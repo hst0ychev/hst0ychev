@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="checkSubclientStatus" result-type="void" api-version="6.0.0" id="9bfd2c23-bf15-4dd1-87b1-9bada721522f" version="0.0.0" allowed-operations="evf" category-name="com.commvault.utils">
+  <param n="subclientId" t="string"><![CDATA[]]></param>
+  <param n="token" t="string"><![CDATA[]]></param>
+  <param n="host" t="REST:RESTHost"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[/*
+	Inputs:
+	subclientId - subclient Id to check status 
+	token- CV token for REST API
+	
+	API used:
+	/Subclient/subclientId  GET
+	
+	Output:
+	-1 if the status is deleted else 0
+	
+	
+*/
+
+var subclientPropURL = "/Subclient/" + subclientId;
+
+var responseCurrent = System.getModule("com.commvault.utils").processRESTRequest(subclientPropURL,"GET",null,token,null,host);
+if(responseCurrent.statusCode == 404)
+{	
+	System.log("Subclient details could not be found. Recieved status:  "+ responseCurrent.contentAsString);
+	return -1;
+}
+if(responseCurrent.statusCode != 200)
+{
+	throw("Error: Failed to execute REST request to check status of subclient. Recieved status:  "+ responseCurrent.contentAsString);
+}
+else{
+	return 0;
+}]]></script>
+</dunes-script-module>

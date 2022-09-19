@@ -1,0 +1,5 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getRemoteServerUser" result-type="string" api-version="6.0.0" id="faf64102-f002-4cd5-ac90-caa53ebab7b1" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vco.configuration">
+  <param n="server" t="VCO:RemoteServer"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[return server == null ? "" : server.getConnection().getConfiguration().user;]]></script>
+</dunes-script-module>

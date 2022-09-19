@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="addSOAPHostWithWSDLContent" result-type="SOAP:Host" api-version="6.0.0" id="0a160bc2-613f-4eb4-af20-9e54553d86d3" version="1.0.4" allowed-operations="vf" category-name="com.vmware.library.soap.configuration">
+  <description><![CDATA[Adds a SOAPHost object to the plug-in's repository.]]></description>
+  <param n="name" t="string"><![CDATA[Name of the host]]></param>
+  <param n="wsdlContent" t="string"><![CDATA[Content of a WSDL file]]></param>
+  <param n="connectionTimeout" t="number"><![CDATA[Connection timeout in seconds]]></param>
+  <param n="requestTimeout" t="number"><![CDATA[Request timeout in seconds]]></param>
+  <param n="authenticationType" t="string"><![CDATA[Authentication type]]></param>
+  <param n="sessionMode" t="string"><![CDATA[Session mode]]></param>
+  <param n="username" t="string"><![CDATA[User name]]></param>
+  <param n="password" t="SecureString"><![CDATA[Password]]></param>
+  <param n="domain" t="string"><![CDATA[NTLM domain]]></param>
+  <param n="workstation" t="string"><![CDATA[NTLM workstation]]></param>
+  <param n="spn" t="string"><![CDATA[Kerberos service SPN]]></param>
+  <param n="proxyHost" t="string"><![CDATA[Proxy host]]></param>
+  <param n="proxyPort" t="number"><![CDATA[Proxy port]]></param>
+  <script encoded="false"><![CDATA[var host = new SOAPHost();
+host.name = name;
+host.wsdlLocal = true;
+host.wsdlFileContent = wsdlContent;
+host.connectionTimeout = connectionTimeout;
+host.requestTimeout = requestTimeout;
+host.authentication = System.getModule("com.vmware.library.soap.configuration").getSOAPAuthentication(authenticationType, sessionMode, username, password, domain, workstation, spn);
+host.proxyHost = proxyHost;
+host.proxyPort = proxyPort;
+host = SOAPHostManager.addHost(host);
+
+System.log("SOAP host added: " + host);
+
+return host;
+]]></script>
+</dunes-script-module>

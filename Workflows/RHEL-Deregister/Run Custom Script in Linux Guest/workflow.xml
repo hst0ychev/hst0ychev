@@ -1,0 +1,178 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item3" object-name="workflow:name=generic" id="268ca816-8e4f-493e-a47f-fd8692379c55" version="0.0.3" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Run Custom Script in Linux Guest]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="machine" type="Properties"/>
+    <param name="requestId" type="string"/>
+    <param name="virtualMachineAddOrUpdateProperties" type="Properties"/>
+    <param name="virtualMachineEvent" type="string"/>
+    <param name="lifecycleState" type="Properties"/>
+    <param name="componentId" type="string"/>
+    <param name="blueprintName" type="string"/>
+    <param name="componentTypeId" type="string"/>
+    <param name="endpointId" type="string"/>
+    <param name="workflowNextState" type="string"/>
+    <param name="virtualMachineDeleteProperties" type="Properties"/>
+  </input>
+  <attrib name="vmUsername" type="string" read-only="false">
+    <value encoded="n"><![CDATA[root]]></value>
+  </attrib>
+  <attrib name="vmPassword" type="SecureString" read-only="false">
+    <value encoded="n"><![CDATA[8BK63U72U69I73U40Z31X32N33P95907E0K8D49874HD71D595R16D87CFJ4753EADIA503368LB48C780H2235EABQ2069921QCFE38E1O8615A5FTCEE60D1N797B08BU775FB6R3E3A03DOB212DE8W1F54A65O1CA3761P1C05D7RA9A7A63Q50899A1PD8CBE8CJE936062RF2C8685G]]></value>
+  </attrib>
+  <attrib name="scriptConfigurationResource" type="ResourceElement" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/ResourceElement?id='e318cfbd-cf40-4593-937e-90c837884dd6'&dunesName='ResourceElement']]></value>
+  </attrib>
+  <attrib name="vm" type="VC:VirtualMachine" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="host" type="vCAC:VCACHost" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='7678fd07-7e94-41fb-b504-826e693933a5'&dunesName='vCAC:VCACHost']]></value>
+  </attrib>
+  <attrib name="sleepTime" type="number" read-only="false">
+    <value encoded="n"><![CDATA[120.0]]></value>
+    <description><![CDATA[Time to sleep in seconds]]></description>
+  </attrib>
+  <attrib name="skipFailure" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="scriptVariable" type="Array/CompositeType(stringToReplace:string,replacingString:string):scriptVariables" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="664.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item1" type="task">
+    <display-name><![CDATA[Get VC:VirtualMachine]]></display-name>
+    <script encoded="false"><![CDATA[var vmname = machine.get("name");
+System.log("machine.name: " + machine.get("name"));
+var properties = new Properties();
+properties.put("VirtualMachineID", machine.get("id"));
+var virtualMachineEntity = vCACEntityManager.readModelEntity(host.id, "ManagementModelEntities.svc", "VirtualMachines", properties, null);
+
+var vmProperties = new Properties();
+var virtualMachinePropertiesEntities = virtualMachineEntity.getLink(host, "VirtualMachineProperties");
+for each (var virtualMachinePropertiesEntity in virtualMachinePropertiesEntities) {
+    var propertyName = virtualMachinePropertiesEntity.getProperty("PropertyName");
+    var propertyValue = virtualMachinePropertiesEntity.getProperty("PropertyValue");
+    System.log("Found property " + propertyName + " = " + propertyValue);
+    vmProperties.put(propertyName, propertyValue);
+}
+
+var vcacVmUuid = vmProperties.get("VirtualMachine.Admin.UUID"); 
+var vm = System.getModule("com.vmware.vcac.asd").findVcVmByUuid(vcacVmUuid);
+System.log (vm);
+System.log (vmUsername);
+System.log (vmPassword);
+System.log (scriptConfigurationResource);
+System.log (skipFailure);
+System.log (scriptVariable);
+
+]]></script>
+    <in-binding>
+      <bind name="machine" type="Properties" export-name="machine"/>
+      <bind name="host" type="vCAC:VCACHost" export-name="host"/>
+      <bind name="requestId" type="string" export-name="requestId"/>
+      <bind name="virtualMachineAddOrUpdateProperties" type="Properties" export-name="virtualMachineAddOrUpdateProperties"/>
+      <bind name="virtualMachineEvent" type="string" export-name="virtualMachineEvent"/>
+      <bind name="lifecycleState" type="Properties" export-name="lifecycleState"/>
+      <bind name="componentId" type="string" export-name="componentId"/>
+      <bind name="blueprintName" type="string" export-name="blueprintName"/>
+      <bind name="componentTypeId" type="string" export-name="componentTypeId"/>
+      <bind name="endpointId" type="string" export-name="endpointId"/>
+      <bind name="workflowNextState" type="string" export-name="workflowNextState"/>
+      <bind name="virtualMachineDeleteProperties" type="Properties" export-name="virtualMachineDeleteProperties"/>
+      <bind name="vmUsername" type="string" export-name="vmUsername"/>
+      <bind name="vmPassword" type="SecureString" export-name="vmPassword"/>
+      <bind name="skipFailure" type="boolean" export-name="skipFailure"/>
+      <bind name="scriptVariable" type="Array/CompositeType(stringToReplace:string,replacingString:string):scriptVariables" export-name="scriptVariable"/>
+      <bind name="stringToReplace" type="Array/string" export-name="scriptVariable.stringToReplace"/>
+      <bind name="replacingString" type="Array/string" export-name="scriptVariable.replacingString"/>
+      <bind name="scriptConfigurationResource" type="ResourceElement" export-name="scriptConfigurationResource"/>
+    </in-binding>
+    <out-binding>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vm"/>
+      <bind name="vmUsername" type="string" export-name="vmUsername"/>
+      <bind name="vmPassword" type="SecureString" export-name="vmPassword"/>
+      <bind name="scriptConfigurationResource" type="ResourceElement" export-name="scriptConfigurationResource"/>
+      <bind name="skipFailure" type="boolean" export-name="skipFailure"/>
+      <bind name="scriptVariable" type="Array/CompositeType(stringToReplace:string,replacingString:string):scriptVariables" export-name="scriptVariable"/>
+    </out-binding>
+    <position y="55.40909090909091" x="344.5"/>
+  </workflow-item>
+  <workflow-item name="item3" prototype-id="sleep" out-name="item2" content-mode="x" type="task">
+    <display-name><![CDATA[Sleep]]></display-name>
+    <script encoded="false"><![CDATA[//Auto-generated script
+if ( sleepTime != null )  {
+	System.sleep(sleepTime*1000);
+}
+else  {
+	throw "'sleepTime' is NULL";
+}
+]]></script>
+    <in-binding>
+      <bind name="sleepTime" type="number" export-name="sleepTime">
+        <description><![CDATA[Time to sleep in seconds]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Sleep a given number of seconds]]></description>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="link" linked-workflow-id="7520eb30-9516-404a-b3b3-7eab0c31b197">
+    <display-name><![CDATA[Run script in VM guest-PSO]]></display-name>
+    <in-binding>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vm"/>
+      <bind name="vmUsername" type="string" export-name="vmUsername"/>
+      <bind name="vmPassword" type="SecureString" export-name="vmPassword"/>
+      <bind name="scriptConfigurationResource" type="ResourceElement" export-name="scriptConfigurationResource"/>
+      <bind name="scriptVariables" type="Array/CompositeType(stringToReplace:string,replacingString:string):scriptVariables" export-name="scriptVariable"/>
+    </in-binding>
+    <out-binding>
+      <bind name="scriptExitCodeOut" type="number" explicitly-not-bound="true" export-name="NULL"/>
+      <bind name="scriptOutputTextOut" type="string" explicitly-not-bound="true" export-name="NULL"/>
+    </out-binding>
+    <description><![CDATA[Run a script in a guest using existing script configurations. Replaces variables in the script. Optionaly copy additional file and replace its variables as well.
+
+If no working directory is specified:
+- it is set to the guest default temp directory if there is a resource file copied
+- it is set to default (c:\windows\system32 for Windows /root for Linux) if there is no resource file copied.]]></description>
+    <position y="55.40909090909091" x="484.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="machine">
+      <desc><![CDATA[machine]]></desc>
+    </p-param>
+    <p-param name="requestId">
+      <desc><![CDATA[requestId]]></desc>
+    </p-param>
+    <p-param name="virtualMachineAddOrUpdateProperties">
+      <desc><![CDATA[virtualMachineAddOrUpdateProperties]]></desc>
+    </p-param>
+    <p-param name="virtualMachineEvent">
+      <desc><![CDATA[virtualMachineEvent]]></desc>
+    </p-param>
+    <p-param name="lifecycleState">
+      <desc><![CDATA[lifecycleState]]></desc>
+    </p-param>
+    <p-param name="componentId">
+      <desc><![CDATA[componentId]]></desc>
+    </p-param>
+    <p-param name="blueprintName">
+      <desc><![CDATA[blueprintName]]></desc>
+    </p-param>
+    <p-param name="componentTypeId">
+      <desc><![CDATA[componentTypeId]]></desc>
+    </p-param>
+    <p-param name="endpointId">
+      <desc><![CDATA[endpointId]]></desc>
+    </p-param>
+    <p-param name="workflowNextState">
+      <desc><![CDATA[workflowNextState]]></desc>
+    </p-param>
+    <p-param name="virtualMachineDeleteProperties">
+      <desc><![CDATA[virtualMachineDeleteProperties]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

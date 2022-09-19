@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getCustomizationUserData" result-type="Any" api-version="6.0.0" id="41cd7368-300a-4a0c-b6f0-18315078fb5c" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.vm.spec.identity">
+  <param n="computerName" t="Any"><![CDATA[VimCustomizationName: The computer name of the (Windows) virtual machine.]]></param>
+  <param n="fullName" t="string"><![CDATA[User's full name.]]></param>
+  <param n="orgName" t="string"><![CDATA[User's organization.]]></param>
+  <param n="productId" t="string"><![CDATA[Microsoft Sysprep requires that a valid serial number be included in the answer file when mini-setup runs. This serial number is ignored if the original guest operating system was installed using a volume-licensed CD.]]></param>
+  <script encoded="false"><![CDATA[var userData;
+try {
+	checkParams();
+	userData = new VcCustomizationUserData();
+	affectParams();
+	return userData;
+}
+catch (ex) {
+	throw "Unable to create VcCustomizationUserData: " + ex;
+}
+
+function affectParams() {
+	userData.computerName = computerName;
+	userData.fullName = fullName;
+	userData.orgName = orgName;
+	userData.productId = productId;
+}
+
+function checkParams() {
+	if (computerName == null) throw "hostname cannot be null";
+	if (((computerName instanceof VcCustomizationCustomName) || (computerName instanceof VcCustomizationFixedName) ||
+		 (computerName instanceof VcCustomizationPrefixName) || (computerName instanceof VcCustomizationUnknownName) ||
+		 (computerName instanceof VcCustomizationVirtualMachineName)) == false) {
+		throw "computerName must be of type VcCustomizationCustomName, VcCustomizationFixedName, VcCustomizationPrefixName, VcCustomizationUnknownName, VcCustomizationVirtualMachineName";
+	}
+	if (fullName == null) throw "fullName cannot be null";
+	if (orgName == null) throw "orgName cannot be null";
+}]]></script>
+</dunes-script-module>

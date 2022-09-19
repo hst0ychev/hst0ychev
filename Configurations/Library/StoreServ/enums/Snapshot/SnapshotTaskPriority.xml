@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="7991a29f-dca6-4893-be85-98bd3c637762" version="1.0.0">
+  <display-name><![CDATA[SnapshotTaskPriority]]></display-name>
+  <atts>
+    <att name="MEDIUM" type="number" read-only="false">
+      <value encoded="n"><![CDATA[2.0]]></value>
+    </att>
+    <att name="HIGH" type="number" read-only="false">
+      <value encoded="n"><![CDATA[1.0]]></value>
+    </att>
+    <att name="LOW" type="number" read-only="false">
+      <value encoded="n"><![CDATA[3.0]]></value>
+    </att>
+  </atts>
+</config-element>

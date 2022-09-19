@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="c4b6e2bb-4f3e-4457-bdcf-2bc826242e17" version="2.0.0" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Remove an Active Directory server]]></display-name>
+  <description><![CDATA[Removes an Active Direcotry server configuration.]]></description>
+  <ref-types><![CDATA[(AD:AdHost)]]></ref-types>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="adServer" type="AD:AdHost">
+      <description><![CDATA[Active Directory server to delete]]></description>
+    </param>
+  </input>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Scriptable task]]></display-name>
+    <script encoded="false"><![CDATA[var propValue;
+System.log("Deleting "  + adServer.name)
+System.log("Configuration id "  + adServer.hostConfiguration.id)
+ConfigurationManager.deleteConfiguration(adServer.hostConfiguration.id);]]></script>
+    <in-binding>
+      <bind name="adServer" type="AD:AdHost" export-name="adServer"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="adServer">
+      <desc><![CDATA[Active Directory server to delete]]></desc>
+      <p-qual name="contextualParameter" type="void"><![CDATA[__NULL__]]></p-qual>
+    </p-param>
+  </presentation>
+</workflow>

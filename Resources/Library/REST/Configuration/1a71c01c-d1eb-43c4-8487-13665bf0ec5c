@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<endpoint nativeId="0644794b-e794-4e19-bd83-1196ee76c571" pluginVersion="2.3.2">
+    <properties>
+        <property type="string" name="schema">&lt;com.vmware.o11n.plugin.rest.schema.SchemaRespository&gt;
+  &lt;sources/&gt;
+&lt;/com.vmware.o11n.plugin.rest.schema.SchemaRespository&gt;</property>
+        <property type="string" name="proxyAuthenticationType">NONE</property>
+        <property type="integer" name="operationTimeout">60</property>
+        <property type="string" name="proxySessionMode">Shared Session</property>
+        <property type="bool" name="useProxy">false</property>
+        <property type="string" name="url">https://10.77.16.132/</property>
+        <property type="bool" name="automaticUrlRedirection">false</property>
+        <property type="string" name="operations">&lt;list/&gt;</property>
+        <property type="bool" name="hostVerification">false</property>
+        <property type="string" name="name">radware_passive</property>
+        <property type="string" name="authenticationType">NONE</property>
+        <property type="string" name="sessionMode">Shared Session</property>
+        <property type="integer" name="connectionTimeout">60</property>
+    </properties>
+</endpoint>

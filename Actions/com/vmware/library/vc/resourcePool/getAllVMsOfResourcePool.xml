@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getAllVMsOfResourcePool" result-type="Array/VC:VirtualMachine" api-version="6.0.0" id="3bc83245-9741-4dcb-84e5-3de200d69a80" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.resourcePool">
+  <param n="resourcePool" t="VC:ResourcePool"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var vms = new Array();
+getVMsOfPool(resourcePool);
+return vms;
+
+
+function getVMsOfPool(pool) {
+	vms = vms.concat(pool.vm);
+	var pools = pool.resourcePool;
+	if (pools != null) {
+		for (index in pools) {
+			if (pools[index] != null)
+				getVMsOfPool(pools[index]);
+		}
+	}
+}]]></script>
+</dunes-script-module>

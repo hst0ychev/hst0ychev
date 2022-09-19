@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="deleteVolume" result-type="boolean" api-version="6.0.0" id="d4266c39-24bc-42d4-ab07-7e9cf301ff17" version="1.0.0" allowed-operations="vf" category-name="com.hpe.storeserv.volume">
+  <description><![CDATA[Deletes specified Virtual Volume from the selected HPE 3PAR StoreServ array.]]></description>
+  <param n="connection" t="StoreServ:Connection"><![CDATA[StoreServ Connection]]></param>
+  <param n="virtualVolume" t="StoreServ:Volume"><![CDATA[Virtual Volume to be deteted]]></param>
+  <script encoded="false"><![CDATA[var out = connection.deleteVol(virtualVolume);
+
+
+if(out != undefined && out == true){
+	System.log("Delete volume operation result: Success");
+	return true;	
+}else {
+	return false;
+}
+
+
+]]></script>
+</dunes-script-module>

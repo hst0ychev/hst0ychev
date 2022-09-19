@@ -1,0 +1,84 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="Workflow:name=generic" id="81808080808080808080808080808080D38680800117924212373419438ed48b5" version="1.1.5" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[JDBC delete all from table example]]></display-name>
+  <description><![CDATA[Tests the deletion of all entries in a table]]></description>
+  <position y="20.0" x="180.0"/>
+  <input>
+    <param name="password1" type="SecureString">
+      <description><![CDATA[Password]]></description>
+    </param>
+    <param name="sqlStatement1" type="string">
+      <description><![CDATA[SQL statement 1]]></description>
+    </param>
+    <param name="url2" type="string">
+      <description><![CDATA[JDBC connection URL 2]]></description>
+    </param>
+    <param name="user1" type="string">
+      <description><![CDATA[Username 1]]></description>
+    </param>
+  </input>
+  <workflow-item name="item0" out-name="item1" type="task">
+    <display-name><![CDATA[Delete from table]]></display-name>
+    <script encoded="false"><![CDATA[var main = new JDBCConnection();
+var con;
+try  {
+	con = main.getConnection( url, user, password );
+	System.log( "Connection to database successful" );
+	
+	var stat = con.createStatement();
+	var result = stat.executeUpdate( sqlStatement );
+	stat.close();
+	if ( result >= 0 )  {
+		System.log( "Table rows deletion successful" );
+	}
+	else  {
+		System.error( "Table rows deletion failed" );
+	}
+}
+catch( ex )  {
+	throw "Connection to database failed (Reason: " + ex + ")";
+} finally {
+	if (con) {
+		con.close();
+	}
+}
+]]></script>
+    <in-binding>
+      <bind name="password" type="SecureString" export-name="password1"/>
+      <bind name="sqlStatement" type="string" export-name="sqlStatement1"/>
+      <bind name="url" type="string" export-name="url2"/>
+      <bind name="user" type="string" export-name="user1"/>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Create a table]]></description>
+    <position y="80.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item1" type="end" end-mode="0">
+    <position y="110.0" x="180.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Parameters]]></title>
+      <p-group>
+        <title><![CDATA[Connection]]></title>
+        <desc><![CDATA[Information about connection to the Database. sample: jdbc://host:port/tableName]]></desc>
+        <p-param name="url2">
+          <desc><![CDATA[JDBC connection URL 2]]></desc>
+        </p-param>
+        <p-param name="user1">
+          <desc><![CDATA[Username 1]]></desc>
+        </p-param>
+        <p-param name="password1">
+          <desc><![CDATA[Password 1]]></desc>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[SQL Query]]></title>
+        <desc><![CDATA[A delete SQL Statement]]></desc>
+        <p-param name="sqlStatement1">
+          <desc><![CDATA[SQL statement 1]]></desc>
+        </p-param>
+      </p-group>
+    </p-step>
+  </presentation>
+</workflow>

@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="cloneResourceAction" result-type="vCACCAFE:ResourceAction" api-version="6.0.0" id="463ab573-7672-45ab-888d-8cae90a59279" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.asd.resourceaction">
+  <param n="resourceAction" t="vCACCAFE:ResourceAction"><![CDATA[Resource action to be cloned]]></param>
+  <script encoded="false"><![CDATA[System.getModule("com.vmware.library.vcaccafe.util").validateObject(resourceAction, "Resource action");
+var host = vCACCAFEEntitiesFinder.getHostForEntity(resourceAction);
+var workflowService = host.createAdvancedDesignerClient().getAdvancedDesignerWorkflowService();
+
+var param = new vCACCAFECsParameter() ;
+param.setName(resourceAction.getInputParameter().getName());
+param.setResourceType(resourceAction.getInputParameter().getResourceType());
+
+System.log("Generating clone of resource operation " + resourceAction.getName());
+var cloned = workflowService.generateResourceOperationByWorkflowIdAndInputParameter(resourceAction.getWorkflowId(), param);
+System.log("Generated clone of resource operation " + resourceAction.getName());
+
+cloned.setTenant(host.tenant);
+cloned.setName(resourceAction.getName() +  " (2)");
+cloned.setDescription(resourceAction.getDescription());
+
+var client = host.createAdvancedDesignerClient().getAdvancedDesignerCsResourceOperationService();
+
+System.log("Cloning resource action " + resourceAction.getName() + "...");
+var uri = client.createResourceOperation(cloned);
+System.log("Resource action cloned.");
+
+var uriString = uri.toString();
+var uriParts = uriString.split("/");
+var resourceActionId = uriParts[uriParts.length - 1];
+return vCACCAFEEntitiesFinder.getResourceAction(host, resourceActionId);]]></script>
+</dunes-script-module>

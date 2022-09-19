@@ -1,0 +1,209 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="e2ad06da-64ce-4d53-84d0-913cba278938" version="0.0.3" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[HorizontalScaleOutIn]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="trapData" type="Properties"/>
+  </input>
+  <attrib name="vCACHost" type="vCAC:VCACHost" read-only="false" conf-id="8f368667-13ac-4498-850f-ae6734e9e98b" conf-key="vcacHost">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="vCACCAFEHost" type="vCACCAFE:VCACHost" read-only="false" conf-id="8f368667-13ac-4498-850f-ae6734e9e98b" conf-key="vcaccafeHost">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="scaleOutResourceBindingId" type="string" read-only="false">
+    <value encoded="n"><![CDATA[composition.resource.action.deployment.scaleout]]></value>
+  </attrib>
+  <attrib name="classId" type="string" read-only="false">
+    <value encoded="n"><![CDATA[Blueprint.Component.Declaration]]></value>
+  </attrib>
+  <attrib name="componentTypeId" type="string" read-only="false">
+    <value encoded="n"><![CDATA[com.vmware.csp.component.cafe.composition]]></value>
+  </attrib>
+  <attrib name="scaleInResourceBindingId" type="string" read-only="false">
+    <value encoded="n"><![CDATA[composition.resource.action.deployment.scalein]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Horizontal Scale out]]></display-name>
+    <script encoded="false"><![CDATA[//Extracting Data from SNMP Trap data
+var vmName= trapData.get("vmName");
+System.debug("VM name "+vmName);
+var scaleOption = trapData.get("scaleOption");
+System.debug("Scale option "+scaleOption)
+var alertId = trapData.get("alertId");
+System.debug("Alert id "+alertId);
+//Get Vcac VM
+var vcacVM;
+var referenceId;
+var allVMs = Server.findAllForType("vCAC:VirtualMachine",null);
+for(var vm in allVMs){
+	if(allVMs[vm].virtualMachineName == vmName){
+		vcacVM = allVMs[vm];
+		referenceId = vcacVM.externalReferenceId
+		System.debug("Reference Id "+referenceId);
+		break;
+	}
+}
+//Find vm object by id
+var vcacVMObject = System.getModule("com.vmware.indcoe.library.vrautil").FindVMObjectById(referenceId);
+//Get vcac entity
+var vcacEntity = vcacVMObject.getEntity()
+//Calling action to get the catalog resource
+var catalogResource = System.getModule("com.vmware.indcoe.library.vrautil").GetCatalogResourceForIaasEntity(vCACCAFEHost, vcacEntity);
+//Getting vCAC VM properties by name
+var vcacVMProp = System.getModule("com.vmware.indcoe.library.vrautil").GetVcacVMProperties(vmName,vCACHost);
+//Extracting data from the vm properties
+var blueprintId = vcacVMProp.get("VirtualMachine.Cafe.Blueprint.Id");
+var componentId = vcacVMProp.get("VirtualMachine.Cafe.Blueprint.Component.Id");
+//Get parent resource 
+var parentRef = catalogResource.getParentResourceRef();
+var cafeApplicationDeployment = vCACCAFEEntitiesFinder.findCatalogResources(vCACCAFEHost , parentRef.getLabel())[0];
+
+//Calling action to get resource action by id
+var resourceOperation;
+if(scaleOption == "out"){
+	resourceOperation = System.getModule("com.vmware.indcoe.library.vrautil").GetResourceOperationById(cafeApplicationDeployment,scaleOutResourceBindingId);
+}else if(scaleOption == "in"){
+	resourceOperation = System.getModule("com.vmware.indcoe.library.vrautil").GetResourceOperationById(cafeApplicationDeployment,scaleInResourceBindingId);
+}
+
+
+//Count VMs Layer from the deployment
+System.log("VM Deployment Name :"+cafeApplicationDeployment.getName());
+
+var category = Server.getConfigurationElementCategoryWithPath("Helper");
+//die in a fire if non-existent
+if (category == null) {
+    throw "Configuration element category not found or empty!";
+}
+//get _all_ the elements
+var elements = category.configurationElements;
+var elementName = "vCACHost";
+var attributeName = "vcaccafeHost";
+var cafeHost;
+//retrieve names
+for (i = 0; i < elements.length; i++) {
+    if (elements[i].name == elementName) {
+        //found required element
+        cafeHost = elements[i].getAttributeWithKey(attributeName).value;		
+    }
+}
+// pass in or set these two variables appropriately
+var id = cafeApplicationDeployment.id
+var host = cafeHost
+var resources = new Array();
+var filter = new Array();
+filter[0] = vCACCAFEFilterParam.equal("parentResource", vCACCAFEFilterParam.string(id));
+var query = vCACCAFEOdataQuery.query().addFilter(filter);
+var odataRequest = new vCACCAFEPageOdataRequest(1, 10000, query);
+var service = host.createCatalogClient().getCatalogConsumerResourceService();
+var resources = service.getResourcesList(odataRequest);
+var vmNames = new Array()
+var counter = 0;
+if (resources) {
+     for (var resource in resources) {
+		counter++;
+		vmNames.push(resources[resource].name)          
+     }
+}
+System.debug("Count of vms "+counter);
+System.debug("output vmNames "+vmNames)
+//For sacle out increase counter
+if(scaleOption == "out"){
+	counter = counter +1;
+}else if(scaleOption =="in"){
+	counter = counter -1;
+}
+System.debug("Final Scale out count "+counter);
+var resourceActionReq = System.getModule("com.vmware.indcoe.library.vrautil").RequestScaleResourceAction(resourceOperation,blueprintId,componentId,componentTypeId,classId);
+var requestResult = resourceActionReq.scaleAction(counter);
+/******/
+//Calling wait for resource action request workflow
+var wfId = "8c275d1d-c296-4975-adca-c915f33cc96e";
+var waitRequestParam = new Properties();
+waitRequestParam.put("request",requestResult);
+waitRequestParam.put("timeout",null);
+var waitRequest = runWF(wfId,waitRequestParam);
+
+// function to launch WF
+function runWF(wfId,workflowParameters) {
+	var workflowToLaunch = Server.getWorkflowWithId(wfId);
+	if (workflowToLaunch == null) {
+		throw "Workflow not found";
+	}	
+	System.log("Launching wait for resource action request WF : " + wfId);
+	var wfToken = workflowToLaunch.execute(workflowParameters);
+}
+//get category
+var category = Server.getConfigurationElementCategoryWithPath("Helper");
+//die in a fire if non-existent
+if (category == null) {
+    throw "Configuration element category not found or empty!";
+}
+//get _all_ the elements
+var elements = category.configurationElements;
+var elementName = "vROPSAuth";
+var attributeName = "username";
+var attributeName1 = "password";
+var attributeName2 = "vROPSRest"
+var vropsRestHost
+var username;
+var password;
+//retrieve names
+for (i = 0; i < elements.length; i++) {
+    if (elements[i].name == elementName) {
+        //found required element
+        username = elements[i].getAttributeWithKey(attributeName).value;
+		password = elements[i].getAttributeWithKey(attributeName1).value;
+		vropsRestHost = elements[i].getAttributeWithKey(attributeName2).value;
+        if (username != null && password !=null) {
+            System.log("Found attribute '" + attributeName + "' in '" + elementName + "' with value '" +username + "'");
+          
+        }
+    }
+}
+//Acknowledging Alert
+var vropsObject = System.getModule("com.vmware.indcoe.library.vropsoperation").AutoScalevROPsOperations(vropsRestHost);
+//Authentication Json content
+jsonContent = '{"username":"none","password":"none"}'
+json = JSON.parse(jsonContent)
+json.username = username
+json.password = password
+authContent = JSON.stringify(json);
+var token = vropsObject.getAuthenticationToken(authContent);
+//Acknowleding alert
+var jsonContent = {
+  "uuids" : [alertId]
+}
+var alertContent = JSON.stringify(jsonContent);
+System.debug("Alert content "+alertContent);
+//Setting Header
+var header = new Properties();
+header.put("Authorization","vRealizeOpsToken "+token);
+var alertResult = vropsObject.acknowledgeAlert(alertContent,header)
+if((alertResult["statusCode"] ==200) || (alertResult["statusCode"] ==201)){
+	System.log("Rest operation got completed "+alertResult["contenAsString"]);                                
+}else
+	throw "Rest Operation In complete response content : "+alertResult["contenAsString"] 
+]]></script>
+    <in-binding>
+      <bind name="classId" type="string" export-name="classId"/>
+      <bind name="componentTypeId" type="string" export-name="componentTypeId"/>
+      <bind name="scaleInResourceBindingId" type="string" export-name="scaleInResourceBindingId"/>
+      <bind name="scaleOutResourceBindingId" type="string" export-name="scaleOutResourceBindingId"/>
+      <bind name="trapData" type="Properties" export-name="trapData"/>
+      <bind name="vCACCAFEHost" type="vCACCAFE:VCACHost" export-name="vCACCAFEHost"/>
+      <bind name="vCACHost" type="vCAC:VCACHost" export-name="vCACHost"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="trapData">
+      <desc><![CDATA[trapData]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

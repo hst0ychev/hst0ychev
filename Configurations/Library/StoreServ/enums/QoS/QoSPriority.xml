@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="cc42563f-3408-49d9-8098-c599749f8a2f" version="1.0.0">
+  <display-name><![CDATA[QoSPriority]]></display-name>
+  <atts>
+    <att name="LOW" type="number" read-only="false">
+      <value encoded="n"><![CDATA[1.0]]></value>
+    </att>
+    <att name="NORMAL" type="number" read-only="false">
+      <value encoded="n"><![CDATA[2.0]]></value>
+    </att>
+    <att name="HIGH" type="number" read-only="false">
+      <value encoded="n"><![CDATA[3.0]]></value>
+    </att>
+  </atts>
+</config-element>

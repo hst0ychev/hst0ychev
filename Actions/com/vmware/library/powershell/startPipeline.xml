@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="startPipeline" result-type="void" api-version="6.0.0" id="F5858080808080808080808080808080938080800126658240472157fdafc0fce" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.powershell">
+  <param n="host" t="PowerShell:PowerShellHost"><![CDATA[]]></param>
+  <param n="sessionId" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[host.startPipeline(sessionId)]]></script>
+</dunes-script-module>

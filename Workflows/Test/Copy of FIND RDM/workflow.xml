@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="c576c4ac-73db-4e71-b0df-2cb399f0a03b" version="0.0.3" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Copy of FIND RDM]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="vmName" type="Array/string"/>
+    <param name="filePath" type="string"/>
+  </input>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Scriptable task]]></display-name>
+    <script encoded="false"><![CDATA[var scObj = System.getModule("com.vmware.indcoe.vcenter").getlunNumberandSCSCI()
+var result  = scObj.getLun(vmName)
+//System.log(" | Where-Object -Property DeviceName -EQ '"+vmdkPath+ "' ===================")
+System.log("result"+result)
+System.log("lun no."+result[1])
+]]></script>
+    <in-binding>
+      <bind name="vmName" type="Array/string" export-name="vmName"/>
+      <bind name="filePath" type="string" export-name="filePath"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="vmName">
+      <desc><![CDATA[vmName]]></desc>
+    </p-param>
+    <p-param name="filePath">
+      <desc><![CDATA[filePath]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

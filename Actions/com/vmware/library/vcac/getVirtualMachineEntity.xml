@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getVirtualMachineEntity" result-type="vCAC:Entity" api-version="6.0.0" id="d7b6a0b9-36e8-47a6-b038-bf6a4fb53c48" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcac">
+  <param n="host" t="vCAC:VCACHost"><![CDATA[vCloud Automation Center host]]></param>
+  <param n="virtualMachine" t="vCAC:VirtualMachine"><![CDATA[vCloud Automation Center virtual machine instance]]></param>
+  <script encoded="false"><![CDATA[if (host == null || virtualMachine == null) return null;
+
+var properties = new Properties();
+properties.put("VirtualMachineID", virtualMachine.virtualMachineID);
+return vCACEntityManager.readModelEntity(host.id, "ManagementModelEntities.svc", "VirtualMachines", properties, null);]]></script>
+</dunes-script-module>

@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="9fdf2485-a262-4984-b303-5eab606feebd" version="0.0.0">
+  <display-name><![CDATA[Commvault_Baas]]></display-name>
+  <atts>
+    <att name="username" type="string" read-only="false">
+      <value encoded="n"><![CDATA[admin]]></value>
+    </att>
+    <att name="password" type="SecureString" read-only="false">
+      <value encoded="n"><![CDATA[__NULL__]]></value>
+    </att>
+    <att name="Commvault_Baas" type="REST:RESTHost" read-only="false">
+      <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='f3d3dff5-3d76-4de8-b3cf-1647ddb6857e'&dunesName='REST:RESTHost']]></value>
+    </att>
+  </atts>
+</config-element>

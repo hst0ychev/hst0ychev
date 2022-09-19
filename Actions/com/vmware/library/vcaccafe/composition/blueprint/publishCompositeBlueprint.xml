@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="publishCompositeBlueprint" result-type="vCACCAFE:CompositeBlueprint" api-version="6.0.0" id="d219dd99-39af-4589-b184-0137a34ad13a" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.composition.blueprint">
+  <param n="blueprint" t="vCACCAFE:CompositeBlueprint"><![CDATA[Composite blueprint]]></param>
+  <script encoded="false"><![CDATA[System.getModule("com.vmware.library.vcaccafe.util").validateObject(blueprint, "Composite blueprint");
+var host = vCACCAFEEntitiesFinder.getHostForEntity(blueprint);
+var blueprintService = host.createCompositionClient().getCompositionCompositeBlueprintService();
+blueprint.setPublishStatus(vCACCAFECompositionPublishStatus.PUBLISHED);
+
+System.log("Publishing composite blueprint " + blueprint.getName() + "...");
+var publishedBlueprint = blueprintService.createOrUpdateBlueprint(blueprint);
+System.log("Composite blueprint published " + blueprint.getName() + ".");
+return publishedBlueprint;]]></script>
+</dunes-script-module>

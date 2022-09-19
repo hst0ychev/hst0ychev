@@ -1,0 +1,241 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="Workflow:name=generic" id="84808080808080808080808080808080E8808080012372877675871d32e0b30c1" version="1.3.0" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Quick migration of virtual machine]]></display-name>
+  <description><![CDATA[Suspends the virtual machine if it is powered on and migrates it to another host using the same storage.]]></description>
+  <position y="30.0" x="100.0"/>
+  <input>
+    <param name="vm" type="VC:VirtualMachine">
+      <description><![CDATA[Virtual machine to migrate]]></description>
+    </param>
+    <param name="destinationHost" type="VC:HostSystem">
+      <description><![CDATA[Destination host]]></description>
+    </param>
+  </input>
+  <attrib name="errorCode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[Unknown Virtual Machine power state value]]></value>
+    <description><![CDATA[Error code]]></description>
+  </attrib>
+  <attrib name="task" type="VC:Task" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Migration task]]></description>
+  </attrib>
+  <attrib name="progress" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+    <description><![CDATA[Log progress while waiting for the task to complete]]></description>
+  </attrib>
+  <attrib name="pollRate" type="number" read-only="false">
+    <value encoded="n"><![CDATA[1.0]]></value>
+    <description><![CDATA[Polling rate for the task state, in seconds]]></description>
+  </attrib>
+  <attrib name="priority" type="VC:VirtualMachineMovePriority" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='defaultPriority'&dunesName='VC:VirtualMachineMovePriority']]></value>
+    <description><![CDATA[Priority of the migration task]]></description>
+  </attrib>
+  <workflow-note x="220.0" y="70.0" w="160.0" h="340.0" color="bfffbfff">
+    <description><![CDATA[Powered on]]></description>
+  </workflow-note>
+  <workflow-note x="390.0" y="70.0" w="160.0" h="260.0" color="ffdfbfff">
+    <description><![CDATA[Suspended or Powered off]]></description>
+  </workflow-note>
+  <workflow-item name="item1" out-name="item8" type="custom-condition" alt-out-name="item2">
+    <display-name><![CDATA[Same datastores ?]]></display-name>
+    <script encoded="false"><![CDATA[var vmDatastores = vm.datastore;
+var hostDatastores = destinationHost.datastore;
+
+for each (var vmDatastore in vmDatastores) {
+	var haveSameDatastore = false;
+	for each (var hostDatastore in hostDatastores) {
+		System.log(vmDatastore.id + " " + hostDatastore.id);
+		if (vmDatastore.id == hostDatastore.id) {
+			haveSameDatastore = true;
+			System.log("The specified VM (" + vm.name + ") and Host (" + destinationHost.name + ") have same datastore.");
+			break;
+		}
+	}
+	if (haveSameDatastore == false)
+		return false;
+}
+
+return true;]]></script>
+    <in-binding>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vm"/>
+      <bind name="destinationHost" type="VC:HostSystem" export-name="destinationHost"/>
+    </in-binding>
+    <position y="110.0" x="60.0"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item0" content-mode="y" type="task" interaction="l">
+    <display-name><![CDATA[System warning]]></display-name>
+    <script encoded="false"><![CDATA[//Auto-generated script
+System.warn("One or more datastores of this Virtual Machine are not registred on the destination host.");
+]]></script>
+    <in-binding/>
+    <out-binding/>
+    <description><![CDATA[Log the input text to the console log with level 'warn']]></description>
+    <position y="180.0" x="60.0"/>
+  </workflow-item>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="410.0" x="100.0"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item6" type="task" script-module="com.vmware.library.vc.vm.power/suspendVM">
+    <display-name><![CDATA[suspendVM]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.vc.vm.power").suspendVM(vm) ;]]></script>
+    <in-binding>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vm">
+        <description><![CDATA[VM to suspend]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="VC:Task" export-name="task"/>
+    </out-binding>
+    <description><![CDATA[Suspend a VM. Return the suspend Task]]></description>
+    <position y="180.0" x="240.0"/>
+  </workflow-item>
+  <workflow-item name="item6" out-name="item9" type="task" script-module="com.vmware.library.vc.basic/vim3WaitTaskEnd">
+    <display-name><![CDATA[vim3WaitTaskEnd]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.vc.basic").vim3WaitTaskEnd(task,progress,pollRate) ;]]></script>
+    <in-binding>
+      <bind name="pollRate" type="number" export-name="pollRate">
+        <description><![CDATA[Polling rate for the task state [seconds]]]></description>
+      </bind>
+      <bind name="progress" type="boolean" export-name="progress">
+        <description><![CDATA[Log progess while waiting for the task]]></description>
+      </bind>
+      <bind name="task" type="VC:Task" export-name="task">
+        <description><![CDATA[Task to Wait for]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Any" explicitly-not-bound="true" export-name="NULL"/>
+    </out-binding>
+    <description><![CDATA[Wait a VIM 3 Task to end.
+When task ended, return the ]]></description>
+    <position y="240.0" x="240.0"/>
+  </workflow-item>
+  <workflow-item name="item8" out-name="item4" type="custom-condition" alt-out-name="item7">
+    <display-name><![CDATA[Is power on ?]]></display-name>
+    <script encoded="false"><![CDATA[return vm.runtime.powerState.value == VcVirtualMachinePowerState.poweredOn.value;]]></script>
+    <in-binding>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vm"/>
+    </in-binding>
+    <position y="110.0" x="240.0"/>
+  </workflow-item>
+  <workflow-item name="item5" out-name="item14" type="task" script-module="com.vmware.library.vc.vm.power/startVM">
+    <display-name><![CDATA[startVM]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.vc.vm.power").startVM(vm,host) ;]]></script>
+    <in-binding>
+      <bind name="host" type="VC:HostSystem" export-name="destinationHost">
+        <description><![CDATA[[Optional] The host where the virtual machine is to be powered on. If no host is specified, the current associated host is used. This field must specify a host that is part of the same compute resource that the virtual machine is currently associated with. If this host is not compatible, the current host association is used. ]]></description>
+      </bind>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vm">
+        <description><![CDATA[VM to start or resume]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="VC:Task" export-name="task"/>
+    </out-binding>
+    <description><![CDATA[Start / Resume a VM. Return the start task]]></description>
+    <position y="320.0" x="240.0"/>
+  </workflow-item>
+  <workflow-item name="item7" out-name="item10" type="custom-condition" alt-out-name="item3">
+    <display-name><![CDATA[Is suspended or power of ?]]></display-name>
+    <script encoded="false"><![CDATA[if (vm.runtime.powerState.value == VcVirtualMachinePowerState.suspended.value ||
+	vm.runtime.powerState.value == VcVirtualMachinePowerState.poweredOff.value) {
+	return true;
+}
+return false;]]></script>
+    <in-binding>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vm"/>
+    </in-binding>
+    <position y="110.0" x="420.0"/>
+  </workflow-item>
+  <workflow-item name="item3" business-status="" throw-bind-name="errorCode" type="end" end-mode="1">
+    <position y="110.0" x="600.0"/>
+  </workflow-item>
+  <workflow-item name="item12" type="end" end-mode="0">
+    <position y="410.0" x="460.0"/>
+  </workflow-item>
+  <workflow-item name="item14" out-name="item11" type="task" script-module="com.vmware.library.vc.basic/vim3WaitTaskEnd">
+    <display-name><![CDATA[vim3WaitTaskEnd]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.vc.basic").vim3WaitTaskEnd(task,progress,pollRate) ;]]></script>
+    <in-binding>
+      <bind name="pollRate" type="number" export-name="pollRate">
+        <description><![CDATA[Polling rate for the task state [seconds]]]></description>
+      </bind>
+      <bind name="progress" type="boolean" export-name="progress">
+        <description><![CDATA[Log progess while waiting for the task]]></description>
+      </bind>
+      <bind name="task" type="VC:Task" export-name="task">
+        <description><![CDATA[Task to Wait for]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Any" explicitly-not-bound="true" export-name="NULL"/>
+    </out-binding>
+    <description><![CDATA[Wait a VIM 3 Task to end.
+When task ended, return the ]]></description>
+    <position y="360.0" x="240.0"/>
+  </workflow-item>
+  <workflow-item name="item11" type="end" end-mode="0">
+    <position y="430.0" x="280.0"/>
+  </workflow-item>
+  <workflow-item name="item10" out-name="item12" type="link" linked-workflow-id="BD8080808080808080808080808080803DC180800122528313869552e41805bb1">
+    <display-name><![CDATA[Migrate VM]]></display-name>
+    <in-binding>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vm">
+        <description><![CDATA[VM to migrate]]></description>
+      </bind>
+      <bind name="pool" type="VC:ResourcePool" explicitly-not-bound="true">
+        <description><![CDATA[The target resource pool for the virtual machine. If the pool parameter is left unset, the virtual machine's current pool is used as the target pool]]></description>
+      </bind>
+      <bind name="host" type="VC:HostSystem" export-name="destinationHost">
+        <description><![CDATA[The target host to which the virtual machine is intended to migrate]]></description>
+      </bind>
+      <bind name="priority" type="VC:VirtualMachineMovePriority" export-name="priority">
+        <description><![CDATA[The priority of the migration task]]></description>
+      </bind>
+      <bind name="state" type="VC:VirtualMachinePowerState" explicitly-not-bound="true">
+        <description><![CDATA[If specified, the virtual machine migrates only if its state matches the specified state. ]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Migrate a VM from a host to another]]></description>
+    <position y="180.0" x="420.0"/>
+  </workflow-item>
+  <workflow-item name="item9" out-name="item5" type="link" linked-workflow-id="BD8080808080808080808080808080803DC180800122528313869552e41805bb1">
+    <display-name><![CDATA[Migrate VM]]></display-name>
+    <in-binding>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vm">
+        <description><![CDATA[VM to migrate]]></description>
+      </bind>
+      <bind name="pool" type="VC:ResourcePool" explicitly-not-bound="true">
+        <description><![CDATA[The target resource pool for the virtual machine. If the pool parameter is left unset, the virtual machine's current pool is used as the target pool]]></description>
+      </bind>
+      <bind name="host" type="VC:HostSystem" export-name="destinationHost">
+        <description><![CDATA[The target host to which the virtual machine is intended to migrate]]></description>
+      </bind>
+      <bind name="priority" type="VC:VirtualMachineMovePriority" export-name="priority">
+        <description><![CDATA[The priority of the migration task]]></description>
+      </bind>
+      <bind name="state" type="VC:VirtualMachinePowerState" explicitly-not-bound="true">
+        <description><![CDATA[If specified, the virtual machine migrates only if its state matches the specified state. ]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Migrate a VM from a host to another]]></description>
+    <position y="280.0" x="240.0"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="vm">
+      <desc><![CDATA[Virtual machine to migrate]]></desc>
+      <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+    </p-param>
+    <p-param name="destinationHost">
+      <desc><![CDATA[Destination host]]></desc>
+      <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+    </p-param>
+  </presentation>
+</workflow>

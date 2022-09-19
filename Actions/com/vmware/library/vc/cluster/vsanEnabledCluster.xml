@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="vsanEnabledCluster" result-type="boolean" api-version="6.0.0" id="d5d2cac1-b220-4a71-98b9-86807898c43a" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.cluster">
+  <description><![CDATA[Return true, if Storage DRS is enabled for the specified. Return false, if Storage DRS is not enabled.]]></description>
+  <param n="cluster" t="VC:ClusterComputeResource"><![CDATA[Cluster whose configuration to check.]]></param>
+  <script encoded="false"><![CDATA[return cluster.configurationEx.vsanConfigInfo.enabled;]]></script>
+</dunes-script-module>

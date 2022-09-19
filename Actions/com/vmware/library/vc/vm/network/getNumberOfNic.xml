@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getNumberOfNic" result-type="number" api-version="6.0.0" id="ec6bb8e7-e3da-43a9-9cf7-41bf0c2bc48b" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.vm.network">
+  <param n="vm" t="VC:VirtualMachine"><![CDATA[VM to count nic number]]></param>
+  <script encoded="false"><![CDATA[var devices = vm.config.hardware.device;
+var result = 0;
+for (var i in devices) {
+    if (System.getModule("com.vmware.library.vc.vm.network").isSupportedNic(devices[i])) {
+		result++;
+	}
+
+}
+return result;]]></script>
+</dunes-script-module>

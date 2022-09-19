@@ -1,0 +1,81 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getVirtualDevice" result-type="Any" api-version="6.0.0" id="a47cc990-b3d2-45f3-9e42-000d483351f8" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.vm.spec.config.device">
+  <param n="device" t="Any"><![CDATA[Virtual Device to set values.]]></param>
+  <param n="backing" t="Any"><![CDATA[[Optional] Any valid VirtualDeviceBackingInfo, depend on the device itself.]]></param>
+  <param n="connectable" t="Any"><![CDATA[[Optional] VimVirtualDeviceConnectInfo: Information about restrictions on removing this device while a virtual machine is running. If the device is not removable, then this property is null.]]></param>
+  <param n="controllerKey" t="number"><![CDATA[[Optional] Object key that denotes the controller object for this device. This property contains the key property value of the controller device object.]]></param>
+  <param n="deviceInfo" t="Any"><![CDATA[[Optional] VimDescription: This property provides a label and summary information for the device.]]></param>
+  <param n="key" t="number"><![CDATA[[Optional] This property is a unique key that distinguishes this device from other devices in the same virtual machine. This must be unique. Can only be setted by users at create time]]></param>
+  <param n="unitNumber" t="number"><![CDATA[[Optioanl] Unit number of this device on its controller. This property is null if the controller property is null (for example, when the device is not attached to a specific controller object).  Normally, two devices on the same controller may not be assigned the same unit number.]]></param>
+  <script encoded="false"><![CDATA[if (device == null) throw "ReferenceError: device cannot be null. getVirtualDevice must be called from another getVirtual[device] action";
+if (backing != null) {
+	if (checkBackingType(backing) == true) {
+		device.backing = backing;
+	}
+}
+if (connectable != null) {
+	if (connectable instanceof VcVirtualDeviceConnectInfo) {
+		device.connectable = connectable;
+	}
+	else {
+		throw "ReferenceError: connectable must be of type 'VcVirtualDeviceConnectInfo'";
+	}
+}
+if (deviceInfo != null) {
+	if (deviceInfo instanceof VcDescription) {
+		device.deviceInfo = deviceInfo;
+	}
+	else {
+		throw "ReferenceError: deviceInfo must be of type 'VcDescription'";
+	}
+}
+if (key != null) {
+	device.key = key;
+}
+else {
+	device.key = 0;
+	System.log("Device key not set. Force to 0");
+}
+if (unitNumber != null) {
+	device.unitNumber = unitNumber;
+}
+
+return device;
+
+
+function checkBackingType(backing) {
+	if (backing instanceof VcVirtualCdromAtapiBackingInfo) return true;
+	if (backing instanceof VcVirtualCdromPassthroughBackingInfo) return true;
+	if (backing instanceof VcVirtualDiskRawDiskVer2BackingInfo) return true;
+	if (backing instanceof VcVirtualDiskPartitionedRawDiskVer2BackingInfo) return true;
+	if (backing instanceof VcVirtualEthernetCardLegacyNetworkBackingInfo) return true;
+	if (backing instanceof VcVirtualEthernetCardNetworkBackingInfo) return true;
+	if (backing instanceof VcVirtualEthernetCardDistributedVirtualPortBackingInfo) return true;
+	if (backing instanceof VcVirtualFloppyDeviceBackingInfo) return true;
+	if (backing instanceof VcVirtualParallelPortDeviceBackingInfo) return true;
+	if (backing instanceof VcVirtualPointingDeviceDeviceBackingInfo) return true;
+	if (backing instanceof VcVirtualSCSIPassthroughDeviceBackingInfo) return true;
+	if (backing instanceof VcVirtualSerialPortDeviceBackingInfo) return true;
+	if (backing instanceof VcVirtualSoundCardDeviceBackingInfo) return true;
+	if (backing instanceof VcVirtualDeviceFileBackingInfo) return true;
+	if (backing instanceof VcVirtualDevicePipeBackingInfo) return true;
+	if (backing instanceof VcVirtualDeviceRemoteDeviceBackingInfo) return true;
+	
+	if (backing instanceof VcVirtualCdromIsoBackingInfo) return true;
+	if (backing instanceof VcVirtualDiskFlatVer1BackingInfo) return true;
+	if (backing instanceof VcVirtualDiskFlatVer2BackingInfo) return true;
+	if (backing instanceof VcVirtualDiskRawDiskMappingVer1BackingInfo) return true;
+	if (backing instanceof VcVirtualDiskSparseVer1BackingInfo) return true;
+	if (backing instanceof VcVirtualDiskSparseVer2BackingInfo) return true;
+	if (backing instanceof VcVirtualFloppyImageBackingInfo) return true;
+	if (backing instanceof VcVirtualParallelPortFileBackingInfo) return true;
+	if (backing instanceof VcVirtualSerialPortFileBackingInfo) return true;
+
+	if (backing instanceof VcVirtualSerialPortPipeBackingInfo) return true;
+	
+	if (backing instanceof VcVirtualCdromRemoteAtapiBackingInfo) return true;
+	if (backing instanceof VcVirtualCdromRemotePassthroughBackingInfo) return true;
+	if (backing instanceof VcVirtualFloppyRemoteDeviceBackingInfo) return true;
+	throw ("TypeError: backing is not of a valide type. type is: " + System.getObjectClassName(backing));
+}]]></script>
+</dunes-script-module>

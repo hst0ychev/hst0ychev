@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getSystemBlueprintByComponentId" result-type="vCAC:Entity" api-version="6.0.0" id="e6d22c5b-617c-4dd8-b901-10e28b2a0c2d" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcac">
+  <param n="host" t="vCAC:VCACHost"><![CDATA[vCAC Host]]></param>
+  <param n="componentType" t="string"><![CDATA[Type of the blueprint component]]></param>
+  <script encoded="false"><![CDATA[var modelName = "ManagementModelEntities.svc";
+var entitySetName = "VirtualMachineTemplates";
+
+var mapping = new Properties();
+mapping.put("Infrastructure.CatalogItem.Machine.Virtual.vSphere", "system_blueprint_vsphere");
+mapping.put("Infrastructure.CatalogItem.Machine.Cloud.AmazonEC2", "system_blueprint_amazon");
+mapping.put("Infrastructure.CatalogItem.Machine.Virtual.CitrixXen", "system_blueprint_citrixxen");
+mapping.put("Infrastructure.CatalogItem.Machine.Virtual.HyperV", "system_blueprint_hyperv");
+mapping.put("Infrastructure.CatalogItem.Machine.Virtual.KVM", "system_blueprint_kvm");
+mapping.put("Infrastructure.CatalogItem.Machine.Cloud.OpenStack", "system_blueprint_openstack");
+mapping.put("Infrastructure.CatalogItem.Machine.Virtual.SCVMM", "system_blueprint_scvmm");
+mapping.put("Infrastructure.CatalogItem.Machine.Cloud.vCloudDirector", "system_blueprint_vcloud");
+mapping.put("Infrastructure.CatalogItem.Machine.Cloud.vCloudAir", "system_blueprint_vcloudair");
+
+var blueprintEntity = null;
+
+var systemBlueprintName = mapping.get(componentType);
+if (systemBlueprintName) {
+	var filter = "VirtualMachineTemplateName eq '" + systemBlueprintName + "'";
+	blueprintEntity = vCACEntityManager.readModelEntitiesBySystemQuery(host.id, modelName, entitySetName, filter, null, null, 1, 0, null)[0];
+}
+
+return blueprintEntity;]]></script>
+</dunes-script-module>

@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="updateSOAPHostWithWSDLContent" result-type="SOAP:Host" api-version="6.0.0" id="54272617-b8cc-4780-a67a-5270109947db" version="1.0.4" allowed-operations="vf" category-name="com.vmware.library.soap.configuration">
+  <description><![CDATA[Updates the specified SOAPHost from the plug-in's repository.]]></description>
+  <param n="id" t="string"><![CDATA[The name of the SOAP host to be updated]]></param>
+  <param n="newName" t="string"><![CDATA[The new name of the SOAP host]]></param>
+  <param n="wsdlContent" t="string"><![CDATA[Content of the new WSDL file]]></param>
+  <param n="newConnectionTimeout" t="number"><![CDATA[The new connection timeout in seconds]]></param>
+  <param n="newRequestTimeout" t="number"><![CDATA[The new request timeout in seconds]]></param>
+  <param n="newAuthenticationType" t="string"><![CDATA[The new authentication type]]></param>
+  <param n="newSessionMode" t="string"><![CDATA[The new session mode]]></param>
+  <param n="newUsername" t="string"><![CDATA[The new user name]]></param>
+  <param n="newPassword" t="SecureString"><![CDATA[The new password]]></param>
+  <param n="newDomain" t="string"><![CDATA[The new NTLM domain]]></param>
+  <param n="newWorkstation" t="string"><![CDATA[The new NTLM workstation]]></param>
+  <param n="spn" t="string"><![CDATA[The new Kerberos SPN]]></param>
+  <param n="proxyHost" t="string"><![CDATA[Proxy host]]></param>
+  <param n="proxyPort" t="number"><![CDATA[Proxy port]]></param>
+  <script encoded="false"><![CDATA[var host = SOAPHostManager.getHost(id);
+
+host.name = newName;
+host.wsdlLocal = true;
+host.wsdlUri = "";
+host.preferredEndpointURL = null;
+host.wsdlFileContent = wsdlContent;
+host.connectionTimeout = newConnectionTimeout;
+host.requestTimeout = newRequestTimeout;
+host.authentication = System.getModule("com.vmware.library.soap.configuration").getSOAPAuthentication(newAuthenticationType, newSessionMode, newUsername, newPassword, newDomain, newWorkstation, spn);
+host.proxyHost = proxyHost;
+host.proxyPort = proxyPort;
+
+host = SOAPHostManager.updateHost(host);
+
+System.log("SOAP host updated: " + host);
+
+return host;
+]]></script>
+</dunes-script-module>

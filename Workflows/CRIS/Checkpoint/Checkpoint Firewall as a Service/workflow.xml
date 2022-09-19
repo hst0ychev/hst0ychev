@@ -1,0 +1,648 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="002d7882-9083-47da-88cd-6b7973d4eddc" version="0.0.3" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Checkpoint Firewall as a Service]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="inputSourceIPs" type="string">
+      <description><![CDATA[Comma separated list of source IP Addresses]]></description>
+    </param>
+    <param name="inputDestinationIPs" type="string">
+      <description><![CDATA[Comma separated list of destination IP Addresses]]></description>
+    </param>
+    <param name="inputAction" type="string">
+      <description><![CDATA[Action:Whether to ALLOW / DENY or DROP]]></description>
+    </param>
+    <param name="inputProtocol" type="string">
+      <description><![CDATA[TCP / UDP]]></description>
+    </param>
+    <param name="inputPort" type="string">
+      <description><![CDATA[Comma separated destination port numbers]]></description>
+    </param>
+    <param name="inputService" type="string">
+      <description><![CDATA[Select a pre-defined service instead of specifying port number and protocol.]]></description>
+    </param>
+    <param name="usersBusinessGroup" type="string">
+      <description><![CDATA[Hidden field - User's Business Group]]></description>
+    </param>
+    <param name="usersEmailId" type="string">
+      <description><![CDATA[Hidden field - User's Email]]></description>
+    </param>
+    <param name="inputLogging" type="string">
+      <description><![CDATA[Level of logging]]></description>
+    </param>
+    <param name="inputTime" type="string">
+      <description><![CDATA[When to keep the rule active]]></description>
+    </param>
+    <param name="bgName" type="string"/>
+  </input>
+  <attrib name="vcacCafeHost" type="vCACCAFE:VCACHost" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='afb159c2-d7c8-458e-8041-6d548231237b'&dunesName='vCACCAFE:VCACHost']]></value>
+  </attrib>
+  <attrib name="username" type="string" read-only="false" conf-id="4da74d71-2459-4f22-a6f1-19c2fe4ce6de" conf-key="username">
+    <value encoded="n"><![CDATA[admin]]></value>
+  </attrib>
+  <attrib name="password" type="SecureString" read-only="false" conf-id="4da74d71-2459-4f22-a6f1-19c2fe4ce6de" conf-key="password">
+    <value encoded="n"><![CDATA[8BP56P4DJ77O61P72Z65N31Y21L57C69A9T381FD8DV12F0FA7JCB3FACAP35BA7E0X30D4885U23DAFA9G78ABC84M757366O39222DCI4A4CB1FYDB18AE1V4BF2060YD4448FCUC218D97UCA997A8M91CAB39V36525CER236A2E9QF1084C5G55564E6I7594C3FQ3BA5FFBK486EE4DH]]></value>
+  </attrib>
+  <attrib name="restHost" type="REST:RESTHost" read-only="false" conf-id="4da74d71-2459-4f22-a6f1-19c2fe4ce6de" conf-key="restHost">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='c6d5a21b-6c2c-430a-9c6a-87759270e862'&dunesName='REST:RESTHost']]></value>
+    <description><![CDATA[NSX-T REST Host]]></description>
+  </attrib>
+  <attrib name="smtp_host" type="string" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_host">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[The SMTP host from where emails will be sent]]></description>
+  </attrib>
+  <attrib name="smtp_port" type="number" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_port">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[The SMTP port from where the emails are sent]]></description>
+  </attrib>
+  <attrib name="smtp_username" type="string" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_username">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[The username used to log in to SMTP host]]></description>
+  </attrib>
+  <attrib name="smtp_password" type="SecureString" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_password">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[The password of the user specified in "smtp_username"]]></description>
+  </attrib>
+  <attrib name="smtp_from_id" type="string" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_from_id">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[From this ID, the mails will be sent]]></description>
+  </attrib>
+  <attrib name="smtp_from_name" type="string" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_from_name">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[The name shown for the ID]]></description>
+  </attrib>
+  <attrib name="use_ssl" type="boolean" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="use_ssl">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Do you want to use SSL communication?]]></description>
+  </attrib>
+  <attrib name="use_start_tls" type="boolean" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="use_start_tls">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Do you want to use TLS?]]></description>
+  </attrib>
+  <attrib name="smtp_to_address" type="Array/string" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_to_address_DFWaaS">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Email IDs to send email ]]></description>
+  </attrib>
+  <attrib name="gateway" type="Array/string" read-only="false" conf-id="4da74d71-2459-4f22-a6f1-19c2fe4ce6de" conf-key="Gateways">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="sleepTime" type="number" read-only="false">
+    <value encoded="n"><![CDATA[60.0]]></value>
+    <description><![CDATA[Time to sleep in seconds]]></description>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="664.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item3" type="task">
+    <display-name><![CDATA[Process Request]]></display-name>
+    <script encoded="false"><![CDATA[
+function SendEmail(subject, body)
+{
+
+	//Add the user's email to the list of email IDs to send email to.
+	if (usersEmailId && usersEmailId != "")
+	{
+		smtp_to_address.push(usersEmailId);
+	}
+
+	var commaSeparatedEmails = '';
+	for (var i in smtp_to_address)
+	{
+		commaSeparatedEmails += smtp_to_address[i] + ',';
+	}
+
+	//workflow ID of Library -> Mail -> 'Send notification'
+	var workflowId = '8D80808080808080808080808080808089808080012318760241416446ce5b52f';
+
+	//ready the workflow params
+	var workflowParameters = new Properties();
+	workflowParameters.put("smtpHost", smtp_host);
+	workflowParameters.put("smtpPort", smtp_port);
+	workflowParameters.put("username", smtp_username);
+	workflowParameters.put("password", smtp_password);
+	workflowParameters.put("fromName", smtp_from_name);
+	workflowParameters.put("fromAddress", smtp_from_id);
+	workflowParameters.put("toAddress", commaSeparatedEmails);
+	workflowParameters.put("subject", subject);
+	workflowParameters.put("content", body);
+	workflowParameters.put("useSsl", use_ssl);
+	workflowParameters.put("UseStartTls", use_start_tls);
+
+	//Run this workflow.
+	var workflowToLaunch = Server.getWorkflowWithId(workflowId);
+
+	//Fetch a token.
+	var workflow_token = workflowToLaunch.execute(workflowParameters);
+	while (workflow_token.state === "running")
+	{
+		System.sleep(3000);
+	}
+	System.log("Email sent");
+	//return after workflow finished 'running'
+	return true;
+}
+var catalogRequestId;
+try
+{
+	//Try to fetch catalog request ID
+	catalogRequestId = System.getContext().getParameter("__asd_catalogRequestId");
+	System.log("Catalog Request ID: " + catalogRequestId);
+}
+catch (e)
+{
+	//If we did not get catalog request ID, we use boolean false
+	catalogRequestId = false;
+}
+
+if (catalogRequestId)
+{
+	try
+	{
+		//We got catalogRequest ID from the inputs, now we try to get request number from that.
+		System.log("Request Id by vRA:" + catalogRequestId);
+		var request = vCACCAFEEntitiesFinder.getCatalogItemRequest(vcacCafeHost, catalogRequestId);
+		requestNumber = request.getRequestNumber();
+	}
+	catch(error)
+	{
+		System.log("Request ID not found: "+error);
+		var date = new Date();
+		requestNumber = date.getFullYear() + "_" + (date.getMonth() + 1) + "_" + date.getDate() + "_" + date.getHours() + "_" + date.getMinutes();
+		System.log("Using request number as current date-time since __asd_catalogRequestId was not found");
+	}
+}
+else
+{
+	var date = new Date();
+	requestNumber = date.getFullYear() + "_" + (date.getMonth() + 1) + "_" + date.getDate() + "_" + date.getHours() + "_" + date.getMinutes();
+	System.log("Using request number as current date-time since __asd_catalogRequestId was not found");
+}
+
+
+System.log("Request Number for this request:  " + requestNumber);
+
+if (!username || !password)
+{
+	var errorMsg = "Credentials not supplied, request can't proceed";
+	var subject = "Checkpoint Firewall request failed.";
+	var body = "Hello, <br/>The Checkpoint Firewall Request with request number: " + requestNumber + " has failed. ";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if (SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+System.log("Using username: " + username + " and password is supplied");
+
+if (!inputSourceIPs)
+{
+	var errorMsg = "Source IP(s) not specified";
+	var subject = "Checkpoint Firewall request failed.";
+	var body = "Hello, <br/>The Checkpoint Firewall Request with request number: " + requestNumber + " has failed. ";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if (SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+System.log("Input Source IPs received.");
+
+if (!inputDestinationIPs)
+{
+	var errorMsg = "Destination IP(s) not specified";
+	var subject = "Checkpoint Firewall request failed.";
+	var body = "Hello, <br/>The Checkpoint Firewall Request with request number: " + requestNumber + " has failed. ";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if (SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+System.log("Input Destination IPs received.");
+
+if (!inputAction)
+{
+	var errorMsg = "Action: Whether to ALLOW / REJECT / DROP not specified.";
+	var subject = "Checkpoint Firewall request failed.";
+	var body = "Hello, <br/>The Checkpoint Firewall Request with request number: " + requestNumber + " has failed. ";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if (SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+System.log("Action received.");
+
+if (inputAction !== "Accept" && inputAction !== "Reject" && inputAction !== "Drop")
+{
+	var errorMsg = "Action: Whether to ALLOW / REJECT / DROP not specified.";
+	var subject = "Checkpoint Firewall request failed.";
+	var body = "Hello, <br/>The Checkpoint Firewall Request with request number: " + requestNumber + " has failed. ";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if (SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+System.log("Action valid.");
+
+/*if (inputTime !== "Weekend" && inputTime !== "Off_Work" && inputTime !== "Every_Day")
+{
+	var errorMsg = "Invalid time to apply firewall rule selected. Valid values are Every_Day / Off_Work / Weekend";
+	var subject = "Checkpoint Firewall request failed.";
+	var body = "Hello, <br/>The Checkpoint Firewall Request with request number: " + requestNumber + " has failed. ";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if (SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+System.log("Action valid.");*/
+
+//User has neither selected any service NOR any custom port and protocol!
+if (!inputService && !inputProtocol && !inputPort)
+{
+	var errorMsg = "Service not selected while submitting request.";
+	var subject = "Checkpoint Firewall request failed.";
+	var body = "Hello, <br/>The Checkpoint Firewall Request with request number: " + requestNumber + " has failed. ";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if (SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+System.log("Service OR Port / Protocol received.");
+
+if (inputService === "custom" && !inputProtocol)
+{
+	var errorMsg = "Protocol not specified";
+	var subject = "Checkpoint Firewall request failed.";
+	var body = "Hello, <br/>The Checkpoint Firewall Request with request number: " + requestNumber + " has failed. ";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if (SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+if(inputLogging !== "none" && inputLogging !== "log" && inputLogging !== "extended log" && inputLogging !== "detailed log")
+{
+	var errorMsg = "Invalid logging mode specified.";
+	var subject = "Checkpoint Firewall request failed.";
+	var body = "Hello, <br/>The Checkpoint Firewall Request with request number: " + requestNumber + " has failed. ";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if (SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+if (inputService === "custom" && (inputProtocol !== 'tcp' && inputProtocol !== 'udp'))
+{
+	var errorMsg = "Invalid protocol specified.";
+	var subject = "Checkpoint Firewall request failed.";
+	var body = "Hello, <br/>The Checkpoint Firewall Request with request number: " + requestNumber + " has failed. ";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if (SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+if (inputService === "custom" && !inputPort)
+{
+	var errorMsg = "Port Number(s) not specified";
+	var subject = "Checkpoint Firewall request failed.";
+	var body = "Hello, <br/>The Checkpoint Firewall Request with request number: " + requestNumber + " has failed. ";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if (SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+if (!usersBusinessGroup)
+{
+	var errorMsg = "Error fetching user's Business group";
+	var subject = "Checkpoint Firewall request failed.";
+	var body = "Hello, <br/>The Checkpoint Firewall Request with request number: " + requestNumber + " has failed. ";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if (SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+System.log("User's Business Group Fetched.");
+
+if (inputService === 'http')
+{
+	inputPort = 80;
+	inputProtocol = 'tcp';
+}
+
+if (inputService === 'https')
+{
+	inputPort = 443;
+	inputProtocol = 'tcp';
+}
+
+if (inputService === 'ssh')
+{
+	inputPort = 22;
+	inputProtocol = 'tcp';
+}
+
+if (inputService === 'ftp')
+{
+	inputPort = 21;
+	inputProtocol = 'tcp';
+}
+
+if (inputService === 'rdp')
+{
+	inputPort = 3389;
+	inputProtocol = 'tcp';
+}
+System.log("Input Service Valid");
+
+//Convert int to string so that split will work.
+inputPort = inputPort.toString(10);
+
+System.log("Requirement is to create a rule with source as " + inputSourceIPs + ", destination as " + inputDestinationIPs + " protocol/port as " + inputProtocol + "/" + inputPort + ", action = " + inputAction + ". This has to be created in 'Network'");
+
+var checkpoint = System.getModule("com.vmware.indcoe.checkpoint").class(username, password, restHost);
+	
+if (!checkpoint)
+{
+	var errorMsg = "Error creating Checkpoint Object, please check with admin team";
+	var subject = "Checkpoint Firewall request failed.";
+	var body = "Hello, <br/>The Checkpoint Firewall Request with request number: " + requestNumber + " has failed. ";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if (SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+System.log("Checkpoint Object Created.")
+
+var filteredSourceIPs = inputSourceIPs.split(",");
+var filteredDestinationIPs = inputDestinationIPs.split(",");
+var filteredInputPorts = inputPort.split(",");
+
+try
+{
+	if (filteredSourceIPs.length < 1)
+	{
+		throw "Source IP(s) not specified.";
+	}
+	if (filteredDestinationIPs.length < 1)
+	{
+		throw "Destination IP(s) not specified.";
+	}
+	if (filteredInputPorts.length < 1)
+	{
+		throw "Port number not specified.";
+	}
+
+	var sourceIpIDs = new Array();
+	var destinationIpIDs = new Array();
+	var serviceIDs = new Array();
+
+	for (var i in filteredSourceIPs)
+	{
+		if(!System.getModule("com.vmware.indcoe.util").isValidIPv4Address(filteredSourceIPs[i].trim()))
+		{
+			throw "This is not a valid IP: "+filteredSourceIPs[i];
+		}
+		var hostID = checkpoint.CheckIfHostExists(filteredSourceIPs[i]);
+		checkpoint.Publish();
+		if (hostID)
+		{
+			System.log("The HOST with IP: " + filteredSourceIPs[i] + " exists in Checkpoint, ID: " + hostID);
+			sourceIpIDs.push(hostID);
+		}
+		else
+		{
+			var newlyAddedHostId = checkpoint.AddHost(filteredSourceIPs[i]);
+			if (!newlyAddedHostId)
+			{
+				throw "Some error occurred adding host " + filteredSourceIPs[i];
+			}
+			System.log("The HOST with IP: " + filteredSourceIPs[i] + " addded to Checkpoint successfully, ID: " + newlyAddedHostId);
+			checkpoint.Publish();
+		
+			sourceIpIDs.push(newlyAddedHostId);
+		}
+	}
+
+	for (var i in filteredDestinationIPs)
+	{
+		if(!System.getModule("com.vmware.indcoe.util").isValidIPv4Address(filteredSourceIPs[i].trim()))
+		{
+			throw "This is not a valid IP: "+filteredSourceIPs[i];
+		}
+		var hostID = checkpoint.CheckIfHostExists(filteredDestinationIPs[i]);
+		checkpoint.Publish();
+		if (hostID)
+		{
+			System.log("The HOST with IP: " + filteredDestinationIPs[i] + " exists in Checkpoint, ID: " + hostID);
+			destinationIpIDs.push(hostID);
+		}
+		else
+		{
+			var newlyAddedHostId = checkpoint.AddHost(filteredDestinationIPs[i]);
+			if (!newlyAddedHostId)
+			{
+				throw "Some error occurred adding host " + filteredDestinationIPs[i];
+			}
+			System.log("The HOST with IP: " + filteredDestinationIPs[i] + " addded to Checkpoint successfully, ID: " + newlyAddedHostId);
+			checkpoint.Publish();
+		
+			destinationIpIDs.push(newlyAddedHostId);
+		}
+	}
+	
+	
+	
+	//Now, the destinationIpIDs and sourceIpIDs have the IDs of the entries.
+
+	for (var i in filteredInputPorts)
+	{
+		var serviceID = checkpoint.CheckIfServiceExists(filteredInputPorts[i], inputProtocol);
+		checkpoint.Publish();
+		if (serviceID)
+		{
+			System.log("The Service for port " + filteredInputPorts[i] + " exists in Checkpoint, Service ID: " + serviceID);
+			serviceIDs.push(serviceID);
+		}
+		else
+		{
+			var newlyCreatedService = checkpoint.CreateNewService("Service_" + inputProtocol + "_" + filteredInputPorts[i] , filteredInputPorts[i] , inputProtocol);
+			if (!newlyCreatedService)
+			{
+				throw "Some error occurred creating new service for port " + filteredDestinationIPs[i];
+			}
+			System.log("New service with port number " + filteredDestinationIPs[i] + " created in Checkpoint successfully, ID: " + newlyCreatedService);
+			checkpoint.Publish();
+			
+			serviceIDs.push(newlyCreatedService);
+		}
+	}
+	
+//	checkpoint.InstallPolicy(gateway);
+	
+	
+	//All Source IPs, Destination IPs and services collected.
+	//todo: Check if rule exists.
+	var ruleName = "Rule_"+requestNumber+"_"+bgName;
+	var createdRule = checkpoint.CreateAccessRule(ruleName, inputAction, serviceIDs, sourceIpIDs, destinationIpIDs, inputLogging, inputTime);
+	
+	System.log("Created Rule ID: "+createdRule);
+	
+	if(!createdRule)
+	{
+		System.log("!createdRule executed)");
+		throw "Some error occurred creating new access rule. Kindly contact admin team";
+	}
+	System.log("Rule created successfully");
+	
+	var publishedRule = checkpoint.Publish();
+	if(!publishedRule)
+	{
+		throw "Some error occurred while publishing the newly created rule";
+	}
+	System.log("Rule published successfully");
+	
+	//System.sleep(180000)
+	//checkpoint.InstallPolicy(gateway);
+	
+	
+
+	var successMsg = "Rule creation in Checkpoint successful. <br />Rule name in Checkpoint: "+ruleName;
+	var subject = "Checkpoint request completed successfully.";
+	var body = "Hello, <br/>The Checkpoint Request with request number: " + requestNumber + " has completed successfully. ";
+	body += successMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	SendEmail(subject, body);
+	System.log(successMsg);
+}
+catch (error)
+{
+	System.log("Error: "+error);
+	checkpoint.Discard();
+	throw "Some error occurred while creating new rule";
+}]]></script>
+    <in-binding>
+      <bind name="usersBusinessGroup" type="string" export-name="usersBusinessGroup"/>
+      <bind name="vcacCafeHost" type="vCACCAFE:VCACHost" export-name="vcacCafeHost"/>
+      <bind name="username" type="string" export-name="username"/>
+      <bind name="password" type="SecureString" export-name="password"/>
+      <bind name="inputSourceIPs" type="string" export-name="inputSourceIPs"/>
+      <bind name="inputDestinationIPs" type="string" export-name="inputDestinationIPs"/>
+      <bind name="inputAction" type="string" export-name="inputAction"/>
+      <bind name="inputProtocol" type="string" export-name="inputProtocol"/>
+      <bind name="inputPort" type="string" export-name="inputPort"/>
+      <bind name="inputService" type="string" export-name="inputService"/>
+      <bind name="restHost" type="REST:RESTHost" export-name="restHost"/>
+      <bind name="usersEmailId" type="string" export-name="usersEmailId"/>
+      <bind name="smtp_host" type="string" export-name="smtp_host"/>
+      <bind name="smtp_port" type="number" export-name="smtp_port"/>
+      <bind name="smtp_username" type="string" export-name="smtp_username"/>
+      <bind name="smtp_password" type="SecureString" export-name="smtp_password"/>
+      <bind name="smtp_from_id" type="string" export-name="smtp_from_id"/>
+      <bind name="smtp_from_name" type="string" export-name="smtp_from_name"/>
+      <bind name="use_ssl" type="boolean" export-name="use_ssl"/>
+      <bind name="use_start_tls" type="boolean" export-name="use_start_tls"/>
+      <bind name="smtp_to_address" type="Array/string" export-name="smtp_to_address"/>
+      <bind name="inputLogging" type="string" export-name="inputLogging"/>
+      <bind name="inputTime" type="string" export-name="inputTime"/>
+      <bind name="bgName" type="string" export-name="bgName"/>
+      <bind name="gateway" type="Array/string" export-name="gateway"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item0" type="task">
+    <display-name><![CDATA[Scriptable task]]></display-name>
+    <script encoded="false"><![CDATA[
+var checkpoint = System.getModule("com.vmware.indcoe.checkpoint").class(username, password, restHost);
+checkpoint.InstallPolicy(gateway);]]></script>
+    <in-binding>
+      <bind name="username" type="string" export-name="username"/>
+      <bind name="password" type="SecureString" export-name="password"/>
+      <bind name="restHost" type="REST:RESTHost" export-name="restHost"/>
+      <bind name="gateway" type="Array/string" export-name="gateway"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="484.5"/>
+  </workflow-item>
+  <workflow-item name="item3" prototype-id="sleep" out-name="item2" content-mode="x" type="task">
+    <display-name><![CDATA[Sleep]]></display-name>
+    <script encoded="false"><![CDATA[//Auto-generated script
+if ( sleepTime != null )  {
+	System.sleep(sleepTime*1000);
+}
+else  {
+	throw "'sleepTime' is NULL";
+}
+]]></script>
+    <in-binding>
+      <bind name="sleepTime" type="number" export-name="sleepTime">
+        <description><![CDATA[Time to sleep in seconds]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Sleep a given number of seconds]]></description>
+    <position y="55.40909090909091" x="344.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="inputSourceIPs">
+      <desc><![CDATA[Comma separated list of source IP Addresses]]></desc>
+    </p-param>
+    <p-param name="inputDestinationIPs">
+      <desc><![CDATA[Comma separated list of destination IP Addresses]]></desc>
+    </p-param>
+    <p-param name="inputAction">
+      <desc><![CDATA[Action:Whether to ALLOW / DENY or DROP]]></desc>
+    </p-param>
+    <p-param name="inputProtocol">
+      <desc><![CDATA[TCP / UDP]]></desc>
+    </p-param>
+    <p-param name="inputPort">
+      <desc><![CDATA[Comma separated destination port numbers]]></desc>
+    </p-param>
+    <p-param name="inputService">
+      <desc><![CDATA[Select a pre-defined service instead of specifying port number and protocol.]]></desc>
+    </p-param>
+    <p-param name="usersBusinessGroup">
+      <desc><![CDATA[Hidden field - User's Business Group]]></desc>
+    </p-param>
+    <p-param name="usersEmailId">
+      <desc><![CDATA[Hidden field - User's Email]]></desc>
+    </p-param>
+    <p-param name="inputLogging">
+      <desc><![CDATA[inputLogging]]></desc>
+    </p-param>
+    <p-param name="inputTime">
+      <desc><![CDATA[When to keep the rule active]]></desc>
+    </p-param>
+    <p-param name="bgName">
+      <desc><![CDATA[bgName]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

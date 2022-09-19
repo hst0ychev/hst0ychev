@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getAzureCustomProperties" result-type="Array/CompositeType(name:string,value:string):AzureCustomProperties" api-version="6.0.0" id="0dd5b977-8b2d-4d1e-ab47-ffa5d5c0fe4d" version="1.2.1" allowed-operations="vf" category-name="com.vmware.library.azure">
+  <param n="connection" t="Azure:Connection"><![CDATA[Azure Connection]]></param>
+  <script encoded="false"><![CDATA[return JSON.parse(connection.customProperties);
+]]></script>
+</dunes-script-module>

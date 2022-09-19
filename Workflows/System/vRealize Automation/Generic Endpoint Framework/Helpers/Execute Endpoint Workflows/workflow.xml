@@ -1,0 +1,201 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="0463bf31-52a7-4221-a0bc-68ceb4912cbc" version="0.0.10" api-version="6.0.0" allowed-operations="vf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Execute Endpoint Workflows]]></display-name>
+  <position y="100.45454545454544" x="105.0"/>
+  <input>
+    <param name="operationType" type="string"/>
+    <param name="endpoint" type="Any"/>
+    <param name="operationDataString" type="string"/>
+  </input>
+  <output>
+    <param name="executionStatus" type="Any"/>
+    <param name="executedWorkflowsOutParameters" type="Properties">
+      <description><![CDATA[A merged set of output parameters from all the executed workflows. ]]></description>
+    </param>
+  </output>
+  <attrib name="workflowsToRun" type="Array/Workflow" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="providerId" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="workflowIndex" type="number" read-only="false">
+    <value encoded="n"><![CDATA[0.0]]></value>
+    <description><![CDATA[Index of currently executing workflow.]]></description>
+  </attrib>
+  <attrib name="executingWorkflow" type="Workflow" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Currently executing workflow.]]></description>
+  </attrib>
+  <attrib name="workflowError" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Error returned by the workflow]]></description>
+  </attrib>
+  <attrib name="workflowIntermediateResults" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Intermediate results of executing the workflow.]]></description>
+  </attrib>
+  <workflow-item name="item1" out-name="item3" type="task">
+    <display-name><![CDATA[extract endpoint Name]]></display-name>
+    <script encoded="false"><![CDATA[providerId = endpoint.vendor;
+
+System.log("Requested to '" + operationType + "' from the endpoint '" + endpoint.name + "'");]]></script>
+    <in-binding>
+      <bind name="endpoint" type="Any" export-name="endpoint"/>
+      <bind name="operationType" type="string" export-name="operationType"/>
+    </in-binding>
+    <out-binding>
+      <bind name="providerId" type="string" export-name="providerId"/>
+    </out-binding>
+    <position y="109.95454545454544" x="184.5"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item10" type="link" linked-workflow-id="cde4e444-84ce-41e9-9fa7-2c204dfc2994">
+    <display-name><![CDATA[Get Provider Workflows To Run]]></display-name>
+    <in-binding>
+      <bind name="operationType" type="string" export-name="operationType">
+        <description><![CDATA[Type of the operation (e.g. endpoint data collection)]]></description>
+      </bind>
+      <bind name="providerId" type="string" export-name="providerId"/>
+    </in-binding>
+    <out-binding>
+      <bind name="workflowsToExecute" type="Array/Workflow" export-name="workflowsToRun">
+        <description><![CDATA[List of workflows that need to be executed]]></description>
+      </bind>
+    </out-binding>
+    <position y="109.95454545454544" x="324.5"/>
+  </workflow-item>
+  <workflow-item name="item7" out-name="item2" type="task">
+    <display-name><![CDATA[Set workflow to run]]></display-name>
+    <script encoded="false"><![CDATA[executingWorkflow = workflowsToRun[workflowIndex];
+workflowIndex = workflowIndex + 1;
+]]></script>
+    <in-binding>
+      <bind name="workflowsToRun" type="Array/Workflow" export-name="workflowsToRun"/>
+      <bind name="workflowIndex" type="number" export-name="workflowIndex"/>
+    </in-binding>
+    <out-binding>
+      <bind name="executingWorkflow" type="Workflow" export-name="executingWorkflow"/>
+      <bind name="workflowIndex" type="number" export-name="workflowIndex"/>
+    </out-binding>
+    <description><![CDATA[Sets which workflow needs to be executed.]]></description>
+    <position y="109.95454545454544" x="704.5"/>
+  </workflow-item>
+  <workflow-item name="item8" out-name="item10" type="custom-condition" alt-out-name="item4">
+    <display-name><![CDATA[Workflow Succeeded]]></display-name>
+    <script encoded="false"><![CDATA[return workflowError == null;]]></script>
+    <in-binding>
+      <bind name="workflowError" type="string" export-name="workflowError"/>
+    </in-binding>
+    <description><![CDATA[Returns true if workflow execution succeeded.]]></description>
+    <position y="163.59090909090907" x="704.5"/>
+  </workflow-item>
+  <workflow-item name="item9" type="end" end-mode="0">
+    <position y="218.13636363636363" x="984.5"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item9" type="task">
+    <display-name><![CDATA[Set Error]]></display-name>
+    <script encoded="false"><![CDATA[executionStatus = new GEFExecutionStatus();
+executionStatus.addErrorMessage(workflowError);
+executedWorkflowsOutParameters = workflowIntermediateResults;
+
+var wfName = workflowsToRun[workflowIndex-1].name;
+var skippedWorkflowNames = new Array();
+for (var i = workflowIndex; i < workflowsToRun.length; i++) 
+{
+    var wf = workflowsToRun[i];
+    skippedWorkflowNames.push("'" + wf.name + "'");
+}
+
+if (skippedWorkflowNames.length != 0)
+{
+	var message = "As a result of an exception during the execution of the vCO workflow '" + wfName + "' (of the endpoint '" + 
+					endpoint.name + "'), the following workflow(s) did not execute: " + skippedWorkflowNames;
+	System.warn(message);
+	executionStatus.addWarningMessage(message);
+}
+]]></script>
+    <in-binding>
+      <bind name="workflowsToRun" type="Array/Workflow" export-name="workflowsToRun"/>
+      <bind name="endpoint" type="Any" export-name="endpoint"/>
+      <bind name="workflowIndex" type="number" export-name="workflowIndex"/>
+      <bind name="workflowError" type="string" export-name="workflowError"/>
+      <bind name="workflowIntermediateResults" type="Properties" export-name="workflowIntermediateResults"/>
+    </in-binding>
+    <out-binding>
+      <bind name="executionStatus" type="Any" export-name="executionStatus"/>
+      <bind name="executedWorkflowsOutParameters" type="Properties" export-name="executedWorkflowsOutParameters">
+        <description><![CDATA[A merged set of output parameters from all the executed workflows. ]]></description>
+      </bind>
+    </out-binding>
+    <description><![CDATA[Sets the execution status.]]></description>
+    <position y="228.13636363636363" x="704.5"/>
+  </workflow-item>
+  <workflow-item name="item10" out-name="item7" type="custom-condition" alt-out-name="item0">
+    <display-name><![CDATA[Any workflows left?]]></display-name>
+    <script encoded="false"><![CDATA[return workflowIndex < workflowsToRun.length;]]></script>
+    <in-binding>
+      <bind name="workflowsToRun" type="Array/Workflow" export-name="workflowsToRun"/>
+      <bind name="workflowIndex" type="number" export-name="workflowIndex"/>
+    </in-binding>
+    <description><![CDATA[Checks whether any workflows are left to run]]></description>
+    <position y="99.95454545454544" x="504.5"/>
+  </workflow-item>
+  <workflow-item name="item12" type="end" end-mode="0">
+    <position y="36.31818181818181" x="744.5"/>
+  </workflow-item>
+  <workflow-item name="item0" out-name="item12" type="task">
+    <display-name><![CDATA[Set Output]]></display-name>
+    <script encoded="false"><![CDATA[executedWorkflowsOutParameters = workflowIntermediateResults;
+executionStatus = new GEFExecutionStatus();]]></script>
+    <in-binding>
+      <bind name="workflowIntermediateResults" type="Properties" export-name="workflowIntermediateResults"/>
+    </in-binding>
+    <out-binding>
+      <bind name="executionStatus" type="Any" export-name="executionStatus"/>
+      <bind name="executedWorkflowsOutParameters" type="Properties" export-name="executedWorkflowsOutParameters"/>
+    </out-binding>
+    <description><![CDATA[Sets the output.]]></description>
+    <position y="46.31818181818181" x="505.0"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item8" type="link" linked-workflow-id="c27e3022-9279-4786-bf60-26946702372e">
+    <display-name><![CDATA[Execute Workflow]]></display-name>
+    <in-binding>
+      <bind name="workflowToExecute" type="Workflow" export-name="executingWorkflow">
+        <description><![CDATA[Workflow that needs to be executed.]]></description>
+      </bind>
+      <bind name="operationType" type="string" export-name="operationType">
+        <description><![CDATA[Type of the workflow to execute.]]></description>
+      </bind>
+      <bind name="operationData" type="string" export-name="operationDataString">
+        <description><![CDATA[Input parameters to the workflow]]></description>
+      </bind>
+      <bind name="endpoint" type="Any" export-name="endpoint">
+        <description><![CDATA[Endpoint information.]]></description>
+      </bind>
+      <bind name="priorWorkflowExecutionResults" type="Properties" export-name="workflowIntermediateResults">
+        <description><![CDATA[Any prior workflow excution results.]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="workflowResults" type="Properties" export-name="workflowIntermediateResults">
+        <description><![CDATA[Workflow execution output.]]></description>
+      </bind>
+      <bind name="workflowError" type="string" export-name="workflowError">
+        <description><![CDATA[Any error returned  by the workflow.]]></description>
+      </bind>
+    </out-binding>
+    <description><![CDATA[Executes a specific workflow and returns the results]]></description>
+    <position y="109.95454545454544" x="945.0"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="operationType">
+      <desc><![CDATA[operationType]]></desc>
+    </p-param>
+    <p-param name="endpoint">
+      <desc><![CDATA[endpoint]]></desc>
+    </p-param>
+    <p-param name="operationDataString">
+      <desc><![CDATA[operationDataString]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

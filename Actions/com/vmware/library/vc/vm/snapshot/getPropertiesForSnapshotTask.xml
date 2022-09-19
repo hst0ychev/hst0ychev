@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getPropertiesForSnapshotTask" result-type="Properties" api-version="6.0.0" id="6fe4fe18-1076-4256-bd6c-79259622a6aa" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.vm.snapshot">
+  <param n="vm" t="VC:VirtualMachine"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var snapshotProperties = new Properties();
+if(vm.runtime.connectionState.value=="connected" && !vm.config.template){
+	var vmLayout = vm.layoutEx;
+	if(vmLayout!=null){
+		var layoutFiles = vmLayout.file;
+		var layoutSnapshots = vmLayout.snapshot;
+		for(l in layoutSnapshots){
+			var layoutSnapshot = layoutSnapshots[l];
+			var dataKey = layoutSnapshot.dataKey;
+			for(m in layoutFiles){
+				if(layoutFiles[m].key==dataKey){
+					snapshotProperties.put(layoutFiles[m].name,VcPlugin.convertToVimManagedObject(vm,layoutSnapshot.key));
+					//System.log("Name : " +layoutFiles[m].name + " - Size : " + layoutFiles[m].size);
+				}
+			}
+		}
+	}
+}
+
+return snapshotProperties;]]></script>
+</dunes-script-module>

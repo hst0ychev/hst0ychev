@@ -1,0 +1,442 @@
+{
+    "0": {
+        "diskFileName": "[ds_srvr_com2_prod-02] pcprclddb1150/pcprclddb1150_2.vmdk",
+        "diskCreatedVm": "pcprclddb1150",
+        "diskAttachedVms": [
+            "pcprclddb1150",
+            "pcprclddb1151"
+        ]
+    },
+    "1": {
+        "diskFileName": "[ds_srvr_com2_prod-02] pcprclddb1150/pcprclddb1150_1.vmdk",
+        "diskCreatedVm": "pcprclddb1150",
+        "diskAttachedVms": [
+            "pcprclddb1150",
+            "pcprclddb1151"
+        ]
+    },
+    "2": {
+        "diskFileName": "[ds_srvr_com2_prod-02] pcprclddb1150/pcprclddb1150_1.vmdk",
+        "diskCreatedVm": "pcprclddb1150",
+        "diskAttachedVms": [
+            "pcprclddb1150",
+            "pcprclddb1151"
+        ]
+    },
+    "3": {
+        "diskFileName": "[ds_srvr_com2_prod-02] pcprclddb1155/pcprclddb1155_1.vmdk",
+        "diskCreatedVm": "pcprclddb1155",
+        "diskAttachedVms": [
+            "pcprclddb1155"
+        ]
+    },
+    "4": {
+        "diskFileName": "[ds_srvr_com2_prod-02] pcprclddb1151/pcprclddb1151_1.vmdk",
+        "diskCreatedVm": "pcprclddb1151",
+        "diskAttachedVms": [
+            "pcprclddb1151"
+        ]
+    },
+    "5": {
+        "diskFileName": "[ds_srvr_com2_prod-02] pcprclddb1190/pcprclddb1190_1.vmdk",
+        "diskCreatedVm": "pcprclddb1190",
+        "diskAttachedVms": [
+            "pcprclddb1190"
+        ]
+    },
+    "6": {
+        "diskFileName": "[ds_srvr_com2_prod-01] pcprclddb1263/pcprclddb1263_1.vmdk",
+        "diskCreatedVm": "pcprclddb1263",
+        "diskAttachedVms": [
+            "pcprclddb1263"
+        ]
+    },
+    "7": {
+        "diskFileName": "[ds_srvr_com2_prod-02] pcprclddb1286/pcprclddb1286_1.vmdk",
+        "diskCreatedVm": "pcprclddb1286",
+        "diskAttachedVms": [
+            "pcprclddb1286"
+        ]
+    },
+    "8": {
+        "diskFileName": "[ds_srvr_com2_prod-02] pcprclddb1288/pcprclddb1288_1.vmdk",
+        "diskCreatedVm": "pcprclddb1288",
+        "diskAttachedVms": [
+            "pcprclddb1288"
+        ]
+    },
+    "9": {
+        "diskFileName": "[ds_srvr_com2_prod-02] pcprclddb1286/pcprclddb1286_2.vmdk",
+        "diskCreatedVm": "pcprclddb1286",
+        "diskAttachedVms": [
+            "pcprclddb1286"
+        ]
+    },
+    "10": {
+        "diskFileName": "[ds_srvr_com2_prod-02] pcprclddb1288/pcprclddb1288_2.vmdk",
+        "diskCreatedVm": "pcprclddb1288",
+        "diskAttachedVms": [
+            "pcprclddb1288"
+        ]
+    },
+    "11": {
+        "diskFileName": "[ds_srvr_com2_prod-01] pcprclddb1292/pcprclddb1292_1.vmdk",
+        "diskCreatedVm": "pcprclddb1292",
+        "diskAttachedVms": [
+            "pcprclddb1292"
+        ]
+    },
+    "12": {
+        "diskFileName": "[ds_srvr_com2_prod-01] pcprclddb1294/pcprclddb1294_1.vmdk",
+        "diskCreatedVm": "pcprclddb1294",
+        "diskAttachedVms": [
+            "pcprclddb1294"
+        ]
+    },
+    "13": {
+        "diskFileName": "[ds_srvr_com2_prod-02] pcprcldapp1322/pcprcldapp1322_1.vmdk",
+        "diskCreatedVm": "pcprcldapp1322",
+        "diskAttachedVms": [
+            "pcprcldapp1322",
+            "pcprcldapp1321"
+        ]
+    },
+    "14": {
+        "diskFileName": "[ds_srvr_com2_prod-02] pcprclddb1285/pcprclddb1285_1.vmdk",
+        "diskCreatedVm": "pcprclddb1285",
+        "diskAttachedVms": [
+            "pcprclddb1285"
+        ]
+    },
+    "15": {
+        "diskFileName": "[ds_srvr_com2_dev02] dcprclddb1282/dcprclddb1282_1.vmdk",
+        "diskCreatedVm": "dcprclddb1282",
+        "diskAttachedVms": [
+            "dcprclddb1282"
+        ]
+    },
+    "16": {
+        "diskFileName": "[ds_srvr_com2_prod-01] pcprclddb1263/pcprclddb1263_5.vmdk",
+        "diskCreatedVm": "pcprclddb1263",
+        "diskAttachedVms": [
+            "pcprclddb1263"
+        ]
+    },
+    "17": {
+        "diskFileName": "[ds_srvr_com2_prod-02] pcprclddb1323/pcprclddb1323_1.vmdk",
+        "diskCreatedVm": "pcprclddb1323",
+        "diskAttachedVms": [
+            "pcprclddb1323",
+            "pcprclddb1324"
+        ]
+    },
+    "18": {
+        "diskFileName": "[ds_srvr_com2_dev02] dcprclddb1328/dcprclddb1328_1.vmdk",
+        "diskCreatedVm": "dcprclddb1328",
+        "diskAttachedVms": [
+            "dcprclddb1328"
+        ]
+    },
+    "19": {
+        "diskFileName": "[ds_srvr_com2_dev02] dcprclddb1328/dcprclddb1328_2.vmdk",
+        "diskCreatedVm": "dcprclddb1328",
+        "diskAttachedVms": [
+            "dcprclddb1328"
+        ]
+    },
+    "20": {
+        "diskFileName": "[ds_srvr_com2_dev02] dcprclddb1327/dcprclddb1327_2.vmdk",
+        "diskCreatedVm": "dcprclddb1327",
+        "diskAttachedVms": [
+            "dcprclddb1327"
+        ]
+    },
+    "21": {
+        "diskFileName": "[ds_srvr_com2_prod-01] pcprcldapp1156/pcprcldapp1156_1.vmdk",
+        "diskCreatedVm": "pcprcldapp1156",
+        "diskAttachedVms": [
+            "pcprcldapp1156",
+            "pcprcldapp1157"
+        ]
+    },
+    "22": {
+        "diskFileName": "[ds_srvr_com2_prod-03] pcprcldapp1430/pcprcldapp1430_1.vmdk",
+        "diskCreatedVm": "pcprcldapp1430",
+        "diskAttachedVms": [
+            "pcprcldapp1430"
+        ]
+    },
+    "23": {
+        "diskFileName": "[ds_srvr_com2_prod-03] pcprclddb1431/pcprclddb1431_2.vmdk",
+        "diskCreatedVm": "pcprclddb1431",
+        "diskAttachedVms": [
+            "pcprclddb1431"
+        ]
+    },
+    "24": {
+        "diskFileName": "[ds_srvr_com2_prod-01] pcpdswndb039/pcpdswndb039_1.vmdk",
+        "diskCreatedVm": "pcpdswndb039",
+        "diskAttachedVms": [
+            "pcpdswndb039"
+        ]
+    },
+    "25": {
+        "diskFileName": "[ds_srvr_com2_prod-01] pcpdswndb039/pcpdswndb039_2.vmdk",
+        "diskCreatedVm": "pcpdswndb039",
+        "diskAttachedVms": [
+            "pcpdswndb039"
+        ]
+    },
+    "26": {
+        "diskFileName": "[ds_srvr_com2_prod-01] pcpdswndb039/pcpdswndb039_3.vmdk",
+        "diskCreatedVm": "pcpdswndb039",
+        "diskAttachedVms": [
+            "pcpdswndb039"
+        ]
+    },
+    "27": {
+        "diskFileName": "[ds_srvr_com2_prod-01] pcpdswndb039/pcpdswndb039_4.vmdk",
+        "diskCreatedVm": "pcpdswndb039",
+        "diskAttachedVms": [
+            "pcpdswndb039"
+        ]
+    },
+    "28": {
+        "diskFileName": "[ds_srvr_com2_prod-01] pcpdswndb039/pcpdswndb039_5.vmdk",
+        "diskCreatedVm": "pcpdswndb039",
+        "diskAttachedVms": [
+            "pcpdswndb039"
+        ]
+    },
+    "29": {
+        "diskFileName": "[ds_srvr_com2_prod-01] pcpdswndb039/pcpdswndb039_6.vmdk",
+        "diskCreatedVm": "pcpdswndb039",
+        "diskAttachedVms": [
+            "pcpdswndb039"
+        ]
+    },
+    "30": {
+        "diskFileName": "[ds_srvr_com2_dev02] dcprclddb1472/dcprclddb1472_1.vmdk",
+        "diskCreatedVm": "dcprclddb1472",
+        "diskAttachedVms": [
+            "dcprclddb1472"
+        ]
+    },
+    "31": {
+        "diskFileName": "[ds_srvr_com2_prod-03] pcprcldapp1476/pcprcldapp1476_1.vmdk",
+        "diskCreatedVm": "pcprcldapp1476",
+        "diskAttachedVms": [
+            "pcprcldapp1476"
+        ]
+    },
+    "32": {
+        "diskFileName": "[ds_srvr_com2_prod-03] pcprcldapp1476/pcprcldapp1476_2.vmdk",
+        "diskCreatedVm": "pcprcldapp1476",
+        "diskAttachedVms": [
+            "pcprcldapp1476"
+        ]
+    },
+    "33": {
+        "diskFileName": "[ds_srvr_com2_prod-03] pcprcldapp1475/pcprcldapp1475_1.vmdk",
+        "diskCreatedVm": "pcprcldapp1475",
+        "diskAttachedVms": [
+            "pcprcldapp1475"
+        ]
+    },
+    "34": {
+        "diskFileName": "[ds_srvr_com2_prod-03] pcprclddb1477/pcprclddb1477_3.vmdk",
+        "diskCreatedVm": "pcprclddb1477",
+        "diskAttachedVms": [
+            "pcprclddb1477"
+        ]
+    },
+    "35": {
+        "diskFileName": "[ds_srvr_com2_prod-03] pcprclddb1477/pcprclddb1477_4.vmdk",
+        "diskCreatedVm": "pcprclddb1477",
+        "diskAttachedVms": [
+            "pcprclddb1477"
+        ]
+    },
+    "36": {
+        "diskFileName": "[ds_srvr_com2_prod-03] pcprclddb1477/pcprclddb1477_5.vmdk",
+        "diskCreatedVm": "pcprclddb1477",
+        "diskAttachedVms": [
+            "pcprclddb1477"
+        ]
+    },
+    "37": {
+        "diskFileName": "[ds_srvr_com2_prod-03] pcprclddb1488/pcprclddb1488_3.vmdk",
+        "diskCreatedVm": "pcprclddb1488",
+        "diskAttachedVms": [
+            "pcprclddb1488"
+        ]
+    },
+    "38": {
+        "diskFileName": "[ds_srvr_com2_prod-03] pcprclddb1497/pcprclddb1497_1.vmdk",
+        "diskCreatedVm": "pcprclddb1497",
+        "diskAttachedVms": [
+            "pcprclddb1497"
+        ]
+    },
+    "39": {
+        "diskFileName": "[ds_srvr_com2_prod-03] pcprclddb1497/pcprclddb1497_2.vmdk",
+        "diskCreatedVm": "pcprclddb1497",
+        "diskAttachedVms": [
+            "pcprclddb1497"
+        ]
+    },
+    "40": {
+        "diskFileName": "[ds_srvr_com2_prod-03] pcprclddb1497/pcprclddb1497_3.vmdk",
+        "diskCreatedVm": "pcprclddb1497",
+        "diskAttachedVms": [
+            "pcprclddb1497"
+        ]
+    },
+    "41": {
+        "diskFileName": "[ds_srvr_com2_prod-03] pcprclddb1497/pcprclddb1497_4.vmdk",
+        "diskCreatedVm": "pcprclddb1497",
+        "diskAttachedVms": [
+            "pcprclddb1497"
+        ]
+    },
+    "42": {
+        "diskFileName": "[ds_srvr_com2_prod-03] pcprclddb1500/pcprclddb1500_4.vmdk",
+        "diskCreatedVm": "pcprclddb1500",
+        "diskAttachedVms": [
+            "pcprclddb1500"
+        ]
+    },
+    "43": {
+        "diskFileName": "[ds_srvr_com2_prod-03] pcprclddb1500/pcprclddb1500_5.vmdk",
+        "diskCreatedVm": "pcprclddb1500",
+        "diskAttachedVms": [
+            "pcprclddb1500"
+        ]
+    },
+    "44": {
+        "diskFileName": "[ds_srvr_com2_prod-03] pcprclddb1500/pcprclddb1500_6.vmdk",
+        "diskCreatedVm": "pcprclddb1500",
+        "diskAttachedVms": [
+            "pcprclddb1500"
+        ]
+    },
+    "45": {
+        "diskFileName": "[ds_srvr_com2_prod-03] pcprclddb1504/pcprclddb1504_1.vmdk",
+        "diskCreatedVm": "pcprclddb1504",
+        "diskAttachedVms": [
+            "pcprclddb1504"
+        ]
+    },
+    "46": {
+        "diskFileName": "[ds_srvr_com2_prod-03] pcprclddb1504/pcprclddb1504_2.vmdk",
+        "diskCreatedVm": "pcprclddb1504",
+        "diskAttachedVms": [
+            "pcprclddb1504"
+        ]
+    },
+    "47": {
+        "diskFileName": "[ds_srvr_com2_prod-03] pcprclddb1504/pcprclddb1504_3.vmdk",
+        "diskCreatedVm": "pcprclddb1504",
+        "diskAttachedVms": [
+            "pcprclddb1504"
+        ]
+    },
+    "48": {
+        "diskFileName": "[ds_srvr_com2_prod-03] pcprclddb1504/pcprclddb1504_4.vmdk",
+        "diskCreatedVm": "pcprclddb1504",
+        "diskAttachedVms": [
+            "pcprclddb1504"
+        ]
+    },
+    "49": {
+        "diskFileName": "[ds_srvr_com2_prod-03] pcprclddb1504/pcprclddb1504_8.vmdk",
+        "diskCreatedVm": "pcprclddb1504",
+        "diskAttachedVms": [
+            "pcprclddb1504"
+        ]
+    },
+    "50": {
+        "diskFileName": "[ds_srvr_com2_prod-03] pcprclddb1507/pcprclddb1507_1.vmdk",
+        "diskCreatedVm": "pcprclddb1507",
+        "diskAttachedVms": [
+            "pcprclddb1507"
+        ]
+    },
+    "51": {
+        "diskFileName": "[ds_srvr_com2_prod-03] pcprclddb1507/pcprclddb1507_2.vmdk",
+        "diskCreatedVm": "pcprclddb1507",
+        "diskAttachedVms": [
+            "pcprclddb1507"
+        ]
+    },
+    "52": {
+        "diskFileName": "[ds_srvr_com2_prod-03] pcprclddb1507/pcprclddb1507_3.vmdk",
+        "diskCreatedVm": "pcprclddb1507",
+        "diskAttachedVms": [
+            "pcprclddb1507"
+        ]
+    },
+    "53": {
+        "diskFileName": "[ds_srvr_com2_prod-03] pcprcldapp1509/pcprcldapp1509_1.vmdk",
+        "diskCreatedVm": "pcprcldapp1509",
+        "diskAttachedVms": [
+            "pcprcldapp1509"
+        ]
+    },
+    "54": {
+        "diskFileName": "[ds_srvr_com2_prod-03] pcprcldapp1509/pcprcldapp1509_2.vmdk",
+        "diskCreatedVm": "pcprcldapp1509",
+        "diskAttachedVms": [
+            "pcprcldapp1509"
+        ]
+    },
+    "55": {
+        "diskFileName": "[ds_srvr_com2_prod-03] pcprcldapp1509/pcprcldapp1509_3.vmdk",
+        "diskCreatedVm": "pcprcldapp1509",
+        "diskAttachedVms": [
+            "pcprcldapp1509"
+        ]
+    },
+    "56": {
+        "diskFileName": "[ds_srvr_com2_prod-03] pcprcldapp1509/pcprcldapp1509_4.vmdk",
+        "diskCreatedVm": "pcprcldapp1509",
+        "diskAttachedVms": [
+            "pcprcldapp1509"
+        ]
+    },
+    "57": {
+        "diskFileName": "[ds_srvr_com2_prod-03] pcprcldapp1509/pcprcldapp1509_5.vmdk",
+        "diskCreatedVm": "pcprcldapp1509",
+        "diskAttachedVms": [
+            "pcprcldapp1509"
+        ]
+    },
+    "58": {
+        "diskFileName": "[ds_srvr_com2_prod-03] pcprcldapp1509/pcprcldapp1509_7.vmdk",
+        "diskCreatedVm": "pcprcldapp1509",
+        "diskAttachedVms": [
+            "pcprcldapp1509"
+        ]
+    },
+    "59": {
+        "diskFileName": "[ds_srvr_com2_dev02] dcprclddb1512/dcprclddb1512_1.vmdk",
+        "diskCreatedVm": "dcprclddb1512",
+        "diskAttachedVms": [
+            "dcprclddb1512"
+        ]
+    },
+    "60": {
+        "diskFileName": "[ds_srvr_com2_dev02] dcprclddb1512/dcprclddb1512_2.vmdk",
+        "diskCreatedVm": "dcprclddb1512",
+        "diskAttachedVms": [
+            "dcprclddb1512"
+        ]
+    },
+    "61": {
+        "diskFileName": "[ds_srvr_com2_prod-03] pcprclddb1523/pcprclddb1523_2.vmdk",
+        "diskCreatedVm": "pcprclddb1523",
+        "diskAttachedVms": [
+            "pcprclddb1523"
+        ]
+    }
+}

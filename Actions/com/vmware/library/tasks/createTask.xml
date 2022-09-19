@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="createTask" result-type="Task" api-version="6.0.0" id="8B8080808080808080808080808080808380808001297259131125b940b51f82d" version="1.1.1" allowed-operations="vfe" category-name="com.vmware.library.tasks">
+  <description><![CDATA[Create a Task. Return the newly created task]]></description>
+  <param n="workflowToCall" t="Workflow"><![CDATA[]]></param>
+  <param n="date" t="Date"><![CDATA[]]></param>
+  <param n="workflowArguments" t="Properties"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[if (date < new Date()) {
+	throw "Start date in the past!";
+}
+
+var task = workflowToCall.schedule(workflowArguments, date);
+return task;]]></script>
+</dunes-script-module>

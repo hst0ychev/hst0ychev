@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getPwdInfoFromCVConfigElement" result-type="Array/SecureString" api-version="6.0.0" id="82119e4c-d0d9-4c18-83b1-6e61f515e8ad" version="0.0.0" allowed-operations="evf" category-name="com.commvault.utils">
+  <param n="csName" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var passwordEssentials = [];
+var configurationElementPath  = "web-root";
+var configurationElementNamePassPhrase  = "Commvault - Pass Phrase";
+var configurationElementNamePasswords  = "Commvault - REST Host Password";
+var passPhrase = "passPhrase";
+var encryptedPassword = "encryptedPassword"+csName.split(".")[0];
+var initialisationVector = "initialisationVector"+csName.split(".")[0];
+try{
+var category = Server.getConfigurationElementCategoryWithPath(configurationElementPath);
+}
+catch(e){
+    System.log(e);
+}
+
+for each ( var element in category.configurationElements) { 
+    if (element.name == configurationElementNamePassPhrase) {
+        var configurationElementPassPhrase = element;
+    }
+    if (element.name == configurationElementNamePasswords) {
+        var configurationElementPasswords = element;
+    }
+ } 
+//System.log(configurationElementPasswords.getAttributeWithKey(encryptedPassword).value);
+//System.log(configurationElementPasswords.getAttributeWithKey(initialisationVector).value);
+//System.log(configurationElementPassPhrase.getAttributeWithKey(passPhrase).value);
+passwordEssentials.push(configurationElementPasswords.getAttributeWithKey(encryptedPassword).value);
+passwordEssentials.push(configurationElementPasswords.getAttributeWithKey(initialisationVector).value);
+passwordEssentials.push(configurationElementPassPhrase.getAttributeWithKey(passPhrase).value);
+return passwordEssentials;
+
+]]></script>
+</dunes-script-module>

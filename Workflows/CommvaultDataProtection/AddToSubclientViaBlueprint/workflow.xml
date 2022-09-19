@@ -1,0 +1,245 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="1199af0b-baea-40bb-93d2-8dad3e122766" version="0.0.7" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[AddToSubclientViaBlueprint]]></display-name>
+  <description><![CDATA[Add the VM to Subclient based on selected backup policy and attach the plan]]></description>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="payload" type="Properties"/>
+  </input>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[AddVMtoBackupPolicy]]></display-name>
+    <script encoded="false"><![CDATA[var uuId ="";
+var vCenterName = "";
+var SubclientToAddVM = "";
+
+var backupPolicy = "";
+var storagePlan =  "";
+var backupSetName = "";
+
+var machine =  payload.get("machine");
+var vmName =  machine.get("name");
+System.log("vm name is " + vmName);
+var id = machine.get("id");
+System.log("vm id is " + id);
+
+var storagePlan = "";
+var backupPolicy = "";
+var backupSetId = "";
+var instanceID = "";
+
+
+var vcacVm = Server.findForType("vCAC:VirtualMachine", id);
+if (vcacVm != null) { 
+	var hostId = vcacVm.getEntity().hostId;
+	var vCACHost = Server.findForType("vCAC:VCACHost", hostId);
+	vCACVmProperties = System.getModule("com.vmware.library.vcac").getPropertiesFromVirtualMachine(vCACHost,vcacVm);
+	backupPolicy = vCACVmProperties.get("CV VM Group Name");
+	storagePlan =  vCACVmProperties.get("CV Plan");
+	backupSetName = vCACVmProperties.get("Tenant Name");
+	uuId = vCACVmProperties.get("VirtualMachine.Admin.UUID");
+}
+if(backupPolicy != null && storagePlan != null && backupSetName != null){
+	System.log("FOUND ALL ADDED PROPERTY VALUES FOR CV OPERATOIONS " );
+
+
+	SubclientToAddVM = backupPolicy;
+	
+	//client details
+	var registeredVcenterInstance = System.getModule("com.vmware.library.vc.configuration").getAllRegisteredInstances()
+	System.log("Registered vcenters"  + registeredVcenterInstance);
+	if(registeredVcenterInstance.length == 0){
+		throw("Could not find any VCenter instance, check the configuration of VCenter plugin.");
+	}
+	var str = JSON.stringify(registeredVcenterInstance[0]);
+	var listVar = str.split("/");
+	if(listVar.length != 0){
+		vCenterName = listVar[2].split(":")[0];
+		System.log( "Using vcenter name as " + vCenterName);
+	
+	}
+	else{
+		throw("Could not find the vcenter name from the registered vsphere vcenter instance, cannot continue");
+	}
+	
+	
+	//backupset details
+	var restHost = System.getModule("com.commvault.utils").getHost();
+	if(restHost == null)
+	{
+	    throw("Error: couldn't find the REST host, please add REST host on vRO with Commvault webservice URL. example: http://server1.company.com:81/SearchSvc/CVWebService.svc/");
+	}
+	
+	//Prepare cvLogin
+	var token = System.getModule("com.commvault.utils").getToken(restHost);
+	if(token == -1)
+	{
+	    throw("Error: Failed to generate token. Please check Commvault WebServer log for login request");
+	}
+	
+	var vcClientName = vCenterName;
+	vcClientID = System.getModule("com.commvault.utils").getClientId(token,vcClientName);
+	if (vcClientID == -1)
+	{
+		throw("Error: Could not find Virtualization client configured in commcell with the End point name. Please configure Virtualization client with the name as End point name in VRA");
+	
+	}
+	
+	//Check if BackupSet exists
+	var Ids = System.getModule("com.commvault.utils").getBackupSet(token, vcClientID, backupSetName) //This will get BackupSetId and instanceId
+	if ( Ids != -1)
+	{
+	    //BackupSet exists, also check for Subclient
+	    aID  = Ids.split(",")
+		instanceID = aID[1];
+		backupSetId = aID[0];
+		System.log("BackupSetId exists, backupsetId and Instance Id found: "+ Ids)
+			
+	    //Check if subclient exists
+		System.log("Subclient before querying the subclient for backupset:  " +  SubclientToAddVM);
+	    subClientId = System.getModule("com.commvault.utils").getSubclient(token,vcClientID,backupSetName,SubclientToAddVM);
+		if (subClientId == -1)
+		{
+			bnewSubclient = true;
+			System.log("Subclient named " + SubclientToAddVM + " not found, calling createSubclient");
+			System.log("subclient name before create subclient 1 " + SubclientToAddVM );
+			
+			/***********get plan details*****************************/
+			var planId = System.getModule("com.commvault.utils").getStoragePlanId(token,storagePlan);
+			if(planId == ""){
+				throw("Error: Could not find the Plan details for selected plan" );
+			
+			}
+			var storagePolicy = System.getModule("com.commvault.utils").getStoragePolicyFromPlan(token,planId);
+			if(storagePolicy == ""){
+			
+				throw("Error: Could not find the storage policy linked with the selected plan" );
+			
+			}
+			//System.log("storagePolicy from plan " +  storagePolicy);
+			
+			/***********create new subclient*****************************/
+			SubclientToAddVM = backupSetName + "." + backupPolicy;
+			System.log("Creating new subclient " + SubclientToAddVM);
+			subClientId = System.getModule("com.commvault.utils").createSubclient(token,vcClientName,backupSetName,SubclientToAddVM,planId);
+		}
+	}
+	else
+	{		
+			/******************* get plan details *********************************/
+			var planId = System.getModule("com.commvault.utils").getStoragePlanId(token,storagePlan);
+			if(planId == ""){
+				throw("Error: Could not find the Plan details for selected plan" );
+			
+			}
+			//System.log("selected plan " + planId);
+			var storagePolicy = System.getModule("com.commvault.utils").getStoragePolicyFromPlan(token,planId);
+			if(storagePolicy == ""){
+			
+				throw("Error: Could not find the storage policy linked with the selected plan" );
+			
+			}
+			//System.log("storagePolicy from plan " +  storagePolicy);
+			
+			/*********************Create New Backupset and subclient*******************/
+	        System.log("Creating new BackupSet and SubClient");
+	        var status = System.getModule("com.commvault.utils").createBackupSet(token,vcClientName, backupSetName);
+			if (status != 0)
+			{
+				throw("Error: BackupSet creation failed "+ response.contentAsString);
+			}
+			else
+			{
+				//Get BackupSetID
+				var Ids = System.getModule("com.commvault.utils").getBackupSet(token, vcClientID, backupSetName) //This will get BackupSetId and instanceId
+	            if ( Ids != -1){
+	            	//BackupSet exists, fetching the ids
+	                aID  = Ids.split(",")
+	                instanceID = aID[1];
+	                backupSetId = aID[0];
+	                System.log("BackupSetId and Instance Id: "+ Ids)
+	                    
+	                //Check if subclient exists
+	                subClientId = System.getModule("com.commvault.utils").getSubclient(token,vcClientID,backupSetName,SubclientToAddVM);
+	                if (subClientId == -1)
+	                {
+	                    bnewSubclient = true;
+						System.log("Subclient not found, calling createSubclient after backupset creation");
+						 SubclientToAddVM = backupSetName + "." + backupPolicy;
+						System.log("Creating new subclient " + SubclientToAddVM);
+						subClientId = System.getModule("com.commvault.utils").createSubclient(token,vcClientName,backupSetName,SubclientToAddVM,planId);
+	                }
+	            }
+	            else{
+	                throw("Error: Couldn't find the backupSetId of newly created BackupSet, please check WebServer logs on CommServ");
+	            }
+			}		
+	}
+	
+	/*
+	//Flag to determine whther VM should be added or appended to the subclient
+	if(bnewSubclient == "false")
+	{	
+		System.log("subclient name while appending to content " + subClientName );
+	    requestContent = "<App_UpdateSubClientPropertiesRequest><association><entity><appName>Virtual Server</appName><instanceName>VMware</instanceName><backupsetName>"+backupSetName+"</backupsetName><clientName>"+vcClientName+"</clientName><subclientName>"+subClientName+"</subclientName></entity></association><subClientProperties><vmContentOperationType>ADD</vmContentOperationType><vmContent><children equalsOrNotEquals=\"1\" name=\"\" displayName="+"\""+vmName+"\""+" type=\"VMName\"/></vmContent></subClientProperties></App_UpdateSubClientPropertiesRequest>";
+	    System.log(requestContent);
+	}
+	else
+	{	System.log("subclient name while creating new subclient content " + subClientName );
+	    requestContent = "<App_UpdateSubClientPropertiesRequest><association><entity><appName>Virtual Server</appName><instanceName>VMware</instanceName><backupsetName>"+backupSetName+"</backupsetName><clientName>"+vcClientName+"</clientName><subclientName>"+subClientName+"</subclientName></entity></association><subClientProperties><vmContentOperationType>OVERWRITE</vmContentOperationType><vmContent><children equalsOrNotEquals=\"1\" name=\"\" displayName="+"\""+vmName+"\""+" type=\"VMName\"/></vmContent></subClientProperties></App_UpdateSubClientPropertiesRequest>";
+	    System.log(requestContent);
+	}
+	
+	////////////////////////////////////////////////////////////
+	
+	var Ids = System.getModule("com.commvault.utils").getBackupSet(token, vcClientID, backupSetName) //This will get BackupSetId and instanceId
+	if ( Ids != -1)
+	{
+	    //BackupSet exists, also check for Subclient
+	    aID  = Ids.split(",")
+		instanceID = aID[1];
+		backupSetId = aID[0];
+		System.log("BackupSetId exists, backupsetId and Instance Id found: "+ Ids)
+	}
+	if(Ids == -1){
+		
+		throw("Error: Could not find the backupset details");
+	}
+	*/
+	
+	var subclientList = System.getModule("com.commvault.utils").getSubclientsForClient(token,vcClientID,backupSetId);
+	if(subclientList == "")
+	{
+		throw("Couldn't find VM Groups for the associated virtualization hypervisor.");
+	}
+	
+	var vmSubclient = "";
+	for each(var subclientId in subclientList.keys){
+		if(subclientList.get(subclientId) == SubclientToAddVM ){
+			vmSubclient = subclientId;
+			break;
+		}	
+	}
+	
+	System.log("Subclient id for vm  " + vmSubclient);
+	
+	var addVMResponse = System.getModule("com.commvault.utils").addVMtoSubclient(vmName,uuId,vmSubclient,token,restHost);
+	if(addVMResponse.statusCode != 200)
+	{
+		throw("Couldn't add VM to the VM Group. Response from REST API : " + addVMResponse);
+	} 
+}]]></script>
+    <in-binding>
+      <bind name="payload" type="Properties" export-name="payload"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="payload">
+      <desc><![CDATA[payload]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

@@ -1,0 +1,70 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="d6392fd2-9e32-443a-bf17-5034a54bfda1" version="0.0.19" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[UninstallCVResources]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="VCACCAFEHost" type="vCACCAFE:VCACHost"/>
+    <param name="ResourceAction" type="Array/vCACCAFE:ResourceAction"/>
+    <param name="PropertyGroup" type="Array/vCACCAFE:PropertyGroup"/>
+    <param name="EventSubscription" type="Array/vCACCAFE:WorkflowSubscription"/>
+    <param name="PropertyDefinition" type="Array/vCACCAFE:PropertyDefinition"/>
+  </input>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Scriptable task]]></display-name>
+    <script encoded="false"><![CDATA[System.log("UninstallingResources");
+if(ResourceAction != null){
+	for(var i=0; i<ResourceAction.length; i++){
+		var deleteAction = System.getModule("com.vmware.library.vcaccafe.asd.resourceaction").deleteResourceOperation(ResourceAction[i]);
+		
+	
+	}
+}
+if(PropertyGroup !=null){
+	for(var i=0; i<PropertyGroup.length; i++){
+		PropertyGroupDeletion = System.getModule("com.vmware.library.vcaccafe.propertygroup").deletePropertyGroup(PropertyGroup[i]);
+	}
+}
+if(PropertyDefinition !=null){
+	for(var i=0; i<PropertyDefinition.length; i++){
+		PropertiesDeletion = System.getModule("com.vmware.library.vcaccafe.propertydefinition").deletePropertyDefinition(PropertyDefinition[i]);
+	}
+}
+if(EventSubscription != null){
+	for(var i=0; i<EventSubscription.length; i++){
+    	DeleteWorkflowSubscription = System.getModule("com.vmware.library.vcaccafe.workflow.subscription").deleteWorkflowSubscription(EventSubscription[i]);
+	}
+}]]></script>
+    <in-binding>
+      <bind name="ResourceAction" type="Array/vCACCAFE:ResourceAction" export-name="ResourceAction"/>
+      <bind name="PropertyGroup" type="Array/vCACCAFE:PropertyGroup" export-name="PropertyGroup"/>
+      <bind name="EventSubscription" type="Array/vCACCAFE:WorkflowSubscription" export-name="EventSubscription"/>
+      <bind name="PropertyDefinition" type="Array/vCACCAFE:PropertyDefinition" export-name="PropertyDefinition"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.90909090909091" x="205.0"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="VCACCAFEHost">
+      <desc><![CDATA[VCACCAFEHost]]></desc>
+      <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+    </p-param>
+    <p-param name="PropertyGroup">
+      <desc><![CDATA[Property Group]]></desc>
+      <p-qual kind="ognl" name="linkedEnumeration" type="Array/vCACCAFE:PropertyGroup"><![CDATA[GetAction("com.commvault.utils","GetPropertyGroupForVRAHost").call( #VCACCAFEHost )]]></p-qual>
+    </p-param>
+    <p-param name="PropertyDefinition">
+      <desc><![CDATA[Property Definition]]></desc>
+      <p-qual kind="ognl" name="linkedEnumeration" type="Array/vCACCAFE:PropertyDefinition"><![CDATA[GetAction("com.commvault.utils","getPropertyDefinitionForVCACHost").call( #VCACCAFEHost )]]></p-qual>
+    </p-param>
+    <p-param name="EventSubscription">
+      <desc><![CDATA[Worlkflow Subscription]]></desc>
+      <p-qual kind="ognl" name="linkedEnumeration" type="Array/vCACCAFE:WorkflowSubscription"><![CDATA[GetAction("com.commvault.utils","getEventSubscriptionForVCACHost").call( #VCACCAFEHost )]]></p-qual>
+    </p-param>
+    <p-param name="ResourceAction">
+      <desc><![CDATA[Resource Action]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

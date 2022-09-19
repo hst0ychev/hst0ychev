@@ -1,0 +1,236 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item3" object-name="Workflow:name=generic" id="EF8180808080808080808080808080804980808001270557368849c62c352aa82" version="5.1.11" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Update a PowerShell host]]></display-name>
+  <description><![CDATA[Updates the specified PowerShell host in the plug-in's inventory.]]></description>
+  <ref-types><![CDATA[>(PowerShell:PowerShellHost)]]></ref-types>
+  <position y="30.0" x="180.0"/>
+  <input>
+    <param name="host" type="PowerShell:PowerShellHost">
+      <description><![CDATA[Host to update]]></description>
+    </param>
+    <param name="name" type="string">
+      <description><![CDATA[Name of the host]]></description>
+    </param>
+    <param name="type" type="string">
+      <description><![CDATA[Type of the host]]></description>
+    </param>
+    <param name="hostName" type="string">
+      <description><![CDATA[Connection URL]]></description>
+    </param>
+    <param name="username" type="string">
+      <description><![CDATA[User name]]></description>
+    </param>
+    <param name="password" type="SecureString">
+      <description><![CDATA[Password]]></description>
+    </param>
+    <param name="sessionMode" type="string">
+      <description><![CDATA[Session mode]]></description>
+    </param>
+    <param name="transportProtocol" type="string">
+      <description><![CDATA[The transport protocol in case of WinRM]]></description>
+    </param>
+    <param name="port" type="string">
+      <description><![CDATA[The port on which to communicate with the remote machine]]></description>
+    </param>
+    <param name="authentication" type="string">
+      <description><![CDATA[Used in case of WinRM option choosen to determine authentication schema. Supports Basic and Kerberos authentication schema.]]></description>
+    </param>
+    <param name="accetAllCertificates" type="boolean">
+      <description><![CDATA[Accept all certificates]]></description>
+    </param>
+    <param name="shellCodePage" type="string">
+      <description><![CDATA[Shell Code Page]]></description>
+    </param>
+    <param name="idleTimeout" type="number">
+      <description><![CDATA[How long(in milliseconds) session will live if it is idle or disconnected]]></description>
+    </param>
+  </input>
+  <output>
+    <param name="result" type="PowerShell:PowerShellHost"/>
+  </output>
+  <attrib name="errorCode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[The error message in case of error]]></description>
+  </attrib>
+  <attrib name="sslUrl" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[The URL for which to get the certificate when HTTPS used for transport protocol]]></description>
+  </attrib>
+  <workflow-item name="item3" out-name="item1" type="custom-condition" alt-out-name="item4">
+    <display-name><![CDATA[Is SSL?]]></display-name>
+    <script encoded="false"><![CDATA[return transportProtocol.equals("HTTPS");]]></script>
+    <in-binding>
+      <bind name="transportProtocol" type="string" export-name="transportProtocol"/>
+    </in-binding>
+    <position y="170.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item7" type="end" end-mode="0">
+    <position y="418.1363636363636" x="185.0"/>
+  </workflow-item>
+  <workflow-item name="item12" throw-bind-name="errorCode" type="end" end-mode="1">
+    <position y="291.3636363636363" x="605.0"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item2" catch-name="item12" throw-bind-name="errorCode" type="task">
+    <display-name><![CDATA[Construct URL]]></display-name>
+    <script encoded="false"><![CDATA[sslUrl = "https://" + host + ((port) ? ":" + port : ":5986") + "/wsman/";
+System.log("Manage SSL certificate called for URL->" + sslUrl );]]></script>
+    <in-binding>
+      <bind name="host" type="string" export-name="hostName"/>
+      <bind name="port" type="string" export-name="port"/>
+    </in-binding>
+    <out-binding>
+      <bind name="sslUrl" type="string" export-name="sslUrl"/>
+    </out-binding>
+    <position y="180.0" x="360.0"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item4" catch-name="item12" throw-bind-name="errorCode" type="link" linked-workflow-id="c5a874a2-e8e7-480d-bdde-d1a80b8a3011">
+    <display-name><![CDATA[Import a certificate from URL]]></display-name>
+    <in-binding>
+      <bind name="url" type="string" export-name="sslUrl">
+        <description><![CDATA[URL or just host:port for non-HTTPS SSL services:]]></description>
+      </bind>
+      <bind name="ignoreWarnings" type="boolean" export-name="accetAllCertificates">
+        <description><![CDATA[If set to true, the certificate is accepted silently and the certificate is added to the trusted store]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Imports an SSL certificate into the server trust store.]]></description>
+    <position y="182.68181818181816" x="565.0"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item7" catch-name="item12" throw-bind-name="errorCode" type="task" script-module="com.vmware.library.powershell.configuration/updatePowerShellHost">
+    <display-name><![CDATA[updatePowerShellHost]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.powershell.configuration").updatePowerShellHost(host,name,type,hostName,transportProtocol,port,username,password,sessionMode,authentication,shellCodePage,idleTimeout) ;]]></script>
+    <in-binding>
+      <bind name="host" type="PowerShell:PowerShellHost" export-name="host">
+        <description><![CDATA[The host to update]]></description>
+      </bind>
+      <bind name="name" type="string" export-name="name">
+        <description><![CDATA[The logical name to use for the added PowerShell host]]></description>
+      </bind>
+      <bind name="type" type="string" export-name="type">
+        <description><![CDATA[The type of communication - WinRM  is the only supported protocol]]></description>
+      </bind>
+      <bind name="hostName" type="string" export-name="hostName">
+        <description><![CDATA[Host name or IP of the Remote machine]]></description>
+      </bind>
+      <bind name="transportProtocol" type="string" export-name="transportProtocol">
+        <description><![CDATA[The transport protocol. In case of WinRM HTTP and HTTPS options are available]]></description>
+      </bind>
+      <bind name="port" type="string" export-name="port">
+        <description><![CDATA[The port on which to communicate. Defaults are 22 for SSH 5985 for WinRM/HTTP and 5986 for WinRM/HTTPS]]></description>
+      </bind>
+      <bind name="username" type="string" export-name="username">
+        <description><![CDATA[The username to login to the remote machine]]></description>
+      </bind>
+      <bind name="password" type="SecureString" export-name="password">
+        <description><![CDATA[Password to use to login ]]></description>
+      </bind>
+      <bind name="sessionMode" type="string" export-name="sessionMode">
+        <description><![CDATA[Shared session or Session per user modes are supported]]></description>
+      </bind>
+      <bind name="authentication" type="string" export-name="authentication">
+        <description><![CDATA[Specifies authentication mechanism used when communicating with PowerShell host. WinRM protocol supported Basic and Kerberos.]]></description>
+      </bind>
+      <bind name="shellCodePage" type="string" export-name="shellCodePage">
+        <description><![CDATA[Shell code page]]></description>
+      </bind>
+      <bind name="idleTimeout" type="number" export-name="idleTimeout">
+        <description><![CDATA[How long(in milliseconds) session will live if it is idle or disconnected]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="PowerShell:PowerShellHost" export-name="result"/>
+    </out-binding>
+    <description><![CDATA[Updates the specified Power Shell Host from the plug-in's repository.]]></description>
+    <position y="300.8636363636363" x="145.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Update a PowerShell host]]></title>
+      <p-group>
+        <title><![CDATA[PowerShell Host]]></title>
+        <desc><![CDATA[Select a PowerShell host to update.]]></desc>
+        <p-param name="host">
+          <desc><![CDATA[PowerShell host]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual name="contextualParameter" type="void"><![CDATA[]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[New Settings]]></title>
+        <desc><![CDATA[Modify the connection parameters. If <b>Shared Session</b> is selected, the provided credentials are used. If <b>Per User Session</b> option is used, the credentials are retrieved from the currently logged-in user.]]></desc>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#host != null]]></p-qual>
+        <p-param name="name">
+          <desc><![CDATA[Name]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[#host.name]]></p-qual>
+        </p-param>
+        <p-param name="type">
+          <desc><![CDATA[PowerShell host type]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[#host.type]]></p-qual>
+          <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#WinRM#}#]]></p-qual>
+        </p-param>
+        <p-param name="transportProtocol">
+          <desc><![CDATA[Transport protocol]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#type=='WinRM']]></p-qual>
+          <p-qual kind="ognl" name="mandatory" type="boolean"><![CDATA[#type=='WinRM']]></p-qual>
+          <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#HTTP#;#string#HTTPS#}#]]></p-qual>
+          <p-qual kind="ognl" name="defaultValue" type="string"><![CDATA[#host.transportProtocol]]></p-qual>
+        </p-param>
+        <p-param name="authentication">
+          <desc><![CDATA[Authentication
+]]></desc>
+          <p-qual kind="ognl" name="mandatory" type="boolean"><![CDATA[#type=='WinRM']]></p-qual>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#type=='WinRM']]></p-qual>
+          <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#Basic#;#string#Kerberos#}#]]></p-qual>
+          <p-qual kind="ognl" name="defaultValue" type="string"><![CDATA[#host.authenticationSchema]]></p-qual>
+        </p-param>
+        <p-param name="accetAllCertificates">
+          <desc><![CDATA[accetAllCertificates]]></desc>
+          <p-qual kind="static" name="defaultValue" type="boolean"><![CDATA[false]]></p-qual>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#transportProtocol=="HTTPS"]]></p-qual>
+        </p-param>
+        <p-param name="hostName">
+          <desc><![CDATA[Host / IP]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[#host.connectionURL]]></p-qual>
+        </p-param>
+        <p-param name="port">
+          <desc><![CDATA[Port]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#type=='WinRM']]></p-qual>
+          <p-qual kind="ognl" name="defaultValue" type="string"><![CDATA[(#host.port == null)  ?  "" : #host.port]]></p-qual>
+        </p-param>
+        <p-param name="sessionMode">
+          <desc><![CDATA[Session mode]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#Shared Session#;#string#Session per User#}#]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[GetAction("com.vmware.library.powershell.configuration","getSessionMode").call( #host )]]></p-qual>
+        </p-param>
+        <p-param name="username">
+          <desc><![CDATA[User name]]></desc>
+          <p-qual kind="ognl" name="mandatory" type="boolean"><![CDATA[#sessionMode=="Shared Session"]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[#host.username]]></p-qual>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#sessionMode=="Shared Session"]]></p-qual>
+        </p-param>
+        <p-param name="password">
+          <desc><![CDATA[Password]]></desc>
+          <p-qual kind="ognl" name="mandatory" type="boolean"><![CDATA[#sessionMode=="Shared Session"]]></p-qual>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#sessionMode=="Shared Session"]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Advanced Settings]]></title>
+        <p-param name="shellCodePage">
+          <desc><![CDATA[Shell Code Page]]></desc>
+          <p-qual kind="ognl" name="defaultValue" type="string"><![CDATA[GetAction("com.vmware.library.powershell.configuration","getCurrentShellCodePage").call( #host )]]></p-qual>
+          <p-qual kind="ognl" name="linkedEnumeration" type="Array/string"><![CDATA[GetAction("com.vmware.library.powershell.configuration","getSupportedShellCodePages").call( #host )]]></p-qual>
+        </p-param>
+        <p-param name="idleTimeout">
+          <desc><![CDATA[Idle Timeout]]></desc>
+        </p-param>
+      </p-group>
+    </p-step>
+  </presentation>
+</workflow>

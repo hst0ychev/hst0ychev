@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="deleteApprovalPolicy" result-type="void" api-version="6.0.0" id="3ab3c9e3-dec3-4000-ad25-dea53cf1ead3" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.approvalpolicy">
+  <param n="approvalPolicy" t="vCACCAFE:ApprovalPolicy"><![CDATA[The approval policy to be deleted]]></param>
+  <script encoded="false"><![CDATA[System.getModule("com.vmware.library.vcaccafe.util").validateObject(approvalPolicy, "Approval policy");
+var host = vCACCAFEEntitiesFinder.getHostForEntity(approvalPolicy);
+var client = host.createApprovalClient().getApprovalApprovalPolicyService();
+
+System.log("Deleting approval policy '" + approvalPolicy.getName() + "'...");
+client.delete(approvalPolicy);
+System.log("Approval policy '" + approvalPolicy.getName() + "' deleted.");]]></script>
+</dunes-script-module>

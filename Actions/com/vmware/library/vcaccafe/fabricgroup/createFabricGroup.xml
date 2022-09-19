@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="createFabricGroup" result-type="vCACCAFE:FabricGroup" api-version="6.0.0" id="cd33ab10-09aa-4dc7-8e7e-b5b127244ce8" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.fabricgroup">
+  <param n="name" t="string"><![CDATA[Name]]></param>
+  <param n="description" t="string"><![CDATA[Description]]></param>
+  <param n="administrators" t="Array/string"><![CDATA[Administrators]]></param>
+  <param n="host" t="vCACCAFE:VCACHost"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var group = new vCACCAFEFabricGroup();
+group.setName(name);
+group.setDescription(description);
+group.setAdministrators(administrators);
+var service = host.createInfrastructureClientWithCurrentUserRights().getFabricGroupService();
+var id = service.create(group);
+return vCACCAFEEntitiesFinder.getFabricGroup(host, id.toString());]]></script>
+</dunes-script-module>

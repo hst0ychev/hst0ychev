@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="a0d94dcc-3f58-4fd7-8c14-41250e6f8039" version="0.0.0">
+  <display-name><![CDATA[vRAHost]]></display-name>
+  <atts>
+    <att name="vraHost" type="REST:RESTHost" read-only="false">
+      <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='c47b5026-a242-4cf8-8e67-a7e39d6ba334'&dunesName='REST:RESTHost']]></value>
+    </att>
+    <att name="username" type="string" read-only="false">
+      <value encoded="n"><![CDATA[vraadmin@vsphere.local]]></value>
+    </att>
+    <att name="password" type="SecureString" read-only="false">
+      <value encoded="n"><![CDATA[__NULL__]]></value>
+    </att>
+    <att name="tenant" type="string" read-only="false">
+      <value encoded="n"><![CDATA[CRIS]]></value>
+    </att>
+  </atts>
+</config-element>

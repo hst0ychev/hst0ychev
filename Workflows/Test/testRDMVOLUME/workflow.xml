@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="162256ff-1eee-411b-a3bc-3eaf1ca8f3f5" version="0.0.0" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[testRDMVOLUME]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <attrib name="vmName" type="string" read-only="false">
+    <value encoded="n"><![CDATA[pcprcldapp20115]]></value>
+  </attrib>
+  <attrib name="filePath" type="string" read-only="false">
+    <value encoded="n"><![CDATA[ddssd]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Scriptable task]]></display-name>
+    <script encoded="false"><![CDATA[//var con = System.getModule("com.hpe.storeserv.connection").getConnectionBySerialNumber("SGH109YK2K")
+//var con = System.getModule("com.hpe.storeserv.connection").getConnectionBySerialNumber("SGH109YK2K")
+serialNumber="SGH109YK2K";
+
+var con1 = StoreServConnectionManager
+System.log("---"+con1)
+var nn = con1.getConnectionByName(serialNumber)
+System.log(nn)
+//var con = System.getModule("com.hpe.storeserv.connection").getConnectionBySerialNumber(serialNumber)
+//System.log(con)
+var hostset = System.getModule("com.hpe.storeserv.hostset").querySpecificHostSet(con,"HCPCTCHSRVR")
+System.log(hostset)]]></script>
+    <in-binding>
+      <bind name="vmName" type="string" export-name="vmName"/>
+    </in-binding>
+    <out-binding>
+      <bind name="filePath" type="string" export-name="filePath"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation/>
+</workflow>

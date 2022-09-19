@@ -1,0 +1,84 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="9637fc05-785b-4a31-8003-fe45c530553c" version="0.0.2" api-version="6.0.0" allowed-operations="vf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Endpoint Workflow Template]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="EndpointIn" type="Properties"/>
+    <param name="MachineIn" type="Properties"/>
+    <param name="TemplateIn" type="Properties"/>
+    <param name="RequestedPowerStateIn" type="string"/>
+  </input>
+  <output>
+    <param name="vmName" type="string"/>
+    <param name="vmProperties" type="Properties"/>
+  </output>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="664.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item3" type="task">
+    <display-name><![CDATA[Display Inputs]]></display-name>
+    <script encoded="false"><![CDATA[System.log("MachineIn:");
+System.log(MachineIn.toSource());
+
+System.log("TemplateIn:");
+System.log(TemplateIn.toSource());
+
+System.log("PowerStateIn:");
+System.log(RequestedPowerStateIn);
+
+System.log("Endpoint info:");
+System.log(endpoint.vendor);
+System.log(endpoint.managementUri);
+System.log(endpoint.vendorProperties.get("Custom.Property").toSource());]]></script>
+    <in-binding>
+      <bind name="endpoint" type="Properties" export-name="EndpointIn"/>
+      <bind name="MachineIn" type="Properties" export-name="MachineIn"/>
+      <bind name="TemplateIn" type="Properties" export-name="TemplateIn"/>
+      <bind name="RequestedPowerStateIn" type="string" export-name="RequestedPowerStateIn"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item0" type="task">
+    <display-name><![CDATA[set outputs]]></display-name>
+    <script encoded="false"><![CDATA[vmName = "some VM name";
+vmProperties = new Properties();
+vmProperties.put("key1", "value1");
+var subProperties = new Properties();
+subProperties.put("subprop1", "subval1");
+vmProperties.put("key2", subProperties);]]></script>
+    <in-binding/>
+    <out-binding>
+      <bind name="vmName" type="string" export-name="vmName"/>
+      <bind name="vmProperties" type="Properties" export-name="vmProperties"/>
+    </out-binding>
+    <position y="55.40909090909091" x="484.5"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item2" type="task">
+    <display-name><![CDATA[spot check inputs]]></display-name>
+    <script encoded="false"><![CDATA[System.debug("machineid = " + MachineIn.MachineId);
+var computeResource = MachineIn.ComputeResource;
+System.debug("ComputeResource uniqueID = " + computeResource.UniqueId);
+
+System.debug("Compute Resource Networks = " + computeResource.Networks);]]></script>
+    <in-binding>
+      <bind name="MachineIn" type="Properties" export-name="MachineIn"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="344.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="EndpointIn">
+      <desc><![CDATA[endpoint]]></desc>
+    </p-param>
+    <p-param name="MachineIn">
+      <desc><![CDATA[MachineIn]]></desc>
+    </p-param>
+    <p-param name="TemplateIn">
+      <desc><![CDATA[TemplateIn]]></desc>
+    </p-param>
+    <p-param name="RequestedPowerStateIn">
+      <desc><![CDATA[RequestedPowerStateIn]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

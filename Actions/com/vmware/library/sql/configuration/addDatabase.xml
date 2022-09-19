@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="addDatabase" result-type="SQL:Database" api-version="6.0.0" id="971d2b4e-e7d3-42ab-8a4a-117c2f21f1f3" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.sql.configuration">
+  <param n="name" t="string"><![CDATA[Database name]]></param>
+  <param n="type" t="string"><![CDATA[Database type]]></param>
+  <param n="connectionURL" t="string"><![CDATA[Connection URL]]></param>
+  <param n="username" t="string"><![CDATA[Username to do the database authentication]]></param>
+  <param n="password" t="SecureString"><![CDATA[User password]]></param>
+  <param n="sessionMode" t="string"><![CDATA[Connection session mode]]></param>
+  <script encoded="false"><![CDATA[var database = new SQLDatabase() ;
+
+database.name = name;
+database.type = type;
+database.connectionURL = connectionURL;
+database.username = username;
+database.password = password;
+database.sessionMode = sessionMode;
+database = SQLDatabaseManager.addDatabase(database);
+
+System.log("Database object added: " + database);
+
+return database;]]></script>
+</dunes-script-module>

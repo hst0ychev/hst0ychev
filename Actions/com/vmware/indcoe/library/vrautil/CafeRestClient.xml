@@ -1,0 +1,221 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="CafeRestClient" result-type="Any" api-version="6.0.0" id="9fac705d-36a3-3406-b011-de696facdc99" version="1.0.0" allowed-operations="evf" category-name="com.vmware.indcoe.library.vrautil">
+  <param n="host" t="string"><![CDATA[]]></param>
+  <param n="clientName" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var logger = System.getModule("com.vmware.indcoe.library.vrautil").getLogger("com.vmware.pscoe.library.vra.CafeRestClient");
+var restClient = host.createRestClient(clientName);
+var SPECIAL_CHARACTERS = /['&]/g;
+
+var CafeRestClient = function (baseUrl, getAllSuffixUrl) {
+
+    this.create = function (json) {
+        return restClient.post(baseUrl, json);
+    };
+
+    this.update = function (json) {
+        var id = getElementId(json);
+        var url = id ? baseUrl + "/" + id : baseUrl;
+
+        return restClient.put(url, json);
+    };
+
+    this.createOrUpdate = function (json, skipIdGeneration) {
+        var existing = false;
+        var entityUuid = getElementId(json);
+        if (json.id) {
+            try {
+                existing = (!!this.get(entityUuid));
+            } catch (e) {
+                logger.debug("Cafe entity with ID '" + entityUuid + "' was not found. Creating new one.");
+            }
+        }
+
+        if (!json.id || !existing) {
+            if (!skipIdGeneration && !json.id) {
+                json.id = System.nextUUID();
+                entityUuid = json.id;
+            }
+            logger.debug("Creating new cafe entity with id '" + entityUuid + "' and content: " + JSON.stringify(json));
+            var response = this.create(json);
+            var locations = response.getHeadersProperty("Location");
+            var location = null;
+            if (locations) {
+                location = locations[0];
+            }
+
+
+            if (location && parseInt(response.getStatus()) === 201) {
+                location = location.replace(restClient.getUrl(), "");
+                response = restClient.get(location);
+            }
+
+            return response.getBodyAsJson().id;
+        } else {
+            logger.debug("Updating cafe entity with id '" + entityUuid + "' and content: " + JSON.stringify(json));
+            this.update(json);
+        }
+
+        // return the whole ID, even if it's an object
+        return json.id;
+    };
+
+    this.delete = function (id) {
+        if (id) {
+            logger.debug("Deleting cafe entity with id '" + id + "'.");
+            restClient.delete(baseUrl + "/" + id);
+        } else {
+            logger.warn("No id specified to delete.");
+        }
+    };
+
+    this.get = function (id) {
+        return restClient.get(baseUrl + "/" + id).getBodyAsJson();
+    };
+
+    this.getWithVariables = function (id, variables) {
+        return restClient.getWithVariables(baseUrl + "/" + id, variables).getBodyAsJson();
+    };
+
+    this.getAll = function () {
+        return getContentFromAllPages(getAllSuffixUrl ? baseUrl + "/" + getAllSuffixUrl : baseUrl);
+    };
+
+    this.getByName = function (name) {
+        var results = this.getByFilter({
+            name: name
+        });
+
+        for (var i = 0; i < results.length; i++) {
+            var result = results[i];
+            if (result.name == name) {
+                return result;
+            }
+        }
+
+        return null;
+    };
+
+    this.getByFilter = function (filter) {
+        //?$filter=name%20eq%20'vSphere%20Machine'
+        var filterStr = "";
+        var arr = [];
+        for (var key in filter) {
+            var value = filter[key];
+            if (System.getObjectType(value) == "string") {
+                if (value.match(SPECIAL_CHARACTERS)) {
+                    arr.push(splitFilterValue(key, value));
+                } else {
+                    arr.push(key + " eq '" + value + "'");
+                }
+            } else {
+                arr.push(key + " eq " + value);
+            }
+        }
+
+        filterStr += arr.join(" and ");
+
+        var res = this.getByFilterString(filterStr);
+        arr = [];
+
+        if (res.content) {
+            for (var i = 0; i < res.content.length; i++) {
+                var info = res.content[i];
+                var id = getElementId(info);
+                arr.push(this.get(id));
+            }
+        }
+
+        return arr;
+    };
+
+    this.getByFilterString = function (filterStr) {
+        var filter = "?$filter=" + filterStr;
+        return getContentFromAllPages((getAllSuffixUrl ? baseUrl + "/" + getAllSuffixUrl : baseUrl) + "/" + filter);
+    };
+};
+
+function splitFilterValue(key, value) {
+    logger.info("Name containts special character. Splittnig name to build OData Filter");
+
+    var tokens = value
+        .split(SPECIAL_CHARACTERS)
+        .filter(function (token) {
+            return token !== "" && !token.match(/^\s+$/);
+        });
+
+    var oDataFilter = "startswith(" + key + ", '" + tokens[0] + "')";
+    if (tokens.length > 2) {
+        for (var i = 1; i < tokens.length - 1; i++) {
+            oDataFilter += " and substringof('" + tokens[i] + "', " + key + ")";
+        }
+    }
+
+    oDataFilter += " and endswith(" + key + ", '" + tokens[tokens.length - 1] + "')";
+    return oDataFilter;
+}
+
+function getElementId(element) {
+    return (element.id === Object(element.id)) ? element.id.id : element.id;
+}
+
+function getContentFromAllPages(urlWithoutPage) {
+    var result = {};
+    var resultContent = [];
+
+    var pageNo = 1;
+    var totalPages = 1;
+
+    while (pageNo <= totalPages) {
+        var url = addPageToUrl(urlWithoutPage, pageNo);
+
+        var pageResultStr = restClient.get(url).getBodyAsString();
+        var pageResultJson = getBodyAsJson(pageResultStr);
+
+        var metadata = pageResultJson.metadata;
+        if (metadata && metadata.totalPages > totalPages) {
+            totalPages = metadata.totalPages;
+        }
+
+        var pageResultContent = pageResultJson.content;
+        if (pageResultContent) {
+            for (var i = 0; i < pageResultContent.length; i++) {
+                resultContent.push(pageResultContent[i]);
+            }
+        }
+
+        pageNo++;
+    }
+
+    result.content = resultContent;
+
+    return result;
+}
+
+function addPageToUrl(urlWithoutPage, pageNo) {
+    var url = urlWithoutPage;
+    if (url) {
+        if (url.search(/\?.+$/) > -1) {
+            url += "&page=" + pageNo;
+        } else if (url.search(/\?$/) > -1) {
+            url += "page=" + pageNo;
+        } else {
+            url += "?page=" + pageNo;
+        }
+    }
+
+    return url;
+}
+
+function getBodyAsJson(bodyAsString) {
+    var json = {};
+
+    if (bodyAsString) {
+        json = JSON.parse(bodyAsString);
+    }
+
+    return json || {};
+}
+
+return CafeRestClient;
+]]></script>
+</dunes-script-module>

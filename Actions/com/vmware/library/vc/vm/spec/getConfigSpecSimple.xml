@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getConfigSpecSimple" result-type="Any" api-version="6.0.0" id="fc75fc29-92e7-4e3e-8ada-65afedcc225f" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.vm.spec">
+  <param n="deviceChange" t="Array/Any"><![CDATA[[optional] Array of VirtualDeviceConfigSpec: Set of virtual devices being modified by the configuration operation.]]></param>
+  <param n="files" t="Any"><![CDATA[[optional] VirtualMachineFileInfo: Information about virtual machine files]]></param>
+  <param n="flags" t="Any"><![CDATA[[optional] VirtualMachineFlagInfo: Additional flags for a virtual machine.]]></param>
+  <param n="memoryMB" t="number"><![CDATA[[optional] Size of a virtual machine's memory, in MB.]]></param>
+  <param n="name" t="string"><![CDATA[[optional] Display name of the virtual machine.]]></param>
+  <param n="numCPUs" t="number"><![CDATA[[optional] Number of virtual processors in a virtual machine.]]></param>
+  <script encoded="false"><![CDATA[try {
+	checkParam();
+	var configSpec = new VcVirtualMachineConfigSpec();
+	affectParam();
+	return configSpec;
+}
+catch (ex) {
+	throw "Unable to create VcVirtualMachineConfigSpec: " + ex;
+}
+
+
+function affectParam() {
+	configSpec.deviceChange = deviceChange;
+	configSpec.files = files;
+	configSpec.flags = flags;
+	configSpec.memoryMB = memoryMB;
+	configSpec.name = name;
+	configSpec.numCPUs = numCPUs;
+}
+
+function checkParam() {
+	if (deviceChange != null) {
+		for (var i in deviceChange) {
+			if ((deviceChange[i] instanceof VcVirtualDeviceConfigSpec) == false) throw "deviceChange must be of type 'Array of VcVirtualDeviceConfigSpec'";
+		}
+	}
+	if (files != null && (files instanceof VcVirtualMachineFileInfo) == false) throw "files must be of type 'VcVirtualMachineFileInfo'";
+	if (flags != null && (flags instanceof VcVirtualMachineFlagInfo) == false) throw "flags must be of type 'VcVirtualMachineFlagInfo'";
+}]]></script>
+</dunes-script-module>

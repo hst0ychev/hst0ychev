@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getJobDetails" result-type="void" api-version="6.0.0" id="e646f053-2ae3-4fc9-acab-94b46bd8eabb" version="0.0.0" allowed-operations="evf" category-name="com.commvault.utils">
+  <description><![CDATA[job detials for a specific job id]]></description>
+  <param n="jobId" t="string"><![CDATA[CV backup job id]]></param>
+  <param n="token" t="string"><![CDATA[CV token for REST API]]></param>
+  <script encoded="false"><![CDATA[/*
+	Inputs
+	jobId - job id to be used for lookup
+	token - CV REST API token
+	
+	API used
+	/Job/{jobId}
+	
+	Output
+	String with concatenated start and end time of the job
+	eg, startTime;endTime
+
+*/
+
+var jobDetailsURL = "/Job/" + jobId;
+var response = System.getModule("com.commvault.utils").processRESTRequest(jobDetailsURL,"GET",null,token, null ,null);
+
+if(response.statusCode != 200)
+{
+	throw("Error: Failed to execute REST request to get Job Details of selected job id. Recieved status:  "+ response.contentAsString);
+}
+
+var jobDetail = "";
+if(response.contentAsString != null){
+		
+		var document = XMLManager.fromString(response.contentAsString);
+		var list = document.getElementsByTagName("jobs");
+		if(list.item(0) != null){
+			var jobSummaryEntity = list.item(0).getElementsByTagName("jobSummary");
+			var jobSummary = jobSummaryEntity.item(0);
+			var startTime = jobSummary.getAttribute("jobStartTime");
+			var endTime = jobSummary.getAttribute("jobEndTime");
+			jobDetails = startTime + ";" + endTime;
+		}
+		else{
+			throw("Error: Could not find details of selected job. Please check the CS to see if the job exists.");
+		}
+}
+System.log("Job Details start and end time is " + jobDetails);
+return jobDetails;]]></script>
+</dunes-script-module>

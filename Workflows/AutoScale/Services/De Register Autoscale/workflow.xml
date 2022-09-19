@@ -1,0 +1,164 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="11774b70-6e3b-486b-8bed-b8e234ce5f53" version="0.0.1" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[De Register Autoscale]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="deployment" type="vCACCAFE:CatalogResource"/>
+  </input>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Scriptable task]]></display-name>
+    <script encoded="false"><![CDATA[var deploymentName = deployment.getName();
+System.debug("DeploymentName "+deploymentName)
+//get category
+var category = Server.getConfigurationElementCategoryWithPath("Helper");
+//die in a fire if non-existent
+if (category == null) {
+    throw "Configuration element category not found or empty!";
+}
+//get _all_ the elements
+var elements = category.configurationElements;
+var elementName = "vROPSAuth";
+var attributeName = "username";
+var attributeName1 = "password";
+var attributeName2 = "vROPSRest"
+var vropsRestHost
+var username;
+var password;
+//retrieve names
+for (i = 0; i < elements.length; i++) {
+    if (elements[i].name == elementName) {
+        //found required element
+        username = elements[i].getAttributeWithKey(attributeName).value;
+		password = elements[i].getAttributeWithKey(attributeName1).value;
+		vropsRestHost = elements[i].getAttributeWithKey(attributeName2).value;
+        if (username != null && password !=null) {
+            System.log("Found attribute '" + attributeName + "' in '" + elementName + "' with value '" +username + "'");
+          
+        }
+    }
+}
+//Creating Object
+var vropsObject = System.getModule("com.vmware.indcoe.library.vropsoperation").AutoScalevROPsOperations(vropsRestHost);
+//Authentication Json content
+jsonContent = '{"username":"none","password":"none"}'
+json = JSON.parse(jsonContent)
+json.username = username
+json.password = password
+authContent = JSON.stringify(json);
+//Process the token
+var token = vropsObject.getAuthenticationToken(authContent);
+var header = new Properties();
+header.put("Authorization","vRealizeOpsToken "+token);
+
+//Get all alert defintion
+var getAlertContent = vropsObject.getAlertDefinition(null,header)
+if(getAlertContent["statusCode"]==200 || getAlertContent["statusCode"]==201 ||  getAlertContent["statusCode"]==204){
+	//System.debug("Rest operation complete "+getAlertContent["contentAsString"])
+}else throw "Rest Operation In complete "+getAlertContent["contentAsString"]
+
+var alertDefIds = new Array()
+var arrayAlertDefs = getAlertContent["contentAsObject"].alertDefinitions;
+for(var i =0;i<arrayAlertDefs.length;i++){
+	if(arrayAlertDefs[i].name.lastIndexOf(deploymentName)!=-1){
+		alertDefIds.push(arrayAlertDefs[i].id);
+		System.debug("Alert definition exist "+alertDefIds);		
+	}	
+}
+
+//get all the symptom def
+var getSymContent = vropsObject.getSymDefinition(null,header)
+
+if(getSymContent["statusCode"]==200 || getSymContent["statusCode"]==201 || getSymContent["statusCode"]==204){
+	//System.debug("Rest operation complete "+getSymContent["contentAsString"])
+}else throw "Rest Operation In complete "+getSymContent["contentAsString"]
+var symIds = new Array();
+var arraySymDefs = getSymContent["contentAsObject"].symptomDefinitions;
+for(var i =0;i<arraySymDefs.length;i++){
+	if(arraySymDefs[i].name.lastIndexOf(deploymentName)!=-1){
+		symIds.push(arraySymDefs[i].id)
+		System.debug("Symptom exists "+symIds);
+	}
+}
+
+//Delete all the alerts
+if(alertDefIds!=null || alertDefIds!= undefined || alertDefIds!=""){
+	for(var j in alertDefIds){
+		System.debug("for loop alert delete")
+		alertDeleteResult = vropsObject.deleteAlertDefinition(null,header,alertDefIds[j])
+		if(alertDeleteResult["statusCode"]==200 || alertDeleteResult["statusCode"]==201 || alertDeleteResult["statusCode"]==204 ){
+			//System.debug("Rest operation complete "+alertDeleteResult["contentAsString"])
+		}else throw "Rest Operation In complete "+alertDeleteResult["contentAsString"]
+	}
+}
+//Delete all symptom defintion
+if(symIds!=null || symIds!= undefined || symIds!=""){
+	for(var m in symIds){
+		System.debug("for loop sym delete "+symIds[m])
+		symDeleteResult = vropsObject.deleteSymDefinition(null,header,symIds[m])
+		if(symDeleteResult["statusCode"]==200 || symDeleteResult["statusCode"]==201 || symDeleteResult["statusCode"]==204){
+			//System.debug("Rest operation complete "+symDeleteResult["contentAsString"])
+		}else throw "Rest Operation In complete "+symDeleteResult["contentAsString"]	
+	}
+}
+
+//get all the notification rule plugin
+var getNotifyContent = vropsObject.getNotificationRule(null,header)
+if(getNotifyContent["statusCode"]==200 || getNotifyContent["statusCode"]==201 || getNotifyContent["statusCode"]==204){
+	//System.debug("Rest operation complete "+getNotifyContent["contentAsString"])
+}else throw "Rest Operation In complete "+getNotifyContent["contentAsString"]
+var notifyIds = new Array()
+for(var i=0;i<getNotifyContent["contentAsObject"].rules.length;i++){
+	if(getNotifyContent["contentAsObject"].rules[i].name.lastIndexOf(deploymentName)!=-1){
+		notifyIds.push(getNotifyContent["contentAsObject"].rules[i].id);
+		System.debug("Notification rule exist "+notifyIds)
+	}
+}
+//delete all notification rules
+if(notifyIds!=null || notifyIds!= undefined || notifyIds!=""){
+	for(var k in notifyIds){
+		System.debug("for loop notification delete")
+		notifyResult = vropsObject.deleteNotificationRule(null,header,notifyIds[k])
+		if(notifyResult["statusCode"]==200 || notifyResult["statusCode"]==201 ||notifyResult["statusCode"]==204 ){
+			//System.debug("Rest operation complete "+notifyResult["contentAsString"])
+		}else throw "Rest Operation In complete "+notifyResult["contentAsString"]
+	}
+}
+//Get all custom groups
+var customgrpContent = vropsObject.getCustomGroups(null,header);
+if(customgrpContent["statusCode"]==200 || customgrpContent["statusCode"]==201 || customgrpContent["statusCode"]==204){
+	System.debug("Rest operation complete "+customgrpContent["contentAsString"])
+}else throw "Rest Operation In complete "+customgrpContent["contentAsString"]
+
+var cusGrpIds =  new Array();
+for(var i =0;i<customgrpContent["contentAsObject"].groups.length;i++){
+	System.debug("for loop sym delete")
+	if(customgrpContent["contentAsObject"].groups[i].resourceKey.name.lastIndexOf(deploymentName)!=-1){
+		
+		cusGrpIds.push(customgrpContent["contentAsObject"].groups[i].id)
+		System.debug("Custom group exists "+cusGrpIds);
+	}
+}
+//Delete custom groups
+if(cusGrpIds!=null || cusGrpIds!= undefined || cusGrpIds!=""){
+	for(var l in cusGrpIds){
+		customResult = vropsObject.deleteCustomGroups(null,header,cusGrpIds[l])
+		if(customResult["statusCode"]==200 || customResult["statusCode"]==201 || customResult["statusCode"]==204 ){
+			//System.debug("Rest operation complete "+customResult["contentAsString"])
+		}else throw "Rest Operation In complete "+customResult["contentAsString"]
+	}
+}]]></script>
+    <in-binding>
+      <bind name="deployment" type="vCACCAFE:CatalogResource" export-name="deployment"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="deployment">
+      <desc><![CDATA[deployment]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

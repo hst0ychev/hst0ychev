@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="86392c31-1534-4f2d-bb86-edfbbe827643" version="2.0.1" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Reset configuration (Deprecated)]]></display-name>
+  <description><![CDATA[Deletes the default Active Directory server configuration.
+
+Deprecated since version 2.0.0.
+Use "Delete an Active Directory server"]]></description>
+  <position y="50.0" x="100.0"/>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.90909090909091" x="765.0"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Scriptable task]]></display-name>
+    <script encoded="false"><![CDATA[ConfigurationManager.reset();]]></script>
+    <in-binding/>
+    <out-binding/>
+    <position y="55.90909090909091" x="365.0"/>
+  </workflow-item>
+  <presentation/>
+</workflow>

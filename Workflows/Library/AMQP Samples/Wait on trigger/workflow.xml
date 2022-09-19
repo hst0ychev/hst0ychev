@@ -1,0 +1,104 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="Workflow:name=generic" id="9F8080808080808080808080808080808E808080013049260427240aee8dc5c71" version="1.0.1" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Wait on trigger]]></display-name>
+  <description><![CDATA[Demonstrates how to block a workflow on a trigger waiting for an AMQP message.]]></description>
+  <position y="20.0" x="180.0"/>
+  <input>
+    <param name="broker" type="AMQP:Broker">
+      <description><![CDATA[Broker to be used for the example]]></description>
+    </param>
+    <param name="queueName" type="string">
+      <description><![CDATA[Name of the queue to be created for example]]></description>
+    </param>
+    <param name="exchangeName" type="string">
+      <description><![CDATA[Name of the exchange to be created for the example]]></description>
+    </param>
+    <param name="routingKey" type="string">
+      <description><![CDATA[Routing key to be used for bindings]]></description>
+    </param>
+  </input>
+  <attrib name="errorCode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="headers" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="body" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="properties" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <workflow-item name="item0" out-name="item1" catch-name="item3" throw-bind-name="errorCode" type="task">
+    <display-name><![CDATA[Prepare test]]></display-name>
+    <script encoded="false"><![CDATA[if ( broker != null ) {
+	broker.declareExchange(exchangeName, {type: "direct"});
+	broker.declareQueue(queueName, null);
+	broker.bind(queueName, exchangeName, {routingKey: routingKey});
+} else {
+	throw "Broker is null!";
+}]]></script>
+    <in-binding>
+      <bind name="broker" type="AMQP:Broker" export-name="broker"/>
+      <bind name="queueName" type="string" export-name="queueName"/>
+      <bind name="exchangeName" type="string" export-name="exchangeName"/>
+      <bind name="routingKey" type="string" export-name="routingKey"/>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Demonstrats AMQP plug-in usage of triggers.]]></description>
+    <position y="80.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item4" catch-name="item3" throw-bind-name="errorCode" type="link" linked-workflow-id="9F80808080808080808080808080808081808080013049260427240aee8dc5c71">
+    <display-name><![CDATA[Wait for message]]></display-name>
+    <in-binding>
+      <bind name="broker" type="AMQP:Broker" export-name="broker"/>
+      <bind name="queue" type="string" export-name="queueName"/>
+    </in-binding>
+    <out-binding>
+      <bind name="headers" type="Properties" export-name="headers"/>
+      <bind name="body" type="string" export-name="body"/>
+      <bind name="properties" type="Properties" export-name="properties"/>
+    </out-binding>
+    <position y="120.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item3" throw-bind-name="errorCode" type="end" end-mode="1">
+    <position y="110.0" x="320.0"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item5" catch-name="item3" throw-bind-name="errorCode" type="task">
+    <display-name><![CDATA[Test cleanup]]></display-name>
+    <script encoded="false"><![CDATA[broker.deleteExchange(exchangeName);
+broker.deleteQueue(queueName);
+]]></script>
+    <in-binding>
+      <bind name="broker" type="AMQP:Broker" export-name="broker"/>
+      <bind name="queueName" type="string" export-name="queueName"/>
+      <bind name="exchangeName" type="string" export-name="exchangeName"/>
+    </in-binding>
+    <out-binding/>
+    <position y="160.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item5" type="end" end-mode="0">
+    <position y="190.0" x="180.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Wait on trigger]]></title>
+      <p-group>
+        <title><![CDATA[Example input properties]]></title>
+        <desc><![CDATA[Select a broker for the example. Specify the exchange, the queue and the routing key. The queue and the exchange created in the broker are removed at the end of the workflow run.]]></desc>
+        <p-param name="broker">
+          <desc><![CDATA[Broker]]></desc>
+        </p-param>
+        <p-param name="exchangeName">
+          <desc><![CDATA[Exchange]]></desc>
+        </p-param>
+        <p-param name="queueName">
+          <desc><![CDATA[Queue]]></desc>
+        </p-param>
+        <p-param name="routingKey">
+          <desc><![CDATA[Routing key]]></desc>
+        </p-param>
+      </p-group>
+    </p-step>
+  </presentation>
+</workflow>

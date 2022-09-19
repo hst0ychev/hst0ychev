@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="assignResourceActionsToEntitlement" result-type="void" api-version="6.0.0" id="b932af5e-0847-4cd1-b8d0-54a81102fb94" version="1.0.1" allowed-operations="vf" category-name="com.vmware.library.vcaccafe.catalog.entitlement">
+  <description><![CDATA[Assigns resource actions to an entitlement. You can also apply an approval policy to the resource actions.]]></description>
+  <param n="entitlement" t="vCACCAFE:Entitlement"><![CDATA[Entitlement to assign resource actions to]]></param>
+  <param n="actions" t="Array/vCACCAFE:CatalogResourceAction"><![CDATA[Actions to assign to the entitlement]]></param>
+  <param n="approvalPolicy" t="vCACCAFE:ApprovalPolicy"><![CDATA[Approval policy to apply to the resource actions]]></param>
+  <script encoded="false"><![CDATA[if(approvalPolicy != null) {
+	System.getModule("com.vmware.library.vcaccafe.util").checkHosts(entitlement, approvalPolicy, "entitlement", "approval policy");
+}
+var host = vCACCAFEEntitiesFinder.getHostForEntity(entitlement);
+var client = host.createCatalogClient().getCatalogEntitlementService();
+
+var entitledResourceOperations = entitlement.getEntitledResourceOperations();
+var entitledAction;
+for(var i = 0 ; i < actions.length ; i++ ) {
+	System.getModule("com.vmware.library.vcaccafe.util").checkHosts(entitlement, actions[i], "entitlement", "resource action");
+	//Check if the resource operation already exists in the entitlement
+	var alreadyExists = false;
+	for(var j = 0 ; j < entitledResourceOperations.length ; j++ ) {
+		if(entitledResourceOperations[j].getResourceOperationRef().getId() == actions[i].getId()) {
+			System.warn("Resource action " + actions[i].getName() + " is already entitled. The action will be skipped.");
+			alreadyExists = true;
+		}
+	}
+	if(!alreadyExists) {
+		entitledAction = new vCACCAFEEntitledResourceOperation();
+		var resourceOperationReference = new vCACCAFELabelledReference();
+		resourceOperationReference.setId(actions[i].getId());
+		resourceOperationReference.setLabel(actions[i].getName());
+		entitledAction.setResourceOperationRef(resourceOperationReference);
+		if(approvalPolicy != null) {
+			entitledAction.setApprovalPolicyId(approvalPolicy.getId());
+		}
+		System.getModule("com.vmware.library.vcaccafe.util").addElementToList(entitlement, "getEntitledResourceOperations", entitledAction);
+	}
+}
+
+System.log("Assigning resource actions to entitlement " + entitlement.getName() + "...");
+client.update(entitlement);
+System.log("Resource actions assigned to entitlement " + entitlement.getName());]]></script>
+</dunes-script-module>

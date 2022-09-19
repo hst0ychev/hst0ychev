@@ -1,0 +1,304 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="Workflow:name=generic" id="E7808080808080808080808080808080A88080800129726455395757fdafc0fce" version="1.0.11" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Invoke a SOAP operation]]></display-name>
+  <description><![CDATA[Invokes a SOAP operation.]]></description>
+  <ref-types><![CDATA[(SOAP:Operation)]]></ref-types>
+  <position y="20.0" x="180.0"/>
+  <input>
+    <param name="operation" type="SOAP:Operation"/>
+    <param name="parameter1" type="string"/>
+    <param name="parameter2" type="string"/>
+    <param name="parameter3" type="string"/>
+    <param name="parameter4" type="string"/>
+    <param name="parameter5" type="string"/>
+    <param name="parameter6" type="string"/>
+    <param name="parameter7" type="string"/>
+    <param name="parameter8" type="string"/>
+    <param name="parameter9" type="string"/>
+    <param name="parameter10" type="string"/>
+    <param name="parameter11" type="string"/>
+    <param name="parameter12" type="string"/>
+    <param name="parameter13" type="string"/>
+    <param name="parameter14" type="string"/>
+    <param name="parameter15" type="string"/>
+    <param name="header1" type="string"/>
+    <param name="header2" type="string"/>
+    <param name="header3" type="string"/>
+    <param name="header4" type="string"/>
+    <param name="header5" type="string"/>
+  </input>
+  <output>
+    <param name="outHeaders" type="Properties">
+      <description><![CDATA[Headers returned in the response.]]></description>
+    </param>
+    <param name="outParameters" type="Properties">
+      <description><![CDATA[Parameters returned in the response.]]></description>
+    </param>
+  </output>
+  <attrib name="errorCode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="parameter" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="header" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="actionResult" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="attribute" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <workflow-item name="item0" out-name="item5" type="task">
+    <display-name><![CDATA[Prepare Parameters]]></display-name>
+    <script encoded="false"><![CDATA[header = new Properties();
+parameter = new Properties();
+attribute = new Properties();
+
+var inHeaders = operation.getInHeaders();
+var headerSize = inHeaders.length;
+
+var inParameters = operation.getInParameters();
+var size = inParameters.length;
+
+// processing headers
+setHeader(1, header1);
+setHeader(2, header2);
+setHeader(3, header3);
+setHeader(4, header4);
+setHeader(5, header5);
+
+// processing parameters
+setParameter(1, parameter1);
+setParameter(2, parameter2);
+setParameter(3, parameter3);
+setParameter(4, parameter4);
+setParameter(5, parameter5);
+setParameter(6, parameter6);
+setParameter(7, parameter7);
+setParameter(8, parameter8);
+setParameter(9, parameter9);
+setParameter(10, parameter10);
+setParameter(11, parameter11);
+setParameter(12, parameter12);
+setParameter(13, parameter13);
+setParameter(14, parameter14);
+setParameter(15, parameter15);
+
+// helper functions
+function setParameter(paramPosition, paramValue) {
+	if (size >= paramPosition) {
+		var rawName = inParameters[paramPosition - 1];
+		var trimmedInParam = rawName.replace("[]", "[0]");
+		if(isAttribute(rawName)) {
+			attribute.put(trimmedInParam, paramValue);
+		} else { //it's a parameter
+			parameter.put(trimmedInParam, paramValue);
+		}
+	}
+}
+
+function setHeader(headerPosition, headerValue) {
+	if (headerSize >= headerPosition) {
+		header.put(inHeaders[headerPosition - 1].replace("[]", "[0]"), headerValue);
+	}
+}
+
+function isAttribute(name){
+	return name.indexOf('(') != -1;
+}
+]]></script>
+    <in-binding>
+      <bind name="operation" type="SOAP:Operation" export-name="operation"/>
+      <bind name="parameter1" type="string" export-name="parameter1"/>
+      <bind name="parameter2" type="string" export-name="parameter2"/>
+      <bind name="parameter3" type="string" export-name="parameter3"/>
+      <bind name="parameter4" type="string" export-name="parameter4"/>
+      <bind name="parameter5" type="string" export-name="parameter5"/>
+      <bind name="parameter6" type="string" export-name="parameter6"/>
+      <bind name="parameter7" type="string" export-name="parameter7"/>
+      <bind name="parameter8" type="string" export-name="parameter8"/>
+      <bind name="parameter9" type="string" export-name="parameter9"/>
+      <bind name="parameter10" type="string" export-name="parameter10"/>
+      <bind name="parameter11" type="string" export-name="parameter11"/>
+      <bind name="parameter12" type="string" export-name="parameter12"/>
+      <bind name="parameter13" type="string" export-name="parameter13"/>
+      <bind name="parameter14" type="string" export-name="parameter14"/>
+      <bind name="parameter15" type="string" export-name="parameter15"/>
+      <bind name="header1" type="string" export-name="header1"/>
+      <bind name="header2" type="string" export-name="header2"/>
+      <bind name="header3" type="string" export-name="header3"/>
+      <bind name="header4" type="string" export-name="header4"/>
+      <bind name="header5" type="string" export-name="header5"/>
+    </in-binding>
+    <out-binding>
+      <bind name="header" type="Properties" export-name="header"/>
+      <bind name="parameter" type="Properties" export-name="parameter"/>
+      <bind name="attribute" type="Properties" export-name="attribute"/>
+    </out-binding>
+    <position y="100.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item2" type="end" end-mode="0">
+    <position y="270.0" x="180.0"/>
+  </workflow-item>
+  <workflow-item name="item3" throw-bind-name="errorCode" type="end" end-mode="1">
+    <position y="150.0" x="340.0"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item2" type="task">
+    <display-name><![CDATA[Prepare Result]]></display-name>
+    <script encoded="false"><![CDATA[outHeaders = actionResult.get("SOAP_OUT_HEADERS");
+outParameters = actionResult.get("SOAP_OUT_PARAMETERS");
+]]></script>
+    <in-binding>
+      <bind name="actionResult" type="Properties" export-name="actionResult"/>
+    </in-binding>
+    <out-binding>
+      <bind name="outHeaders" type="Properties" export-name="outHeaders"/>
+      <bind name="outParameters" type="Properties" export-name="outParameters"/>
+    </out-binding>
+    <position y="220.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item5" out-name="item4" catch-name="item3" throw-bind-name="errorCode" type="task" script-module="com.vmware.library.soap/invokeSOAPOperation">
+    <display-name><![CDATA[invokeSOAPOperation]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.soap").invokeSOAPOperation(operation,header,parameter,attribute) ;]]></script>
+    <in-binding>
+      <bind name="operation" type="SOAP:Operation" export-name="operation">
+        <description><![CDATA[SOAP operation]]></description>
+      </bind>
+      <bind name="header" type="Properties" export-name="header"/>
+      <bind name="parameter" type="Properties" export-name="parameter"/>
+      <bind name="attribute" type="Properties" export-name="attribute"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Properties" export-name="actionResult"/>
+    </out-binding>
+    <description><![CDATA[Invokes a SOAP operation.]]></description>
+    <position y="160.0" x="140.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Invoke a SOAP operation]]></title>
+      <p-group>
+        <title><![CDATA[Operation]]></title>
+        <desc><![CDATA[Name of the SOAP operation to be invoked.]]></desc>
+        <p-param name="operation">
+          <desc><![CDATA[Operation]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual kind="static" name="contextualParameter" type="void"><![CDATA[]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Headers]]></title>
+        <desc><![CDATA[Header parameters to be included within the SOAP header of the SOAP envelope.]]></desc>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[GetAction("com.vmware.library.soap","showInHeader").call( #operation , 1.0 )]]></p-qual>
+        <p-param name="header1">
+          <desc><![CDATA[header1]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[GetAction("com.vmware.library.soap","showInHeader").call( #operation , 1.0 )]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[GetAction("com.vmware.library.soap","defaultInHeaderLabel").call( #operation , 1.0 )]]></p-qual>
+        </p-param>
+        <p-param name="header2">
+          <desc><![CDATA[header2]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[GetAction("com.vmware.library.soap","showInHeader").call( #operation , 2.0 )]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[GetAction("com.vmware.library.soap","defaultInHeaderLabel").call( #operation , 2.0 )]]></p-qual>
+        </p-param>
+        <p-param name="header3">
+          <desc><![CDATA[header3]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[GetAction("com.vmware.library.soap","showInHeader").call( #operation , 3.0 )]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[GetAction("com.vmware.library.soap","defaultInHeaderLabel").call( #operation , 3.0 )]]></p-qual>
+        </p-param>
+        <p-param name="header4">
+          <desc><![CDATA[header4]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[GetAction("com.vmware.library.soap","showInHeader").call( #operation , 4.0 )]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[GetAction("com.vmware.library.soap","defaultInHeaderLabel").call( #operation , 4.0 )]]></p-qual>
+        </p-param>
+        <p-param name="header5">
+          <desc><![CDATA[header5]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[GetAction("com.vmware.library.soap","showInHeader").call( #operation , 5.0 )]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[GetAction("com.vmware.library.soap","defaultInHeaderLabel").call( #operation , 5.0 )]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Inputs]]></title>
+        <desc><![CDATA[Input parameters used by the SOAP operation.]]></desc>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[GetAction("com.vmware.library.soap","showInParameter").call( #operation , 1.0 )]]></p-qual>
+        <p-param name="parameter1">
+          <desc><![CDATA[parameter1]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[GetAction("com.vmware.library.soap","showInParameter").call( #operation , 1.0 )]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[GetAction("com.vmware.library.soap","defaultInParameterLabel").call( #operation , 1.0 )]]></p-qual>
+        </p-param>
+        <p-param name="parameter2">
+          <desc><![CDATA[parameter2]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[GetAction("com.vmware.library.soap","showInParameter").call( #operation , 2.0 )]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[GetAction("com.vmware.library.soap","defaultInParameterLabel").call( #operation , 2.0 )]]></p-qual>
+        </p-param>
+        <p-param name="parameter3">
+          <desc><![CDATA[parameter3]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[GetAction("com.vmware.library.soap","showInParameter").call( #operation , 3.0 )]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[GetAction("com.vmware.library.soap","defaultInParameterLabel").call( #operation , 3.0 )]]></p-qual>
+        </p-param>
+        <p-param name="parameter4">
+          <desc><![CDATA[parameter4]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[GetAction("com.vmware.library.soap","showInParameter").call( #operation , 4.0 )]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[GetAction("com.vmware.library.soap","defaultInParameterLabel").call( #operation , 4.0 )]]></p-qual>
+        </p-param>
+        <p-param name="parameter5">
+          <desc><![CDATA[parameter5]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[GetAction("com.vmware.library.soap","showInParameter").call( #operation , 5.0 )]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[GetAction("com.vmware.library.soap","defaultInParameterLabel").call( #operation , 5.0 )]]></p-qual>
+        </p-param>
+        <p-param name="parameter6">
+          <desc><![CDATA[parameter6]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[GetAction("com.vmware.library.soap","showInParameter").call( #operation , 6.0 )]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[GetAction("com.vmware.library.soap","defaultInParameterLabel").call( #operation , 6.0 )]]></p-qual>
+        </p-param>
+        <p-param name="parameter7">
+          <desc><![CDATA[parameter7]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[GetAction("com.vmware.library.soap","showInParameter").call( #operation , 7.0 )]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[GetAction("com.vmware.library.soap","defaultInParameterLabel").call( #operation , 7.0 )]]></p-qual>
+        </p-param>
+        <p-param name="parameter8">
+          <desc><![CDATA[parameter8]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[GetAction("com.vmware.library.soap","showInParameter").call( #operation , 8.0 )]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[GetAction("com.vmware.library.soap","defaultInParameterLabel").call( #operation , 8.0 )]]></p-qual>
+        </p-param>
+        <p-param name="parameter9">
+          <desc><![CDATA[parameter9]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[GetAction("com.vmware.library.soap","showInParameter").call( #operation , 9.0 )]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[GetAction("com.vmware.library.soap","defaultInParameterLabel").call( #operation , 9.0 )]]></p-qual>
+        </p-param>
+        <p-param name="parameter10">
+          <desc><![CDATA[parameter10]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[GetAction("com.vmware.library.soap","showInParameter").call( #operation , 10.0 )]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[GetAction("com.vmware.library.soap","defaultInParameterLabel").call( #operation , 10.0 )]]></p-qual>
+        </p-param>
+        <p-param name="parameter11">
+          <desc><![CDATA[parameter11]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[GetAction("com.vmware.library.soap","showInParameter").call( #operation , 11.0 )]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[GetAction("com.vmware.library.soap","defaultInParameterLabel").call( #operation , 11.0 )]]></p-qual>
+        </p-param>
+        <p-param name="parameter12">
+          <desc><![CDATA[parameter12]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[GetAction("com.vmware.library.soap","showInParameter").call( #operation , 12.0 )]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[GetAction("com.vmware.library.soap","defaultInParameterLabel").call( #operation , 12.0 )]]></p-qual>
+        </p-param>
+        <p-param name="parameter13">
+          <desc><![CDATA[parameter13]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[GetAction("com.vmware.library.soap","showInParameter").call( #operation , 13.0 )]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[GetAction("com.vmware.library.soap","defaultInParameterLabel").call( #operation , 13.0 )]]></p-qual>
+        </p-param>
+        <p-param name="parameter14">
+          <desc><![CDATA[parameter14]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[GetAction("com.vmware.library.soap","showInParameter").call( #operation , 14.0 )]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[GetAction("com.vmware.library.soap","defaultInParameterLabel").call( #operation , 14.0 )]]></p-qual>
+        </p-param>
+        <p-param name="parameter15">
+          <desc><![CDATA[parameter15]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[GetAction("com.vmware.library.soap","showInParameter").call( #operation , 15.0 )]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[GetAction("com.vmware.library.soap","defaultInParameterLabel").call( #operation , 15.0 )]]></p-qual>
+        </p-param>
+      </p-group>
+    </p-step>
+  </presentation>
+</workflow>

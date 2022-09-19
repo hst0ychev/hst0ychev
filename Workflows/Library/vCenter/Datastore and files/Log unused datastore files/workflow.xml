@@ -1,0 +1,86 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="Workflow:name=generic" id="858080808080808080808080808080801C8080800123780023911323ba1c368d4" version="1.2.0" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Log unused datastore files]]></display-name>
+  <description><![CDATA[Searches the vCenter Server environment for unused files that are registered on virtual machines and exports a log of the files in a text file.]]></description>
+  <position y="20.0" x="180.0"/>
+  <input>
+    <param name="filename" type="Path">
+      <description><![CDATA[File in which to generate the log]]></description>
+    </param>
+  </input>
+  <attrib name="diskFiles" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Disk files]]></description>
+  </attrib>
+  <attrib name="vmFiles" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Virtual machine files]]></description>
+  </attrib>
+  <workflow-item name="item1" out-name="item2" type="task" interaction="l">
+    <display-name><![CDATA[Log files]]></display-name>
+    <script encoded="false"><![CDATA[System.log("VM config Files found");
+var keys = vmFiles.keys;
+for each (var key in keys) {
+	System.log(key);
+}
+
+System.log("VM disk Files found");
+var keys = diskFiles.keys;
+for each (var key in keys) {
+	System.log(key);
+}]]></script>
+    <in-binding>
+      <bind name="diskFiles" type="Properties" export-name="diskFiles"/>
+      <bind name="vmFiles" type="Properties" export-name="vmFiles"/>
+    </in-binding>
+    <out-binding/>
+    <position y="160.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item0" out-name="item1" type="link" linked-workflow-id="85808080808080808080808080808080ED8080800123780023911323ba1c368d4">
+    <display-name><![CDATA[Found files on datastore not used by VCenters registered VMs]]></display-name>
+    <in-binding/>
+    <out-binding>
+      <bind name="diskFiles" type="Properties" export-name="diskFiles"/>
+      <bind name="vmFiles" type="Properties" export-name="vmFiles"/>
+      <bind name="orphanedVMs" type="Array/VC:VirtualMachine" explicitly-not-bound="true"/>
+      <bind name="orphanedFound" type="boolean" explicitly-not-bound="true"/>
+    </out-binding>
+    <position y="100.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item3" type="task">
+    <display-name><![CDATA[Write file]]></display-name>
+    <script encoded="false"><![CDATA[var file = new FileWriter(filename);
+file.open();
+file.clean();
+file.lineEndType = 1;
+file.writeLine("VM Config Files");
+var keys = vmFiles.keys;
+for each (var key in keys) {
+	file.writeLine(key);
+}
+
+file.writeLine("VM Disk Files");
+var keys = diskFiles.keys;
+for each (var key in keys) {
+	file.writeLine(key);
+}
+
+file.close();]]></script>
+    <in-binding>
+      <bind name="diskFiles" type="Properties" export-name="diskFiles"/>
+      <bind name="vmFiles" type="Properties" export-name="vmFiles"/>
+      <bind name="filename" type="Path" export-name="filename"/>
+    </in-binding>
+    <out-binding/>
+    <position y="220.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item3" type="end" end-mode="0">
+    <position y="250.0" x="180.0"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="filename">
+      <desc><![CDATA[File in which to generate the log]]></desc>
+      <p-qual kind="static" name="defaultValue" type="Path"><![CDATA[c:\orchestrator\unusedDatastore.csv]]></p-qual>
+    </p-param>
+  </presentation>
+</workflow>

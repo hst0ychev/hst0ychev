@@ -1,0 +1,696 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="9f844152-2252-4b76-90c3-898f1eb3ec62" version="0.0.13" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[DFWaaS]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="inputSourceIPs" type="string">
+      <description><![CDATA[Comma separated list of source IP Addresses]]></description>
+    </param>
+    <param name="inputDestinationIPs" type="string">
+      <description><![CDATA[Comma separated list of destination IP Addresses]]></description>
+    </param>
+    <param name="inputAction" type="string">
+      <description><![CDATA[Action:Whether to ALLOW / DENY or DROP]]></description>
+    </param>
+    <param name="inputProtocol" type="string">
+      <description><![CDATA[TCP / UDP]]></description>
+    </param>
+    <param name="inputPort" type="string">
+      <description><![CDATA[Comma separated destination port numbers]]></description>
+    </param>
+    <param name="inputService" type="string">
+      <description><![CDATA[Select a pre-defined service instead of specifying port number and protocol.]]></description>
+    </param>
+    <param name="usersBusinessGroup" type="string">
+      <description><![CDATA[Hidden field - User's Business Group]]></description>
+    </param>
+    <param name="usersEmailId" type="string">
+      <description><![CDATA[Hidden field - User's Email]]></description>
+    </param>
+    <param name="inputDescription" type="string">
+      <description><![CDATA[Description of Rule]]></description>
+    </param>
+  </input>
+  <attrib name="vcacCafeHost" type="vCACCAFE:VCACHost" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='afb159c2-d7c8-458e-8041-6d548231237b'&dunesName='vCACCAFE:VCACHost']]></value>
+  </attrib>
+  <attrib name="username" type="string" read-only="false" conf-id="b076846e-b485-4746-92c6-455f2f4b048d" conf-key="username">
+    <value encoded="n"><![CDATA[admin]]></value>
+  </attrib>
+  <attrib name="password" type="SecureString" read-only="false" conf-id="b076846e-b485-4746-92c6-455f2f4b048d" conf-key="password">
+    <value encoded="n"><![CDATA[8BP56P4DJ77O61P72Z65N31Y21L57C69A9T381FD8DV12F0FA7JCB3FACAP35BA7E0X30D4885U23DAFA9G78ABC84M757366O39222DCI4A4CB1FYDB18AE1V4BF2060YD4448FCUC218D97UCA997A8M91CAB39V36525CER236A2E9QF1084C5G55564E6I7594C3FQ3BA5FFBK486EE4DH]]></value>
+  </attrib>
+  <attrib name="restHost" type="REST:RESTHost" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='c6d5a21b-6c2c-430a-9c6a-87759270e862'&dunesName='REST:RESTHost']]></value>
+    <description><![CDATA[NSX-T REST Host]]></description>
+  </attrib>
+  <attrib name="smtp_host" type="string" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_host">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[The SMTP host from where emails will be sent]]></description>
+  </attrib>
+  <attrib name="smtp_port" type="number" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_port">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[The SMTP port from where the emails are sent]]></description>
+  </attrib>
+  <attrib name="smtp_username" type="string" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_username">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[The username used to log in to SMTP host]]></description>
+  </attrib>
+  <attrib name="smtp_password" type="SecureString" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_password">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[The password of the user specified in "smtp_username"]]></description>
+  </attrib>
+  <attrib name="smtp_from_id" type="string" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_from_id">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[From this ID, the mails will be sent]]></description>
+  </attrib>
+  <attrib name="smtp_from_name" type="string" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_from_name">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[The name shown for the ID]]></description>
+  </attrib>
+  <attrib name="use_ssl" type="boolean" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="use_ssl">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Do you want to use SSL communication?]]></description>
+  </attrib>
+  <attrib name="use_start_tls" type="boolean" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="use_start_tls">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Do you want to use TLS?]]></description>
+  </attrib>
+  <attrib name="smtp_to_address" type="Array/string" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_to_address_DFWaaS">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Email IDs to send email ]]></description>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Process Request]]></display-name>
+    <script encoded="false"><![CDATA[
+function SendEmail(subject, body)
+{
+
+	//Add the user's email to the list of email IDs to send email to.
+	if (usersEmailId && usersEmailId != "")
+	{
+		smtp_to_address.push(usersEmailId);
+	}
+
+	var commaSeparatedEmails = '';
+	for (var i in smtp_to_address)
+	{
+		commaSeparatedEmails += smtp_to_address[i] + ',';
+	}
+
+	//workflow ID of Library -> Mail -> 'Send notification'
+	var workflowId = '8D80808080808080808080808080808089808080012318760241416446ce5b52f';
+
+	//ready the workflow params
+	var workflowParameters = new Properties();
+	workflowParameters.put("smtpHost", smtp_host);
+	workflowParameters.put("smtpPort", smtp_port);
+	workflowParameters.put("username", smtp_username);
+	workflowParameters.put("password", smtp_password);
+	workflowParameters.put("fromName", smtp_from_name);
+	workflowParameters.put("fromAddress", smtp_from_id);
+	workflowParameters.put("toAddress", commaSeparatedEmails);
+	workflowParameters.put("subject", subject);
+	workflowParameters.put("content", body);
+	workflowParameters.put("useSsl", use_ssl);
+	workflowParameters.put("UseStartTls", use_start_tls);
+
+	//Run this workflow.
+	var workflowToLaunch = Server.getWorkflowWithId(workflowId);
+
+	//Fetch a token.
+	var workflow_token = workflowToLaunch.execute(workflowParameters);
+	while (workflow_token.state === "running")
+	{
+		System.sleep(3000);
+	}
+	System.log("Email sent");
+	//return after workflow finished 'running'
+	return true;
+}
+var catalogRequestId;
+try
+{
+	//Try to fetch catalog request ID
+	catalogRequestId = System.getContext().getParameter("__asd_catalogRequestId");
+	System.log("Catalog Request ID: " + catalogRequestId);
+}
+catch (e)
+{
+	//If we did not get catalog request ID, we use boolean false
+	catalogRequestId = false;
+}
+
+if (catalogRequestId)
+{
+	//We got catalogRequest ID from the inputs, now we try to get request number from that.
+	System.log("Request Id by vRA:" + catalogRequestId);
+	var request = vCACCAFEEntitiesFinder.getCatalogItemRequest(vcacCafeHost, catalogRequestId);
+	requestNumber = request.getRequestNumber();
+}
+else
+{
+	var date = new Date();
+	requestNumber = date.getFullYear() + "_" + (date.getMonth() + 1) + "_" + date.getDate() + "_" + date.getHours() + "_" + date.getMinutes();
+	System.log("Using request number as current date-time since __asd_catalogRequestId was not found");
+}
+
+System.log("Request Number for this request:  " + requestNumber);
+
+if (!username || !password)
+{
+	var errorMsg = "Credentials not supplied, request can't proceed";
+	var subject = "DFW request failed.";
+	var body = "Hello, <br/>The DFW Request with request number: " + requestNumber + " has failed. ";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if (SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+System.log("Using username: " + username + " and password is supplied");
+
+if (!inputSourceIPs)
+{
+	var errorMsg = "Source IP(s) not specified";
+	var subject = "DFW request failed.";
+	var body = "Hello, <br/>The DFW Request with request number: " + requestNumber + " has failed. ";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if (SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+if (!inputDestinationIPs)
+{
+	var errorMsg = "Destination IP(s) not specified";
+	var subject = "DFW request failed.";
+	var body = "Hello, <br/>The DFW Request with request number: " + requestNumber + " has failed. ";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if (SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+if (!inputAction)
+{
+	var errorMsg = "Action: Whether to ALLOW / REJECT / DROP not specified.";
+	var subject = "DFW request failed.";
+	var body = "Hello, <br/>The DFW Request with request number: " + requestNumber + " has failed. ";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if (SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+if (inputAction !== 'allow' && inputAction !== 'reject' && inputAction !== 'drop')
+{
+	var errorMsg = "Invalid action selected.";
+	var subject = "DFW request failed.";
+	var body = "Hello, <br/>The DFW Request with request number: " + requestNumber + " has failed. ";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if (SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+//User has neither selected any service NOR any custom port and protocol!
+if (!inputService && !inputProtocol && !inputPort)
+{
+	var errorMsg = "Service not selected while submitting request.";
+	var subject = "DFW request failed.";
+	var body = "Hello, <br/>The DFW Request with request number: " + requestNumber + " has failed. ";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if (SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+if (inputService === "custom" && !inputProtocol)
+{
+	var errorMsg = "Protocol not specified";
+	var subject = "DFW request failed.";
+	var body = "Hello, <br/>The DFW Request with request number: " + requestNumber + " has failed. ";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if (SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+if (inputService === "custom" && (inputProtocol !== 'tcp' && inputProtocol !== 'udp'))
+{
+	var errorMsg = "Invalid protocol specified.";
+	var subject = "DFW request failed.";
+	var body = "Hello, <br/>The DFW Request with request number: " + requestNumber + " has failed. ";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if (SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+if (inputService === "custom" && !inputPort)
+{
+	var errorMsg = "Port Number(s) not specified";
+	var subject = "DFW request failed.";
+	var body = "Hello, <br/>The DFW Request with request number: " + requestNumber + " has failed. ";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if (SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+if (!usersBusinessGroup)
+{
+	var errorMsg = "Error fetching user's Business group";
+	var subject = "DFW request failed.";
+	var body = "Hello, <br/>The DFW Request with request number: " + requestNumber + " has failed. ";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if (SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+if (inputService === 'http')
+{
+	inputPort = 80;
+	inputProtocol = 'tcp';
+}
+
+if (inputService === 'https')
+{
+	inputPort = 443;
+	inputProtocol = 'tcp';
+}
+
+if (inputService === 'ssh')
+{
+	inputPort = 22;
+	inputProtocol = 'tcp';
+}
+
+if (inputService === 'ftp')
+{
+	inputPort = 21;
+	inputProtocol = 'tcp';
+}
+
+if (inputService === 'rdp')
+{
+	inputPort = 3389;
+	inputProtocol = 'tcp';
+}
+
+
+//UpperCase action and protocol.
+inputProtocol = inputProtocol.toUpperCase();
+inputAction = inputAction.toUpperCase();
+
+//Convert int to string so that split will work.
+inputPort = inputPort.toString(10);
+
+System.log("Requirement is to create a rule with source as " + inputSourceIPs + ", destination as " + inputDestinationIPs + " protocol/port as " + inputProtocol + "/" + inputPort + ", action = " + inputAction + ". This has to be created on section: " + usersBusinessGroup);
+
+var nsxTObject = System.getModule("com.vmware.indcoe.nsx_t_dfw").nsx_t_class(username, password, restHost);
+
+if (!nsxTObject)
+{
+	var errorMsg = "Error creating NSX T Object, please check with admin team";
+	var subject = "DFW request failed.";
+	var body = "Hello, <br/>The DFW Request with request number: " + requestNumber + " has failed. ";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if (SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+System.log("Using NSXT - Object: " + nsxTObject.PrintAuthenticationToken());
+
+var filteredSourceIPs = inputSourceIPs.split(",");
+var filteredDestinationIPs = inputDestinationIPs.split(",");
+var filteredInputPorts = inputPort.split(",");
+
+//Initially, we assume that NSGroup does not exist.
+var NSGroupId = false;
+
+//Proceeding only if we have at least 1 filteredSourceIPs and filteredDestinationIPs
+if (filteredSourceIPs.length > 0 && filteredDestinationIPs.length > 0)
+{
+	var sourceVMs = new Array();
+	var destinationVMs = new Array();
+
+	//Initially we assume, all IPs belong to a VM
+	var allSourceIPsBelongToVMs = true;
+	var allDestinationIPsBelongToVMs = true;
+	//This will be used later to apply the created DFW rule on the created NSGroup.
+
+	for (var iterations in filteredSourceIPs)
+	{
+		filteredSourceIPs[iterations] = filteredSourceIPs[iterations].trim();
+		var result = nsxTObject.getVMfromIP(filteredSourceIPs[iterations]);
+		if (result)
+		{
+			System.log(filteredSourceIPs[iterations] + " found in VM: " + result.name);
+			sourceVMs.push(result);
+		}
+		else
+		{
+			System.log(filteredSourceIPs[iterations] + " not found in any of the VMs");
+			//If result is false, that means this particular IP was not found in any VM and hence false.
+			allSourceIPsBelongToVMs = false;
+		}
+	}
+	for (var iterations in filteredDestinationIPs)
+	{
+		filteredDestinationIPs[iterations] = filteredDestinationIPs[iterations].trim();
+		var result = nsxTObject.getVMfromIP(filteredDestinationIPs[iterations]);
+		if (result)
+		{
+			System.log(filteredDestinationIPs[iterations] + " found in VM: " + result.name);
+			destinationVMs.push(result);
+		}
+		else
+		{
+			System.log(filteredDestinationIPs[iterations] + " not found in any of the VMs");
+			//If result is false, that means this particular IP was not found in any VM and hence false.
+			allDestinationIPsBelongToVMs = false;
+		}
+	}
+	System.log("All IPs in Source Belong to VMs: " + allSourceIPsBelongToVMs);
+	System.log("All IPs in Destination Belong to VMs: " + allDestinationIPsBelongToVMs);
+
+
+	System.log(filteredSourceIPs);
+	System.log(filteredDestinationIPs);
+
+
+	if (allSourceIPsBelongToVMs && allDestinationIPsBelongToVMs)
+	{
+		System.log("All entered IPs belong to VMs");
+
+		var isNSGroupCreated = nsxTObject.IsNSGroupAlreadyCreated(sourceVMs, destinationVMs);
+		if (isNSGroupCreated)
+		{
+			NSGroupId = isNSGroupCreated;
+			System.log("NSGroup already exists. ID: " + isNSGroupCreated);
+		}
+		else
+		{
+			System.log("NSGroup not found, trying to create it.");
+			//Since NSGroup is not already created, we create it.
+			var newNSGroupResult = nsxTObject.CreateNSGroup(requestNumber, sourceVMs, destinationVMs);
+
+			var req = nsxTObject.GetRequestBody();
+			System.log(req);
+
+			var resp = nsxTObject.GetResponse();
+
+			System.log(resp.statusCode);
+			System.log(resp.contentAsString);
+
+
+			if (!newNSGroupResult)
+			{
+				System.log("Error creating new NSGroup, this rule will be applied on the DFW instead");
+			}
+			else
+			{
+				NSGroupId = newNSGroupResult;
+				System.log("NSGroup created with ID: " + newNSGroupResult);
+			}
+		}
+		System.log("NS Group part done");
+	}
+	//NSGroup section is done
+
+	/*
+	1. Get VM => (sourceVMs, destinationVMs)
+	2. Get Instance ID => (sourceVMs.instanceId, destinationVMs.instanceId)
+	3. Get LportAttachment ID from /api/v1/fabric/vifs?owner_vm_id=`instanceID`
+	4. Get All logical ports: /api/v1/logical-ports , extract port id from there.
+	5. Create rule
+	*/
+	var sourceTypes = new Array();
+	
+	for (var i in filteredSourceIPs)
+	{
+		//For each input source IP, mark the source type as "IPAddress"
+		sourceTypes.push("IPAddress");
+	}
+
+	if (allSourceIPsBelongToVMs)
+	{
+		System.log("Source IP belongs to a VM");
+		for (var i in sourceVMs)
+		{
+			var vmInstanceId = sourceVMs[i].instanceId;
+			if (vmInstanceId)
+			{
+				var lportAttachmentId = nsxTObject.GetLportAttachmentId(vmInstanceId,filteredSourceIPs[i]);
+				if (lportAttachmentId)
+				{
+					System.log("LPort ID for Source VM: " + sourceVMs[i].name + " is " + lportAttachmentId);
+					var lPortId = nsxTObject.GetLportId(lportAttachmentId);
+					if (lPortId)
+					{
+						System.log("LportID found for Source VM " + sourceVMs[i].name + " -> " + lPortId);
+						filteredSourceIPs[i] = lPortId;
+						sourceTypes[i] = "LogicalPort";
+					}
+				}
+			}
+		}
+	}
+
+	var destinationTypes = new Array();
+	
+	for (var i in filteredDestinationIPs)
+	{
+		//For each input destination IP, mark the source type as "IPAddress"
+		destinationTypes.push("IPAddress");
+	}
+	if (allDestinationIPsBelongToVMs)
+	{
+		System.log("Destination IP belongs to a VM");
+
+		for (var i in destinationVMs)
+		{
+			var vmInstanceId = destinationVMs[i].instanceId;
+			if (vmInstanceId)
+			{
+				var lportAttachmentId = nsxTObject.GetLportAttachmentId(vmInstanceId,filteredDestinationIPs[i]);
+				if (lportAttachmentId)
+				{
+					System.log("LPort ID for Destination VM: " + destinationVMs[i].name + " is " + lportAttachmentId);
+					var lPortId = nsxTObject.GetLportId(lportAttachmentId);
+					if (lPortId)
+					{
+						System.log("LportID found for Destination VM " + destinationVMs[i].name + " -> " + lPortId);
+						filteredDestinationIPs[i] = lPortId;
+						destinationTypes[i] = "LogicalPort";
+					}
+				}
+			}
+		}
+	}
+	else
+	{
+		System.log("Destination IP does not belong to a VM");
+		for (var i in destinationVMs)
+		{
+			destinationTypes.push("IPAddress");
+		}
+	}
+
+	//now let us get the section in which the rules need to be placed OR create the section.
+
+	var sectionName = usersBusinessGroup;
+
+	if (sectionName)
+	{
+		System.log("Section to use for Rule Creation: " + sectionName);
+	}
+
+	var sectionId = nsxTObject.GetSectionId(sectionName);
+	if (!sectionId)
+	{
+		System.log("Section with section name: " + sectionName + " was not found, creating new");
+		var sectionId = nsxTObject.CreateEmptySection(sectionName);
+		if (sectionId)
+		{
+			System.log("Section with section id: " + sectionId + " created");
+		}
+		else
+		{
+			System.log("Error creating new section");
+			var errorMsg = "NSX Section was found, nor created. Please contact the admin team";
+			var subject = "DFW request failed.";
+			var body = "Hello, <br/>The DFW Request with request number: " + requestNumber + " has failed. ";
+			body += errorMsg;
+			body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+			if (SendEmail(subject, body))
+			{
+				throw errorMsg;
+			}
+		}
+	}
+	else
+	{
+		System.log("Section found, using section with id: " + sectionId);
+	}
+
+	//Now we have the section, either found or created, we now check if the rule exists. 
+	System.log("Section in use: " + sectionId);
+
+	var doesDFWRuleExist = nsxTObject.CheckIfRuleExists(sectionId, filteredSourceIPs, filteredDestinationIPs, inputProtocol, filteredInputPorts, inputAction);
+	System.log("Does rule already exist?: " + doesDFWRuleExist);
+
+	if (doesDFWRuleExist)
+	{
+
+		var errorMsg = "Rule already exists, Rule name: " + doesDFWRuleExist;
+		var subject = "DFW request failed.";
+		var body = "Hello, <br/>The DFW Request with request number: " + requestNumber + " has failed. ";
+		body += errorMsg;
+		body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+		System.log(errorMsg);
+		if (SendEmail(subject, body))
+		{
+			throw errorMsg;
+		}
+
+	}
+	else
+	{
+		System.log("DFW Rule doesn't exist, creating ...");
+	}
+
+	//Ok, the rule doesnt exist, need to create it.
+	System.log("Creating rule with following :");
+	System.log("Request No. :" + requestNumber);
+	System.log("Section ID :" + sectionId);
+	System.log("NSGroup :" + NSGroupId);
+	System.log("Input Source IP :" + filteredSourceIPs);
+	System.log("Input Dest IP :" + filteredDestinationIPs);
+	System.log("Input Protocol :" + inputProtocol);
+	System.log("Input Ports :" + filteredInputPorts);
+	System.log("Input Description:"+ inputDescription);
+
+	var ruleCreationResults = nsxTObject.CreateDFWRule(requestNumber, sectionId, NSGroupId, filteredSourceIPs, sourceTypes, filteredDestinationIPs, destinationTypes, inputProtocol, filteredInputPorts, inputAction, inputDescription, usersBusinessGroup);
+
+	if (ruleCreationResults)
+	{
+		var successMsg = "Rule creation in section: " + sectionName + ". Rule ID: " + ruleCreationResults.id;
+		var subject = "DFW request completed successfully.";
+		var body = "Hello, <br/>The DFW Request with request number: " + requestNumber + " has completed successfully. ";
+		body += errorMsg;
+		body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+		SendEmail(subject, body);
+		System.log(successMsg);
+	}
+	else
+	{
+		System.log(ruleCreationResults);
+		var errorMsg = "Rule creation failed, kindly check with admin team";
+		var subject = "DFW request failed.";
+		var body = "Hello, <br/>The DFW Request with request number: " + requestNumber + " has failed. ";
+		body += errorMsg;
+		body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+		if (SendEmail(subject, body))
+		{
+			throw errorMsg;
+		}
+	}
+}
+else
+{
+	var errorMsg = "Source / Destination IPs were not found";
+	var subject = "DFW request failed.";
+	var body = "Hello, <br/>The DFW Request with request number: " + requestNumber + " has failed. ";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if (SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}]]></script>
+    <in-binding>
+      <bind name="usersBusinessGroup" type="string" export-name="usersBusinessGroup"/>
+      <bind name="vcacCafeHost" type="vCACCAFE:VCACHost" export-name="vcacCafeHost"/>
+      <bind name="username" type="string" export-name="username"/>
+      <bind name="password" type="SecureString" export-name="password"/>
+      <bind name="inputSourceIPs" type="string" export-name="inputSourceIPs"/>
+      <bind name="inputDestinationIPs" type="string" export-name="inputDestinationIPs"/>
+      <bind name="inputAction" type="string" export-name="inputAction"/>
+      <bind name="inputProtocol" type="string" export-name="inputProtocol"/>
+      <bind name="inputPort" type="string" export-name="inputPort"/>
+      <bind name="inputService" type="string" export-name="inputService"/>
+      <bind name="restHost" type="REST:RESTHost" export-name="restHost"/>
+      <bind name="usersEmailId" type="string" export-name="usersEmailId"/>
+      <bind name="smtp_host" type="string" export-name="smtp_host"/>
+      <bind name="smtp_port" type="number" export-name="smtp_port"/>
+      <bind name="smtp_username" type="string" export-name="smtp_username"/>
+      <bind name="smtp_password" type="SecureString" export-name="smtp_password"/>
+      <bind name="smtp_from_id" type="string" export-name="smtp_from_id"/>
+      <bind name="smtp_from_name" type="string" export-name="smtp_from_name"/>
+      <bind name="use_ssl" type="boolean" export-name="use_ssl"/>
+      <bind name="use_start_tls" type="boolean" export-name="use_start_tls"/>
+      <bind name="smtp_to_address" type="Array/string" export-name="smtp_to_address"/>
+      <bind name="inputDescription" type="string" export-name="inputDescription"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="inputSourceIPs">
+      <desc><![CDATA[Comma separated list of source IP Addresses]]></desc>
+    </p-param>
+    <p-param name="inputDestinationIPs">
+      <desc><![CDATA[Comma separated list of destination IP Addresses]]></desc>
+    </p-param>
+    <p-param name="inputAction">
+      <desc><![CDATA[Action:Whether to ALLOW / DENY or DROP]]></desc>
+    </p-param>
+    <p-param name="inputProtocol">
+      <desc><![CDATA[TCP / UDP]]></desc>
+    </p-param>
+    <p-param name="inputPort">
+      <desc><![CDATA[Comma separated destination port numbers]]></desc>
+    </p-param>
+    <p-param name="inputService">
+      <desc><![CDATA[Select a pre-defined service instead of specifying port number and protocol.]]></desc>
+    </p-param>
+    <p-param name="usersBusinessGroup">
+      <desc><![CDATA[Hidden field - User's Business Group]]></desc>
+    </p-param>
+    <p-param name="usersEmailId">
+      <desc><![CDATA[Hidden field - User's Email]]></desc>
+    </p-param>
+    <p-param name="inputDescription">
+      <desc><![CDATA[Description of Rule]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

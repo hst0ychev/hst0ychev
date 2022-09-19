@@ -1,0 +1,165 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item3" object-name="workflow:name=generic" id="4e483a42-d5a7-47dd-a3c8-14712dc02609" version="7.5.1" api-version="6.0.0" allowed-operations="vf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Create Vm Nic]]></display-name>
+  <position y="45.90909090909091" x="45.0"/>
+  <input>
+    <param name="connection" type="Azure:Connection"/>
+    <param name="destinationRG" type="Azure:ResourceGroup">
+      <description><![CDATA[The destination RG where to create the NIC]]></description>
+    </param>
+    <param name="nicProperties" type="CompositeType(nicName:string,networkConfigurationType:string,vNetName:string,subnetName:string,vNetSubnetRGName:string,networkProfileName:string,ipAddressType:string,publicIpAddressName:string,publicIpAddressRGName:string,securityGroupName:string,securityGroupRGName:string,securityGroupEnabled:boolean,isPrimary:boolean):AzureVmNic">
+      <description><![CDATA[NIC properties as passed by the UI used to create Azure:NetworkInterface]]></description>
+    </param>
+    <param name="assignableTags" type="Properties"/>
+    <param name="region" type="Azure:Region"/>
+  </input>
+  <output>
+    <param name="networkInterface" type="Azure:NetworkInterface"/>
+  </output>
+  <attrib name="subnetAttr" type="Azure:Subnet" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Resolved subnet Azure object by NIC.subnetName]]></description>
+  </attrib>
+  <attrib name="networkSecurityGroupAttr" type="Azure:NetworkSecurityGroup" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Resolved security group Azure object by NIC.securityGroupName]]></description>
+  </attrib>
+  <attrib name="virtualNetwork" type="Azure:VirtualNetwork" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <workflow-item name="item2" out-name="item0" type="task">
+    <display-name><![CDATA[Create NIC]]></display-name>
+    <script encoded="false"><![CDATA[networkInterface = AzureNetworkInterfaceManager.createWithoutPublicIp(destinationRG, region, virtualNetwork, subnetAttr, nicProperties.nicName, null);
+System.log("Network Interface Created!");
+
+// Set 'static' IP
+if (nicProperties.ipAddressType.toLowerCase() == "Static".toLowerCase()) {
+	AzureNetworkInterfaceManager.toggleNicIpAllocationType(networkInterface,true);
+}
+
+if (networkSecurityGroupAttr != null) {
+   System.log("Attaching Security Group to the Nic");
+   AzureNetworkInterfaceManager.attachNetworkSecurityGroup( networkInterface, networkSecurityGroupAttr);
+}
+
+System.log("- Set VM tags");
+for each (var key in assignableTags.keys) {
+   AzureNetworkInterfaceManager.addTag(networkInterface,key,assignableTags.get(key));
+}
+
+System.log("- Set VM tags");
+]]></script>
+    <in-binding>
+      <bind name="connection" type="Azure:Connection" export-name="connection"/>
+      <bind name="nicProperties" type="CompositeType(nicName:string,networkConfigurationType:string,vNetName:string,subnetName:string,vNetSubnetRGName:string,networkProfileName:string,ipAddressType:string,publicIpAddressName:string,publicIpAddressRGName:string,securityGroupName:string,securityGroupRGName:string,securityGroupEnabled:boolean,isPrimary:boolean):AzureVmNic" export-name="nicProperties"/>
+      <bind name="destinationRG" type="Azure:ResourceGroup" export-name="destinationRG"/>
+      <bind name="subnetAttr" type="Azure:Subnet" export-name="subnetAttr"/>
+      <bind name="networkSecurityGroupAttr" type="Azure:NetworkSecurityGroup" export-name="networkSecurityGroupAttr"/>
+      <bind name="assignableTags" type="Properties" export-name="assignableTags"/>
+      <bind name="virtualNetwork" type="Azure:VirtualNetwork" export-name="virtualNetwork"/>
+      <bind name="region" type="Azure:Region" export-name="region"/>
+    </in-binding>
+    <out-binding>
+      <bind name="networkInterface" type="Azure:NetworkInterface" export-name="networkInterface"/>
+    </out-binding>
+    <position y="55.40909090909091" x="424.5"/>
+  </workflow-item>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="624.5"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item2" type="task">
+    <display-name><![CDATA[Resolve dependencies]]></display-name>
+    <script encoded="false"><![CDATA[if (nicProperties.nicName == null || nicProperties.nicName == "") {
+    throw "NIC name should not be empty.";
+}
+
+if (nicProperties.ipAddressType == null ||
+    !(nicProperties.ipAddressType.toLowerCase() == 'Static'.toLowerCase() ||
+        nicProperties.ipAddressType.toLowerCase() == 'Dynamic'.toLowerCase())) {
+    throw "IP address type of '" + nicProperties.nicName + "' NIC should be any of [Static, Dynamic]. Actual: " + nicProperties.ipAddressType;
+}
+
+// Resolve vNet-Subnet
+
+if (nicProperties.vNetSubnetRGName == null || nicProperties.vNetSubnetRGName == "") {
+    throw "RG name of vNet-Subnet pair of '" + nicProperties.nicName + "' NIC should not be empty.";
+}
+
+var vNetSubnetRG = AzureResourceGroupManager.getResourceGroupByConnectionAndName(connection, nicProperties.vNetSubnetRGName);
+
+if (vNetSubnetRG == null) {
+    throw "RG with name '" + nicProperties.vNetSubnetRGName + "' does not exist.";
+}
+
+if (nicProperties.vNetName == null || nicProperties.vNetName == "") {
+    throw "vNet name of '" + nicProperties.nicName + "' NIC should not be empty.";
+}
+
+virtualNetwork = AzureVirtualNetworkManager.getVirtualNetworkByResourceGroupAndName(vNetSubnetRG, nicProperties.vNetName);
+
+if (virtualNetwork == null) {
+    throw "vNet with name '" + nicProperties.vNetName + "' does not exist.";
+}
+
+
+if (nicProperties.subnetName == null || nicProperties.subnetName == "") {
+    throw "Subnet name of '" + nicProperties.nicName + "' NIC should not be empty.";
+}
+
+subnetAttr = AzureSubnetManager.getSubnetByVirtualNetworkAndName(nicProperties.subnetName, virtualNetwork)
+
+if (subnetAttr == null) {
+    throw "Subnet with name '" + nicProperties.subnetName + "' does not exist.";
+}
+
+System.log("[resolveNicDependencies] '" + nicProperties.subnetName + "' Subnet of '" + nicProperties.nicName + "' NIC resolved.");
+
+// Resolve security group
+if (nicProperties.securityGroupName != null && nicProperties.securityGroupName != "") {
+    if (nicProperties.securityGroupRGName == null || nicProperties.securityGroupRGName == "") {
+        throw "RG name of Security Group of '" + nicProperties.nicName + "' NIC should not be empty.";
+    }
+
+    var securityGroupRG = AzureResourceGroupManager.getResourceGroupByConnectionAndName(connection, nicProperties.securityGroupRGName);
+
+    if (securityGroupRG == null) {
+        throw "RG with name '" + nicProperties.securityGroupRGName + "' does not exist.";
+    }
+
+    networkSecurityGroupAttr = AzureNetworkSecurityGroupManager.getNetworkSecurityGroupByResourceGroupAndName(securityGroupRG, nicProperties.securityGroupName);
+
+    if (networkSecurityGroupAttr == null) {
+        throw "Security Group with name '" + nicProperties.securityGroupName + "' does not exist.";
+    }
+
+    System.log("[resolveNicDependencies] '" + nicProperties.securityGroupName + "' Security Group of '" + nicProperties.nicName + "' NIC resolved.");
+}]]></script>
+    <in-binding>
+      <bind name="connection" type="Azure:Connection" export-name="connection"/>
+      <bind name="nicProperties" type="CompositeType(nicName:string,networkConfigurationType:string,vNetName:string,subnetName:string,vNetSubnetRGName:string,networkProfileName:string,ipAddressType:string,publicIpAddressName:string,publicIpAddressRGName:string,securityGroupName:string,securityGroupRGName:string,securityGroupEnabled:boolean,isPrimary:boolean):AzureVmNic" export-name="nicProperties"/>
+    </in-binding>
+    <out-binding>
+      <bind name="subnetAttr" type="Azure:Subnet" export-name="subnetAttr"/>
+      <bind name="networkSecurityGroupAttr" type="Azure:NetworkSecurityGroup" export-name="networkSecurityGroupAttr"/>
+      <bind name="virtualNetwork" type="Azure:VirtualNetwork" export-name="virtualNetwork"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="nicProperties">
+      <desc><![CDATA[nicProperties]]></desc>
+    </p-param>
+    <p-param name="connection">
+      <desc><![CDATA[connection]]></desc>
+    </p-param>
+    <p-param name="destinationRG">
+      <desc><![CDATA[destinationRG]]></desc>
+    </p-param>
+    <p-param name="assignableTags">
+      <desc><![CDATA[assignableTags]]></desc>
+    </p-param>
+    <p-param name="region">
+      <desc><![CDATA[region]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

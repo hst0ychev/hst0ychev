@@ -1,0 +1,73 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="Workflow:name=generic" id="958080808080808080808080808080803D81808001175609873343b6bbd2e3eea" version="1.1.0" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Create an organizational unit]]></display-name>
+  <description><![CDATA[Creates an organizational unit in an existing organizational unit.]]></description>
+  <ref-types><![CDATA[(AD:OrganizationalUnit)]]></ref-types>
+  <position y="20.0" x="180.0"/>
+  <input>
+    <param name="ouName" type="string">
+      <description><![CDATA[The name for the new organizational unit]]></description>
+    </param>
+    <param name="ouContainer" type="AD:OrganizationalUnit">
+      <description><![CDATA[Organizational unit in which to put the newly created organizational unit]]></description>
+    </param>
+  </input>
+  <output>
+    <param name="newOU" type="AD:OrganizationalUnit"/>
+  </output>
+  <workflow-item name="item2" type="end" end-mode="0">
+    <position y="210.0" x="180.0"/>
+  </workflow-item>
+  <workflow-item name="item0" out-name="item1" type="task" script-module="com.vmware.library.microsoft.activeDirectory/createOrganizationalUnit">
+    <display-name><![CDATA[createOrganizationalUnit]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+System.getModule("com.vmware.library.microsoft.activeDirectory").createOrganizationalUnit(ouName,container) ;]]></script>
+    <in-binding>
+      <bind name="ouName" type="string" export-name="ouName">
+        <description><![CDATA[The name for the organizational unit]]></description>
+      </bind>
+      <bind name="container" type="AD:OrganizationalUnit" export-name="ouContainer">
+        <description><![CDATA[Existing organizational unit in which to put the new organizational unit]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Creates an organizational unit in an existing organizational unit.]]></description>
+    <position y="100.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item2" type="task" script-module="com.vmware.library.microsoft.activeDirectory/getOrganizationUnitFromOrganizationUnit">
+    <display-name><![CDATA[getOrganizationUnitFromOrganizationUnit]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.microsoft.activeDirectory").getOrganizationUnitFromOrganizationUnit(container,ouName) ;]]></script>
+    <in-binding>
+      <bind name="container" type="Any" export-name="ouContainer">
+        <description><![CDATA[Organizational unit / group]]></description>
+      </bind>
+      <bind name="ouName" type="string" export-name="ouName">
+        <description><![CDATA[Name of the computer]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="AD:OrganizationalUnit" export-name="newOU"/>
+    </out-binding>
+    <description><![CDATA[Gets a computer by its name in the given organizational unit or group (container).]]></description>
+    <position y="160.0" x="140.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Create an organizational unit]]></title>
+      <p-group>
+        <title><![CDATA[Details]]></title>
+        <p-param name="ouContainer">
+          <desc><![CDATA[Parent for the new organizational unit]]></desc>
+          <p-qual kind="static" name="show-select-as" type="string"><![CDATA[drop-down]]></p-qual>
+          <p-qual name="contextualParameter"><![CDATA[]]></p-qual>
+          <p-qual name="mandatory"><![CDATA[true]]></p-qual>
+        </p-param>
+        <p-param name="ouName">
+          <desc><![CDATA[Name for the new organizational unit]]></desc>
+          <p-qual name="mandatory"><![CDATA[true]]></p-qual>
+        </p-param>
+      </p-group>
+    </p-step>
+  </presentation>
+</workflow>

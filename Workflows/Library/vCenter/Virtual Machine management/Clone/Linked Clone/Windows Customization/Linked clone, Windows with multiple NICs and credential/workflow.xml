@@ -1,0 +1,1583 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item38" object-name="Workflow:name=generic" id="98808080808080808080808080808080B68080800123417702800022547c1c312" version="0.1.5" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Linked clone, Windows with multiple NICs and credential]]></display-name>
+  <description><![CDATA[Creates a linked clone of a Windows virtual machine and performs the guest operating system customization. Configures up to four virtual network cards and a local administrator user account.
+
+Sysprep tools must be available on the vCenter Server system.]]></description>
+  <position y="30.0" x="60.0"/>
+  <input>
+    <param name="folder" type="VC:VmFolder">
+      <description><![CDATA[Virtual machine folder]]></description>
+    </param>
+    <param name="name" type="string">
+      <description><![CDATA[New virtual machine name]]></description>
+    </param>
+    <param name="vm" type="VC:VirtualMachine">
+      <description><![CDATA[Virtual machine of which to create a linked clone]]></description>
+    </param>
+    <param name="powerOn" type="boolean">
+      <description><![CDATA[Specifies whether or not to power on the new virtual machine]]></description>
+    </param>
+    <param name="template" type="boolean">
+      <description><![CDATA[Specifies whether or not to mark the new virtual machine as a template]]></description>
+    </param>
+    <param name="datastore" type="VC:Datastore">
+      <description><![CDATA[Datastore in which to store the virtual machine. If not specified, the current datastore is used]]></description>
+    </param>
+    <param name="host" type="VC:HostSystem">
+      <description><![CDATA[(Optional) Host on which to create the virtual machine]]></description>
+    </param>
+    <param name="pool" type="VC:ResourcePool">
+      <description><![CDATA[(Optional) Resource pool in which to create the virtual machine]]></description>
+    </param>
+    <param name="doSysprep" type="boolean">
+      <description><![CDATA[Run the Sysprep operations and wait for the task to complete. Not used if the virtual machine is marked as template]]></description>
+    </param>
+    <param name="clientName" type="string">
+      <description><![CDATA[Name or prefix name of the Windows client]]></description>
+    </param>
+    <param name="productId" type="string">
+      <description><![CDATA[Microsoft Sysprep requires that a valid serial number be included in the answer file when mini-setup runs. This serial number is ignored if the original guest operating system was installed using a volume-licensed CD]]></description>
+    </param>
+    <param name="joinDomain" type="string">
+      <description><![CDATA[(Optional) The domain that the virtual machine should join. If this value is supplied, then domainAdmin and domainAdminPassword must also be supplied, and the workgroup name must be empty]]></description>
+    </param>
+    <param name="joinWorkgroup" type="string">
+      <description><![CDATA[(Optional) The workgroup that the virtual machine should join. If this value is supplied, then the domain name and authentication fields must be empty]]></description>
+    </param>
+    <param name="domainAdmin" type="Credential">
+      <description><![CDATA[(Optional) This is the domain user account used for authentication if the virtual machine is joining a domain. The user does not need to be a domain administrator, but the account must have the privileges required to add computers to the domain]]></description>
+    </param>
+    <param name="domainAdminUsername" type="string">
+      <description><![CDATA[(Optional) This is the username of domain user account used for authentication if the virtual machine is joining a domain. The user does not need to be a domain administrator, but the account must have the privileges required to add computers to the domain]]></description>
+    </param>
+    <param name="domainAdminPassword" type="SecureString">
+      <description><![CDATA[(Optional) This is the password for the domain user account used for authentication if the virtual machine is joining a domain. The user does not need to be a domain administrator, but the account must have the privileges required to add computers to the domain]]></description>
+    </param>
+    <param name="licenseMode" type="VC:CustomizationLicenseDataMode">
+      <description><![CDATA[Server licensing mode]]></description>
+    </param>
+    <param name="licenseUsers" type="number">
+      <description><![CDATA[This key is valid only if AutoMode = PerServer]]></description>
+    </param>
+    <param name="newAdminPassword" type="string">
+      <description><![CDATA[The password string. It is encrypted if the associated plainText flag is false]]></description>
+    </param>
+    <param name="inTimezone" type="Enums:MSTimeZone">
+      <description><![CDATA[Timezone for the newly created virtual machine]]></description>
+    </param>
+    <param name="fullName" type="string">
+      <description><![CDATA[User's full name]]></description>
+    </param>
+    <param name="orgName" type="string">
+      <description><![CDATA[Organization name]]></description>
+    </param>
+    <param name="nicNumber" type="number">
+      <description><![CDATA[Number of virtual network cards for the new virtual machine]]></description>
+    </param>
+    <param name="nic1Network" type="VC:Network">
+      <description><![CDATA[Network on which to attach the virtual network interface]]></description>
+    </param>
+    <param name="nic1MacAddress" type="string">
+      <description><![CDATA[(Optional) The MAC address of a network adapter being customized. If it is not included, the customization process maps the settings from the virtual machine's network adapters, in PCI slot order]]></description>
+    </param>
+    <param name="nic1Dhcp" type="boolean">
+      <description><![CDATA[Use a DHCP server to configure the virtual network adapter]]></description>
+    </param>
+    <param name="nic1IpAddress" type="string">
+      <description><![CDATA[(Optional) Fixed valid IP address]]></description>
+    </param>
+    <param name="nic1SubnetMask" type="string">
+      <description><![CDATA[(Optional) Subnet mask for this virtual network adapter]]></description>
+    </param>
+    <param name="nic1Gateway" type="Array/string">
+      <description><![CDATA[(Optional) List of gateways, in order of preference]]></description>
+    </param>
+    <param name="nic1NetBIOS" type="VC:CustomizationNetBIOSMode">
+      <description><![CDATA[(Optional) NetBIOS setting for Windows]]></description>
+    </param>
+    <param name="nic1DnsDomain" type="string">
+      <description><![CDATA[(Optional) DNS domain suffix such as vmware.com]]></description>
+    </param>
+    <param name="nic1DnsServerList" type="Array/string">
+      <description><![CDATA[(Optional) List of DNS servers for a virtual network adapter with a static IP address]]></description>
+    </param>
+    <param name="nic1PrimaryWINS" type="string">
+      <description><![CDATA[(Optional) The IP address of the primary WINS server. This property is ignored for Linux guest operating systems]]></description>
+    </param>
+    <param name="nic1SecondaryWINS" type="string">
+      <description><![CDATA[(Optional) The IP address of the secondary WINS server. This property is ignored for Linux guest operating systems]]></description>
+    </param>
+    <param name="nic2Network" type="VC:Network">
+      <description><![CDATA[Network on which to attach the virtual network interface]]></description>
+    </param>
+    <param name="nic2MacAddress" type="string">
+      <description><![CDATA[(Optional) The MAC address of a network adapter being customized. If it is not included, the customization process maps the settings from the virtual machine's network adapters, in PCI slot order]]></description>
+    </param>
+    <param name="nic2Dhcp" type="boolean">
+      <description><![CDATA[Use a DHCP server to configure the virtual network adapter]]></description>
+    </param>
+    <param name="nic2IpAddress" type="string">
+      <description><![CDATA[(Optional) Fixed valid IP address]]></description>
+    </param>
+    <param name="nic2SubnetMask" type="string">
+      <description><![CDATA[(Optional) Subnet mask for this virtual network adapter]]></description>
+    </param>
+    <param name="nic2Gateway" type="Array/string">
+      <description><![CDATA[(Optional) List of gateways, in order of preference]]></description>
+    </param>
+    <param name="nic2NetBIOS" type="VC:CustomizationNetBIOSMode">
+      <description><![CDATA[(Optional) NetBIOS setting for Windows]]></description>
+    </param>
+    <param name="nic2DnsDomain" type="string">
+      <description><![CDATA[(Optional) DNS domain suffix such as vmware.com]]></description>
+    </param>
+    <param name="nic2DnsServerList" type="Array/string">
+      <description><![CDATA[(Optional) List of DNS servers for a virtual network adapter with a static IP address]]></description>
+    </param>
+    <param name="nic2PrimaryWINS" type="string">
+      <description><![CDATA[(Optional) The IP address of the primary WINS server. This property is ignored for Linux guest operating systems]]></description>
+    </param>
+    <param name="nic2SecondaryWINS" type="string">
+      <description><![CDATA[(Optional) The IP address of the secondary WINS server. This property is ignored for Linux guest operating systems]]></description>
+    </param>
+    <param name="nic3Network" type="VC:Network">
+      <description><![CDATA[Network on which to attach the virtual network interface]]></description>
+    </param>
+    <param name="nic3MacAddress" type="string">
+      <description><![CDATA[(Optional) The MAC address of a network adapter being customized. If it is not included, the customization process maps the settings from the virtual machine's network adapters, in PCI slot order]]></description>
+    </param>
+    <param name="nic3Dhcp" type="boolean">
+      <description><![CDATA[Use a DHCP server to configure the virtual network adapter]]></description>
+    </param>
+    <param name="nic3IpAddress" type="string">
+      <description><![CDATA[(Optional) Fixed valid IP address]]></description>
+    </param>
+    <param name="nic3SubnetMask" type="string">
+      <description><![CDATA[(Optional) Subnet mask for this virtual network adapter]]></description>
+    </param>
+    <param name="nic3Gateway" type="Array/string">
+      <description><![CDATA[(Optional) List of gateways, in order of preference]]></description>
+    </param>
+    <param name="nic3NetBIOS" type="VC:CustomizationNetBIOSMode">
+      <description><![CDATA[(Optional) NetBIOS setting for Windows]]></description>
+    </param>
+    <param name="nic3DnsDomain" type="string">
+      <description><![CDATA[(Optional) DNS domain suffix such as vmware.com]]></description>
+    </param>
+    <param name="nic3DnsServerList" type="Array/string">
+      <description><![CDATA[(Optional) List of DNS servers for a virtual network adapter with a static IP address]]></description>
+    </param>
+    <param name="nic3PrimaryWINS" type="string">
+      <description><![CDATA[(Optional) The IP address of the primary WINS server. This property is ignored for Linux guest operating systems]]></description>
+    </param>
+    <param name="nic3SecondaryWINS" type="string">
+      <description><![CDATA[(Optional) The IP address of the secondary WINS server. This property is ignored for Linux guest operating systems]]></description>
+    </param>
+    <param name="nic4Network" type="VC:Network">
+      <description><![CDATA[Network on which to attach the virtual network interface]]></description>
+    </param>
+    <param name="nic4MacAddress" type="string">
+      <description><![CDATA[(Optional) The MAC address of a network adapter being customized. If it is not included, the customization process maps the settings from the virtual machine's network adapters, in PCI slot order]]></description>
+    </param>
+    <param name="nic4Dhcp" type="boolean">
+      <description><![CDATA[Use a DHCP server to configure the virtual network adapter]]></description>
+    </param>
+    <param name="nic4IpAddress" type="string">
+      <description><![CDATA[(Optional) Fixed valid IP address]]></description>
+    </param>
+    <param name="nic4SubnetMask" type="string">
+      <description><![CDATA[(Optional) Subnet mask for this virtual network adapter]]></description>
+    </param>
+    <param name="nic4Gateway" type="Array/string">
+      <description><![CDATA[(Optional) List of gateways, in order of preference]]></description>
+    </param>
+    <param name="nic4NetBIOS" type="VC:CustomizationNetBIOSMode">
+      <description><![CDATA[(Optional) NetBIOS setting for Windows]]></description>
+    </param>
+    <param name="nic4DnsDomain" type="string">
+      <description><![CDATA[(Optional) DNS domain suffix such as vmware.com]]></description>
+    </param>
+    <param name="nic4DnsServerList" type="Array/string">
+      <description><![CDATA[(Optional) List of DNS servers for a virtual network adapter with a static IP address]]></description>
+    </param>
+    <param name="nic4PrimaryWINS" type="string">
+      <description><![CDATA[(Optional) The IP address of the primary WINS server. This property is ignored for Linux guest operating systems]]></description>
+    </param>
+    <param name="nic4SecondaryWINS" type="string">
+      <description><![CDATA[(Optional) The IP address of the secondary WINS server. This property is ignored for Linux guest operating systems]]></description>
+    </param>
+    <param name="Snapshot" type="VC:VirtualMachineSnapshot">
+      <description><![CDATA[If null, a new snapshot shall be created]]></description>
+    </param>
+  </input>
+  <output>
+    <param name="newVM" type="VC:VirtualMachine">
+      <description><![CDATA[The newly created virtual machine]]></description>
+    </param>
+  </output>
+  <attrib name="task" type="VC:Task" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Task to await]]></description>
+  </attrib>
+  <attrib name="progress" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+    <description><![CDATA[Log progress while waiting for the task to complete]]></description>
+  </attrib>
+  <attrib name="pollRate" type="number" read-only="false">
+    <value encoded="n"><![CDATA[60.0]]></value>
+    <description><![CDATA[Polling rate for the task state, in seconds]]></description>
+  </attrib>
+  <attrib name="spec" type="Any" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Specifies how to clone the virtual machine (VimVirtualMachineCloneSpec)]]></description>
+  </attrib>
+  <attrib name="location" type="Any" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Specifies the location of resources the cloned virtual machine will be using (VirtualMachineRelocateSpec)]]></description>
+  </attrib>
+  <attrib name="customization" type="Any" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Optional guest operating system customization specification (CustomizationSpec)]]></description>
+  </attrib>
+  <attrib name="globalIPSettings" type="Any" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Global IP settings constitute the IP settings that are not specific to a particular virtual network adapter (VimCustomizationGlobalIPSettings)]]></description>
+  </attrib>
+  <attrib name="identity" type="Any" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Network identity and settings, similar to Microsoft's Sysprep tool. This is a Sysprep, LinuxPrep, or SysprepText object (VimCustomizationIdentitySettings)]]></description>
+  </attrib>
+  <attrib name="nicSettingMaps" type="Array/Any" read-only="false">
+    <value encoded="n"><![CDATA[#{##}#]]></value>
+    <description><![CDATA[(Optional) IP settings that are specific to a particular virtual network adapter (an array of VimCustomizationAdapterMapping)]]></description>
+  </attrib>
+  <attrib name="options" type="Any" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Optional operations (VimCustomizationOptions: LinuxOptions or WinOptions)]]></description>
+  </attrib>
+  <attrib name="autoLogon" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+    <description><![CDATA[Flag to determine whether or not the machine automatically logs on as Administrator]]></description>
+  </attrib>
+  <attrib name="timeZone" type="number" read-only="false">
+    <value encoded="n"><![CDATA[110.0]]></value>
+    <description><![CDATA[The time zone for the new virtual machine. Numbers correspond to time zones listed in sysprep documentation]]></description>
+  </attrib>
+  <attrib name="adapterMapping" type="Any" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Data object type to associate a virtual network adapter with its IP settings]]></description>
+  </attrib>
+  <attrib name="startVm" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+    <description><![CDATA[Specifies whether to start the cloned virtual machine. Depends on the values set for 'template', 'doSysprep' and 'powerOn' attributes]]></description>
+  </attrib>
+  <attrib name="tempNewVm" type="VC:VirtualMachine" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[The newly created virtual machine]]></description>
+  </attrib>
+  <attrib name="pollingRate" type="number" read-only="false">
+    <value encoded="n"><![CDATA[60.0]]></value>
+    <description><![CDATA[Polling rate for the task state, in seconds]]></description>
+  </attrib>
+  <attrib name="timeout" type="number" read-only="false">
+    <value encoded="n"><![CDATA[60.0]]></value>
+    <description><![CDATA[Timeout period to elapse before throwing a timeout exception, in minutes]]></description>
+  </attrib>
+  <attrib name="sourceVirtualEthernetCard" type="Any" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[The VirtualEthernetCard the template defines]]></description>
+  </attrib>
+  <attrib name="config" type="Any" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[(Optional) Specification of changes to the virtual hardware (VirtualMachineConfigSpec)]]></description>
+  </attrib>
+  <attrib name="deviceChange" type="Array/Any" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[(Optional) Set of virtual devices being modified by the configuration operation (an array of VirtualDeviceConfigSpec)]]></description>
+  </attrib>
+  <attrib name="addNumberToName" type="boolean" read-only="true">
+    <value encoded="n"><![CDATA[false]]></value>
+    <description><![CDATA[Append a number to the client name to ensure the name is unique]]></description>
+  </attrib>
+  <attrib name="nicPosition" type="number" read-only="false">
+    <value encoded="n"><![CDATA[1.0]]></value>
+    <description><![CDATA[Specifies which network card to use. If no valid value, the first network card is used]]></description>
+  </attrib>
+  <attrib name="pollRateCustomization" type="number" read-only="false">
+    <value encoded="n"><![CDATA[10.0]]></value>
+    <description><![CDATA[Polling rate for the task state, in seconds]]></description>
+  </attrib>
+  <attrib name="neverStart" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+    <description><![CDATA[Specifies whether or not to power on the new virtual machine]]></description>
+  </attrib>
+  <attrib name="targetDatastore" type="VC:Datastore" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Datastore in which to store the virtual machine]]></description>
+  </attrib>
+  <attrib name="templateAttr" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+    <description><![CDATA[Specifies whether or not to mark the new virtual machine as a template]]></description>
+  </attrib>
+  <attrib name="snapshot" type="VC:VirtualMachineSnapshot" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[VcVirtualMachineSnapshot on which to base the clone]]></description>
+  </attrib>
+  <attrib name="wasTemplate" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+    <description><![CDATA[Virtual machine is marked as template]]></description>
+  </attrib>
+  <attrib name="errorCode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[error code]]></description>
+  </attrib>
+  <attrib name="nicNumberValues" type="Array/number" read-only="false">
+    <value encoded="n"><![CDATA[#{#number#0.0#;#number#1.0#;#number#2.0#;#number#3.0#;#number#4.0#}#]]></value>
+    <description><![CDATA[An array of the NICs to use]]></description>
+  </attrib>
+  <workflow-note x="440.0" y="627.2727272727273" w="210.0" h="50.0">
+    <description><![CDATA[Relocate Spec]]></description>
+  </workflow-note>
+  <workflow-note x="80.0" y="181.8181818181818" w="360.0" h="507.27272727272725">
+    <description><![CDATA[Customization Spec]]></description>
+  </workflow-note>
+  <workflow-note x="1000.0" y="645.4545454545454" w="190.0" h="50.0" color="bfdfffff">
+    <description><![CDATA[Compile specs to Clone Spec]]></description>
+  </workflow-note>
+  <workflow-note x="1060.0" y="199.99999999999997" w="240.0" h="50.0" color="bfffbfff">
+    <description><![CDATA[Wait for the sysprep operation to be terminated]]></description>
+  </workflow-note>
+  <workflow-note x="700.0" y="500.0" w="240.0" h="200.0">
+    <description><![CDATA[Config Spec]]></description>
+  </workflow-note>
+  <workflow-note x="1100.0" y="427.27272727272725" w="370.0" h="90.0">
+    <description><![CDATA[Customize here: if NIC number change, 
+cannot clone + change NIC number + 
+customize with new NIC number at same time]]></description>
+  </workflow-note>
+  <workflow-note x="1280.0" y="563.6363636363636" w="210.0" h="190.0" color="d7a1d7ff">
+    <description><![CDATA[Clone VM and wait]]></description>
+  </workflow-note>
+  <workflow-item name="item0" out-name="item1" business-status="Preparing Clone" type="task" script-module="com.vmware.library.vc.vm.spec/checkVMwareInput">
+    <display-name><![CDATA[checkVMwareInput]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+System.getModule("com.vmware.library.vc.vm.spec").checkVMwareInput(vm,folder,datastore,host,pool) ;]]></script>
+    <in-binding>
+      <bind name="datastore" type="VC:Datastore" export-name="targetDatastore">
+        <description><![CDATA[Target datastore]]></description>
+      </bind>
+      <bind name="folder" type="VC:VmFolder" export-name="folder">
+        <description><![CDATA[Target folder]]></description>
+      </bind>
+      <bind name="host" type="VC:HostSystem" export-name="host">
+        <description><![CDATA[Target host]]></description>
+      </bind>
+      <bind name="pool" type="VC:ResourcePool" export-name="pool">
+        <description><![CDATA[Target pool]]></description>
+      </bind>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vm">
+        <description><![CDATA[VM to clone]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <position y="80.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item41" type="task" script-module="com.vmware.library.vc.vm.spec/getCloneSpec">
+    <display-name><![CDATA[getCloneSpec]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.vc.vm.spec").getCloneSpec(config,customization,location,powerOn,template) ;]]></script>
+    <in-binding>
+      <bind name="config" type="Any" export-name="config">
+        <description><![CDATA[[optional] VirtualMachineConfigSpec: An optional specification of changes to the virtual hardware.]]></description>
+      </bind>
+      <bind name="customization" type="Any" explicitly-not-bound="true">
+        <description><![CDATA[[optional] CustomizationSpec: An optional guest operating system customization specification.]]></description>
+      </bind>
+      <bind name="location" type="Any" export-name="location">
+        <description><![CDATA[VirtualMachineRelocateSpec: A type of RelocateSpec that specifies the location of resources the newly cloned virtual machine will use]]></description>
+      </bind>
+      <bind name="powerOn" type="boolean" export-name="neverStart">
+        <description><![CDATA[Specifies whether or not the new VirtualMachine should be powered on after creation]]></description>
+      </bind>
+      <bind name="template" type="boolean" export-name="templateAttr">
+        <description><![CDATA[Specifies whether or not the new virtual machine should be marked as a template. ]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Any" export-name="spec"/>
+    </out-binding>
+    <position y="665.0" x="1045.0"/>
+  </workflow-item>
+  <workflow-item name="item5" out-name="item9" type="link" linked-workflow-id="BD808080808080808080808080808080FEC180800122528313869552e41805bb1">
+    <display-name><![CDATA[Get Windows Customization (Sysprep)]]></display-name>
+    <in-binding>
+      <bind name="autoLogon" type="boolean" export-name="autoLogon">
+        <description><![CDATA[Flag to determine whether or not the machine automatically logs on as Administrator]]></description>
+      </bind>
+      <bind name="autoLogonCount" type="number" explicitly-not-bound="true" export-name="NULL">
+        <description><![CDATA[If the AutoLogon flag is set, then the AutoLogonCount property specifies the number of times the machine should automatically log on as Administrator]]></description>
+      </bind>
+      <bind name="commandList" type="Array/string" explicitly-not-bound="true" export-name="NULL">
+        <description><![CDATA[A list of commands to run at first user logon, after guest customization. ]]></description>
+      </bind>
+      <bind name="domainAdmin" type="Credential" export-name="domainAdmin">
+        <description><![CDATA[[Optional] This is the domain user account used for authentication if the virtual machine is joining a domain. The user does not need to be a domain administrator, but the account must have the privileges required to add computers to the domain. ]]></description>
+      </bind>
+      <bind name="domainAdminUsername" type="string" export-name="domainAdminUsername">
+        <description><![CDATA[[Optional] This is the username of the domain user account used for authentication if the virtual machine is joining a domain. The user does not need to be a domain administrator, but the account must have the privileges required to add computers to the domain. ]]></description>
+      </bind>
+      <bind name="domainAdminPassword" type="SecureString" export-name="domainAdminPassword">
+        <description><![CDATA[[Optional] This is the password for the domain user account used for authentication if the virtual machine is joining a domain. The user does not need to be a domain administrator, but the account must have the privileges required to add computers to the domain. ]]></description>
+      </bind>
+      <bind name="fullName" type="string" export-name="fullName">
+        <description><![CDATA[User's full name. ]]></description>
+      </bind>
+      <bind name="joinDomain" type="string" export-name="joinDomain">
+        <description><![CDATA[[Optional] The domain that the virtual machine should join. If this value is supplied, then domainAdmin and domainAdminPassword must also be supplied, and the workgroup name must be empty. ]]></description>
+      </bind>
+      <bind name="joinWorkgroup" type="string" export-name="joinWorkgroup">
+        <description><![CDATA[[Optional] The workgroup that the virtual machine should join. If this value is supplied, then the domain name and authentication fields must be empty. ]]></description>
+      </bind>
+      <bind name="licenseMode" type="VC:CustomizationLicenseDataMode" export-name="licenseMode">
+        <description><![CDATA[Server licensing mode ]]></description>
+      </bind>
+      <bind name="licenseUsers" type="number" export-name="licenseUsers">
+        <description><![CDATA[This key is valid only if AutoMode = PerServer. ]]></description>
+      </bind>
+      <bind name="newAdminPassword" type="string" export-name="newAdminPassword">
+        <description><![CDATA[The password string. It is encrypted if the associated plainText flag is false. ]]></description>
+      </bind>
+      <bind name="orgName" type="string" export-name="orgName">
+        <description><![CDATA[User's organization. ]]></description>
+      </bind>
+      <bind name="productId" type="string" export-name="productId">
+        <description><![CDATA[Microsoft Sysprep requires that a valid serial number be included in the answer file when mini-setup runs. This serial number is ignored if the original guest operating system was installed using a volume-licensed CD. ]]></description>
+      </bind>
+      <bind name="timeZone" type="number" export-name="timeZone">
+        <description><![CDATA[The time zone for the new virtual machine. Numbers correspond to time zones listed in sysprep documentation ]]></description>
+      </bind>
+      <bind name="clientName" type="string" export-name="clientName"/>
+      <bind name="addNumberToName" type="boolean" export-name="addNumberToName"/>
+    </in-binding>
+    <out-binding>
+      <bind name="sysprep" type="Any" export-name="identity">
+        <description><![CDATA[An object representation of a Windows sysprep.inf answer file.]]></description>
+      </bind>
+    </out-binding>
+    <position y="283.18181818181813" x="145.0"/>
+  </workflow-item>
+  <workflow-item name="item6" out-name="item23" type="task" script-module="com.vmware.library.vc.vm.spec/getRelocateSpec">
+    <display-name><![CDATA[getRelocateSpec]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.vc.vm.spec").getRelocateSpec(datastore,disk,host,pool,transform) ;]]></script>
+    <in-binding>
+      <bind name="datastore" type="VC:Datastore" export-name="targetDatastore">
+        <description><![CDATA[[optional] The datastore where the virtual machine should be located. If not specified, the current datastore is used]]></description>
+      </bind>
+      <bind name="disk" type="Array/Any" explicitly-not-bound="true" export-name="NULL">
+        <description><![CDATA[[optional] Array of VirtualMachineRelocateSpecDiskLocator: An optional list that allows specifying the datastore location for each virtual disk.]]></description>
+      </bind>
+      <bind name="host" type="VC:HostSystem" export-name="host">
+        <description><![CDATA[[optional] The target host for the virtual machine.]]></description>
+      </bind>
+      <bind name="pool" type="VC:ResourcePool" export-name="pool">
+        <description><![CDATA[[optional] The resource pool to which this virtual machine should be attached. ]]></description>
+      </bind>
+      <bind name="transform" type="VC:VirtualMachineRelocateTransformation" explicitly-not-bound="true" export-name="NULL">
+        <description><![CDATA[[optional] Transformation to perform on the disks. ]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Any" export-name="location"/>
+    </out-binding>
+    <position y="646.8181818181818" x="525.0"/>
+  </workflow-item>
+  <workflow-item name="item7" out-name="item6" type="task" script-module="com.vmware.library.vc.vm.spec/getCustomizationSpec">
+    <display-name><![CDATA[getCustomizationSpec]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.vc.vm.spec").getCustomizationSpec(globalIPSettings,identity,nicSettingMap,options) ;]]></script>
+    <in-binding>
+      <bind name="globalIPSettings" type="Any" export-name="globalIPSettings">
+        <description><![CDATA[VimCustomizationGlobalIPSettings: Global IP settings constitute the IP settings that are not specific to a particular virtual network adapter. ]]></description>
+      </bind>
+      <bind name="identity" type="Any" export-name="identity">
+        <description><![CDATA[VimCustomizationIdentitySettings: Network identity and settings, similar to Microsoft's Sysprep tool. This is a Sysprep, LinuxPrep, or SysprepText object. ]]></description>
+      </bind>
+      <bind name="nicSettingMap" type="Array/Any" export-name="nicSettingMaps">
+        <description><![CDATA[[Optional] Array of VimCustomizationAdapterMapping: IP settings that are specific to a particular virtual network adapter.]]></description>
+      </bind>
+      <bind name="options" type="Any" export-name="options">
+        <description><![CDATA[[Optional] VimCustomizationOptions: Optional operations (either LinuxOptions or WinOptions). ]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Any" export-name="customization"/>
+    </out-binding>
+    <position y="646.8181818181818" x="205.0"/>
+  </workflow-item>
+  <workflow-item name="item11" out-name="item8" type="task">
+    <display-name><![CDATA[Get Timezone in Number]]></display-name>
+    <script encoded="false"><![CDATA[timeZone = inTimezone.id;]]></script>
+    <in-binding>
+      <bind name="inTimezone" type="Enums:MSTimeZone" export-name="inTimezone"/>
+    </in-binding>
+    <out-binding>
+      <bind name="timeZone" type="number" export-name="timeZone"/>
+    </out-binding>
+    <position y="160.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item11" type="task">
+    <display-name><![CDATA[Set start vm?]]></display-name>
+    <script encoded="false"><![CDATA[if (template) {
+	startVm = false;
+}
+else if (doSysprep) {
+	startVm = true;
+}
+else {
+	startVm = powerOn;
+}]]></script>
+    <in-binding>
+      <bind name="template" type="boolean" export-name="template"/>
+      <bind name="powerOn" type="boolean" export-name="powerOn"/>
+      <bind name="doSysprep" type="boolean" export-name="doSysprep"/>
+    </in-binding>
+    <out-binding>
+      <bind name="startVm" type="boolean" export-name="startVm"/>
+    </out-binding>
+    <position y="120.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item12" out-name="item39" type="condition" alt-out-name="item15" comparator="0">
+    <display-name><![CDATA[Template?]]></display-name>
+    <script encoded="false"><![CDATA[//Generated by the system, cannot be edited
+return (template == true) ;]]></script>
+    <in-binding>
+      <bind name="template" type="boolean" export-name="template"/>
+    </in-binding>
+    <condition name="template" type="boolean" comparator="0" label="null">false</condition>
+    <position y="354.99999999999994" x="1345.0"/>
+  </workflow-item>
+  <workflow-item name="item13" out-name="item24" type="task">
+    <display-name><![CDATA[Set ouput vm]]></display-name>
+    <script encoded="false"><![CDATA[newVM = tempNewVm;]]></script>
+    <in-binding>
+      <bind name="tempNewVm" type="VC:VirtualMachine" export-name="tempNewVm"/>
+    </in-binding>
+    <out-binding>
+      <bind name="newVM" type="VC:VirtualMachine" export-name="newVM"/>
+    </out-binding>
+    <position y="528.6363636363636" x="1345.0"/>
+  </workflow-item>
+  <workflow-item name="item14" type="end" end-mode="0">
+    <position y="354.99999999999994" x="1705.0"/>
+  </workflow-item>
+  <workflow-item name="item15" out-name="item28" type="condition" alt-out-name="item16" comparator="0">
+    <display-name><![CDATA[Do sysprep?]]></display-name>
+    <script encoded="false"><![CDATA[//Generated by the system, cannot be edited
+return (doSysprep == true) ;]]></script>
+    <in-binding>
+      <bind name="doSysprep" type="boolean" export-name="doSysprep"/>
+    </in-binding>
+    <condition name="doSysprep" type="boolean" comparator="0" label="null">false</condition>
+    <position y="273.18181818181813" x="1345.0"/>
+  </workflow-item>
+  <workflow-item name="item16" type="end" end-mode="0">
+    <position y="273.18181818181813" x="1525.0"/>
+  </workflow-item>
+  <workflow-item name="item18" out-name="item19" type="condition" alt-out-name="item20" comparator="0">
+    <display-name><![CDATA[Power on?]]></display-name>
+    <script encoded="false"><![CDATA[//Generated by the system, cannot be edited
+return (powerOn == true) ;]]></script>
+    <in-binding>
+      <bind name="powerOn" type="boolean" export-name="powerOn"/>
+    </in-binding>
+    <condition name="powerOn" type="boolean" comparator="0" label="null">false</condition>
+    <position y="155.0" x="1165.0"/>
+  </workflow-item>
+  <workflow-item name="item19" type="end" end-mode="0">
+    <position y="155.0" x="1365.0"/>
+  </workflow-item>
+  <workflow-item name="item21" type="end" end-mode="0">
+    <position y="73.18181818181817" x="1365.0"/>
+  </workflow-item>
+  <workflow-item name="item26" out-name="item4" type="task" script-module="com.vmware.library.vc.vm.spec/getConfigSpecSimple">
+    <display-name><![CDATA[getConfigSpecSimple]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.vc.vm.spec").getConfigSpecSimple(deviceChange,files,flags,memoryMB,name,numCPUs) ;]]></script>
+    <in-binding>
+      <bind name="deviceChange" type="Array/Any" export-name="deviceChange">
+        <description><![CDATA[[optional] Array of VirtualDeviceConfigSpec: Set of virtual devices being modified by the configuration operation. ]]></description>
+      </bind>
+      <bind name="files" type="Any" explicitly-not-bound="true" export-name="NULL">
+        <description><![CDATA[[optional] VirtualMachineFileInfo: Information about virtual machine files]]></description>
+      </bind>
+      <bind name="flags" type="Any" explicitly-not-bound="true" export-name="NULL">
+        <description><![CDATA[[optional] VirtualMachineFlagInfo: Additional flags for a virtual machine. ]]></description>
+      </bind>
+      <bind name="memoryMB" type="number" explicitly-not-bound="true" export-name="NULL">
+        <description><![CDATA[[optional] Size of a virtual machine's memory, in MB. ]]></description>
+      </bind>
+      <bind name="name" type="string" explicitly-not-bound="true" export-name="NULL">
+        <description><![CDATA[[optional] Display name of the virtual machine. ]]></description>
+      </bind>
+      <bind name="numCPUs" type="number" explicitly-not-bound="true" export-name="NULL">
+        <description><![CDATA[[optional] Number of virtual processors in a virtual machine.]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Any" export-name="config"/>
+    </out-binding>
+    <description><![CDATA[The ConfigSpec data object type encapsulates configuration settings when creating or reconfiguring a virtual machine. To support incremental changes, these properties are all optional. 
+Basic Version]]></description>
+    <position y="665.0" x="745.0"/>
+  </workflow-item>
+  <workflow-item name="item17" out-name="item18" business-status="Waiting for Sysprep to complete" type="task" script-module="com.vmware.library.vc.vm.tools/vim3WaitDnsNameInTools">
+    <display-name><![CDATA[vim3WaitDnsNameInTools]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+System.getModule("com.vmware.library.vc.vm.tools").vim3WaitDnsNameInTools(vm,pollingRate,dnsNameToWait,timeout,addNumberToName) ;]]></script>
+    <in-binding>
+      <bind name="vm" type="VC:VirtualMachine" export-name="tempNewVm">
+        <description><![CDATA[VM in which the action look to get the new DNS Name]]></description>
+      </bind>
+      <bind name="pollingRate" type="number" export-name="pollingRate">
+        <description><![CDATA[Time between all request information on the tools [seconds]]]></description>
+      </bind>
+      <bind name="dnsNameToWait" type="string" export-name="clientName">
+        <description><![CDATA[Define a specific DNS name to wait for (either in compute.dunes.ch or compute form)]]></description>
+      </bind>
+      <bind name="timeout" type="number" export-name="timeout">
+        <description><![CDATA[Timeout before throwing a timeout exception [minutes]]]></description>
+      </bind>
+      <bind name="addNumberToName" type="boolean" export-name="addNumberToName">
+        <description><![CDATA[Specify if the DNS name has an automatically number added at end (not known at clone time)]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Wait for a given name in the DNS guest informations (VMware tools).
+
+Exception:
+- Timeout: When timeout is reached]]></description>
+    <position y="228.63636363636363" x="1165.0"/>
+  </workflow-item>
+  <workflow-item name="item23" out-name="item22" type="task" script-module="com.vmware.library.vc.vm.network/getNicByNumber">
+    <display-name><![CDATA[getNicByNumber]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.vc.vm.network").getNicByNumber(vm,nicPosition) ;]]></script>
+    <in-binding>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vm">
+        <description><![CDATA[VM from which to get the network card]]></description>
+      </bind>
+      <bind name="nicPosition" type="number" export-name="nicPosition">
+        <description><![CDATA[Let you choose if you want to get the 1st, 2nd... 5th network card. If no valid value, 1st if used.]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Any" export-name="sourceVirtualEthernetCard"/>
+    </out-binding>
+    <description><![CDATA[Return a Network card device (VimVirtualE1000, VimVirtualVmxnet, VimVirtualPCNet32). The network position let you choose if you want to get the 1st, 2nd... 5th network card.]]></description>
+    <position y="528.6363636363636" x="745.0"/>
+  </workflow-item>
+  <workflow-item name="item20" out-name="item21" type="link" linked-workflow-id="BD80808080808080808080808080808075C280800122528313869552e41805bb1">
+    <display-name><![CDATA[Shutdown guest OS and wait]]></display-name>
+    <in-binding>
+      <bind name="vm" type="VC:VirtualMachine" export-name="tempNewVm"/>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Shutdown guest OS and wait.]]></description>
+    <position y="83.18181818181817" x="1165.0"/>
+  </workflow-item>
+  <workflow-item name="item9" out-name="item10" type="condition" alt-out-name="item29" comparator="0">
+    <display-name><![CDATA[Net1 Defined?]]></display-name>
+    <script encoded="false"><![CDATA[//Generated by the system, cannot be edited
+return (nicNumber >= 1.0) ;]]></script>
+    <in-binding>
+      <bind name="nicNumber" type="number" export-name="nicNumber"/>
+    </in-binding>
+    <condition name="nicNumber" type="number" comparator="5" label="null">1.0</condition>
+    <position y="318.6363636363636" x="145.0"/>
+  </workflow-item>
+  <workflow-item name="item10" out-name="item27" type="link" linked-workflow-id="BD80808080808080808080808080808094C280800122528313869552e41805bb1">
+    <display-name><![CDATA[Get Nic 1 Setting Map]]></display-name>
+    <in-binding>
+      <bind name="dhcp" type="boolean" export-name="nic1Dhcp">
+        <description><![CDATA[Use a DHCP server to configure the virtual network adapter. ]]></description>
+      </bind>
+      <bind name="dnsDomain" type="string" export-name="nic1DnsDomain">
+        <description><![CDATA[[Optional] A DNS domain suffix such as dunes.ch. ]]></description>
+      </bind>
+      <bind name="dnsServerList" type="Array/string" export-name="nic1DnsServerList">
+        <description><![CDATA[[Optional] A list of server IP addresses to use for DNS lookup in a Windows guest operating system.]]></description>
+      </bind>
+      <bind name="gateway" type="Array/string" export-name="nic1Gateway">
+        <description><![CDATA[[Optional] List of gateways, in order of preference. ]]></description>
+      </bind>
+      <bind name="ipAddress" type="string" export-name="nic1IpAddress">
+        <description><![CDATA[A Fixed valid IP Address]]></description>
+      </bind>
+      <bind name="macAddress" type="string" export-name="nic1MacAddress">
+        <description><![CDATA[[Optional] The MAC address of a network adapter being customized. If it is not included, the customization process maps the settings from the virtual machine's network adapters, in PCI slot order.]]></description>
+      </bind>
+      <bind name="netBIOS" type="VC:CustomizationNetBIOSMode" export-name="nic1NetBIOS">
+        <description><![CDATA[[Optional] NetBIOS setting for Windows. ]]></description>
+      </bind>
+      <bind name="primaryWINS" type="string" export-name="nic1PrimaryWINS">
+        <description><![CDATA[[Optional] The IP address of the primary WINS server. This property is ignored for Linux guest operating systems. ]]></description>
+      </bind>
+      <bind name="secondaryWINS" type="string" export-name="nic1SecondaryWINS">
+        <description><![CDATA[[Optional] The IP address of the secondary WINS server. This property is ignored for Linux guest operating systems. ]]></description>
+      </bind>
+      <bind name="subnetMask" type="string" export-name="nic1SubnetMask">
+        <description><![CDATA[[Optional] Subnet mask for this virtual network adapter. ]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="adapterMapping" type="Any" export-name="adapterMapping">
+        <description><![CDATA[Data object type to associate a virtual network adapter with its IP settings. ]]></description>
+      </bind>
+    </out-binding>
+    <position y="328.6363636363636" x="285.0"/>
+  </workflow-item>
+  <workflow-item name="item27" out-name="item29" type="task">
+    <display-name><![CDATA[Nic -> Nic[]]]></display-name>
+    <script encoded="false"><![CDATA[nicSettingMaps.push(adapterMapping);]]></script>
+    <in-binding>
+      <bind name="nicSettingMaps" type="Array/Any" export-name="nicSettingMaps"/>
+      <bind name="adapterMapping" type="Any" export-name="adapterMapping"/>
+    </in-binding>
+    <out-binding>
+      <bind name="nicSettingMaps" type="Array/Any" export-name="nicSettingMaps"/>
+    </out-binding>
+    <position y="364.99999999999994" x="285.0"/>
+  </workflow-item>
+  <workflow-item name="item29" out-name="item30" type="condition" alt-out-name="item32" comparator="0">
+    <display-name><![CDATA[Net2 Defined?]]></display-name>
+    <script encoded="false"><![CDATA[//Generated by the system, cannot be edited
+return (nicNumber >= 2.0) ;]]></script>
+    <in-binding>
+      <bind name="nicNumber" type="number" export-name="nicNumber"/>
+    </in-binding>
+    <condition name="nicNumber" type="number" comparator="5" label="null">2.0</condition>
+    <position y="400.45454545454544" x="145.0"/>
+  </workflow-item>
+  <workflow-item name="item30" out-name="item31" type="link" linked-workflow-id="BD80808080808080808080808080808094C280800122528313869552e41805bb1">
+    <display-name><![CDATA[Get Nic 2 Setting Map]]></display-name>
+    <in-binding>
+      <bind name="dhcp" type="boolean" export-name="nic2Dhcp">
+        <description><![CDATA[Use a DHCP server to configure the virtual network adapter. ]]></description>
+      </bind>
+      <bind name="dnsDomain" type="string" export-name="nic2DnsDomain">
+        <description><![CDATA[[Optional] A DNS domain suffix such as dunes.ch. ]]></description>
+      </bind>
+      <bind name="dnsServerList" type="Array/string" export-name="nic2DnsServerList">
+        <description><![CDATA[[Optional] A list of server IP addresses to use for DNS lookup in a Windows guest operating system.]]></description>
+      </bind>
+      <bind name="gateway" type="Array/string" export-name="nic2Gateway">
+        <description><![CDATA[[Optional] List of gateways, in order of preference. ]]></description>
+      </bind>
+      <bind name="ipAddress" type="string" export-name="nic2IpAddress">
+        <description><![CDATA[A Fixed valid IP Address]]></description>
+      </bind>
+      <bind name="macAddress" type="string" export-name="nic2MacAddress">
+        <description><![CDATA[[Optional] The MAC address of a network adapter being customized. If it is not included, the customization process maps the settings from the virtual machine's network adapters, in PCI slot order.]]></description>
+      </bind>
+      <bind name="netBIOS" type="VC:CustomizationNetBIOSMode" export-name="nic2NetBIOS">
+        <description><![CDATA[[Optional] NetBIOS setting for Windows. ]]></description>
+      </bind>
+      <bind name="primaryWINS" type="string" export-name="nic2PrimaryWINS">
+        <description><![CDATA[[Optional] The IP address of the primary WINS server. This property is ignored for Linux guest operating systems. ]]></description>
+      </bind>
+      <bind name="secondaryWINS" type="string" export-name="nic2SecondaryWINS">
+        <description><![CDATA[[Optional] The IP address of the secondary WINS server. This property is ignored for Linux guest operating systems. ]]></description>
+      </bind>
+      <bind name="subnetMask" type="string" export-name="nic2SubnetMask">
+        <description><![CDATA[[Optional] Subnet mask for this virtual network adapter. ]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="adapterMapping" type="Any" export-name="adapterMapping">
+        <description><![CDATA[Data object type to associate a virtual network adapter with its IP settings. ]]></description>
+      </bind>
+    </out-binding>
+    <position y="410.45454545454544" x="285.0"/>
+  </workflow-item>
+  <workflow-item name="item31" out-name="item32" type="task">
+    <display-name><![CDATA[Nic -> Nic[]]]></display-name>
+    <script encoded="false"><![CDATA[nicSettingMaps.push(adapterMapping);]]></script>
+    <in-binding>
+      <bind name="nicSettingMaps" type="Array/Any" export-name="nicSettingMaps"/>
+      <bind name="adapterMapping" type="Any" export-name="adapterMapping"/>
+    </in-binding>
+    <out-binding>
+      <bind name="nicSettingMaps" type="Array/Any" export-name="nicSettingMaps"/>
+    </out-binding>
+    <position y="446.81818181818176" x="285.0"/>
+  </workflow-item>
+  <workflow-item name="item32" out-name="item33" type="condition" alt-out-name="item35" comparator="0">
+    <display-name><![CDATA[Nic3 Defined?]]></display-name>
+    <script encoded="false"><![CDATA[//Generated by the system, cannot be edited
+return (nicNumber >= 3.0) ;]]></script>
+    <in-binding>
+      <bind name="nicNumber" type="number" export-name="nicNumber"/>
+    </in-binding>
+    <condition name="nicNumber" type="number" comparator="5" label="null">3.0</condition>
+    <position y="473.18181818181813" x="145.0"/>
+  </workflow-item>
+  <workflow-item name="item33" out-name="item34" type="link" linked-workflow-id="BD80808080808080808080808080808094C280800122528313869552e41805bb1">
+    <display-name><![CDATA[Get Nic 3 Setting Map]]></display-name>
+    <in-binding>
+      <bind name="dhcp" type="boolean" export-name="nic3Dhcp">
+        <description><![CDATA[Use a DHCP server to configure the virtual network adapter. ]]></description>
+      </bind>
+      <bind name="dnsDomain" type="string" export-name="nic3DnsDomain">
+        <description><![CDATA[[Optional] A DNS domain suffix such as dunes.ch. ]]></description>
+      </bind>
+      <bind name="dnsServerList" type="Array/string" export-name="nic3DnsServerList">
+        <description><![CDATA[[Optional] A list of server IP addresses to use for DNS lookup in a Windows guest operating system.]]></description>
+      </bind>
+      <bind name="gateway" type="Array/string" export-name="nic3Gateway">
+        <description><![CDATA[[Optional] List of gateways, in order of preference. ]]></description>
+      </bind>
+      <bind name="ipAddress" type="string" export-name="nic3IpAddress">
+        <description><![CDATA[A Fixed valid IP Address]]></description>
+      </bind>
+      <bind name="macAddress" type="string" export-name="nic3MacAddress">
+        <description><![CDATA[[Optional] The MAC address of a network adapter being customized. If it is not included, the customization process maps the settings from the virtual machine's network adapters, in PCI slot order.]]></description>
+      </bind>
+      <bind name="netBIOS" type="VC:CustomizationNetBIOSMode" export-name="nic3NetBIOS">
+        <description><![CDATA[[Optional] NetBIOS setting for Windows. ]]></description>
+      </bind>
+      <bind name="primaryWINS" type="string" export-name="nic3PrimaryWINS">
+        <description><![CDATA[[Optional] The IP address of the primary WINS server. This property is ignored for Linux guest operating systems. ]]></description>
+      </bind>
+      <bind name="secondaryWINS" type="string" export-name="nic3SecondaryWINS">
+        <description><![CDATA[[Optional] The IP address of the secondary WINS server. This property is ignored for Linux guest operating systems. ]]></description>
+      </bind>
+      <bind name="subnetMask" type="string" export-name="nic3SubnetMask">
+        <description><![CDATA[[Optional] Subnet mask for this virtual network adapter. ]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="adapterMapping" type="Any" export-name="adapterMapping">
+        <description><![CDATA[Data object type to associate a virtual network adapter with its IP settings. ]]></description>
+      </bind>
+    </out-binding>
+    <position y="483.18181818181813" x="285.0"/>
+  </workflow-item>
+  <workflow-item name="item34" out-name="item35" type="task">
+    <display-name><![CDATA[Nic -> Nic[]]]></display-name>
+    <script encoded="false"><![CDATA[nicSettingMaps.push(adapterMapping);]]></script>
+    <in-binding>
+      <bind name="nicSettingMaps" type="Array/Any" export-name="nicSettingMaps"/>
+      <bind name="adapterMapping" type="Any" export-name="adapterMapping"/>
+    </in-binding>
+    <out-binding>
+      <bind name="nicSettingMaps" type="Array/Any" export-name="nicSettingMaps"/>
+    </out-binding>
+    <position y="528.6363636363636" x="285.0"/>
+  </workflow-item>
+  <workflow-item name="item35" out-name="item36" type="condition" alt-out-name="item7" comparator="0">
+    <display-name><![CDATA[Net4 Defined?]]></display-name>
+    <script encoded="false"><![CDATA[//Generated by the system, cannot be edited
+return (nicNumber >= 4.0) ;]]></script>
+    <in-binding>
+      <bind name="nicNumber" type="number" export-name="nicNumber"/>
+    </in-binding>
+    <condition name="nicNumber" type="number" comparator="5" label="null">4.0</condition>
+    <position y="555.0" x="145.0"/>
+  </workflow-item>
+  <workflow-item name="item36" out-name="item37" type="link" linked-workflow-id="BD80808080808080808080808080808094C280800122528313869552e41805bb1">
+    <display-name><![CDATA[Get Nic 4 Setting Map]]></display-name>
+    <in-binding>
+      <bind name="dhcp" type="boolean" export-name="nic4Dhcp">
+        <description><![CDATA[Use a DHCP server to configure the virtual network adapter. ]]></description>
+      </bind>
+      <bind name="dnsDomain" type="string" export-name="nic4DnsDomain">
+        <description><![CDATA[[Optional] A DNS domain suffix such as dunes.ch. ]]></description>
+      </bind>
+      <bind name="dnsServerList" type="Array/string" export-name="nic4DnsServerList">
+        <description><![CDATA[[Optional] A list of server IP addresses to use for DNS lookup in a Windows guest operating system.]]></description>
+      </bind>
+      <bind name="gateway" type="Array/string" export-name="nic4Gateway">
+        <description><![CDATA[[Optional] List of gateways, in order of preference. ]]></description>
+      </bind>
+      <bind name="ipAddress" type="string" export-name="nic4IpAddress">
+        <description><![CDATA[A Fixed valid IP Address]]></description>
+      </bind>
+      <bind name="macAddress" type="string" export-name="nic4MacAddress">
+        <description><![CDATA[[Optional] The MAC address of a network adapter being customized. If it is not included, the customization process maps the settings from the virtual machine's network adapters, in PCI slot order.]]></description>
+      </bind>
+      <bind name="netBIOS" type="VC:CustomizationNetBIOSMode" export-name="nic4NetBIOS">
+        <description><![CDATA[[Optional] NetBIOS setting for Windows. ]]></description>
+      </bind>
+      <bind name="primaryWINS" type="string" export-name="nic4PrimaryWINS">
+        <description><![CDATA[[Optional] The IP address of the primary WINS server. This property is ignored for Linux guest operating systems. ]]></description>
+      </bind>
+      <bind name="secondaryWINS" type="string" export-name="nic4SecondaryWINS">
+        <description><![CDATA[[Optional] The IP address of the secondary WINS server. This property is ignored for Linux guest operating systems. ]]></description>
+      </bind>
+      <bind name="subnetMask" type="string" export-name="nic4SubnetMask">
+        <description><![CDATA[[Optional] Subnet mask for this virtual network adapter. ]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="adapterMapping" type="Any" export-name="adapterMapping">
+        <description><![CDATA[Data object type to associate a virtual network adapter with its IP settings. ]]></description>
+      </bind>
+    </out-binding>
+    <position y="565.0" x="285.0"/>
+  </workflow-item>
+  <workflow-item name="item37" out-name="item7" type="task">
+    <display-name><![CDATA[Nic -> Nic[]]]></display-name>
+    <script encoded="false"><![CDATA[nicSettingMaps.push(adapterMapping);]]></script>
+    <in-binding>
+      <bind name="nicSettingMaps" type="Array/Any" export-name="nicSettingMaps"/>
+      <bind name="adapterMapping" type="Any" export-name="adapterMapping"/>
+    </in-binding>
+    <out-binding>
+      <bind name="nicSettingMaps" type="Array/Any" export-name="nicSettingMaps"/>
+    </out-binding>
+    <position y="610.4545454545454" x="285.0"/>
+  </workflow-item>
+  <workflow-item name="item22" out-name="item26" type="link" linked-workflow-id="BD8080808080808080808080808080804DC280800122528313869552e41805bb1">
+    <display-name><![CDATA[Get Multiple VirtualEthernetCard devices change (add/remove)]]></display-name>
+    <in-binding>
+      <bind name="sourceVm" type="VC:VirtualMachine" export-name="vm">
+        <description><![CDATA[Clone operation Source VM]]></description>
+      </bind>
+      <bind name="numberOfNic" type="number" export-name="nicNumber">
+        <description><![CDATA[Number of network interface card for the newly cloned VM]]></description>
+      </bind>
+      <bind name="nic1Type" type="string" explicitly-not-bound="true" export-name="NULL">
+        <description><![CDATA[[Optional] Type of Network Interface Card 1 (default is VirtualPCNet32)]]></description>
+      </bind>
+      <bind name="nic1Network" type="VC:Network" export-name="nic1Network">
+        <description><![CDATA[[Optional] Network for Network Interface Card 1 (if not specified, use same as Source)]]></description>
+      </bind>
+      <bind name="nic2Type" type="string" explicitly-not-bound="true" export-name="NULL">
+        <description><![CDATA[[Optional] Type of Network Interface Card 2 (default is VirtualPCNet32)]]></description>
+      </bind>
+      <bind name="nic2Network" type="VC:Network" export-name="nic2Network">
+        <description><![CDATA[[Optional] Network for Network Interface Card 2 (if not specified, use same as Source)]]></description>
+      </bind>
+      <bind name="nic3Type" type="string" explicitly-not-bound="true" export-name="NULL">
+        <description><![CDATA[[Optional] Type of Network Interface Card 3 (default is VirtualPCNet32)]]></description>
+      </bind>
+      <bind name="nic3Network" type="VC:Network" export-name="nic3Network">
+        <description><![CDATA[[Optional] Network for Network Interface Card 3 (if not specified, use same as Source)]]></description>
+      </bind>
+      <bind name="nic4Type" type="string" explicitly-not-bound="true" export-name="NULL">
+        <description><![CDATA[[Optional] Type of Network Interface Card 4 (default is VirtualPCNet32)]]></description>
+      </bind>
+      <bind name="nic4Network" type="VC:Network" export-name="nic4Network">
+        <description><![CDATA[[Optional] Network for Network Interface Card 4 (if not specified, use same as Source)]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="virtualDeviceChanges" type="Array/Any" export-name="deviceChange">
+        <description><![CDATA[VirtualDeviceChanges for Network cards]]></description>
+      </bind>
+    </out-binding>
+    <position y="610.4545454545454" x="745.0"/>
+  </workflow-item>
+  <workflow-item name="item24" out-name="item25" type="task" script-module="com.vmware.library.vc.vm/customizeVM">
+    <display-name><![CDATA[customizeVM]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.vc.vm").customizeVM(vm,customizationSpec) ;]]></script>
+    <in-binding>
+      <bind name="vm" type="VC:VirtualMachine" export-name="tempNewVm">
+        <description><![CDATA[VM to clone]]></description>
+      </bind>
+      <bind name="customizationSpec" type="Any" export-name="customization">
+        <description><![CDATA[VimCustomizationSpec: Specifies the ustomization for the virtual machine. ]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="VC:Task" export-name="task"/>
+    </out-binding>
+    <description><![CDATA[Try to customize a VM. (no clone operation done)
+
+If any Exception appens, raise a "VMware3:CloneException" with no object attached.]]></description>
+    <position y="483.18181818181813" x="1345.0"/>
+  </workflow-item>
+  <workflow-item name="item25" out-name="item12" type="task" script-module="com.vmware.library.vc.basic/vim3WaitTaskEnd">
+    <display-name><![CDATA[vim3WaitTaskEnd]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.vc.basic").vim3WaitTaskEnd(task,progress,pollRate) ;]]></script>
+    <in-binding>
+      <bind name="pollRate" type="number" export-name="pollRateCustomization">
+        <description><![CDATA[Polling rate for the task state [seconds]]]></description>
+      </bind>
+      <bind name="progress" type="boolean" export-name="progress">
+        <description><![CDATA[Log progess while waiting for the task]]></description>
+      </bind>
+      <bind name="task" type="VC:Task" export-name="task">
+        <description><![CDATA[Task to Wait for]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Any" explicitly-not-bound="true"/>
+    </out-binding>
+    <description><![CDATA[Wait a VIM 3 Task to end.
+When task ended, return the ]]></description>
+    <position y="446.81818181818176" x="1345.0"/>
+  </workflow-item>
+  <workflow-item name="item28" out-name="item17" type="link" linked-workflow-id="BD808080808080808080808080808080CCC280800122528313869552e41805bb1">
+    <display-name><![CDATA[Start VM and wait]]></display-name>
+    <in-binding>
+      <bind name="vm" type="VC:VirtualMachine" export-name="tempNewVm"/>
+      <bind name="host" type="VC:HostSystem" explicitly-not-bound="true" export-name="NULL">
+        <description><![CDATA[[Optional] The host where the virtual machine is to be powered on. If no host is specified, the current associated host is used. This field must specify a host that is part of the same compute resource that the virtual machine is currently associated with. If this host is not compatible, the current host association is used. ]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Starts a virtual machine.]]></description>
+    <position y="228.63636363636363" x="1345.0"/>
+  </workflow-item>
+  <workflow-item name="item38" out-name="item0" type="task">
+    <display-name><![CDATA[Set datastore if null]]></display-name>
+    <script encoded="false"><![CDATA[if (datastore != null) {
+	targetDatastore = datastore;
+}
+else {
+	targetDatastore = vm.datastore[0];
+}]]></script>
+    <in-binding>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vm"/>
+      <bind name="datastore" type="VC:Datastore" export-name="datastore"/>
+    </in-binding>
+    <out-binding>
+      <bind name="targetDatastore" type="VC:Datastore" export-name="targetDatastore"/>
+    </out-binding>
+    <position y="40.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item39" out-name="item14" type="link" linked-workflow-id="BD80808080808080808080808080808093C380800122528313869552e41805bb1">
+    <display-name><![CDATA[Mark as Template]]></display-name>
+    <in-binding>
+      <bind name="vm" type="VC:VirtualMachine" export-name="tempNewVm">
+        <description><![CDATA[The VM to mark as template]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Mark an existing VM as a template, preventing it to start]]></description>
+    <position y="364.99999999999994" x="1525.0"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item3" type="link" linked-workflow-id="98808080808080808080808080808080D58080800123417702800022547c1c312">
+    <display-name><![CDATA[Setup VM for Linked Clone]]></display-name>
+    <in-binding>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vm"/>
+      <bind name="host" type="VC:HostSystem" export-name="host"/>
+      <bind name="pool" type="VC:ResourcePool" export-name="pool"/>
+    </in-binding>
+    <out-binding>
+      <bind name="snapshot" type="VC:VirtualMachineSnapshot" export-name="snapshot"/>
+      <bind name="wasTemplate" type="boolean" export-name="wasTemplate"/>
+    </out-binding>
+    <position y="700.8636363636363" x="1345.0"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item40" type="task" script-module="com.vmware.library.vc.vm/linkedCloneVM">
+    <display-name><![CDATA[linkedCloneVM]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.vc.vm").linkedCloneVM(vm,folder,name,spec,snapshot) ;]]></script>
+    <in-binding>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vm">
+        <description><![CDATA[VM to clone]]></description>
+      </bind>
+      <bind name="folder" type="VC:VmFolder" export-name="folder">
+        <description><![CDATA[The location of the new virtual machine. ]]></description>
+      </bind>
+      <bind name="name" type="string" export-name="name">
+        <description><![CDATA[The name of the new virtual machine. ]]></description>
+      </bind>
+      <bind name="spec" type="Any" export-name="spec">
+        <description><![CDATA[VcVirtualMachineCloneSpec: Specifies how to clone the virtual machine. ]]></description>
+      </bind>
+      <bind name="snapshot" type="VC:VirtualMachineSnapshot" export-name="snapshot">
+        <description><![CDATA[VcVirtualMachineSnapshot to base the clone of]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="VC:Task" export-name="task"/>
+    </out-binding>
+    <description><![CDATA[Try to clone a VM. 
+
+If any Exception appens, raise a "VMware3:CloneException" with no object attached.]]></description>
+    <position y="646.3181818181818" x="1345.0"/>
+  </workflow-item>
+  <workflow-item name="item40" out-name="item13" catch-name="item43" throw-bind-name="errorCode" type="task" script-module="com.vmware.library.vc.basic/vim3WaitTaskEnd">
+    <display-name><![CDATA[vim3WaitTaskEnd]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.vc.basic").vim3WaitTaskEnd(task,progress,pollRate) ;]]></script>
+    <in-binding>
+      <bind name="pollRate" type="number" export-name="pollRate">
+        <description><![CDATA[Polling rate for the task state [seconds]]]></description>
+      </bind>
+      <bind name="progress" type="boolean" export-name="progress">
+        <description><![CDATA[Log progess while waiting for the task]]></description>
+      </bind>
+      <bind name="task" type="VC:Task" export-name="task">
+        <description><![CDATA[Task to Wait for]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="VC:VirtualMachine" export-name="tempNewVm"/>
+    </out-binding>
+    <description><![CDATA[Wait a VIM 3 Task to end.
+When task ended, return the ]]></description>
+    <position y="591.7727272727273" x="1345.0"/>
+  </workflow-item>
+  <workflow-item name="item42" out-name="item44" type="link" linked-workflow-id="98808080808080808080808080808080DC8080800123417702800022547c1c312">
+    <display-name><![CDATA[Restore VM from Linked Clone setup]]></display-name>
+    <in-binding>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vm"/>
+      <bind name="snapshot" type="VC:VirtualMachineSnapshot" export-name="snapshot"/>
+      <bind name="wasTemplate" type="boolean" export-name="wasTemplate"/>
+    </in-binding>
+    <out-binding/>
+    <position y="683.1818181818181" x="1505.0"/>
+  </workflow-item>
+  <workflow-item name="item43" out-name="item42" content-mode="y" type="task" interaction="l">
+    <display-name><![CDATA[System+Server error]]></display-name>
+    <script encoded="false"><![CDATA[//Auto-generated script
+System.error(text + " - " + object);
+Server.error(text, object);
+]]></script>
+    <in-binding>
+      <bind name="text" type="String" export-name="errorCode">
+        <description><![CDATA[The text to log]]></description>
+      </bind>
+      <bind name="object" type="Any" explicitly-not-bound="true" export-name="NULL">
+        <description><![CDATA[The text to log and additional info]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Log the input text to the console and the server log with level 'error']]></description>
+    <position y="646.8181818181818" x="1505.0"/>
+  </workflow-item>
+  <workflow-item name="item44" throw-bind-name="errorCode" type="end" end-mode="1">
+    <position y="673.1818181818181" x="1665.0"/>
+  </workflow-item>
+  <workflow-item name="item41" out-name="item45" type="condition" alt-out-name="item46" comparator="0">
+    <display-name><![CDATA[Decision]]></display-name>
+    <script encoded="false"><![CDATA[//Generated by the system, cannot be edited
+return (Snapshot  != null ) ;]]></script>
+    <in-binding>
+      <bind name="Snapshot" type="VC:VirtualMachineSnapshot" export-name="Snapshot"/>
+    </in-binding>
+    <condition name="Snapshot" type="VC:VirtualMachineSnapshot" comparator="0" label="null"/>
+    <position y="654.5" x="1185.0"/>
+  </workflow-item>
+  <workflow-item name="item46" out-name="item2" type="task">
+    <display-name><![CDATA[Will create snapshot]]></display-name>
+    <script encoded="false"><![CDATA[System.log("Snapshot is null, Creating a new snapshot");]]></script>
+    <in-binding/>
+    <out-binding/>
+    <position y="728.1363636363636" x="1185.0"/>
+  </workflow-item>
+  <workflow-item name="item45" out-name="item3" type="task">
+    <display-name><![CDATA[No snapshot creation]]></display-name>
+    <script encoded="false"><![CDATA[System.log("Snapshot is defined");
+snapshot = Snapshot;]]></script>
+    <in-binding>
+      <bind name="Snapshot" type="VC:VirtualMachineSnapshot" export-name="Snapshot"/>
+    </in-binding>
+    <out-binding>
+      <bind name="snapshot" type="VC:VirtualMachineSnapshot" export-name="snapshot"/>
+    </out-binding>
+    <position y="591.7727272727273" x="1184.5"/>
+  </workflow-item>
+  <workflow-item name="item8" out-name="item5" type="task" script-module="com.vmware.library.vc.vm.spec/getCustomizationGlobalIPSettingsWithDomainAsString">
+    <display-name><![CDATA[getCustomizationGlobalIPSettingsWithDomainAsString]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.vc.vm.spec").getCustomizationGlobalIPSettingsWithDomainAsString(dnsServerList,dnsSuffix) ;]]></script>
+    <in-binding>
+      <bind name="dnsServerList" type="Array/string" export-name="nic1DnsServerList">
+        <description><![CDATA[[Optional] List of DNS servers, for a virtual network adapter with a static IP address]]></description>
+      </bind>
+      <bind name="dnsSuffix" type="string" export-name="nic1DnsDomain">
+        <description><![CDATA[[Optional] List of name resolution suffixes for the virtual network adapter]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Any" export-name="globalIPSettings"/>
+    </out-binding>
+    <description><![CDATA[A collection of global IP settings for a virtual network adapter. In Linux, DNS server settings are global. The settings can either be statically set or supplied by a DHCP server. ]]></description>
+    <position y="219.04545454545453" x="145.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[VMware Information]]></title>
+      <p-group>
+        <title><![CDATA[Basic VM Information]]></title>
+        <p-param name="vm">
+          <desc><![CDATA[Virtual machine of which to create a linked clone]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual kind="static" name="show-select-as" type="string"><![CDATA[live-search]]></p-qual>
+        </p-param>
+        <p-param name="name">
+          <desc><![CDATA[Name of the new virtual machine]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+        <p-param name="template">
+          <desc><![CDATA[Mark the new virtual machine as a template]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+        <p-param name="Snapshot">
+          <desc><![CDATA[Snapshot (If null, a new snapshot shall be created)]]></desc>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Running informations]]></title>
+        <p-qual kind="ognl" name="notVisible" type="boolean"><![CDATA[#template]]></p-qual>
+        <p-param name="powerOn">
+          <desc><![CDATA[Power on the new virtual machine]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+        <p-param name="pool">
+          <desc><![CDATA[Resource pool]]></desc>
+          <p-qual kind="static" name="show-select-as" type="string"><![CDATA[tree]]></p-qual>
+          <p-qual kind="ognl" name="sdkRootObject" type="any"><![CDATA[GetAction("com.vmware.library.vc.basic","getVimHostForVimObject").call( #vm )]]></p-qual>
+        </p-param>
+        <p-param name="host">
+          <desc><![CDATA[Host]]></desc>
+          <p-qual kind="static" name="show-select-as" type="string"><![CDATA[live-search]]></p-qual>
+          <p-qual kind="ognl" name="linkedEnumeration" type="Array/VC:HostSystem"><![CDATA[GetAction("com.vmware.library.vc.datastore","getAllAvaiblableHostForVM").call( #vm )]]></p-qual>
+        </p-param>
+        <p-param name="nicNumber">
+          <desc><![CDATA[Number of virtual network cards for the new virtual machine]]></desc>
+          <p-qual kind="ognl" name="linkedEnumeration" type="Array/number"><![CDATA[#nicNumberValues]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="number"><![CDATA[GetAction("com.vmware.library.vc.vm.network","getNumberOfNic").call( #vm )]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Location informations]]></title>
+        <p-param name="folder">
+          <desc><![CDATA[Virtual machine folder]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual kind="static" name="show-select-as" type="string"><![CDATA[tree]]></p-qual>
+          <p-qual kind="ognl" name="sdkRootObject" type="any"><![CDATA[GetAction("com.vmware.library.vc.basic","getVimHostForVimObject").call( #vm )]]></p-qual>
+        </p-param>
+        <p-param name="datastore">
+          <desc><![CDATA[Datastore in which to store the virtual machine. If not specified, the current datastore is used]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[false]]></p-qual>
+          <p-qual kind="static" name="show-select-as" type="string"><![CDATA[list]]></p-qual>
+          <p-qual kind="ognl" name="linkedEnumeration" type="Array/VC:Datastore"><![CDATA[GetAction("com.vmware.library.vc.datastore","getDatastoreForHostAndResourcePool").call( #host , #pool, #vm )]]></p-qual>
+        </p-param>
+      </p-group>
+    </p-step>
+    <p-step>
+      <title><![CDATA[Microsoft Customization Information]]></title>
+      <p-group>
+        <title><![CDATA[User information]]></title>
+        <p-param name="fullName">
+          <desc><![CDATA[User's full name]]></desc>
+        </p-param>
+        <p-param name="orgName">
+          <desc><![CDATA[Organization name]]></desc>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Basic information]]></title>
+        <desc><![CDATA[Sysprep information is put in the virtual hard disk, even if you choose to not execute sysprep operations. Activating this options will only change the this workflow is responsible of the sysprep operations.]]></desc>
+        <p-param name="doSysprep">
+          <desc><![CDATA[Run the Sysprep operations and wait for the task to complete. Not used if the virtual machine is marked as template]]></desc>
+          <p-qual kind="ognl" name="defaultValue" type="boolean"><![CDATA[!#template]]></p-qual>
+          <p-qual kind="ognl" name="notVisible" type="boolean"><![CDATA[#template]]></p-qual>
+        </p-param>
+        <p-param name="clientName">
+          <desc><![CDATA[Name or prefix name of the Windows client]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+        <p-param name="newAdminPassword">
+          <desc><![CDATA[New local administrator password]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+        <p-param name="inTimezone">
+          <desc><![CDATA[Timezone for the newly created virtual machine]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[License information]]></title>
+        <p-param name="productId">
+          <desc><![CDATA[Windows key (ignored if template key is VLK)]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[false]]></p-qual>
+        </p-param>
+        <p-param name="licenseMode">
+          <desc><![CDATA[Server licensing mode]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual kind="static" name="defaultValue" type="VC:CustomizationLicenseDataMode"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='perSeat'&dunesName='VC:CustomizationLicenseDataMode']]></p-qual>
+        </p-param>
+        <p-param name="licenseUsers">
+          <desc><![CDATA[Number of licenses (only if License mode = PerServer)]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual kind="static" name="minNumberValue" type="Number"><![CDATA[0.0]]></p-qual>
+          <p-qual kind="static" name="defaultValue" type="number"><![CDATA[5.0]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Domain or Workgroup]]></title>
+        <desc><![CDATA[Only Domain OR Workgroup name can be set at same time.]]></desc>
+        <p-param name="joinDomain">
+          <desc><![CDATA[Domain name to join]]></desc>
+        </p-param>
+        <p-param name="joinWorkgroup">
+          <desc><![CDATA[Workgroup name to join]]></desc>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Domain Login information]]></title>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#joinDomain != ""]]></p-qual>
+        <p-param name="domainAdmin">
+          <desc><![CDATA[Domain user account used for authentication if the virtual machine is joining a domain]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[false]]></p-qual>
+        </p-param>
+        <p-param name="domainAdminUsername">
+          <desc><![CDATA[Username of the domain user account used for authentication if the virtual machine is joining a domain]]></desc>
+          <p-qual kind="ognl" name="mandatory" type="boolean"><![CDATA[((#joinDomain!="")&&(#joinDomain != null))]]></p-qual>
+        </p-param>
+        <p-param name="domainAdminPassword">
+          <desc><![CDATA[Password for the domain user account used for authentication if the virtual machine is joining a domain]]></desc>
+          <p-qual kind="ognl" name="mandatory" type="boolean"><![CDATA[((#joinDomain!="")&&(#joinDomain != null))]]></p-qual>
+        </p-param>
+      </p-group>
+    </p-step>
+    <p-step>
+      <title><![CDATA[Network 1 information]]></title>
+      <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#nicNumber >= 1]]></p-qual>
+      <p-group>
+        <title><![CDATA[Network interface]]></title>
+        <desc><![CDATA[If the mac address is not included, the customization process maps the settings from the virtual machine's network adapters, in PCI slot order.]]></desc>
+        <p-param name="nic1MacAddress">
+          <desc><![CDATA[The MAC address of a network adapter being customized]]></desc>
+          <p-qual kind="static" name="regexp" type="Regexp"><![CDATA[00:50:56:[0-3][0-9A-Fa-f](:[0-9A-Fa-f]{2}){2}]]></p-qual>
+        </p-param>
+        <p-param name="nic1Network">
+          <desc><![CDATA[Network on which to attach the virtual network interface]]></desc>
+          <p-qual kind="ognl" name="dataBinding" type="VC:Network"><![CDATA[GetAction("com.vmware.library.vc.vm.network","getNetworkForGivenNic").call(#vm, 1)]]></p-qual>
+          <p-qual kind="static" name="show-select-as" type="string"><![CDATA[list]]></p-qual>
+          <p-qual kind="ognl" name="linkedEnumeration" type="Array/VC:Network"><![CDATA[GetAction("com.vmware.library.vc.network","getNetworkForResourcePoolHostVm").call( #pool , #host , #vm )]]></p-qual>
+          <p-qual kind="ognl" name="mandatory" type="boolean"><![CDATA[#nicNumber >= 1]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Use DHCP]]></title>
+        <p-param name="nic1Dhcp">
+          <desc><![CDATA[Use a DHCP server to configure the virtual network adapter]]></desc>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Fixed IP]]></title>
+        <p-qual kind="ognl" name="notVisible" type="boolean"><![CDATA[#nic1Dhcp]]></p-qual>
+        <p-param name="nic1IpAddress">
+          <desc><![CDATA[Fixed valid IP address]]></desc>
+          <p-qual kind="static" name="regexp" type="Regexp"><![CDATA[\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b]]></p-qual>
+        </p-param>
+        <p-param name="nic1SubnetMask">
+          <desc><![CDATA[Subnet mask for this virtual network adapter]]></desc>
+          <p-qual kind="static" name="regexp" type="Regexp"><![CDATA[\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b]]></p-qual>
+        </p-param>
+        <p-param name="nic1Gateway">
+          <desc><![CDATA[List of gateways, in order of preference]]></desc>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Information Settable with or without DHCP]]></title>
+        <p-param name="nic1DnsDomain">
+          <desc><![CDATA[DNS domain suffix such as vmware.com]]></desc>
+        </p-param>
+        <p-param name="nic1DnsServerList">
+          <desc><![CDATA[List of DNS servers for a virtual network adapter with a static IP address]]></desc>
+        </p-param>
+        <p-param name="nic1NetBIOS">
+          <desc><![CDATA[NetBIOS setting for Windows]]></desc>
+        </p-param>
+        <p-param name="nic1PrimaryWINS">
+          <desc><![CDATA[The IP address of the primary WINS server]]></desc>
+          <p-qual kind="static" name="regexp" type="Regexp"><![CDATA[\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b]]></p-qual>
+        </p-param>
+        <p-param name="nic1SecondaryWINS">
+          <desc><![CDATA[The IP address of the secondary WINS server]]></desc>
+          <p-qual kind="static" name="regexp" type="Regexp"><![CDATA[\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b]]></p-qual>
+        </p-param>
+      </p-group>
+    </p-step>
+    <p-step>
+      <title><![CDATA[Network 2 information]]></title>
+      <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#nicNumber >= 2]]></p-qual>
+      <p-group>
+        <title><![CDATA[Network interface]]></title>
+        <p-param name="nic2MacAddress">
+          <desc><![CDATA[The MAC address of a network adapter being customized]]></desc>
+          <p-qual kind="static" name="regexp" type="Regexp"><![CDATA[00:50:56:[0-3][0-9A-Fa-f](:[0-9A-Fa-f]{2}){2}]]></p-qual>
+        </p-param>
+        <p-param name="nic2Network">
+          <desc><![CDATA[Network on which to attach the virtual network interface]]></desc>
+          <p-qual kind="ognl" name="dataBinding" type="VC:Network"><![CDATA[GetAction("com.vmware.library.vc.vm.network","getNetworkForGivenNic").call(#vm, 2)]]></p-qual>
+          <p-qual kind="static" name="show-select-as" type="string"><![CDATA[list]]></p-qual>
+          <p-qual kind="ognl" name="linkedEnumeration" type="Array/VC:Network"><![CDATA[GetAction("com.vmware.library.vc.network","getNetworkForResourcePoolHostVm").call( #pool , #host , #vm )]]></p-qual>
+          <p-qual kind="ognl" name="mandatory" type="boolean"><![CDATA[#nicNumber >= 2]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Use DHCP]]></title>
+        <p-param name="nic2Dhcp">
+          <desc><![CDATA[Use a DHCP server to configure the virtual network adapter]]></desc>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Fixed IP]]></title>
+        <p-qual kind="ognl" name="notVisible" type="boolean"><![CDATA[#nic2Dhcp]]></p-qual>
+        <p-param name="nic2IpAddress">
+          <desc><![CDATA[Fixed valid IP address]]></desc>
+          <p-qual kind="static" name="regexp" type="Regexp"><![CDATA[\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b]]></p-qual>
+        </p-param>
+        <p-param name="nic2SubnetMask">
+          <desc><![CDATA[Subnet mask for this virtual network adapter]]></desc>
+          <p-qual kind="static" name="regexp" type="Regexp"><![CDATA[\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b]]></p-qual>
+        </p-param>
+        <p-param name="nic2Gateway">
+          <desc><![CDATA[List of gateways, in order of preference]]></desc>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Information Settable with or without DHCP]]></title>
+        <p-param name="nic2DnsDomain">
+          <desc><![CDATA[DNS domain suffix such as vmware.com]]></desc>
+        </p-param>
+        <p-param name="nic2DnsServerList">
+          <desc><![CDATA[List of DNS servers for a virtual network adapter with a static IP address]]></desc>
+        </p-param>
+        <p-param name="nic2NetBIOS">
+          <desc><![CDATA[NetBIOS setting for Windows]]></desc>
+        </p-param>
+        <p-param name="nic2PrimaryWINS">
+          <desc><![CDATA[The IP address of the primary WINS server]]></desc>
+          <p-qual kind="static" name="regexp" type="Regexp"><![CDATA[\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b]]></p-qual>
+        </p-param>
+        <p-param name="nic2SecondaryWINS">
+          <desc><![CDATA[The IP address of the secondary WINS server]]></desc>
+          <p-qual kind="static" name="regexp" type="Regexp"><![CDATA[\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b]]></p-qual>
+        </p-param>
+      </p-group>
+    </p-step>
+    <p-step>
+      <title><![CDATA[Network 3 information]]></title>
+      <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#nicNumber >= 3]]></p-qual>
+      <p-group>
+        <title><![CDATA[Network interface]]></title>
+        <p-param name="nic3MacAddress">
+          <desc><![CDATA[The MAC address of a network adapter being customized]]></desc>
+          <p-qual kind="static" name="regexp" type="Regexp"><![CDATA[00:50:56:[0-3][0-9A-Fa-f](:[0-9A-Fa-f]{2}){2}]]></p-qual>
+        </p-param>
+        <p-param name="nic3Network">
+          <desc><![CDATA[Network on which to attach the virtual network interface]]></desc>
+          <p-qual kind="ognl" name="dataBinding" type="VC:Network"><![CDATA[GetAction("com.vmware.library.vc.vm.network","getNetworkForGivenNic").call(#vm, 3)]]></p-qual>
+          <p-qual kind="static" name="show-select-as" type="string"><![CDATA[list]]></p-qual>
+          <p-qual kind="ognl" name="linkedEnumeration" type="Array/VC:Network"><![CDATA[GetAction("com.vmware.library.vc.network","getNetworkForResourcePoolHostVm").call( #pool , #host , #vm )]]></p-qual>
+          <p-qual kind="ognl" name="mandatory" type="boolean"><![CDATA[#nicNumber >= 3]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Use DHCP]]></title>
+        <p-param name="nic3Dhcp">
+          <desc><![CDATA[Use a DHCP server to configure the virtual network adapter]]></desc>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Fixed IP]]></title>
+        <p-qual kind="ognl" name="notVisible" type="boolean"><![CDATA[#nic3Dhcp]]></p-qual>
+        <p-param name="nic3IpAddress">
+          <desc><![CDATA[Fixed valid IP Address]]></desc>
+          <p-qual kind="static" name="regexp" type="Regexp"><![CDATA[\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b]]></p-qual>
+        </p-param>
+        <p-param name="nic3SubnetMask">
+          <desc><![CDATA[Subnet mask for this virtual network adapter]]></desc>
+          <p-qual kind="static" name="regexp" type="Regexp"><![CDATA[\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b]]></p-qual>
+        </p-param>
+        <p-param name="nic3Gateway">
+          <desc><![CDATA[List of gateways, in order of preference]]></desc>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Information Settable with or without DHCP]]></title>
+        <p-param name="nic3DnsDomain">
+          <desc><![CDATA[DNS domain suffix such as vmware.com]]></desc>
+        </p-param>
+        <p-param name="nic3DnsServerList">
+          <desc><![CDATA[List of DNS servers for a virtual network adapter with a static IP address]]></desc>
+        </p-param>
+        <p-param name="nic3NetBIOS">
+          <desc><![CDATA[NetBIOS setting for Windows]]></desc>
+        </p-param>
+        <p-param name="nic3PrimaryWINS">
+          <desc><![CDATA[The IP address of the primary WINS server]]></desc>
+          <p-qual kind="static" name="regexp" type="Regexp"><![CDATA[\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b]]></p-qual>
+        </p-param>
+        <p-param name="nic3SecondaryWINS">
+          <desc><![CDATA[The IP address of the secondary WINS server]]></desc>
+          <p-qual kind="static" name="regexp" type="Regexp"><![CDATA[\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b]]></p-qual>
+        </p-param>
+      </p-group>
+    </p-step>
+    <p-step>
+      <title><![CDATA[Network 4 information]]></title>
+      <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#nicNumber >= 4]]></p-qual>
+      <p-group>
+        <title><![CDATA[Network interface]]></title>
+        <p-param name="nic4MacAddress">
+          <desc><![CDATA[The MAC address of a network adapter being customized]]></desc>
+          <p-qual kind="static" name="regexp" type="Regexp"><![CDATA[00:50:56:[0-3][0-9A-Fa-f](:[0-9A-Fa-f]{2}){2}]]></p-qual>
+        </p-param>
+        <p-param name="nic4Network">
+          <desc><![CDATA[Network on which to attach the virtual network interface]]></desc>
+          <p-qual kind="ognl" name="dataBinding" type="VC:Network"><![CDATA[GetAction("com.vmware.library.vc.vm.network","getNetworkForGivenNic").call(#vm, 4)]]></p-qual>
+          <p-qual kind="static" name="show-select-as" type="string"><![CDATA[list]]></p-qual>
+          <p-qual kind="ognl" name="linkedEnumeration" type="Array/VC:Network"><![CDATA[GetAction("com.vmware.library.vc.network","getNetworkForResourcePoolHostVm").call( #pool , #host , #vm )]]></p-qual>
+          <p-qual kind="ognl" name="mandatory" type="boolean"><![CDATA[#nicNumber >= 4]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Use DHCP]]></title>
+        <p-param name="nic4Dhcp">
+          <desc><![CDATA[Use a DHCP server to configure the virtual network adapter]]></desc>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Fixed IP]]></title>
+        <p-qual kind="ognl" name="notVisible" type="boolean"><![CDATA[#nic4Dhcp]]></p-qual>
+        <p-param name="nic4IpAddress">
+          <desc><![CDATA[Fixed valid IP Address]]></desc>
+          <p-qual kind="static" name="regexp" type="Regexp"><![CDATA[\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b]]></p-qual>
+        </p-param>
+        <p-param name="nic4SubnetMask">
+          <desc><![CDATA[Subnet mask for this virtual network adapter]]></desc>
+          <p-qual kind="static" name="regexp" type="Regexp"><![CDATA[\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b]]></p-qual>
+        </p-param>
+        <p-param name="nic4Gateway">
+          <desc><![CDATA[List of gateways, in order of preference]]></desc>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Information Settable with or without DHCP]]></title>
+        <p-param name="nic4DnsDomain">
+          <desc><![CDATA[DNS domain suffix such as vmware.com]]></desc>
+        </p-param>
+        <p-param name="nic4DnsServerList">
+          <desc><![CDATA[List of DNS servers for a virtual network adapter with a static IP address]]></desc>
+        </p-param>
+        <p-param name="nic4NetBIOS">
+          <desc><![CDATA[NetBIOS setting for Windows]]></desc>
+        </p-param>
+        <p-param name="nic4PrimaryWINS">
+          <desc><![CDATA[The IP address of the primary WINS server]]></desc>
+          <p-qual kind="static" name="regexp" type="Regexp"><![CDATA[\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b]]></p-qual>
+        </p-param>
+        <p-param name="nic4SecondaryWINS">
+          <desc><![CDATA[The IP address of the secondary WINS server]]></desc>
+          <p-qual kind="static" name="regexp" type="Regexp"><![CDATA[\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b]]></p-qual>
+        </p-param>
+      </p-group>
+    </p-step>
+  </presentation>
+</workflow>

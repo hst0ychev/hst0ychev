@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getConnectionUrl" result-type="string" api-version="6.0.0" id="1a5aa485-a9aa-4544-8e8c-71356a20b63e" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.sql.configuration">
+  <param n="existing" t="string"><![CDATA[Current connection URL]]></param>
+  <param n="type" t="string"><![CDATA[Database type]]></param>
+  <script encoded="false"><![CDATA[return SQLDatabaseManager.getConnectionUrl(existing, type);]]></script>
+</dunes-script-module>

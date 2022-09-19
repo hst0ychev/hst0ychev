@@ -1,0 +1,5 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="drsEnabledCluster" result-type="boolean" api-version="6.0.0" id="d128cd6d-68e9-4d9f-ac8f-e996c93fa522" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.cluster">
+  <param n="cluster" t="VC:ClusterComputeResource"><![CDATA[Cluster to check config]]></param>
+  <script encoded="false"><![CDATA[return cluster.configuration.drsConfig.enabled;]]></script>
+</dunes-script-module>

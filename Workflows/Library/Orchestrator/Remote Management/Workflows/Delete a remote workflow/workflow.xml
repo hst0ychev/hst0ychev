@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="Workflow:name=generic" id="E6808080808080808080808080808080F680808001297796784030ce882292c2a" version="1.1.1" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Delete a remote workflow]]></display-name>
+  <description><![CDATA[Deletes a workflow from a remote Orchestrator server.]]></description>
+  <ref-types><![CDATA[(VCO:RemoteWorkflow)]]></ref-types>
+  <position y="20.0" x="180.0"/>
+  <input>
+    <param name="rmtWorkflow" type="VCO:RemoteWorkflow">
+      <description><![CDATA[Workflow to delete]]></description>
+    </param>
+    <param name="force" type="boolean"/>
+  </input>
+  <output>
+    <param name="errors" type="Array/string"/>
+  </output>
+  <workflow-item name="item0" out-name="item1" type="task">
+    <display-name><![CDATA[Delete a workflow]]></display-name>
+    <script encoded="false"><![CDATA[var errors = new Array()
+var impStatusList = null;
+try {
+	VCODeploymentManager.deleteWorkflow(rmtWorkflow, force)
+} catch (e) {
+	errors.push(e.message);
+	System.error(e.message)
+}]]></script>
+    <in-binding>
+      <bind name="rmtWorkflow" type="VCO:RemoteWorkflow" export-name="rmtWorkflow"/>
+      <bind name="force" type="boolean" export-name="force"/>
+    </in-binding>
+    <out-binding>
+      <bind name="errors" type="Array/string" export-name="errors"/>
+    </out-binding>
+    <position y="100.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item1" type="end" end-mode="0">
+    <position y="170.0" x="180.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Delete a remote workflow]]></title>
+      <p-group>
+        <title><![CDATA[Workflow details]]></title>
+        <desc><![CDATA[Select a workflow on the remote vCO server to delete. Select whether to force the deletion of the workflow which is referenced from another workflow or no.]]></desc>
+        <p-param name="rmtWorkflow">
+          <desc><![CDATA[Workflow]]></desc>
+          <p-qual name="contextualParameter" type="void"><![CDATA[]]></p-qual>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+        <p-param name="force">
+          <desc><![CDATA[Force delete]]></desc>
+        </p-param>
+      </p-group>
+    </p-step>
+  </presentation>
+</workflow>

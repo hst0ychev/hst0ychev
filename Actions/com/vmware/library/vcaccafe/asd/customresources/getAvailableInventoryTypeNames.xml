@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getAvailableInventoryTypeNames" result-type="Array/string" api-version="6.0.0" id="3e0456a5-d193-47dc-ba73-cbfad1bf6af2" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.asd.customresources">
+  <param n="host" t="vCACCAFE:VCACHost"><![CDATA[vRA CAFE host]]></param>
+  <script encoded="false"><![CDATA[var inventoryTypes = System.getModule("com.vmware.library.vcaccafe.asd.customresources").getAvailableInventoryTypes(host);
+
+var inventoryTypeNames = new Array();
+for(var i = 0 ; i < inventoryTypes.length ; i++ ) {
+	inventoryTypeNames[i] = inventoryTypes[i].getName();
+}
+return inventoryTypeNames;]]></script>
+</dunes-script-module>

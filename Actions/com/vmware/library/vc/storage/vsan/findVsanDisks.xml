@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="findVsanDisks" result-type="Array/Any" api-version="6.0.0" id="9791a763-433b-4033-99ba-2fed34dc0020" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.storage.vsan">
+  <param n="host" t="VC:HostSystem"><![CDATA[Host whose VSAN disks to search]]></param>
+  <param n="diskNames" t="Array/string"><![CDATA[Names of VSAN disks to find]]></param>
+  <script encoded="false"><![CDATA[var disks = [];
+
+var vsanDisks = host.configManager.vsanSystem.queryDisksForVsan();
+for (var i in diskNames) {
+	var diskName = diskNames[i];
+	for (var j in vsanDisks) {
+		var disk = vsanDisks[j].disk;
+		if (diskName == disk.displayName) {
+			disks.push(disk);
+		}
+	}
+}
+
+return disks;]]></script>
+</dunes-script-module>

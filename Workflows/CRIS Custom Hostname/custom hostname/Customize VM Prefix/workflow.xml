@@ -1,0 +1,138 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="077bb556-ebd0-4b06-943c-0452a3c96a55" version="0.0.23" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Customize VM Prefix]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="payload" type="Properties"/>
+  </input>
+  <attrib name="newVMProperties" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="virtualMachineEntity" type="vCAC:Entity" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="links" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[A map of link name and entity of the complex properties of the IaaS entity]]></description>
+  </attrib>
+  <attrib name="headers" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[A map of the HTTP headers]]></description>
+  </attrib>
+  <attrib name="updatedEntity" type="vCAC:Entity" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[The updated IaaS entity]]></description>
+  </attrib>
+  <attrib name="vCACHost" type="vCAC:VCACHost" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='7678fd07-7e94-41fb-b504-826e693933a5'&dunesName='vCAC:VCACHost']]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="664.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item2" type="task">
+    <display-name><![CDATA[Form VM Name]]></display-name>
+    <script encoded="false"><![CDATA[var machine = payload.get("machine");
+var vmName = machine.get("name");
+
+System.debug("vmName "+vmName);
+var num = vmName.match(/\d+/g);
+System.debug("VM suffix nunber "+num[0]);
+
+var properties = new Properties();
+properties.put("VirtualMachineID",machine.get("id"));
+var virtualMachineEntity = vCACEntityManager.readModelEntity(vCACHost.id, "ManagementModelEntities.svc", "VirtualMachines", properties, null);
+//System.log("virtualMachineEntity"+virtualMachineEntity);
+var vmProperties = new Properties();
+var virtualMachinePropertiesEntities = virtualMachineEntity.getLink(vCACHost, "VirtualMachineProperties");
+for each (var virtualMachinePropertiesEntity in virtualMachinePropertiesEntities) {
+    var propertyName = virtualMachinePropertiesEntity.getProperty("PropertyName");
+    var propertyValue = virtualMachinePropertiesEntity.getProperty("PropertyValue");
+    System.log("Found property " + propertyName + " = " + propertyValue);
+    vmProperties.put(propertyName, propertyValue);
+}
+var applicationName = vmProperties.get("cris.hostname.Type");
+var location = vmProperties.get("cris.hostname.location");
+var envId = null;
+var prodEnvProp =  vmProperties.get("ReservationPolicyID");
+System.debug("prod prop "+prodEnvProp)
+var devEnvProp =  vmProperties.get("ReservationPolicyID");
+System.debug("dev prop "+devEnvProp)
+
+if(prodEnvProp ==null || prodEnvProp ==undefined || prodEnvProp=="" ){
+	System.debug("skipping ");
+}else{
+	envId = prodEnvProp;
+	System.debug("Prod Env Id "+envId);
+}
+if(devEnvProp != null || devEnvProp != undefined){	
+	envId = devEnvProp
+	System.debug("Dev Env Id "+envId);
+}
+
+var bgCode = vmProperties.get("bgcode");
+
+//var blueprint = System.getContext().getParameter("__asd_composition_blueprintId");
+var blueprint = vmProperties.get("VirtualMachine.Cafe.Blueprint.Id");
+var component = vmProperties.get("VirtualMachine.Cafe.Blueprint.Component.Id");
+var user = System.getContext().getParameter("__asd_requestedFor");
+var tenant = System.getContext().getParameter("__asd_tenantRef");
+var subtenantId = System.getContext().getParameter("__asd_subtenantRef")
+
+var reservationProp = System.getModule("com.vmware.vra.reservations").getApplicableReservationPolicyName(blueprint,component,user,tenant,subtenantId);
+System.debug("Environment Name "+reservationProp.get(envId));
+var environmentName = reservationProp.get(envId)
+
+var envCode;
+if(environmentName == "Production" || environmentName == "Gold-Production" ){
+	envCode = "p"
+}else if(environmentName == "Critical Production" || environmentName == "Gold-Critical Production"){
+	envCode = "p"
+}else if(environmentName == "Development" || environmentName == "Gold-Development"){
+	envCode = "d"
+}
+var finalizedName = envCode+location+bgCode+applicationName+num
+System.debug("Final name "+finalizedName);
+var newVMProperties =
+	{
+		VirtualMachineName : finalizedName
+	};]]></script>
+    <in-binding>
+      <bind name="payload" type="Properties" export-name="payload"/>
+      <bind name="vCACHost" type="vCAC:VCACHost" export-name="vCACHost"/>
+    </in-binding>
+    <out-binding>
+      <bind name="newVMProperties" type="Properties" export-name="newVMProperties"/>
+      <bind name="virtualMachineEntity" type="vCAC:Entity" export-name="virtualMachineEntity"/>
+    </out-binding>
+    <position y="55.40909090909091" x="284.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item0" type="link" linked-workflow-id="3fbe872a-46de-484e-8232-8b110fcee02b">
+    <display-name><![CDATA[Update an IaaS model entity]]></display-name>
+    <in-binding>
+      <bind name="entity" type="vCAC:Entity" export-name="virtualMachineEntity">
+        <description><![CDATA[The IaaS' entity instance]]></description>
+      </bind>
+      <bind name="inputProperties" type="Properties" export-name="newVMProperties">
+        <description><![CDATA[A map of property name, value of the simple properties of the IaaS entity]]></description>
+      </bind>
+      <bind name="links" type="Properties" export-name="links">
+        <description><![CDATA[A map of link name and entity of the complex properties of the IaaS entity]]></description>
+      </bind>
+      <bind name="headers" type="Properties" export-name="headers">
+        <description><![CDATA[A map of the HTTP headers]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="updatedEntity" type="vCAC:Entity" export-name="updatedEntity">
+        <description><![CDATA[The updated IaaS entity]]></description>
+      </bind>
+    </out-binding>
+    <description><![CDATA[Updates a vCloud Automation Center model entity by its ID.]]></description>
+    <position y="55.40909090909091" x="484.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="payload">
+      <desc><![CDATA[payload]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

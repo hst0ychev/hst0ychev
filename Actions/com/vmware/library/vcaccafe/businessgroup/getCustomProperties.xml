@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getCustomProperties" result-type="Array/vCACCAFE:CustomProperty" api-version="6.0.0" id="fa64f947-3828-4333-a6e4-b41f7736f55e" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.businessgroup">
+  <param n="group" t="vCACCAFE:BusinessGroup"><![CDATA[Business group]]></param>
+  <param n="query" t="string"><![CDATA[Query]]></param>
+  <script encoded="false"><![CDATA[return vCACCAFEEntitiesFinder.findCustomProperties(group, query);]]></script>
+</dunes-script-module>

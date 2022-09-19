@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="activateCatalogItem" result-type="void" api-version="6.0.0" id="563f186c-ec49-4b65-a6c5-27aee6cf5f94" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.catalog.catalogitem">
+  <param n="catalogItem" t="vCACCAFE:AdminCatalogItem"><![CDATA[Catalog item to be activated]]></param>
+  <script encoded="false"><![CDATA[var host = vCACCAFEEntitiesFinder.getHostForEntity(catalogItem);
+var client = host.createCatalogClient().getCatalogAdminCatalogItemService();
+
+catalogItem.setStatus(vCACCAFEPublishStatus.PUBLISHED);
+
+System.log("Activating catalog item "+ catalogItem.getName() +"...");
+client.updateCatalogItem(catalogItem);
+System.log("Catalog item: " + catalogItem.getName() + " activated.");]]></script>
+</dunes-script-module>

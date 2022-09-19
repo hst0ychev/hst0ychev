@@ -1,0 +1,151 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="7d6f0ed3-5f8d-47ed-b46a-aae5b7db1717" version="0.0.0" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[DeleteFirewalRule]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="businesGroup" type="string"/>
+    <param name="rules" type="string"/>
+    <param name="source" type="string"/>
+    <param name="destination" type="string"/>
+    <param name="protocol" type="string"/>
+    <param name="port" type="string"/>
+  </input>
+  <attrib name="username" type="string" read-only="false" conf-id="b076846e-b485-4746-92c6-455f2f4b048d" conf-key="username">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="password" type="SecureString" read-only="false" conf-id="b076846e-b485-4746-92c6-455f2f4b048d" conf-key="password">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Scriptable task]]></display-name>
+    <script encoded="false"><![CDATA[//Getting Authentication token
+var authenticationToken = System.getModule("com.vmware.indcoe.util").base64encode(username + ":" + password)
+
+//Preparting header prop for rest api
+var header = new Properties()
+header.put("Authorization", "Basic " +authenticationToken);
+/**
+	Get the NSX T REST host from configuration element
+**/
+var restHost;
+var category = Server.getConfigurationElementCategoryWithPath("Helper")
+//die in a fire if non-existent
+if (category == null) {
+    throw "Configuration element category '" + categoryPath + "' not found or empty!";
+}
+//get _all_ the elements
+var elements = category.configurationElements;
+var elementName = "NSXTHost";
+var attributeName = "nsxtHost"
+//retrieve names
+for (i = 0; i < elements.length; i++) {
+     if (elements[i].name == elementName) {
+         //found required element
+         restHost = elements[i].getAttributeWithKey(attributeName).value;
+         if (restHost != null) {
+             System.debug("Found attribute '" + attributeName + "' in '" + elementName + "' with value '" +restHost + "'");
+         }
+     }
+}
+var sectionId = getSectionID(restHost,businesGroup,header);
+System.log("sectionId:"+sectionId);
+ruleSpilt = rules.split("-");
+ruleElem = ruleSpilt[0];
+rule = ruleElem.trim();
+var ruleID = getRuleID(restHost,sectionId,rule,header);
+System.log("ruleID:"+ruleID);
+var deleteRule = removeFWRule(restHost,sectionId,ruleID,header)
+
+function getSectionID(restHost,section,header){
+var apiUrl = "/api/v1/firewall/sections/";
+var requestMethod = "GET"
+var typeContent = "json"
+var sectionResult = System.getModule("com.vmware.indcoe.library.nsxlbgeneric").ExecuteRest(restHost,apiUrl,requestMethod,null,typeContent,header)
+if(sectionResult["statusCode"]==200 ||sectionResult["statusCode"]==201 || sectionResult["statusCode"]==204){
+	System.debug("Getting section rest operation completed ")
+}else throw "Getting section failed"
+System.debug("rules:"+sectionResult["contentAsString"]);
+var secContent = sectionResult["contentAsString"];
+var secJson = JSON.parse(secContent);
+var sectionId;
+for(var i in secJson.results){
+var secDisplayName = secJson.results[i].display_name;
+	if(secJson.results[i].display_name == section){
+		sectionId = secJson.results[i].id;
+		System.debug("sectionId:"+sectionId);
+		}
+	}
+	return sectionId;
+}
+
+function getRuleID(restHost,sectionId,ruleName, header){
+var apiUrl = "/api/v1/firewall/sections/"+sectionId+"/rules";
+var requestMethod = "GET"
+var typeContent = "json"
+var sectionRuleIDResult = System.getModule("com.vmware.indcoe.library.nsxlbgeneric").ExecuteRest(restHost,apiUrl,requestMethod,null,typeContent,header)
+if(sectionRuleIDResult["statusCode"]==200 ||sectionRuleIDResult["statusCode"]==201 || sectionRuleIDResult["statusCode"]==204){
+	System.debug("Getting section rule rest operation completed ")
+}else throw "Getting section rule failed"
+System.debug("rules:"+sectionRuleIDResult["contentAsString"]);
+var secRuleIDContent = sectionRuleIDResult["contentAsString"];
+var secRuleIDJson = JSON.parse(secRuleIDContent);
+var ruleId =[];
+for(var j in secRuleIDJson.results){
+	if(secRuleIDJson.results[j].display_name == ruleName){
+	ruleId = secRuleIDJson.results[j].id;
+	}
+	System.debug("ruleId:" +ruleId);
+	}
+return ruleId;
+}
+
+function removeFWRule(restHost,sectionId,ruleID, header){
+var apiUrl = "/api/v1/firewall/sections/"+sectionId+"/rules/"+ruleID+"";
+var requestMethod = "DELETE"
+var typeContent = "json"
+var deleteRuleResult = System.getModule("com.vmware.indcoe.library.nsxlbgeneric").ExecuteRest(restHost,apiUrl,requestMethod,null,typeContent,header)
+System.log("apiUrl:" +apiUrl);
+System.debug("deleteRuleResult : "+deleteRuleResult["statusCode"])
+if(deleteRuleResult["statusCode"]==200 ||deleteRuleResult["statusCode"]==201 || deleteRuleResult["statusCode"]==204){
+	System.debug("Deleting rule rest operation completed ")
+	}else throw "delete rule operation failed"
+
+}]]></script>
+    <in-binding>
+      <bind name="businesGroup" type="string" export-name="businesGroup"/>
+      <bind name="rules" type="string" export-name="rules"/>
+      <bind name="username" type="string" export-name="username"/>
+      <bind name="password" type="SecureString" export-name="password"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="businesGroup">
+      <desc><![CDATA[businesGroup]]></desc>
+    </p-param>
+    <p-param name="rules">
+      <desc><![CDATA[List of Rules]]></desc>
+      <p-qual kind="ognl" name="linkedEnumeration" type="Array/string"><![CDATA[GetAction("com.vmware.indcoe.nsx_t_fw_delete","getRules").call( #username , #password , #businesGroup )]]></p-qual>
+    </p-param>
+    <p-param name="source">
+      <desc><![CDATA[Source Address]]></desc>
+      <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[GetAction("com.vmware.indcoe.nsx_t_fw_delete","getSourceOfRule").call( #username , #password , #businesGroup , #rules )]]></p-qual>
+    </p-param>
+    <p-param name="destination">
+      <desc><![CDATA[Destination Address]]></desc>
+      <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[GetAction("com.vmware.indcoe.nsx_t_fw_delete","getDestinationOfRule").call( #username , #password , #businesGroup , #rules )]]></p-qual>
+    </p-param>
+    <p-param name="protocol">
+      <desc><![CDATA[Protocol]]></desc>
+      <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[GetAction("com.vmware.indcoe.nsx_t_fw_delete","getProtocol").call( #username , #password , #businesGroup , #rules )]]></p-qual>
+    </p-param>
+    <p-param name="port">
+      <desc><![CDATA[Port]]></desc>
+      <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[GetAction("com.vmware.indcoe.nsx_t_fw_delete","getPort").call( #username , #password , #businesGroup , #rules )]]></p-qual>
+    </p-param>
+  </presentation>
+</workflow>

@@ -1,0 +1,90 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="b811c738-39f7-41ea-94c4-d78fa227b109" version="0.0.9" api-version="6.0.0" allowed-operations="vf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Get Compute Resource Inventory]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="EndpointIn" type="Any"/>
+    <param name="ComputeResourceIn" type="Any"/>
+  </input>
+  <output>
+    <param name="ComputeResourceNetworksOut" type="Array/Any"/>
+    <param name="ComputeResourceStoragesOut" type="Array/Any"/>
+    <param name="ComputeResourcePoolsOut" type="Array/Any"/>
+  </output>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="784.5"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item2" type="task">
+    <display-name><![CDATA[Add Default Disk]]></display-name>
+    <script encoded="false"><![CDATA[ComputeResourceStoragesOut = [];
+
+var storage = GEFComputeResourceStorage.build("DefaultStorage");
+storage.storageName = "DefaultStorage";
+storage.storageTypeId = 2; //NAS
+// storage.freeCapacityBytes = 10000; // Shouldn't need this
+	
+ComputeResourceStoragesOut.push(storage);]]></script>
+    <in-binding>
+      <bind name="ComputeResourceIn" type="Any" export-name="ComputeResourceIn"/>
+    </in-binding>
+    <out-binding>
+      <bind name="ComputeResourceStoragesOut" type="Array/Any" export-name="ComputeResourceStoragesOut"/>
+    </out-binding>
+    <position y="55.40909090909091" x="464.5"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item3" type="task">
+    <display-name><![CDATA[Add Default Network]]></display-name>
+    <script encoded="false"><![CDATA[ComputeResourceNetworksOut = [];
+
+var network = GEFComputeResourceNetwork.build("DefaultNetwork");
+network.name = "DefaultNetwork";
+network.networkName = "DefaultNetwork";
+network.uniqueId = "DefaultNetwork";
+	
+ComputeResourceNetworksOut.push(network);]]></script>
+    <in-binding>
+      <bind name="ComputeResourceIn" type="Any" export-name="ComputeResourceIn"/>
+    </in-binding>
+    <out-binding>
+      <bind name="ComputeResourceNetworksOut" type="Array/Any" export-name="ComputeResourceNetworksOut"/>
+    </out-binding>
+    <position y="55.40909090909091" x="344.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item4" type="task">
+    <display-name><![CDATA[Dump Inputs]]></display-name>
+    <script encoded="false"><![CDATA[System.log("EndpointIn: ");
+System.log(EndpointIn.toSource());
+
+System.log("ComputeResourceIn: ");
+System.log(ComputeResourceIn.toSource());]]></script>
+    <in-binding>
+      <bind name="EndpointIn" type="Any" export-name="EndpointIn"/>
+      <bind name="ComputeResourceIn" type="Any" export-name="ComputeResourceIn"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item0" type="task">
+    <display-name><![CDATA[Add Resource Pool]]></display-name>
+    <script encoded="false"><![CDATA[var pool = GEFComputeResourceResourcePool.build("pool1");
+pool.name = "Pool1";
+
+ComputeResourcePoolsOut = [];
+ComputeResourcePoolsOut.push(pool);]]></script>
+    <in-binding>
+      <bind name="ComputeResourceIn" type="Any" export-name="ComputeResourceIn"/>
+    </in-binding>
+    <out-binding>
+      <bind name="ComputeResourcePoolsOut" type="Array/Any" export-name="ComputeResourcePoolsOut"/>
+    </out-binding>
+    <position y="55.40909090909091" x="604.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="EndpointIn">
+      <desc><![CDATA[EndpointIn]]></desc>
+    </p-param>
+    <p-param name="ComputeResourceIn">
+      <desc><![CDATA[ComputeResourceIn]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

@@ -1,0 +1,141 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="Workflow:name=generic" id="2765ea1e-d88b-4c5a-933b-0c0a15d3ed22" version="1.0.2" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Invoke a REST host with dynamic params]]></display-name>
+  <description><![CDATA[Makes a quick call to a REST host, without the need to have a RESTOperation defined. Users can dynamically change the operation base URL and credentials used for request execution.]]></description>
+  <ref-types><![CDATA[>(REST:RESTHost)]]></ref-types>
+  <position y="20.0" x="180.0"/>
+  <input>
+    <param name="restHost" type="REST:RESTHost">
+      <description><![CDATA[The host that should take the request]]></description>
+    </param>
+    <param name="requestType" type="string">
+      <description><![CDATA[The type of the request]]></description>
+    </param>
+    <param name="operationUrl" type="string">
+      <description><![CDATA[The URL that should be appended to the host base URL in order to make the request]]></description>
+    </param>
+    <param name="requestContent" type="string">
+      <description><![CDATA[The request content]]></description>
+    </param>
+    <param name="requestContentType" type="string">
+      <description><![CDATA[The request content type]]></description>
+    </param>
+    <param name="user" type="string">
+      <description><![CDATA[Basic HTTP AuthN Username]]></description>
+    </param>
+    <param name="password" type="SecureString">
+      <description><![CDATA[Basic HTTP AuthN Password]]></description>
+    </param>
+    <param name="baseUrl" type="string">
+      <description><![CDATA[The new base URL]]></description>
+    </param>
+  </input>
+  <output>
+    <param name="result" type="Properties">
+      <description><![CDATA[The result]]></description>
+    </param>
+  </output>
+  <attrib name="errorCode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <workflow-item name="item0" out-name="item1" catch-name="item2" throw-bind-name="errorCode" type="task">
+    <display-name><![CDATA[Make REST call]]></display-name>
+    <script encoded="false"><![CDATA[System.log("Host: " + restHost + ", operation: " + operationUrl + ", Request Type: " + requestType);
+
+var transientHost = RESTHostManager.createTransientHostFrom(restHost);
+
+if (baseUrl != null && baseUrl != "") {
+    transientHost.url = baseUrl;
+}
+
+
+var req = transientHost.createRequest(requestType, operationUrl, requestContent);
+req.contentType = requestContentType;
+var resp;
+
+if (user != null && user != "") {
+    System.log("Executing request with dynamic credentials: " + user);
+    resp = req.executeWithCredentials(user, password);
+} else {
+    System.log("Executing request with original credentials.");
+    resp = req.execute();
+}
+
+result = new Properties();
+result.put("statusCode", resp.statusCode);
+result.put("contentLength", resp.contentLength);
+result.put("headers", resp.getAllHeaders());
+result.put("contentAsString", resp.contentAsString);
+
+System.log("response: " + resp.contentAsString);
+]]></script>
+    <in-binding>
+      <bind name="restHost" type="REST:RESTHost" export-name="restHost"/>
+      <bind name="requestType" type="string" export-name="requestType"/>
+      <bind name="operationUrl" type="string" export-name="operationUrl"/>
+      <bind name="requestContent" type="string" export-name="requestContent"/>
+      <bind name="requestContentType" type="string" export-name="requestContentType"/>
+      <bind name="user" type="string" export-name="user"/>
+      <bind name="baseUrl" type="string" export-name="baseUrl"/>
+      <bind name="password" type="SecureString" export-name="password"/>
+    </in-binding>
+    <out-binding>
+      <bind name="errorCode" type="string" export-name="errorCode"/>
+      <bind name="result" type="Properties" export-name="result"/>
+    </out-binding>
+    <position y="100.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item1" type="end" end-mode="0">
+    <position y="150.0" x="180.0"/>
+  </workflow-item>
+  <workflow-item name="item2" throw-bind-name="errorCode" type="end" end-mode="1">
+    <position y="90.0" x="300.0"/>
+  </workflow-item>
+  <presentation>
+    <p-group>
+      <title><![CDATA[Request properties]]></title>
+      <p-param name="restHost">
+        <desc><![CDATA[The host that should take the request]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        <p-qual name="contextualParameter" type="void"><![CDATA[]]></p-qual>
+        <p-qual kind="static" name="defaultValue" type="REST:RESTHost"><![CDATA[__NULL__]]></p-qual>
+      </p-param>
+      <p-param name="operationUrl">
+        <desc><![CDATA[The URL that should be appended to the host base URL in order to make the request]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        <p-qual kind="static" name="defaultValue" type="string"><![CDATA[]]></p-qual>
+      </p-param>
+      <p-param name="requestType">
+        <desc><![CDATA[The type of the request]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#GET#;#string#POST#;#string#PUT#;#string#DELETE#;#string#OPTIONS#;#string#HEAD#;#string#PATCH#;#string#TRACE#}#]]></p-qual>
+        <p-qual kind="static" name="defaultValue" type="string"><![CDATA[GET]]></p-qual>
+      </p-param>
+      <p-param name="requestContent">
+        <desc><![CDATA[The request content]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[(#requestType=="POST"||#requestType=="PUT"||#requestType=="PATCH"||#requestType=="DELETE")]]></p-qual>
+        <p-qual name="textInput" type="void"><![CDATA[]]></p-qual>
+        <p-qual kind="static" name="defaultValue" type="string"><![CDATA[]]></p-qual>
+      </p-param>
+      <p-param name="requestContentType">
+        <desc><![CDATA[The request content type]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[(#requestType=="POST"||#requestType=="PUT"||#requestType=="PATCH"||#requestType=="DELETE")]]></p-qual>
+        <p-qual kind="static" name="defaultValue" type="string"><![CDATA[]]></p-qual>
+      </p-param>
+    </p-group>
+    <p-group>
+      <title><![CDATA[Dynamic Params]]></title>
+      <p-param name="baseUrl">
+        <desc><![CDATA[The new base URL]]></desc>
+      </p-param>
+      <p-param name="user">
+        <desc><![CDATA[Basic HTTP AuthN Username]]></desc>
+      </p-param>
+      <p-param name="password">
+        <desc><![CDATA[Basic HTTP AuthN Password]]></desc>
+      </p-param>
+    </p-group>
+  </presentation>
+</workflow>

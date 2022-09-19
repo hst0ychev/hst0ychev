@@ -1,0 +1,79 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="a02c9bf2-304a-41a0-83fe-961b406221e9" version="2.0.2" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Configure Active Directory plug-in options]]></display-name>
+  <description><![CDATA[Configures the Active Direcotry plug-in global options. 
+
+]]></description>
+  <ref-types><![CDATA[(AD:AdHost)]]></ref-types>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="useDefaultServer" type="boolean">
+      <description><![CDATA[Use a default Active Directory server]]></description>
+    </param>
+    <param name="defaultAdServer" type="AD:AdHost">
+      <description><![CDATA[Default Active Directory server]]></description>
+    </param>
+    <param name="searchSizeLimit" type="number">
+      <description><![CDATA[Sets the maximum number of items returned by a search.]]></description>
+    </param>
+    <param name="searchSizeLimitPerServer" type="number">
+      <description><![CDATA[Sets the maximum number of items returned by a search from single a Active Directory server]]></description>
+    </param>
+  </input>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="344.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[save plugin options]]></display-name>
+    <script encoded="false"><![CDATA[var prop = {}
+if (useDefaultServer==false || defaultAdServer == null) {
+	prop["DEFAULT_CFG_ID"] = '';
+} else {
+	prop["DEFAULT_CFG_ID"] = defaultAdServer.hostConfiguration.id;
+}
+
+prop["SEARCH_SIZE_LIMIT"] = searchSizeLimit.toString();
+prop["SEARCH_SIZE_LIMIT_PER_SERVER"] = searchSizeLimitPerServer.toString();
+
+ConfigurationManager.savePluginOptions(prop)]]></script>
+    <in-binding>
+      <bind name="defaultAdServer" type="AD:AdHost" export-name="defaultAdServer"/>
+      <bind name="useDefaultServer" type="boolean" export-name="useDefaultServer"/>
+      <bind name="searchSizeLimit" type="number" export-name="searchSizeLimit"/>
+      <bind name="searchSizeLimitPerServer" type="number" export-name="searchSizeLimitPerServer"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="184.5"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[General]]></title>
+      <p-group>
+        <title><![CDATA[General]]></title>
+        <p-param name="useDefaultServer">
+          <desc><![CDATA[Default Active Directory server]]></desc>
+          <p-qual kind="ognl" name="defaultValue" type="boolean"><![CDATA[(GetAction("com.vmware.library.microsoft.activeDirectory","getDefaultAdServer").call() != null)?true:false]]></p-qual>
+        </p-param>
+        <p-param name="defaultAdServer">
+          <desc><![CDATA[Select a default Active Directory server
+]]></desc>
+          <p-qual kind="static" name="contextualParameter" type="void"><![CDATA[__NULL__]]></p-qual>
+          <p-qual kind="ognl" name="defaultValue" type="AD:AdHost"><![CDATA[GetAction("com.vmware.library.microsoft.activeDirectory","getDefaultAdServer").call()]]></p-qual>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#useDefaultServer]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Search limits]]></title>
+        <p-param name="searchSizeLimit">
+          <desc><![CDATA[Sets the maximum number of items returned by a search.]]></desc>
+          <p-qual kind="ognl" name="defaultValue" type="number"><![CDATA[GetAction("com.vmware.library.microsoft.activeDirectory","getPluginOptionAsNumber").call( "searchSizeLimit" )]]></p-qual>
+        </p-param>
+        <p-param name="searchSizeLimitPerServer">
+          <desc><![CDATA[Sets the maximum number of items returned by a search from a single Active Direcotry server
+A value of zero or '-1' indicates that there should be no limit]]></desc>
+          <p-qual kind="ognl" name="defaultValue" type="number"><![CDATA[GetAction("com.vmware.library.microsoft.activeDirectory","getPluginOptionAsNumber").call( "searchSizeLimitPerServer" )]]></p-qual>
+        </p-param>
+      </p-group>
+    </p-step>
+  </presentation>
+</workflow>

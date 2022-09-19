@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="importVraObject" result-type="Any" api-version="6.0.0" id="5d0df968-0ad9-4ded-a355-c46b9ded8141" version="2.7.16" allowed-operations="evf" category-name="com.vmware.indcoe.library.vrautil">
+  <description><![CDATA[@deprecated Use VraObjectType.importFrom()]]></description>
+  <param n="host" t="vCACCAFE:VCACHost"><![CDATA[]]></param>
+  <param n="type" t="string"><![CDATA[]]></param>
+  <param n="resourceElementOrString" t="ResourceElement|String"><![CDATA[]]></param>
+  <param n="allTenants" t="boolean"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var def = System.getModule("com.vmware.indcoe.library.vrautil.types")[type]();
+var nameProperty = def.nameProperty;
+var beforeSave = def.beforeSave;
+var clazz = System.getModule("com.vmware.indcoe.library.vrautil.types")[type](host);
+var content = resourceElementOrString;
+
+if (content instanceof ResourceElement) {
+	content = content.getContentAsMimeAttachment().content;
+}
+
+var newObj = new clazz(JSON.parse(content));
+
+if (beforeSave) {
+	var currentObj;
+	var name = newObj[nameProperty];
+
+	if (clazz.getByNameAndType && typeof clazz.getByNameAndType === "function" &&
+		newObj.inputParameter && newObj.inputParameter.resourceType) {
+		var vroType = newObj.inputParameter.resourceType.vcoType;
+		currentObj = clazz.getByNameAndType(name, vroType);
+	} else {
+		currentObj = clazz.getByName(name);
+	}
+
+	beforeSave(newObj, currentObj, host, allTenants);
+}
+
+newObj.save();
+return clazz.getByName(newObj[nameProperty]);
+]]></script>
+</dunes-script-module>

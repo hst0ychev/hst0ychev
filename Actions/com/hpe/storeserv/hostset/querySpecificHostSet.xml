@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="querySpecificHostSet" result-type="StoreServ:HostSet" api-version="6.0.0" id="235e94c8-f241-41ee-ae01-6d51ce1ace91" version="1.0.0" allowed-operations="vf" category-name="com.hpe.storeserv.hostset">
+  <description><![CDATA[Queries specific Host Set from the selected HPE 3PAR StoreServ array. ]]></description>
+  <param n="connection" t="StoreServ:Connection"><![CDATA[]]></param>
+  <param n="hostsetname" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var hostset = connection.getHostSetByName(hostsetname);
+
+if(hostset != undefined && hostset != null ){
+	System.log("Retrieved the details of host set \"" + hostset.name + "\" successfully!");
+	System.debug("Returned host set: " + hostset);
+}
+else {
+
+	throw "Host set does not exist";	
+}
+	
+
+return hostset;
+]]></script>
+</dunes-script-module>

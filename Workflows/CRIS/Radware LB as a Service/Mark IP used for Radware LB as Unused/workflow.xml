@@ -1,0 +1,57 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="067b0dae-4ba9-42fa-811a-819d0c4a77bd" version="0.0.2" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Mark IP used for Radware LB as Unused]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="networkType" type="string"/>
+    <param name="ipAddress" type="string"/>
+  </input>
+  <attrib name="vCACHost" type="vCAC:VCACHost" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='7678fd07-7e94-41fb-b504-826e693933a5'&dunesName='vCAC:VCACHost']]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Process Request]]></display-name>
+    <script encoded="false"><![CDATA[
+if(networkType === "tnd")
+{
+	var networkProfileToUse = "TnD_SLB_VIP_VLAN_Radware_LB";
+}
+else if(networkType === "production")
+{
+	var networkProfileToUse = "Production_SLB_VIP_VLAN_Radware";
+}
+else
+{
+	throw "Invalid network type provided";
+}
+
+var isValidIP = System.getModule("com.vmware.indcoe.util").isValidIPv4Address(ipAddress);
+
+if(!isValidIP)
+{
+	throw "IP is invalid, doesnt seem like a valid IP";
+}
+
+System.getModule("com.vmware.indcoe.library.vrautil").UnallocateIP(ipAddress, vCACHost);
+
+System.log("IP Address Unallocated");]]></script>
+    <in-binding>
+      <bind name="ipAddress" type="string" export-name="ipAddress"/>
+      <bind name="networkType" type="string" export-name="networkType"/>
+      <bind name="vCACHost" type="vCAC:VCACHost" export-name="vCACHost"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="networkType">
+      <desc><![CDATA[networkType]]></desc>
+    </p-param>
+    <p-param name="ipAddress">
+      <desc><![CDATA[ipAddress]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

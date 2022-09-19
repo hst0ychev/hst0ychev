@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="destroyElement" result-type="void" api-version="6.0.0" id="36818080808080808080808080808080A480808001270557368849c62c352aa82" version="1.1.1" allowed-operations="vf" category-name="com.vmware.library.microsoft.activeDirectory">
+  <description><![CDATA[Detroy an element of the Active Directory.]]></description>
+  <param n="element" t="Any"><![CDATA[Any valid element from Active Directoy to destroy]]></param>
+  <script encoded="false"><![CDATA[element.destroy();]]></script>
+</dunes-script-module>

@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="4da74d71-2459-4f22-a6f1-19c2fe4ce6de" version="0.0.0">
+  <display-name><![CDATA[Checkpoint]]></display-name>
+  <atts>
+    <att name="username" type="string" read-only="false">
+      <value encoded="n"><![CDATA[admin]]></value>
+    </att>
+    <att name="password" type="SecureString" read-only="false">
+      <value encoded="n"><![CDATA[__NULL__]]></value>
+    </att>
+    <att name="restHost" type="REST:RESTHost" read-only="false">
+      <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='ebce54e1-dba2-4422-b3f8-34761a1b11e7'&dunesName='REST:RESTHost']]></value>
+    </att>
+    <att name="Gateways" type="Array/string" read-only="false">
+      <value encoded="n"><![CDATA[[19:string#"PCPCTSVM01",19:string#"PCPCTSVM02",19:string#"PCPCTSVM03",19:string#"PCPCTSVM04",19:string#"PCPCTSVM05",19:string#"PCPCTSVM06",19:string#"PCPCTSVM07"]]]></value>
+    </att>
+  </atts>
+</config-element>

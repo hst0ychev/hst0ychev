@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="isValidIPv4Address" result-type="boolean" api-version="6.0.0" id="532812ec-d702-3c2e-ad60-d9ee72e88737" version="1.0.1" allowed-operations="evf" category-name="com.vmware.indcoe.util">
+  <description><![CDATA[Returns whether the IP is valid or not]]></description>
+  <param n="ipAddress" t="string"><![CDATA[The IP address to test]]></param>
+  <script encoded="false"><![CDATA[//Source: https://stackoverflow.com/a/27434991
+if (/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(ipAddress)) {
+        return true;
+}
+return false;
+]]></script>
+</dunes-script-module>

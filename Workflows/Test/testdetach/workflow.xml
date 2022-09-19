@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="3277ab02-20d8-48df-b0a7-766546c698ef" version="0.0.0" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[testdetach]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Scriptable task]]></display-name>
+    <script encoded="false"><![CDATA[		var vmName = 'pcprcldapp20115'
+		var vCACVms = Server.findAllForType("vCAC:VirtualMachine", "VirtualMachineName eq '"+vmName+"'");
+		var sdkConnections = VcPlugin.allSdkConnections;  
+		var vcenterName;        
+		var psHost;      
+		for(var j in sdkConnections){
+			System.log("VM id "+vCACVms[0].vmUniqueID)
+			try{
+		    	vcVirtualMachine = sdkConnections[j].searchIndex.findByUuid(null,vCACVms[0].vmUniqueID,true,true);
+				if(vcVirtualMachine){
+					vcenterName = sdkConnections[j].id
+					System.debug("SDK id "+sdkConnections[j].id)
+				}
+			}catch(e){System.debug("Unable to find vc vm by uuid in sdkConnection "+sdkConnections[j]);}
+		}
+		//get category
+		var category = Server.getConfigurationElementCategoryWithPath("Helper");
+		//die in a fire if non-existent
+		if (category == null) {
+		    throw "Configuration element category not found or empty!";
+		}
+		//get _all_ the elements
+		var elements = category.configurationElements;
+		//retrieve names
+	]]></script>
+    <in-binding/>
+    <out-binding/>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation/>
+</workflow>

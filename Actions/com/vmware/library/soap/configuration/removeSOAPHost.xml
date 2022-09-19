@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="removeSOAPHost" result-type="SOAP:Host" api-version="6.0.0" id="91808080808080808080808080808080E4808080013220404425363c0250095dc" version="1.0.1" allowed-operations="vfe" category-name="com.vmware.library.soap.configuration">
+  <description><![CDATA[Removes a SOAPHost object from the plug-in's repository.]]></description>
+  <param n="id" t="string"><![CDATA[The id of the host to be removed]]></param>
+  <script encoded="false"><![CDATA[var host = SOAPHostManager.removeHost(id);
+
+System.log("SOAP host removed: " + host);
+
+return host;
+]]></script>
+</dunes-script-module>

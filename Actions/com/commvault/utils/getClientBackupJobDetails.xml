@@ -1,0 +1,148 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getClientBackupJobDetails" result-type="Array/string" api-version="6.0.0" id="093fe895-db44-4441-90f9-cb2b9df2f8d4" version="0.0.0" allowed-operations="evf" category-name="com.commvault.utils">
+  <description><![CDATA[Get all the backup jobs for the given lookup time]]></description>
+  <param n="VCACVm" t="VC:VirtualMachine"><![CDATA[VC Virtual Machine]]></param>
+  <param n="completedJobLookupTime" t="string"><![CDATA[Complete job look time(latest backup, last 3 months etc)]]></param>
+  <script encoded="false"><![CDATA[/*
+	Inputs:
+	VCACVm - Virtual Machine
+	completedJobLookupTime - Look up time for the backup jobs
+	
+	API used:
+	/Job?clientId={clientId}&Jobs&completedJobLookupTime={looktimeinseconds}&jobCategory=Backup
+	
+	Output:
+	List of job details in below format
+	JobId:jobId;Start Time:jobtime;Backup level:backupLevel
+
+*/
+
+
+var restHost = System.getModule("com.commvault.utils").getHost();
+System.log("REST" + restHost);
+
+if(restHost == null)
+{
+    throw("Error: couldn't find the REST host, please add REST host on vRO with Commvault webservice URL. example: http://server1.company.com:81/SearchSvc/CVWebService.svc/");
+}
+
+//Prepare cvLogin
+var token = System.getModule("com.commvault.utils").getToken(restHost);
+				
+if(token == -1)
+{
+    throw("Error: Failed to generate token. please check simpana's WebServer log for login request");
+}
+
+
+var vmName = VCACVm.name;
+
+var vmClientId = System.getModule("com.commvault.utils").getClientIdForVM(token,vmName);
+
+if(vmClientId == -1){
+	throw("Error: Could not find the VM Client Id");
+
+}
+
+var JobLookupTime = "";
+var jobDetailsURL = "Job?clientId=";
+if(completedJobLookupTime == "Latest Backup"){
+	
+	//jobDetailsURL = jobDetailsURL + vmClientId + "&Jobs&jobCategory=Backup";
+	JobLookupTime = "86400";
+	jobDetailsURL = jobDetailsURL + vmClientId + "&Jobs&completedJobLookupTime=" + JobLookupTime + "&jobCategory=Backup&showAgedJobs=false";
+
+
+}
+else if(completedJobLookupTime == "Last 30 days"){
+
+	JobLookupTime = "2592000";
+	jobDetailsURL = jobDetailsURL + vmClientId + "&Jobs&completedJobLookupTime=" + JobLookupTime + "&jobCategory=Backup&showAgedJobs=false";
+	System.log("JOBS API URL " + jobDetailsURL);
+}
+if(completedJobLookupTime == "Last 6 months"){
+
+	JobLookupTime = "15552000";
+	jobDetailsURL = jobDetailsURL + vmClientId + "&Jobs&completedJobLookupTime=" + JobLookupTime + "&jobCategory=Backup&showAgedJobs=false";
+
+}
+if(completedJobLookupTime == "Last 1 year"){
+
+	JobLookupTime = "31536000";
+	jobDetailsURL = jobDetailsURL + vmClientId + "&Jobs&completedJobLookupTime=" + JobLookupTime + "&jobCategory=Backup&showAgedJobs=false";
+}
+VirtualMachineName = VCACVm.name;
+
+System.log("Fetching VM Job Details: " + jobDetailsURL );
+
+var response = System.getModule("com.commvault.utils").processRESTRequest(jobDetailsURL,"GET",null,token, null, null);
+
+if(response.statusCode != 200)
+{
+	throw("Error: Failed to execute REST request to get Job details for selected time. Recieved status:  "+ response.contentAsString);
+}
+var JobsList = [];
+var jobDetail = "";
+if(response.contentAsString != null){
+		
+		var document = XMLManager.fromString(response.contentAsString);
+		var list = document.getElementsByTagName("jobs");
+		var itemsToCheck = list.length;
+		var j = 0;
+		//show only last completed job from the list in case of latest backup
+		if(completedJobLookupTime == "Latest Backup"){
+			
+			for(var i=itemsToCheck-1; i>=0; i--){
+				var jobSummaryEntity = list.item(i).getElementsByTagName("jobSummary");
+				var jobSummary = jobSummaryEntity.item(0);
+				var jobId = jobSummary.getAttribute("jobId");
+				var jobType = jobSummary.getAttribute("jobType");
+				if(jobType == "Backup"){
+					var jobStartTime= jobSummary.getAttribute("jobStartTime");
+					var backupLevel = jobSummary.getAttribute("backupLevelName");
+					var status = jobSummary.getAttribute("localizedStatus");
+					if( status == "Completed" || status == "Completed with one or more errors"){
+						var jobtime = System.getModule("com.commvault.utils").convertUnixTimestampToDate(jobStartTime)
+						var jobDetail = "JobId:" + jobId + " ; " + "Start Time:" + jobtime + " ; " +"Backup level:"  +backupLevel;
+						JobsList.push(jobDetail);
+						break;
+					}
+				}
+			}
+		}
+		else{
+			j =0
+			for(var i=j; i<itemsToCheck; i++){
+				var jobSummaryEntity = list.item(i).getElementsByTagName("jobSummary");
+				var jobSummary = jobSummaryEntity.item(0);
+				var jobId = jobSummary.getAttribute("jobId");
+				System.log("JOB ID IS " + jobId);
+				var jobType = jobSummary.getAttribute("jobType");
+				System.log("JOB type IS " + jobType);
+				if(jobType == "Backup"){
+					var jobStartTime= jobSummary.getAttribute("jobStartTime");
+					var backupLevel = jobSummary.getAttribute("backupLevelName");
+					var status = jobSummary.getAttribute("localizedStatus");
+					if(status == "Completed" || status == "Completed with one or more errors"){
+						var jobtime = System.getModule("com.commvault.utils").convertUnixTimestampToDate(jobStartTime)
+						var jobDetail = "JobId:" + jobId + " ; " + "Start Time:" + jobtime + " ; " +"Backup level:"  +backupLevel;
+						JobsList.push(jobDetail);
+					}
+				}
+			}
+		}
+		
+		
+		
+		if(JobsList.length == 0){
+			JobsList.push("No backup details found, VM may not have been backed up. Please check the backup jobs for respective VMGroup\Subclient and Virtualization client.");
+		
+		}
+		
+		return JobsList;
+
+		
+		
+		
+}]]></script>
+</dunes-script-module>

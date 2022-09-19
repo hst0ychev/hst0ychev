@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="ComponentType" result-type="Any" api-version="6.0.0" id="39cf5c05-fa52-3c16-8183-93c04d6f9945" version="1.0.0" allowed-operations="evf" category-name="com.vmware.indcoe.library.vrautil">
+  <param n="host" t="vCACCAFE:VCACHost"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var CafeRestClient = System.getModule("com.vmware.indcoe.library.vrautil").CafeRestClient(host,
+    vCACCAFEServicesEnum.COMPOSITION_SERVICE);
+var restClient = new CafeRestClient("componenttypes");
+
+var ComponentType = function (bp) {
+    for (var key in bp) {
+        this[key] = bp[key];
+    }
+
+    this.save = function () {
+        var id = restClient.createOrUpdate(this);
+        this.id = id;
+    };
+};
+
+ComponentType.get = function (id) {
+    var bp = restClient.get(id);
+    return new ComponentType(bp);
+};
+
+ComponentType.getByName = function (name) {
+    var bp = restClient.getByName(name);
+    return new ComponentType(bp);
+};
+
+return ComponentType;
+]]></script>
+</dunes-script-module>

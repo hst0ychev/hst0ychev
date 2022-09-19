@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getComputersOfOSAndEnvironment" result-type="Array/String" api-version="6.0.0" id="b460a4f4-fbff-4550-affd-de9e7f2f8b42" version="0.0.0" allowed-operations="evf" category-name="com.vmware.indcoe.active_directory">
+  <param n="OSType" t="string"><![CDATA[]]></param>
+  <param n="environment" t="string"><![CDATA[]]></param>
+  <param n="businessGroup" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[//This function will return the "value" of "key" from a "configuration element" which exists in "category_name"
+function getValueFromConfigurationElement(key, configuration_element, category_name) {
+
+	// Step 1: We fetch the "configuration element" in the "category_name" that means it calls getConfigurationElement function which returns a "configuration element" if it exists, else false.
+
+	var configuration_element_returned = getConfigurationElement(category_name, configuration_element);
+	if (configuration_element_returned) {
+		//Step 2: It means we have got the configuration element and it exists.
+		var configuration_element_attributes = configuration_element_returned.attributes;
+
+		// Step 3: We now iterate over each "key" in the configuration element returned.
+		for (var i in configuration_element_attributes) {
+			//Step 4: If the current key which is interated is the one it was asked for , we return the value.
+			if (configuration_element_attributes[i].name === key) {
+				return configuration_element_attributes[i].value;
+			}
+		}
+	}
+	//Step 5: Return false for all other scenarios, i.e. either the configuration element was not found OR the key was not found.
+	return false;
+}
+
+//This function will fetch the required configuration element from all the configuration elements in the "category_name"
+function getConfigurationElement(category_name, configuration_element) {
+	//We get all configuration elements in "Path" i.e. the folder name in "actions" tab.
+	var configElements = Server.getConfigurationElementCategoryWithPath(category_name).configurationElements;
+	for (var i in configElements) {
+
+		//If this (the one currently in iteration)'s name is same as the one we need, we return it.
+		if (configElements[i].name === configuration_element) {
+			return configElements[i];
+		}
+	}
+	//By default, we return false, implying either we did not encounter the required configuration Element in "category_name"
+	return false;
+}
+
+var listOfComputers = [];
+if(!OSType || !environment)
+{
+	listOfComputers.push("Please select OS and Environment");
+	return listOfComputers;  
+}
+
+var adUsername = getValueFromConfigurationElement("username", "LDAPaaS", "CRIS");
+var adPassword = getValueFromConfigurationElement("password", "LDAPaaS", "CRIS");
+var adServer = getValueFromConfigurationElement("adServer", "LDAPaaS", "CRIS");
+var psHost = getValueFromConfigurationElement("psHost", "LDAPaaS", "CRIS");
+
+var basePath = getValueFromConfigurationElement("basePath_for_Computers", "LDAPaaS", "CRIS");
+
+if (!adUsername || !adPassword || !adServer || !psHost || !basePath) {
+	listOfComputers.push("Error fetching computers from AD");
+	return listOfComputers;
+}
+
+var adObject = System.getModule("com.vmware.indcoe.active_directory").class(adUsername, adPassword, adServer, psHost);
+
+if (!adObject) {
+	listOfComputers.push("Error fetching computers from AD");
+	return listOfComputers;
+}
+else {
+    adObject.SetBasePath(basePath);
+	var computers = adObject.GetComputers(OSType, environment,businessGroup);
+	if (!computers) {
+		listOfComputers.push("No Computers found in the selection");
+		return listOfComputers;
+	}
+	if(computers.SamAccountName)
+	{
+        //Only one computer was returned.
+        computerName = computers.SamAccountName;
+        computerName = computerName.substring(0,computerName.length-1);
+		listOfComputers.push(computerName);
+	}
+	else
+	{
+		for(var i in computers)
+		{
+			computerName = computers[i].SamAccountName;
+       		computerName = computerName.substring(0,computerName.length-1);
+			listOfComputers.push(computerName);
+		}
+	}
+	return listOfComputers;
+}]]></script>
+</dunes-script-module>

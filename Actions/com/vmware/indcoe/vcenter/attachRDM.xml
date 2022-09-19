@@ -1,0 +1,90 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="attachRDM" result-type="Any" api-version="6.0.0" id="7a20464d-8996-465f-ba1c-7970975f1c3a" version="0.0.8" allowed-operations="evf" category-name="com.vmware.indcoe.vcenter">
+  <script encoded="false"><![CDATA[var attachObj = {
+	attachRDM : function(vmName,vmdkPath){
+		vmName = vmName.replace(" ","")
+		var vCACVms = Server.findAllForType("vCAC:VirtualMachine", "VirtualMachineName eq '"+vmName+"'");
+		var sdkConnections = VcPlugin.allSdkConnections;  
+		var vcenterName;              
+		var psHost;
+		for(var j in sdkConnections){
+			System.debug("Vm id "+vCACVms[0].vmUniqueID)
+			try{
+		    	vcVirtualMachine = sdkConnections[j].searchIndex.findByUuid(null,vCACVms[0].vmUniqueID,true,true);
+				if(vcVirtualMachine){
+					vcenterName = sdkConnections[j].id
+					System.debug("SDK id "+sdkConnections[j].id)
+				}
+			}catch(e){System.debug("Unable to find vc vm by uuid in sdkConnection "+sdkConnections[j]);}
+		}
+		//get category
+		var category = Server.getConfigurationElementCategoryWithPath("Helper");
+		//die in a fire if non-existent
+		if (category == null) {
+		    throw "Configuration element category not found or empty!";
+		}
+		//get _all_ the elements
+		var elements = category.configurationElements;
+		//retrieve names
+		for (i = 0; i < elements.length; i++) {
+		    if (elements[i].name == "vCenterCreds") {
+				//found required element
+				var split_val = vcenterName.split('.')
+				var attrib='';
+				for(var hh in split_val){ attrib = attrib+split_val[hh]}
+				vcenterCompVar = elements[i].getAttributeWithKey(attrib).value;
+				psHost = elements[i].getAttributeWithKey("psHost").value
+				//System.debug(psHost)
+				break
+			}
+		}
+		var rdmList =  System.getModule("com.vmware.indcoe.vcenter").callgetSharedRDMFromVM(vmName)
+		var vmdkList = System.getModule("com.vmware.indcoe.vcenter").callGetSharedVmdkFromVm(vmName)
+		try{
+			var lenthDevice = vmdkList.length + rdmList.length + 1;
+		}catch(e){
+			System.debug("catch "+lenthDevice)
+		}
+		if(lenthDevice === 7 ){ 
+			lenthDevice = lenthDevice+1
+		}
+		System.debug("Length device "+lenthDevice)
+		System.debug("Length device "+typeof(lenthDevice))
+		var username = vcenterCompVar.get("username")
+		var password = vcenterCompVar.get("password")
+		var powerObj = System.getModule("com.vmware.indoce.library.executepowershell").ExecutePowershell()
+		var script = ""
+		script += "Connect-VIServer -Server '"+vcenterName+"' -User '"+username+ "' -Password '"+password+"'\n"
+		script += "$vmname = '"+vmName+"'\n"
+		script += "$virtualmachineid = Get-VM -Name $vmname | select -ExpandProperty id \n"
+		script += "$vm = Get-View -Id $virtualmachineid \n"
+		script += "$vmdkFileNamePath = '"+vmdkPath+"'\n"
+		script += "$diskControllerNumber = 1 \n"		
+		script += "$vmDevices = $vm.Config.Hardware.Device \n"
+		script += "foreach ($device in $vmDevices) { \n"
+		script += "	if($device -is [VMware.Vim.VirtualSCSIController] -and $device.BusNumber -eq $diskControllerNumber) {\n"
+		script += "		$diskControllerKey = $device.key \n"
+        script += "		break\n"
+		script += "	} \n"
+		script += "}\n"
+		script += "$diskUnitNumber = "+lenthDevice +"\n"
+		script += "$spec = New-Object VMware.Vim.VirtualMachineConfigSpec \n"
+		script += "$spec.deviceChange = New-Object VMware.Vim.VirtualDeviceConfigSpec\n"
+		script += "$spec.deviceChange[0].operation = 'add' \n"
+		script += "$spec.deviceChange[0].device = New-Object VMware.Vim.VirtualDisk \n"
+		script += "$spec.deviceChange[0].device.key = -10\n"
+		script += "$spec.deviceChange[0].device.ControllerKey = $diskControllerKey \n"
+		script += "$spec.deviceChange[0].device.unitNumber = $diskUnitNumber \n"
+		script += "$spec.DeviceChange[0].device.backing = New-Object VMware.Vim.VirtualDiskRawDiskMappingVer1BackingInfo \n"
+		script += "$spec.DeviceChange[0].device.Backing.fileName = $vmdkFileNamePath \n"
+		//script += "$spec.DeviceChange[0].device.Backing.diskMode = 'independent_persistent' \n"
+		//script += "$spec.DeviceChange[0].device.Backing.eagerlyScrub = $True \n"
+		script += "$spec.DeviceChange[0].device.Backing.Sharing = 'sharingMultiWriter'\n"
+		script += "$vm.ReconfigVM_Task($spec)\n"
+		System.debug("Attach script "+script)
+		var response = powerObj.executeScript(psHost,script)
+		System.debug("Response "+response)
+	}
+}
+return attachObj]]></script>
+</dunes-script-module>

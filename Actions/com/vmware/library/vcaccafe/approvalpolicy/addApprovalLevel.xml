@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="addApprovalLevel" result-type="vCACCAFE:ApprovalPolicy" api-version="6.0.0" id="a82ac3b4-5b9e-401d-ba5a-275e690843f0" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.approvalpolicy">
+  <param n="approvalPolicy" t="vCACCAFE:ApprovalPolicy"><![CDATA[Approval policy]]></param>
+  <param n="approvalType" t="string"><![CDATA[Approval type]]></param>
+  <param n="name" t="string"><![CDATA[Approval level name]]></param>
+  <param n="description" t="string"><![CDATA[Approval level description]]></param>
+  <param n="users" t="Array/string"><![CDATA[Users]]></param>
+  <param n="groups" t="Array/string"><![CDATA[Groups]]></param>
+  <param n="approvalMode" t="string"><![CDATA[Approval level mode]]></param>
+  <script encoded="false"><![CDATA[System.getModule("com.vmware.library.vcaccafe.util").validateObject(approvalPolicy, "Approval policy");
+var level = new vCACCAFEApprovalLevel();
+level.setName(name);
+level.setDescription(description);
+level.setApprovalMode(vCACCAFEApprovalMode.valueOf(approvalMode));
+
+if(users != null){
+   for(var i = 0 ; i < users.length ; i++ ) {
+      var user = new vCACCAFEApprovalPrincipal();
+      user.setValue(users[i]);
+      user.setType(vCACCAFEApprovalPrincipalType.USER);
+      System.getModule("com.vmware.library.vcaccafe.util").addElementToList(level, "getApprovers", user);
+   }
+}
+
+if(groups != null){
+   for(var i = 0 ; i < groups.length ; i++ ) {
+      var group = new vCACCAFEApprovalPrincipal();
+      group.setValue(groups[i]);
+      group.setType(vCACCAFEApprovalPrincipalType.GROUP);
+      System.getModule("com.vmware.library.vcaccafe.util").addElementToList(level, "getApprovers", group);
+   }
+}
+
+var phases = approvalPolicy.getPhases();
+for(var i = 0 ; i < phases.length ; i++ ) {
+	if(phases[i].getPhasetype().getId() == approvalType) {
+		level.setLevelNumber(phases[i].getLevels().length + 1);
+		System.getModule("com.vmware.library.vcaccafe.util").addElementToList(phases[i], "getLevels", level);
+		break;
+	}
+}
+
+var host = vCACCAFEEntitiesFinder.getHostForEntity(approvalPolicy);
+var approvalPolicyService = host.createApprovalClient().getApprovalApprovalPolicyService();
+
+System.log("Adding approval level to approval policy " + approvalPolicy.getName());
+updatedApprovalPolicy = approvalPolicyService.update(approvalPolicy);
+System.log("Approval level added.");
+return vCACCAFEEntitiesFinder.getApprovalPolicy(host, updatedApprovalPolicy.getId());]]></script>
+</dunes-script-module>

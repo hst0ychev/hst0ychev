@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getDefaultWorkflowName" result-type="string" api-version="6.0.0" id="91808080808080808080808080808080CA808080013220404425363c0250095dc" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.soap">
+  <description><![CDATA[Gets the default name for a workflow from a SOAP operation.]]></description>
+  <param n="operation" t="SOAP:Operation"><![CDATA[SOAP operation]]></param>
+  <script encoded="false"><![CDATA[return (operation == null) ? "" : "Invoke '" + operation.name + "' from '" + operation.getHost().name + "'";]]></script>
+</dunes-script-module>

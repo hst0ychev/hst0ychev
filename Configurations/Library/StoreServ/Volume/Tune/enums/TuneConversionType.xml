@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="6c3c8455-672c-4a20-b86e-5ce02379ba90" version="1.0.0">
+  <display-name><![CDATA[TuneConversionType]]></display-name>
+  <atts>
+    <att name="Thin" type="string" read-only="false">
+      <value encoded="n"><![CDATA[TPVV]]></value>
+    </att>
+    <att name="ThinDedupe" type="string" read-only="false">
+      <value encoded="n"><![CDATA[TDVV]]></value>
+    </att>
+    <att name="Full" type="string" read-only="false">
+      <value encoded="n"><![CDATA[FPVV]]></value>
+    </att>
+  </atts>
+</config-element>

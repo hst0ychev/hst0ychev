@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="Workflow:name=generic" id="88808080808080808080808080808080E68080800123780023911323ba1c368d4" version="1.2.1" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Delete all unused datastore files]]></display-name>
+  <description><![CDATA[Searches all datastores in the vCenter Server environment and deletes all unused files.]]></description>
+  <position y="20.0" x="180.0"/>
+  <output>
+    <param name="deletedFiles" type="Array/string">
+      <description><![CDATA[Files deleted by this workflow]]></description>
+    </param>
+  </output>
+  <attrib name="diskFiles" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Disk files]]></description>
+  </attrib>
+  <attrib name="vmFiles" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Virtual machine files]]></description>
+  </attrib>
+  <workflow-item name="item2" type="end" end-mode="0">
+    <position y="210.0" x="180.0"/>
+  </workflow-item>
+  <workflow-item name="item0" out-name="item3" type="link" linked-workflow-id="85808080808080808080808080808080ED8080800123780023911323ba1c368d4">
+    <display-name><![CDATA[Find unused files in datastores]]></display-name>
+    <in-binding/>
+    <out-binding>
+      <bind name="diskFiles" type="Properties" export-name="diskFiles">
+        <description><![CDATA[VMDK files]]></description>
+      </bind>
+      <bind name="vmFiles" type="Properties" export-name="vmFiles">
+        <description><![CDATA[VMX and VMTX files]]></description>
+      </bind>
+      <bind name="orphanedFound" type="boolean" explicitly-not-bound="true" export-name="NULL">
+        <description><![CDATA[Orphan virtual machines present?]]></description>
+      </bind>
+      <bind name="orphanedVMs" type="Array/VC:VirtualMachine" explicitly-not-bound="true" export-name="NULL">
+        <description><![CDATA[Array of orphan virtual machines]]></description>
+      </bind>
+    </out-binding>
+    <description><![CDATA[Searches vCenter Server for all unused disks (*.vmdk), virtual machines (*.vmx), and template (*.vmtx) files that are not associated to any vCenter Server instances that are registered with Orchestrator.]]></description>
+    <position y="100.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item2" type="task">
+    <display-name><![CDATA[delete files]]></display-name>
+    <script encoded="false"><![CDATA[var files = new Array();
+
+for (var i in diskFiles.keys) {
+	files.push(diskFiles.keys[i]);
+}
+
+for (var i in vmFiles.keys) {
+	files.push(vmFiles.keys[i]);
+}
+
+var datastores = System.getModule("com.vmware.library.vc.datastore").getAllDatastores();
+
+for (var i in files) {
+	var a = /\[(.+)] (.+)/(files[i]);
+	var dsName = a[1];
+	var fPath = a[2];
+	for (var j in datastores) {
+		if (datastores[j].name == dsName) {
+			System.getModule("com.vmware.library.vc.datastore.files").deleteFile(datastores[j],fPath)
+		}
+	}
+}
+
+deletedFiles = files;]]></script>
+    <in-binding>
+      <bind name="diskFiles" type="Properties" export-name="diskFiles"/>
+      <bind name="vmFiles" type="Properties" export-name="vmFiles"/>
+    </in-binding>
+    <out-binding>
+      <bind name="deletedFiles" type="Array/string" export-name="deletedFiles"/>
+    </out-binding>
+    <position y="160.0" x="140.0"/>
+  </workflow-item>
+  <presentation/>
+</workflow>

@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getCustomPropertyValue" result-type="string" api-version="6.0.0" id="153b5b8a-02da-481b-bbc1-d2ec9d37a7f5" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.subtenant">
+  <param n="group" t="vCACCAFE:Subtenant"><![CDATA[Business group]]></param>
+  <param n="name" t="string"><![CDATA[Property name]]></param>
+  <script encoded="false"><![CDATA[return vCACCAFESubtenantHelper.getCustomPropertyValue(group, name);]]></script>
+</dunes-script-module>

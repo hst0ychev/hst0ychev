@@ -1,0 +1,260 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="Workflow:name=generic" id="9f6c2c59-6a3f-4854-8437-34e15acb552d" version="0.0.1" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Extract virtual machine info extendingclouds]]></display-name>
+  <description><![CDATA[Returns the virtual machine folder, host system, resource pool, compute resource, datastore, hard drives sizes, CPU and memory, network, and IP address for a given virtual machine. Note: Might require VMware Tools.]]></description>
+  <position y="20.0" x="180.0"/>
+  <input>
+    <param name="vm" type="VC:VirtualMachine">
+      <description><![CDATA[Virtual machine from which to extract information]]></description>
+    </param>
+  </input>
+  <output>
+    <param name="folderName" type="string">
+      <description><![CDATA[Virtual machine folder name]]></description>
+    </param>
+    <param name="folderId" type="string">
+      <description><![CDATA[Virtual machine folder ID]]></description>
+    </param>
+    <param name="runningHostName" type="string">
+      <description><![CDATA[Name of host running the virtual machine]]></description>
+    </param>
+    <param name="runningHostId" type="string">
+      <description><![CDATA[ID of host running the virtual machine]]></description>
+    </param>
+    <param name="resourcePoolName" type="string">
+      <description><![CDATA[Resource pool name]]></description>
+    </param>
+    <param name="resourcePoolId" type="string">
+      <description><![CDATA[Resource pool ID]]></description>
+    </param>
+    <param name="clusterName" type="string">
+      <description><![CDATA[Cluster name]]></description>
+    </param>
+    <param name="clusterId" type="string">
+      <description><![CDATA[Cluster ID]]></description>
+    </param>
+    <param name="computeResourceId" type="string">
+      <description><![CDATA[Compute resource ID]]></description>
+    </param>
+    <param name="datastoresName" type="Array/string">
+      <description><![CDATA[Datastore name]]></description>
+    </param>
+    <param name="datastoresId" type="Array/string">
+      <description><![CDATA[Datastore ID]]></description>
+    </param>
+    <param name="diskSizes" type="Array/number">
+      <description><![CDATA[Disk sizes]]></description>
+    </param>
+    <param name="cpuCount" type="number">
+      <description><![CDATA[Number of CPUs]]></description>
+    </param>
+    <param name="memoryMB" type="number">
+      <description><![CDATA[Memory in MB]]></description>
+    </param>
+    <param name="ipAddresses" type="Array/string">
+      <description><![CDATA[IP addresses]]></description>
+    </param>
+    <param name="networks" type="Array/string">
+      <description><![CDATA[Networks]]></description>
+    </param>
+    <param name="folder" type="VC:VmFolder">
+      <description><![CDATA[Virtual machine folder]]></description>
+    </param>
+    <param name="host" type="VC:HostSystem">
+      <description><![CDATA[Host]]></description>
+    </param>
+    <param name="resourcePool" type="VC:ResourcePool">
+      <description><![CDATA[Resource Pool]]></description>
+    </param>
+    <param name="cluster" type="VC:ClusterComputeResource">
+      <description><![CDATA[Cluster]]></description>
+    </param>
+    <param name="computeResource" type="VC:ComputeResource">
+      <description><![CDATA[Compute resource]]></description>
+    </param>
+    <param name="datastores" type="Array/VC:Datastore">
+      <description><![CDATA[Array of datastores]]></description>
+    </param>
+    <param name="datastore" type="VC:Datastore"/>
+  </output>
+  <workflow-item name="item0" out-name="item2" type="task">
+    <display-name><![CDATA[Get folder]]></display-name>
+    <script encoded="false"><![CDATA[folder = vm.parent;
+folderName = folder.name;
+folderId = folder.sdkId;]]></script>
+    <in-binding>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vm"/>
+    </in-binding>
+    <out-binding>
+      <bind name="folderName" type="string" export-name="folderName"/>
+      <bind name="folderId" type="string" export-name="folderId"/>
+      <bind name="folder" type="VC:VmFolder" export-name="folder"/>
+    </out-binding>
+    <position y="80.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item3" type="task">
+    <display-name><![CDATA[Get Resource Pool]]></display-name>
+    <script encoded="false"><![CDATA[resourcePool = vm.resourcePool;
+resourcePoolName = resourcePool.name;
+resourcePoolId = resourcePool.sdkId;]]></script>
+    <in-binding>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vm"/>
+    </in-binding>
+    <out-binding>
+      <bind name="resourcePoolName" type="string" export-name="resourcePoolName"/>
+      <bind name="resourcePoolId" type="string" export-name="resourcePoolId"/>
+      <bind name="resourcePool" type="VC:ResourcePool" export-name="resourcePool"/>
+    </out-binding>
+    <position y="160.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item1" type="task">
+    <display-name><![CDATA[Get Hostsystem]]></display-name>
+    <script encoded="false"><![CDATA[host = VcPlugin.convertToVimManagedObject(vm, vm.runtime.host);
+runningHostName = host.name;
+runningHostId = host.sdkId;]]></script>
+    <in-binding>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vm"/>
+    </in-binding>
+    <out-binding>
+      <bind name="runningHostName" type="string" export-name="runningHostName"/>
+      <bind name="runningHostId" type="string" export-name="runningHostId"/>
+      <bind name="host" type="VC:HostSystem" export-name="host"/>
+    </out-binding>
+    <position y="120.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item4" type="task">
+    <display-name><![CDATA[Get Compute Resouce]]></display-name>
+    <script encoded="false"><![CDATA[var parent = vm.resourcePool;
+
+while ( ! (parent instanceof VcClusterComputeResource) && ! (parent instanceof VcComputeResource)) {
+	parent = parent.parent;
+}
+
+clusterName = parent.name;
+if (parent instanceof VcClusterComputeResource) {
+	clusterId = parent.sdkId;
+	cluster = parent;
+}
+else {
+	computeResourceId = parent.sdkId;
+	computeResource = parent;
+}]]></script>
+    <in-binding>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vm"/>
+    </in-binding>
+    <out-binding>
+      <bind name="clusterName" type="string" export-name="clusterName"/>
+      <bind name="clusterId" type="string" export-name="clusterId"/>
+      <bind name="computeResourceId" type="string" export-name="computeResourceId"/>
+      <bind name="cluster" type="VC:ClusterComputeResource" export-name="cluster"/>
+      <bind name="computeResource" type="VC:ComputeResource" export-name="computeResource"/>
+    </out-binding>
+    <position y="200.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item5" type="task">
+    <display-name><![CDATA[Get Datastores and HD sizes]]></display-name>
+    <script encoded="false"><![CDATA[var datastoresProp = new Properties();
+var diskSizes = new Array();
+
+var devices = vm.config.hardware.device;
+var j = 0;
+for (var i in devices) {
+	if (devices[i] instanceof VcVirtualDisk) {
+		diskSizes[j++] = devices[i].capacityInKB / 1024;
+		var datastore = VcPlugin.convertToVimManagedObject(vm , devices[i].backing.datastore)
+		datastoresProp.put(datastore.id, datastore);
+	}
+}
+
+var datastoresId = new Array();
+var datastoresName = new Array();
+var datastores = new Array();
+for (var i in datastoresProp.keys) {
+	datastore = datastoresProp.get(datastoresProp.keys[i]);
+	datastoresId[i] = datastore.sdkId;
+	datastoresName[i] = datastore.name;
+	datastores[i] = datastore;
+}
+datastore=datastores[0];
+]]></script>
+    <in-binding>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vm"/>
+    </in-binding>
+    <out-binding>
+      <bind name="datastoresName" type="Array/string" export-name="datastoresName"/>
+      <bind name="diskSizes" type="Array/number" export-name="diskSizes"/>
+      <bind name="datastoresId" type="Array/string" export-name="datastoresId"/>
+      <bind name="datastores" type="Array/VC:Datastore" export-name="datastores"/>
+      <bind name="datastore" type="VC:Datastore" export-name="datastore"/>
+    </out-binding>
+    <position y="240.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item5" out-name="item6" type="task">
+    <display-name><![CDATA[Get CPU / Memory]]></display-name>
+    <script encoded="false"><![CDATA[cpuCount = vm.summary.config.numCpu;
+memoryMB = vm.summary.config.memorySizeMB;]]></script>
+    <in-binding>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vm"/>
+    </in-binding>
+    <out-binding>
+      <bind name="cpuCount" type="number" export-name="cpuCount"/>
+      <bind name="memoryMB" type="number" export-name="memoryMB"/>
+    </out-binding>
+    <position y="280.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item6" out-name="item7" type="task">
+    <display-name><![CDATA[Get network / IP]]></display-name>
+    <script encoded="false"><![CDATA[var devices = vm.config.hardware.device;
+
+var networks = new Array();
+for (var i in devices) {
+	// found a network card
+	if (System.getModule("com.vmware.library.vc.vm.network").isSupportedNic(devices[i])) {
+		var netName = devices[i].backing.deviceName
+		if (! contains(networks, netName))
+			networks.push(netName);
+	}
+}
+
+var ipAddresses = new Array();
+if (vm.guest != null && vm.guest.ipAddress != null && vm.guest.ipAddress != "")
+	ipAddresses.push(vm.guest.ipAddress);
+if (vm.guest != null && vm.guest.net != null) {
+	for (var i in vm.guest.net) {
+		if (vm.guest.net[i] != null && vm.guest.net[i].ipAddress != null) {
+			for (var j in vm.guest.net[i].ipAddress) {
+				if (! contains (ipAddresses, vm.guest.net[i].ipAddress[j])) {
+					ipAddresses.push(vm.guest.net[i].ipAddress[j]);
+				}
+			}
+		}
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+function contains(array, value) {
+	for (var i in array)
+		if (array[i] == value)
+			return true;
+	return false;
+}]]></script>
+    <in-binding>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vm"/>
+    </in-binding>
+    <out-binding>
+      <bind name="ipAddresses" type="Array/string" export-name="ipAddresses"/>
+      <bind name="networks" type="Array/string" export-name="networks"/>
+    </out-binding>
+    <position y="320.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item7" type="end" end-mode="0">
+    <position y="350.0" x="180.0"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="vm">
+      <desc><![CDATA[Virtual machine from which to extract information]]></desc>
+      <p-qual kind="static" name="show-select-as" type="string"><![CDATA[list]]></p-qual>
+      <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+    </p-param>
+  </presentation>
+</workflow>

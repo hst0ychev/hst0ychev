@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="deletePropertyDefinition" result-type="void" api-version="6.0.0" id="e983ba98-1a6a-4d29-9337-777d285e3674" version="0.0.0" allowed-operations="vf" category-name="com.vmware.library.vcaccafe.propertydefinition">
+  <param n="propertyDefinition" t="vCACCAFE:PropertyDefinition"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var host = vCACCAFEEntitiesFinder.getHostForEntity(propertyDefinition);
+var service = host.createPropertyClient().getPropertyContextPropertyDefinitionService();
+
+System.log("Deleting property definition...");
+service.deletePropertyDefinition(propertyDefinition.id);
+System.log("Property definition: " + propertyDefinition.getLabel() + " deleted.");]]></script>
+</dunes-script-module>

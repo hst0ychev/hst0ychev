@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getUplinkPortGroupsForSwitch" result-type="Array/Any" api-version="6.0.0" id="06566f24-1455-449d-a077-c6c179bc2053" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.networking">
+  <param n="dvSwitch" t="VC:VmwareDistributedVirtualSwitch"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var result = new Array();
+if (dvSwitch != null) {
+	for (var i in dvSwitch.portgroup) {
+		var port = VcPlugin.convertToVimManagedObject(dvSwitch, dvSwitch.portgroup[i]);
+		result.push(port);
+	}
+}
+return result;]]></script>
+</dunes-script-module>

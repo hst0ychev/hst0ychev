@@ -1,0 +1,56 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="8a70a326-ffd7-4fef-97e0-2002ac49f5bd" version="2.0.0" api-version="6.0.0" allowed-operations="vfe" icon-id="93015d83-b1ba-42d0-9b3c-bb3ebb862beb" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Delete a trusted certificate]]></display-name>
+  <description><![CDATA[Deletes an SSL certificate from the server trust store.]]></description>
+  <ref-types><![CDATA[(Configurator:CA)]]></ref-types>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="cert" type="Configurator:CA">
+      <description><![CDATA[Trusted Certificate to Delete]]></description>
+    </param>
+  </input>
+  <attrib name="error" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Err]]></description>
+  </attrib>
+  <attrib name="objRoot" type="Configurator:Keystore" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='cakeystore-id'&dunesName='Configurator:Keystore']]></value>
+  </attrib>
+  <workflow-item name="item1" out-name="item4" type="task">
+    <display-name><![CDATA[Delete CA certificate]]></display-name>
+    <script encoded="false"><![CDATA[auth = Config.getKeystores();
+ld = auth.getDeleteCAAction();
+model = ld.getModel();
+model.value = cert.getId();
+error=ld.execute();]]></script>
+    <in-binding>
+      <bind name="cert" type="Configurator:CA" export-name="cert"/>
+    </in-binding>
+    <out-binding>
+      <bind name="error" type="string" export-name="error"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <workflow-item name="item3" type="end" end-mode="0">
+    <position y="45.40909090909091" x="504.5"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item3" type="custom-condition" alt-out-name="item5">
+    <display-name><![CDATA[Custom decision]]></display-name>
+    <script encoded="false"><![CDATA[return !error;]]></script>
+    <in-binding>
+      <bind name="error" type="string" export-name="error"/>
+    </in-binding>
+    <position y="45.40909090909091" x="344.5"/>
+  </workflow-item>
+  <workflow-item name="item5" business-status="Error" throw-bind-name="error" type="end" end-mode="1">
+    <position y="109.04545454545453" x="384.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="cert">
+      <desc><![CDATA[Trusted Certificate to Delete]]></desc>
+      <p-qual kind="static" name="contextualParameter" type="void"><![CDATA[__NULL__]]></p-qual>
+      <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      <p-qual kind="ognl" name="sdkRootObject" type="any"><![CDATA[#objRoot]]></p-qual>
+    </p-param>
+  </presentation>
+</workflow>

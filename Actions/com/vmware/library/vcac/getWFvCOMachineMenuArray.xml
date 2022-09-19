@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getWFvCOMachineMenuArray" result-type="Array/string" api-version="6.0.0" id="6ad3b045-3568-41b9-b64d-677ce2511cfd" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcac">
+  <param n="nb" t="number"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var names = new Array();
+
+for (var i=0; i<nb; i++) {
+	names.push("WFvCOMachineMenu" + (i+1));
+} 
+
+return names;]]></script>
+</dunes-script-module>

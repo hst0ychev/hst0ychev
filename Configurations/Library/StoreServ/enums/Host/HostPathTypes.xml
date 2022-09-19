@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="61a48c79-be52-4e10-997b-5bd6465af75a" version="1.0.0">
+  <display-name><![CDATA[HostPathTypes]]></display-name>
+  <atts>
+    <att name="FC" type="string" read-only="false">
+      <value encoded="n"><![CDATA[FC]]></value>
+    </att>
+    <att name="iSCSI" type="string" read-only="false">
+      <value encoded="n"><![CDATA[iSCSI]]></value>
+    </att>
+  </atts>
+</config-element>

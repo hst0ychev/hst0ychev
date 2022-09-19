@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="shutdownVMAndForce" result-type="void" api-version="6.0.0" id="b3cca0af-11b3-454a-a735-641ff2c9adc8" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.vm.power">
+  <param n="vm" t="VC:VirtualMachine"><![CDATA[VM to shutdown]]></param>
+  <param n="timeout" t="number"><![CDATA[Timeout to wait before force power off [min]]]></param>
+  <param n="polling" t="number"><![CDATA[Polling rate [s]]]></param>
+  <script encoded="false"><![CDATA[try {
+	System.getModule("com.vmware.library.vc.vm.power").shutdownVM(vm, timeout, polling);
+}
+catch (ex) {
+	System.log(ex);
+	var task = System.getModule("com.vmware.library.vc.vm.power").forcePowerOff(vm);
+	System.getModule("com.vmware.library.vc.basic").vim3WaitTaskEnd(task, false, 1);
+}]]></script>
+</dunes-script-module>

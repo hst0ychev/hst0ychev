@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="5de731d0-ff74-4fe8-9373-d08f28908185" version="0.0.1">
+  <display-name><![CDATA[scaleInAlertDefinition]]></display-name>
+  <atts>
+    <att name="name" type="string" read-only="false">
+      <value encoded="n"><![CDATA[_HorizontalIn_MemCPUAlert]]></value>
+    </att>
+    <att name="description" type="string" read-only="false">
+      <value encoded="n"><![CDATA[Horizontal In Memory and CPU Alert Definition]]></value>
+    </att>
+    <att name="waitCycle" type="number" read-only="false">
+      <value encoded="n"><![CDATA[1.0]]></value>
+    </att>
+    <att name="cancelCycle" type="number" read-only="false">
+      <value encoded="n"><![CDATA[1.0]]></value>
+    </att>
+  </atts>
+</config-element>

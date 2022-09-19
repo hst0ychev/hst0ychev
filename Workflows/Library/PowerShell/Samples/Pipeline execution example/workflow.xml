@@ -1,0 +1,281 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="Workflow:name=generic" id="D78080808080808080808080808080808880808001304933636362ce882292c2a" version="6.0.0" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Pipeline execution example]]></display-name>
+  <description><![CDATA[Demonstrates how you can run multiple cmdlets arranged into a pipe.]]></description>
+  <position y="10.0" x="380.0"/>
+  <input>
+    <param name="host" type="PowerShell:PowerShellHost"/>
+    <param name="psServer" type="string"/>
+    <param name="psUser" type="string"/>
+    <param name="psPassword" type="SecureString"/>
+    <param name="psVmName" type="string"/>
+  </input>
+  <attrib name="sessionId" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="addPsSnapin_Name" type="string" read-only="false">
+    <value encoded="n"><![CDATA[VMware.VimAutomation.Core]]></value>
+  </attrib>
+  <attrib name="psVerbose" type="boolean" read-only="false"/>
+  <attrib name="psDebug" type="boolean" read-only="false"/>
+  <attrib name="psErrorVariable" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="psOutVariable" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="psOutBuffer" type="number" read-only="false"/>
+  <attrib name="actionResult" type="PowerShell:PowerShellRemotePSObject" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="errorCode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="wrappedServer" type="Array/string" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <workflow-note x="170.0" y="100.0" w="500.0" h="50.0" color="dfffbfff">
+    <description><![CDATA[Initialize PowerCLI]]></description>
+  </workflow-note>
+  <workflow-note x="170.0" y="160.0" w="500.0" h="50.0">
+    <description><![CDATA[Connect to vCenter Server]]></description>
+  </workflow-note>
+  <workflow-note x="170.0" y="220.0" w="500.0" h="250.0">
+    <description><![CDATA[Start virtual machine]]></description>
+  </workflow-note>
+  <workflow-item name="item5" type="end" end-mode="0">
+    <position y="590.0" x="380.0"/>
+  </workflow-item>
+  <workflow-item name="item6" out-name="item12" catch-name="item11" throw-bind-name="errorCode" type="task" script-module="com.vmware.library.powershell.generated/addPSSnapIn">
+    <display-name><![CDATA[AddPsSnapin]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+System.getModule("com.vmware.library.powershell.generated").addPSSnapIn(host,sessionId,psName,psPassThru,psVerbose,psDebug,psErrorVariable,psOutVariable,psOutBuffer) ;]]></script>
+    <in-binding>
+      <bind name="host" type="PowerShell:PowerShellHost" export-name="host"/>
+      <bind name="psDebug" type="boolean" export-name="psDebug"/>
+      <bind name="psErrorVariable" type="string" export-name="psErrorVariable"/>
+      <bind name="psName" type="string" export-name="addPsSnapin_Name"/>
+      <bind name="psOutBuffer" type="number" export-name="psOutBuffer"/>
+      <bind name="psOutVariable" type="string" export-name="psOutVariable"/>
+      <bind name="psPassThru" type="boolean" explicitly-not-bound="true"/>
+      <bind name="psVerbose" type="boolean" export-name="psVerbose"/>
+      <bind name="sessionId" type="string" export-name="sessionId"/>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Auto generated.]]></description>
+    <position y="120.0" x="340.0"/>
+  </workflow-item>
+  <workflow-item name="item7" out-name="item3" catch-name="item11" throw-bind-name="errorCode" type="task" script-module="com.vmware.library.powershell.generated/connectVIServer">
+    <display-name><![CDATA[ConnectVIServer]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.powershell.generated").connectVIServer(host,sessionId,psServer,psPort,psProtocol,psCredential,psUser,psPassword,psSession,psNotDefault,psSaveCredentials,psVerbose,psDebug,psErrorAction,psWarningAction,psErrorVariable,psWarningVariable,psOutVariable,psOutBuffer) ;]]></script>
+    <in-binding>
+      <bind name="host" type="PowerShell:PowerShellHost" export-name="host"/>
+      <bind name="psDebug" type="boolean" export-name="psDebug"/>
+      <bind name="psErrorVariable" type="string" export-name="psErrorVariable"/>
+      <bind name="psNotDefault" type="boolean" explicitly-not-bound="true"/>
+      <bind name="psOutBuffer" type="number" export-name="psOutBuffer"/>
+      <bind name="psOutVariable" type="string" export-name="psOutVariable"/>
+      <bind name="psPassword" type="SecureString" export-name="psPassword"/>
+      <bind name="psPort" type="number" explicitly-not-bound="true"/>
+      <bind name="psProtocol" type="string" explicitly-not-bound="true"/>
+      <bind name="psSaveCredentials" type="boolean" explicitly-not-bound="true"/>
+      <bind name="psServer" type="Array/string" export-name="wrappedServer"/>
+      <bind name="psSession" type="string" explicitly-not-bound="true"/>
+      <bind name="psUser" type="string" export-name="psUser"/>
+      <bind name="psVerbose" type="boolean" export-name="psVerbose"/>
+      <bind name="sessionId" type="string" export-name="sessionId"/>
+      <bind name="psWarningVariable" type="string" explicitly-not-bound="true"/>
+      <bind name="psWarningAction" type="PowerShell:PowerShellRemotePSObject" explicitly-not-bound="true"/>
+      <bind name="psCredential" type="PowerShell:PowerShellRemotePSObject" explicitly-not-bound="true"/>
+      <bind name="psErrorAction" type="PowerShell:PowerShellRemotePSObject" explicitly-not-bound="true"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="PowerShell:PowerShellRemotePSObject" export-name="actionResult"/>
+    </out-binding>
+    <description><![CDATA[Auto generated.]]></description>
+    <position y="180.0" x="340.0"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item10" type="task" script-module="com.vmware.library.powershell.generated/getVM">
+    <display-name><![CDATA[GetVM]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.powershell.generated").getVM(host,sessionId,psName,psDatastore,psLocation,psId,psNoRecursion,psServer,psVerbose,psDebug,psErrorAction,psErrorVariable,psOutVariable,psOutBuffer) ;]]></script>
+    <in-binding>
+      <bind name="host" type="PowerShell:PowerShellHost" export-name="host"/>
+      <bind name="psDatastore" type="PowerShell:PowerShellRemotePSObject" explicitly-not-bound="true"/>
+      <bind name="psDebug" type="boolean" export-name="psDebug"/>
+      <bind name="psErrorAction" type="PowerShell:PowerShellRemotePSObject" explicitly-not-bound="true"/>
+      <bind name="psErrorVariable" type="string" export-name="psErrorVariable"/>
+      <bind name="psId" type="Array/string" explicitly-not-bound="true"/>
+      <bind name="psLocation" type="PowerShell:PowerShellRemotePSObject" explicitly-not-bound="true"/>
+      <bind name="psName" type="string" export-name="psVmName"/>
+      <bind name="psNoRecursion" type="boolean" explicitly-not-bound="true"/>
+      <bind name="psOutBuffer" type="number" export-name="psOutBuffer"/>
+      <bind name="psOutVariable" type="string" export-name="psOutVariable"/>
+      <bind name="psServer" type="PowerShell:PowerShellRemotePSObject" explicitly-not-bound="true" export-name="NULL"/>
+      <bind name="psVerbose" type="boolean" export-name="psVerbose"/>
+      <bind name="sessionId" type="string" export-name="sessionId"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="PowerShell:PowerShellRemotePSObject" explicitly-not-bound="true" export-name="NULL"/>
+    </out-binding>
+    <description><![CDATA[Auto generated.]]></description>
+    <position y="280.0" x="340.0"/>
+  </workflow-item>
+  <workflow-item name="item10" out-name="item8" type="task" script-module="com.vmware.library.powershell.generated/startVM">
+    <display-name><![CDATA[StartVM]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.powershell.generated").startVM(host,sessionId,psVM,psRunAsync,psServer,psVerbose,psDebug,psErrorAction,psErrorVariable,psOutVariable,psOutBuffer,psWhatIf,psConfirm) ;]]></script>
+    <in-binding>
+      <bind name="host" type="PowerShell:PowerShellHost" export-name="host"/>
+      <bind name="psConfirm" type="boolean" explicitly-not-bound="true"/>
+      <bind name="psDebug" type="boolean" export-name="psDebug"/>
+      <bind name="psErrorAction" type="PowerShell:PowerShellRemotePSObject" explicitly-not-bound="true" export-name="NULL"/>
+      <bind name="psErrorVariable" type="string" export-name="psErrorVariable"/>
+      <bind name="psOutBuffer" type="number" export-name="psOutBuffer"/>
+      <bind name="psOutVariable" type="string" export-name="psOutVariable"/>
+      <bind name="psRunAsync" type="boolean" explicitly-not-bound="true"/>
+      <bind name="psServer" type="PowerShell:PowerShellRemotePSObject" explicitly-not-bound="true" export-name="NULL"/>
+      <bind name="psVerbose" type="boolean" export-name="psVerbose"/>
+      <bind name="psVM" type="PowerShell:PowerShellRemotePSObject" explicitly-not-bound="true" export-name="NULL"/>
+      <bind name="psWhatIf" type="boolean" explicitly-not-bound="true"/>
+      <bind name="sessionId" type="string" export-name="sessionId"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="PowerShell:PowerShellRemotePSObject" explicitly-not-bound="true" export-name="NULL"/>
+    </out-binding>
+    <description><![CDATA[Auto generated.]]></description>
+    <position y="320.0" x="340.0"/>
+  </workflow-item>
+  <workflow-item name="item0" out-name="item6" type="task" script-module="com.vmware.library.powershell/openSession">
+    <display-name><![CDATA[openSession]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.powershell").openSession(host) ;]]></script>
+    <in-binding>
+      <bind name="host" type="PowerShell:PowerShellHost" export-name="host"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="string" export-name="sessionId"/>
+    </out-binding>
+    <position y="60.0" x="340.0"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item5" type="task" script-module="com.vmware.library.powershell/closeSession">
+    <display-name><![CDATA[closeSession]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+System.getModule("com.vmware.library.powershell").closeSession(host,sessionId) ;]]></script>
+    <in-binding>
+      <bind name="host" type="PowerShell:PowerShellHost" export-name="host"/>
+      <bind name="sessionId" type="string" export-name="sessionId"/>
+    </in-binding>
+    <out-binding/>
+    <position y="540.0" x="340.0"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item1" type="task" script-module="com.vmware.library.powershell/startPipeline">
+    <display-name><![CDATA[startPipeline]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+System.getModule("com.vmware.library.powershell").startPipeline(host,sessionId) ;]]></script>
+    <in-binding>
+      <bind name="host" type="PowerShell:PowerShellHost" export-name="host"/>
+      <bind name="sessionId" type="string" export-name="sessionId"/>
+    </in-binding>
+    <out-binding/>
+    <position y="240.0" x="340.0"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item9" catch-name="item11" throw-bind-name="errorCode" type="task" script-module="com.vmware.library.powershell/endPipeline">
+    <display-name><![CDATA[endPipeline]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.powershell").endPipeline(host,sessionId) ;]]></script>
+    <in-binding>
+      <bind name="host" type="PowerShell:PowerShellHost" export-name="host"/>
+      <bind name="sessionId" type="string" export-name="sessionId"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="PowerShell:PowerShellRemotePSObject" export-name="actionResult"/>
+    </out-binding>
+    <position y="440.0" x="340.0"/>
+  </workflow-item>
+  <workflow-item name="item8" out-name="item4" type="task" script-module="com.vmware.library.powershell.generated/outString">
+    <display-name><![CDATA[outString]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.powershell.generated").outString(host,sessionId,psStream,psWidth,psInputObject,psVerbose,psDebug,psErrorAction,psErrorVariable,psOutVariable,psOutBuffer) ;]]></script>
+    <in-binding>
+      <bind name="host" type="PowerShell:PowerShellHost" export-name="host"/>
+      <bind name="sessionId" type="string" export-name="sessionId"/>
+      <bind name="psStream" type="boolean" explicitly-not-bound="true" export-name="NULL"/>
+      <bind name="psWidth" type="number" explicitly-not-bound="true" export-name="NULL"/>
+      <bind name="psVerbose" type="boolean" export-name="psVerbose"/>
+      <bind name="psDebug" type="boolean" export-name="psDebug"/>
+      <bind name="psErrorVariable" type="string" export-name="psErrorVariable"/>
+      <bind name="psOutVariable" type="string" export-name="psOutVariable"/>
+      <bind name="psOutBuffer" type="number" export-name="psOutBuffer"/>
+      <bind name="psInputObject" type="PowerShell:PowerShellRemotePSObject" explicitly-not-bound="true" export-name="NULL"/>
+      <bind name="psErrorAction" type="PowerShell:PowerShellRemotePSObject" explicitly-not-bound="true" export-name="NULL"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="PowerShell:PowerShellRemotePSObject" export-name="actionResult"/>
+    </out-binding>
+    <description><![CDATA[Auto generated.]]></description>
+    <position y="380.0" x="340.0"/>
+  </workflow-item>
+  <workflow-item name="item9" out-name="item2" type="task">
+    <display-name><![CDATA[log output]]></display-name>
+    <script encoded="false"><![CDATA[var  obj = actionResult.getRootObject();
+System.log(obj.toString())
+
+]]></script>
+    <in-binding>
+      <bind name="actionResult" type="PowerShell:PowerShellRemotePSObject" export-name="actionResult"/>
+    </in-binding>
+    <out-binding/>
+    <position y="500.0" x="340.0"/>
+  </workflow-item>
+  <workflow-item name="item11" out-name="item2" type="task">
+    <display-name><![CDATA[log error]]></display-name>
+    <script encoded="false"><![CDATA[System.error(errorCode);
+]]></script>
+    <in-binding>
+      <bind name="errorCode" type="string" export-name="errorCode"/>
+    </in-binding>
+    <out-binding/>
+    <position y="320.0" x="660.0"/>
+  </workflow-item>
+  <workflow-item name="item12" out-name="item7" catch-name="item11" throw-bind-name="errorCode" type="task">
+    <display-name><![CDATA[add host to array]]></display-name>
+    <script encoded="false"><![CDATA[wrappedServer = new Array();
+wrappedServer.push(psServer);]]></script>
+    <in-binding>
+      <bind name="psServer" type="string" export-name="psServer"/>
+    </in-binding>
+    <out-binding>
+      <bind name="wrappedServer" type="Array/string" export-name="wrappedServer"/>
+    </out-binding>
+    <position y="140.0" x="500.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Pipeline execution example]]></title>
+      <p-group>
+        <title><![CDATA[PowerShell Host]]></title>
+        <p-param name="host">
+          <desc><![CDATA[Host]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Parameters]]></title>
+        <p-param name="psServer">
+          <desc><![CDATA[Server]]></desc>
+        </p-param>
+        <p-param name="psUser">
+          <desc><![CDATA[User]]></desc>
+        </p-param>
+        <p-param name="psPassword">
+          <desc><![CDATA[Password]]></desc>
+        </p-param>
+        <p-param name="psVmName">
+          <desc><![CDATA[Virtual machine name]]></desc>
+        </p-param>
+      </p-group>
+    </p-step>
+  </presentation>
+</workflow>

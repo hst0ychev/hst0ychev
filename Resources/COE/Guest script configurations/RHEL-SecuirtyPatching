@@ -1,0 +1,2 @@
+#[#scriptContent#=#string##!/bin/bash
+sudo yum -y update --security#+#scriptTimeOut#=#number#120.0#+#scriptWorkingDirectory#=#string##+#scriptRefreshTime#=#Any#Any#__NULL__#+#deleteResourceAfterRun#=#boolean#true#+#scriptType#=#string#bash#+#resourceSearchReplace#=#boolean#false#+#scriptInteractiveSession#=#boolean#false#+#resourceToCopy#=#Any#Any#__NULL__#+#copyResource#=#boolean#false#]#

@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="checkStorageNameAvailability" result-type="boolean" api-version="6.0.0" id="c4823c2b-e5f1-4155-923c-7c307713c622" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.azure">
+  <param n="resourceGroup" t="Azure:ResourceGroup"><![CDATA[Resource Group]]></param>
+  <param n="storageAccountName" t="string"><![CDATA[Storage Account Name]]></param>
+  <script encoded="false"><![CDATA[return AzureStorageManager.checkNameAvailability(AzureConnectionManager.getConnectionBySid(resourceGroup.ResourceGroup.getInternalId()),storageAccountName);]]></script>
+</dunes-script-module>

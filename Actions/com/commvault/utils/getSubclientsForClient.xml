@@ -1,0 +1,67 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getSubclientsForClient" result-type="void" api-version="6.0.0" id="5481f749-26af-4ada-8136-ecc57fc3de26" version="0.0.0" allowed-operations="evf" category-name="com.commvault.utils">
+  <description><![CDATA[Returns the subclients and their properties associated with a virtualization client
+(subclientId and subclientName)]]></description>
+  <param n="token" t="string"><![CDATA[CV token for REST API]]></param>
+  <param n="clientId" t="string"><![CDATA[virtualization client id]]></param>
+  <param n="backupSetId" t="string"><![CDATA[backupset id]]></param>
+  <script encoded="false"><![CDATA[/*
+	this action queries the subclients associated with a virtualization client
+	and returns properties variable with subclientId as key and subclientName as value
+
+	It can give subclients associated with a particular backupset inside client or 
+	all the subclients. Currently it returns all the subclients for a provided clientId
+	
+	Inputs:
+	token         - CV token for REST API
+	clientId      - Virualization client id
+	backupSetId   - backupset id
+	
+	API used:
+	Subclient?clientId={clientId}
+	
+	Output:
+	Properties object containing all the subclients for a client.
+	eg,
+	{
+		"subclient1_id":"subclient1_name",
+		"subclient2_id":"subclient2_name"
+	}
+*/
+
+var subclientURL = "Subclient?clientId=" + clientId;
+System.log("executing REST request to get the subclients for the clientId: " + subclientURL );
+var response = System.getModule("com.commvault.utils").processRESTRequest(subclientURL,"GET",null,token,null, null);
+if(response.statusCode != 200)
+{
+	throw("Error: Failed to execute REST request to get Failover group. Recieved status:  "+ response.contentAsString);
+}
+
+var document = XMLManager.fromString(response.contentAsString);
+var list = document.getElementsByTagName("subClientProperties");
+var total = list.length;
+
+if(total ==0 ){
+	throw("Error: Could not find subclient properties in the API response. Please check the services and the client configurations");
+}
+var subclientProp = new Properties();
+
+for(var i = 0; i < total ; i++)
+{	
+	
+	var subClientEntityList = list.item(i).getElementsByTagName("subClientEntity");
+	
+	var subClientEntity = subClientEntityList.item(0);
+	if(subClientEntity.getAttribute("clientId") == clientId){
+			
+		var id = subClientEntity.getAttribute("subclientId");
+		var name = subClientEntity.getAttribute("subclientName");
+		if(name != "default"){
+			subclientProp.put(id,name);
+		}
+	}
+	
+
+}
+return subclientProp;]]></script>
+</dunes-script-module>

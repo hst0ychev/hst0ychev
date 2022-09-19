@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getRESTHostAuthenticationProperty" result-type="string" api-version="6.0.0" id="7820559d-17d7-4612-9439-bc8dceca45ea" version="1.0.0" allowed-operations="vf" category-name="com.vmware.library.http-rest.configuration">
+  <description><![CDATA[Retrieves the REST host authentication property by specified index]]></description>
+  <param n="restHost" t="REST:RESTHost"><![CDATA[REST host which authentication property to return]]></param>
+  <param n="index" t="number"><![CDATA[Index of the property within raw authentication properties array]]></param>
+  <param n="newAuthentication" t="string"><![CDATA[]]></param>
+  <param n="visible" t="boolean"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var shouldEstimate = visible && newAuthentication != null && restHost != null && newAuthentication == restHost.authentication.type;
+return shouldEstimate ? restHost.authentication.getRawAuthProperty(index) : "";
+]]></script>
+</dunes-script-module>

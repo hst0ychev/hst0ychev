@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="removeEntityLink" result-type="vCAC:Entity" api-version="6.0.0" id="cf7d7322-4b14-435c-893b-d21d67507a55" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcac">
+  <param n="vcacHost" t="vCAC:VCACHost"><![CDATA[vCloud Automation Center host]]></param>
+  <param n="entity" t="vCAC:Entity"><![CDATA[Entity whose link will be removed]]></param>
+  <param n="linkType" t="string"><![CDATA[Link type]]></param>
+  <param n="linkedEntityToRemove" t="vCAC:Entity"><![CDATA[Entity link to be removed]]></param>
+  <script encoded="false"><![CDATA[hostId = entity.hostId;
+modelName = entity.modelName;
+entitySetName = entity.entitySetName;
+entityIdString = entity.keyString;
+
+var properties = entity.getProperties();
+var links = entity.getLinks(vcacHost);
+
+var elements = links.get(linkType);
+
+var array = new Array();
+for each (var element in elements) {
+if (element != linkedEntityToRemove) {
+	array.push(element);	
+	}
+}
+links.put(linkType, array);
+
+return vCACEntityManager.updateModelEntityBySerializedKey(hostId, modelName, entitySetName, entityIdString, properties, links, null);]]></script>
+</dunes-script-module>

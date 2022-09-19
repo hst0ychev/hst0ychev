@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="addUpdatePropertyFromBlueprint" result-type="void" api-version="6.0.0" id="65d815fa-6f5a-4795-86c0-0c157ea5fd72" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcac">
+  <param n="blueprint" t="vCACCAFE:CompositeBlueprint"><![CDATA[vCloud Automation Center blueprint instance]]></param>
+  <param n="propertyName" t="string"><![CDATA[Blueprint update property name]]></param>
+  <param n="propertyValue" t="string"><![CDATA[Blueprint update property value]]></param>
+  <param n="propertyIsHidden" t="boolean"><![CDATA[Blueprint property 'isHidden' flag]]></param>
+  <param n="propertyIsRuntime" t="boolean"><![CDATA[Blueprint property 'isRuntime' flag]]></param>
+  <param n="propertyIsEncrypted" t="boolean"><![CDATA[Blueprint property 'isEncrypted' flag]]></param>
+  <param n="doNotUpdate" t="boolean"><![CDATA[Blueprint property 'doNotUpdate' flag]]></param>
+  <script encoded="false"><![CDATA[var cafeHost = vCACCAFEEntitiesFinder.getHostForEntity(blueprint);
+if(cafeHost != null){
+	var compositeBlueprintService = cafeHost.createCompositionClient().getCompositionCompositeBlueprintService();
+
+	var customPropertyData = new vCACCAFEComponentFieldValue();
+
+	var propertyLiteralValue = new vCACCAFEComponentFieldValue(new vCACCAFEStringLiteral(propertyValue));
+	customPropertyData.addFacetValue("defaultValue", vCACCAFEConstantValue.fromString(propertyValue));
+	customPropertyData.addFacetValue("encrypted", vCACCAFEConstantValue.fromBoolean(propertyIsEncrypted));
+	customPropertyData.addFacetValue("readOnly", vCACCAFEConstantValue.fromBoolean(doNotUpdate));
+	customPropertyData.addFacetValue("visibility", vCACCAFEConstantValue.fromBoolean(propertyIsRuntime));
+
+	var map = new Object();
+	map[propertyName] = customPropertyData;
+	compositeBlueprintService.updateBlueprintProperties(blueprint.getId(), map);
+} else {
+	System.log("Empty cafe host");
+}]]></script>
+</dunes-script-module>

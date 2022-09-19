@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getWorkflowById" result-type="Workflow" api-version="6.0.0" id="8B808080808080808080808080808080D280808001297259131125b940b51f82d" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.workflow">
+  <description><![CDATA[Return the workflow for the given ID.
+
+Throw an exception if the workflow is not found]]></description>
+  <param n="workflowId" t="string"><![CDATA[A valid workfow ID]]></param>
+  <script encoded="false"><![CDATA[var wf = Server.getWorkflowWithId(workflowId);
+if (wf == null) {
+	throw "Invalid workflow ID. No workflow found for id " + workflowId;
+}
+return wf;]]></script>
+</dunes-script-module>

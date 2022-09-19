@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getBooleanFacetFromPropertyFromGroup" result-type="boolean" api-version="6.0.0" id="67765fa8-0f2c-4e30-aa39-801dff422955" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.propertygroup">
+  <param n="group" t="vCACCAFE:PropertyGroup"><![CDATA[]]></param>
+  <param n="propertyName" t="string"><![CDATA[]]></param>
+  <param n="facetName" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[if(group && propertyName && facetName) {
+	return group.properties.get(propertyName).facets.get(facetName).getValue().getValue();
+} else {
+return false;
+}]]></script>
+</dunes-script-module>

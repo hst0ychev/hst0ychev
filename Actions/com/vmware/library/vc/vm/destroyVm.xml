@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="destroyVm" result-type="VC:Task" api-version="6.0.0" id="b014431f-4af1-4e3b-9e6b-44431a8e7069" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.vm">
+  <param n="vm" t="VC:VirtualMachine"><![CDATA[VM to destroy]]></param>
+  <script encoded="false"><![CDATA[if (vm.summary.runtime.powerState.value != "poweredOff") {
+	throw "VmStateError: The VM must be powered off before deletion";
+}
+return vm.destroy_Task();]]></script>
+</dunes-script-module>

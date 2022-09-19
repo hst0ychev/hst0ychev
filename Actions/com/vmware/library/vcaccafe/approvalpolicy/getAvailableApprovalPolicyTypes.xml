@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getAvailableApprovalPolicyTypes" result-type="Array/Any" api-version="6.0.0" id="58229446-d4b7-4f00-9c8e-cdd1ee2185be" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.approvalpolicy">
+  <param n="host" t="vCACCAFE:VCACHost"><![CDATA[vRA host]]></param>
+  <script encoded="false"><![CDATA[var dataQuery = new vCACCAFEOdataQuery();
+var order = new Array();
+order[0] = "name";
+dataQuery.addAscOrderBy(order);
+var dataRequest = new vCACCAFEPageOdataRequest(1 , 100 , dataQuery);
+
+var typeService = host.createApprovalClient().getApprovalApprovalPolicyTypeService();
+var types = typeService.getApprovalPolicyTypes(dataRequest).getContent();
+
+return types;]]></script>
+</dunes-script-module>

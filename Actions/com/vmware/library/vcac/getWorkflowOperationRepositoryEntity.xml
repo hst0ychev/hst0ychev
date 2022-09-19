@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getWorkflowOperationRepositoryEntity" result-type="vCAC:Entity" api-version="6.0.0" id="45a6a178-acee-43f1-8602-8492ce258bea" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcac">
+  <param n="host" t="vCAC:VCACHost"><![CDATA[vCloud Automation Center host]]></param>
+  <script encoded="false"><![CDATA[var entitySetName = "RepositoryEntities";
+var modelName = "Metamodel.svc";
+
+//Get all workflow definitions
+var properties = new Properties();
+properties.put("Name", "WorkflowOperation");
+var entities = vCACEntityManager.readModelEntitiesByCustomFilter(host.id, modelName, entitySetName, properties, null);
+return entities[0];]]></script>
+</dunes-script-module>

@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getDvSwitchConfigProperty" result-type="Any" api-version="6.0.0" id="d71def1f-0ca6-4664-b286-44c09bd0fb28" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.networking">
+  <param n="dvSwitch" t="VC:VmwareDistributedVirtualSwitch"><![CDATA[]]></param>
+  <param n="property" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[if ( dvSwitch != null ) {
+	try {
+		return eval("dvSwitch.config."+property);
+	} catch(e) {
+		return "";
+	}
+} else {
+	return "";
+}]]></script>
+</dunes-script-module>

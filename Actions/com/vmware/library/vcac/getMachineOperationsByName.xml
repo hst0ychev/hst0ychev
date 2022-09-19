@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getMachineOperationsByName" result-type="Array/vCAC:Entity" api-version="6.0.0" id="1c2ff8e8-4e5a-4738-9bd5-2e3957839072" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcac">
+  <param n="host" t="vCAC:VCACHost"><![CDATA[vCloud Automation Center host]]></param>
+  <param n="name" t="string"><![CDATA[Machine operation name]]></param>
+  <script encoded="false"><![CDATA[var modelName = "ManagementModelEntities.svc";
+var entitySetName = "MachineOperations";
+
+var properties = new Properties();
+properties.put("Name", name);
+
+return vCACEntityManager.readModelEntitiesByCustomFilter(host.id, modelName, entitySetName, properties, null);]]></script>
+</dunes-script-module>

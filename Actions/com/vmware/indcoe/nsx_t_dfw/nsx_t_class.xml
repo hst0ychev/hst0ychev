@@ -1,0 +1,637 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="nsx_t_class" result-type="Any" api-version="6.0.0" id="e7747e56-ca18-3502-a162-dfbbcf7cdc7f" version="1.0.0" allowed-operations="evf" category-name="com.vmware.indcoe.nsx_t_dfw">
+  <param n="username" t="string"><![CDATA[: The user to be used for authenticating with NSX-T]]></param>
+  <param n="password" t="string"><![CDATA[: The password of above user to authenticate with NSX-T]]></param>
+  <param n="restHost" t="REST:RESTHost"><![CDATA[: The REST Host on which the operation needs to be performed.]]></param>
+  <script encoded="false"><![CDATA[	var NSXT = {
+	        username: username,
+	        password: password,
+	        //All the object attributes are here.
+	        authenticationToken: System.getModule("com.vmware.indcoe.util").base64encode(username + ":" + password),
+	        requestBody: null,
+	        response: null,
+	        restHost: restHost,
+	        //all the object methods here.
+	        PrintAuthenticationToken: function () {
+	            return 'The authentication token in use is: ' + this.authenticationToken;
+	        },
+	        GetRequestBody: function () {
+	            return this.requestBody;
+	        },
+	        GetResponse: function () {
+	            return this.response;
+	        },
+	        GetAllNSGroups: function () {
+	            //GETs ALL NSGroups from NSX-T
+
+	            //Blank requestBody, because we wont send anything in the GET Method.
+	            this.requestBody = '';
+
+	            //We create the REST Request.
+	            var request = this.restHost.createRequest("GET", "/api/v1/ns-groups?member_types=VirtualMachine", this.requestBody);
+
+	            //Set the required params
+	            request.setHeader("Accept", "application/json");
+	            request.setHeader("Authorization", "Basic " + this.authenticationToken);
+	            request.setHeader("Content-Type", "application/json");
+
+	            //Execute the REST Request.
+	            this.response = request.execute();
+
+	            //Is the request successful? (Status 200 is successful)
+	            if (this.response.statusCode === 200) {
+	                //The response will be json, the NSGroups are in response->results.
+	                var NSGroups = JSON.parse(this.response.contentAsString);
+	                return NSGroups.results;
+	            }
+	            //Return false by default.
+	            return false;
+	        },
+	        CreateNSGroup: function (requestNumber, sourceVMs, destinationVMs) {
+	            //Create a NS Group, returns new created Group's ID.
+
+	            this.requestBody = '{"display_name":"NSGroup_' + requestNumber + '",';
+
+	            //Now we create the requestBody after iterating each VMs.
+	            this.requestBody += '"members":[';
+
+	            if (sourceVMs.length > 0) {
+	                for (var iterations in sourceVMs) {
+	                    if (sourceVMs[iterations].instanceId) {
+	                        this.requestBody += '{"resource_type":"NSGroupSimpleExpression","target_type":"VirtualMachine","target_property":"external_id","op":"EQUALS","value":"' + sourceVMs[iterations].instanceId + '"},';
+	                    }
+	                }
+				}
+	            if (destinationVMs.length > 0) {
+	                for (var iterations in destinationVMs) {
+	                    if (destinationVMs[iterations].instanceId) {
+	                        this.requestBody += '{"resource_type":"NSGroupSimpleExpression","target_type":"VirtualMachine","target_property":"external_id","op":"EQUALS","value":"' + destinationVMs[iterations].instanceId + '"}';
+	                    }
+	                    if(iterations != (destinationVMs.length - 1))
+	                    {
+	                        this.requestBody += ',';
+	                    }
+	                }
+				}
+
+	            this.requestBody += '],"resource_type":"NSGroup"}';
+
+	            //We create the REST Request.
+	            var request = this.restHost.createRequest("POST", "/api/v1/ns-groups", this.requestBody);
+
+	            //Set the required params
+	            request.setHeader("Accept", "application/json");
+	            request.setHeader("Authorization", "Basic " + this.authenticationToken);
+	            request.setHeader("Content-Type", "application/json");
+
+	            //Execute the REST Request.
+	            this.response = request.execute();
+
+	            //Is the request successful? (Status 201 is successfully created, 200 is just returning)
+	            if (this.response.statusCode === 201) {
+	                //The response will be json, the NSGroups are in response->results.
+	                var NSGroups = JSON.parse(this.response.contentAsString);
+	                return NSGroups.id;
+	            }
+	            //Return false by default.
+	            return false;
+	        },
+	        IsNSGroupAlreadyCreated: function (sourceVMs, destinationVMs) {
+
+	            //Initially we assume the rule is created AND all VMs match.
+	            var allVMsMatch = true;
+
+	            //Total number of VMs which should be present in the group
+	            var totalVMsToMatch = sourceVMs.length + destinationVMs.length;
+
+	            var sourceVMCheck = new Array();
+	            var destinationVMCheck = new Array();
+
+	            //Returns boolean if NSX NS Group is created with the specified set of source and destination VMs
+	            var currentNSGroups = this.GetAllNSGroups();
+
+	            //useful for debugging.
+	            this.requestBody = currentNSGroups;
+
+	            //currentNSGroups will be false if there was a problem fetching the groups.
+	            if (currentNSGroups) {
+	                for (var iterations in currentNSGroups) {
+	                    //if we have members in this group..
+	                    if (currentNSGroups[iterations].members) {
+	                        var members = currentNSGroups[iterations].members;
+
+	                        if (members.length === totalVMsToMatch) {
+	                            //We have same number of VMs as the input
+
+	                            //For every source VM, check if it belongs in the NSGroup.
+	                            for (var sourceVMiterations in sourceVMs) {
+	                                //Initially, we assume the VM is not found in NSGroup
+	                                sourceVMCheck[sourceVMiterations] = false;
+	                                for (var membersIterations in members) {
+	                                    if (sourceVMs[sourceVMiterations].instanceId && sourceVMs[sourceVMiterations].instanceId == members[membersIterations].value) {
+	                                        sourceVMCheck[sourceVMiterations] = true;
+	                                    }
+	                                }
+	                            }
+	                            //For every destination VM, check if it belongs in the NSGroup.
+	                            for (var destinationVMiterations in destinationVMs) {
+	                                //Initially, we assume the VM is not found in NSGroup
+	                                destinationVMCheck[destinationVMiterations] = false;
+
+	                                for (var membersIterations in members) {
+	                                    if (sourceVMs[destinationVMiterations].instanceId && sourceVMs[destinationVMiterations].instanceId == members[membersIterations].value) {
+	                                        destinationVMCheck[destinationVMiterations] = true;
+	                                    }
+	                                }
+	                            }
+
+	                            //Now we have our arrays, lets check.
+	                            for (var anotherIteration in sourceVMCheck) {
+	                                //If any of the sourceVMcheck entry is false, it means that that one VM was not found in NSGroup.
+	                                if (!sourceVMCheck[anotherIteration]) {
+	                                    allVMsMatch = false;
+	                                }
+	                            }
+	                            for (var anotherIteration in destinationVMCheck) {
+	                                //If any of the destinationVMCheck entry is false, it means that that one VM was not found in NSGroup.
+	                                if (!destinationVMCheck[anotherIteration]) {
+	                                    allVMsMatch = false;
+	                                }
+	                            }
+
+	                            //However, if allVMs match is still true: 
+	                            //it means that this particular nsgroup has all the entries matching,
+	                            //so we return true
+	                            if (allVMsMatch) {
+	                                return currentNSGroups[iterations].id;
+	                                //return true;
+	                            }
+	                        }
+	                    }
+	                }
+	            }
+	            //By default, we return false.
+	            return false;
+	        },
+	        GetAllSections: function () {
+	            //GETs all Sections from NSX-T
+
+	            //Blank requestBody, because we wont send anything in the GET Method.
+	            this.requestBody = '';
+
+	            //We create the REST Request.
+	            var request = this.restHost.createRequest("GET", "/api/v1/firewall/sections", this.requestBody);
+
+	            //Set the required params
+	            request.setHeader("Accept", "application/json");
+	            request.setHeader("Authorization", "Basic " + this.authenticationToken);
+	            request.setHeader("Content-Type", "application/json");
+
+	            //Execute the REST Request.
+	            this.response = request.execute();
+
+	            //Is the request successful? (Status 200 is successful)
+	            if (this.response.statusCode === 200) {
+	                //The response will be json, the Sections are in response->results.
+	                var Sections = JSON.parse(this.response.contentAsString);
+	                return Sections.results;
+	            }
+	            //Return false by default.
+	            return false;
+	        },
+	        GetSectionId: function (display_name) {
+	            //Gets SessionID of the session whose session.display_name is display_name(arg)
+	            var allSections = this.GetAllSections();
+	            if (allSections) {
+	                for (var iterations in allSections) {
+	                    //Iterate over each section and check if display_name is same as the name we want.
+	                    if (allSections[iterations].display_name === display_name) {
+	                        //Display name same as the arg, return the section ID;
+	                        return allSections[iterations].id;
+	                    }
+	                }
+	            }
+	            //By default, we return false
+	            return false;
+	        },
+	        CreateEmptySection: function (sectionName) {
+	            //Create a Session, returns newly created Section's ID.
+	            if (sectionName) {
+
+	                //request Body in expected format.
+	                this.requestBody = '{"display_name":"' + sectionName + '","section_type":"LAYER3","stateful":true}';
+
+	                //We create the REST Request.
+	                var request = this.restHost.createRequest("POST", "/api/v1/firewall/sections", this.requestBody);
+
+	                //Set the required params
+	                request.setHeader("Accept", "application/json");
+	                request.setHeader("Authorization", "Basic " + this.authenticationToken);
+	                request.setHeader("Content-Type", "application/json");
+
+	                //Execute the REST Request.
+	                this.response = request.execute();
+
+	                //Is the request successful? (Status 201 is successfully created, 200 is just returning)
+	                if (this.response.statusCode === 201) {
+	                    //The response will be json, the NSGroups are in response->results.
+	                    var createdSection = JSON.parse(this.response.contentAsString);
+	                    return createdSection.id;
+	                }
+	            }
+	            //Return false by default.
+	            return false;
+	        },
+	        GetRevisionofSection: function (sectionId) {
+	            //GETs the _revision of a section
+	            if (sectionId) {
+
+	                //Blank requestBody, because we wont send anything in the GET Method.
+	                var requestBody = '';
+
+	                //We create the REST Request.
+	                var request = this.restHost.createRequest("GET", "/api/v1/firewall/sections/" + sectionId , requestBody);
+
+	                //Set the required params
+	                request.setHeader("Accept", "application/json");
+	                request.setHeader("Authorization", "Basic " + this.authenticationToken);
+	                request.setHeader("Content-Type", "application/json");
+
+	                //Execute the REST Request.
+	                this.response = request.execute();
+
+	                //Is the request successful? (Status 200 is successful)
+	                if (this.response.statusCode === 200) {
+	                    //The response will be json, the Sections are in response->results.
+	                    var sectionDetails = JSON.parse(this.response.contentAsString);
+	                    return sectionDetails._revision;
+	                }
+	            }
+	            //Return 0 by default.
+	            return 0;
+			},
+			
+	        GetLportAttachmentId: function (vmInstanceId, ipAddressOfPort) {
+	            //GETs all Sections from NSX-T
+
+	            //Blank requestBody, because we wont send anything in the GET Method.
+	            this.requestBody = '';
+
+	            //We create the REST Request.
+	            var request = this.restHost.createRequest("GET", "/api/v1/fabric/vifs?owner_vm_id="+vmInstanceId, this.requestBody);
+
+	            //Set the required params
+	            request.setHeader("Accept", "application/json");
+	            request.setHeader("Authorization", "Basic " + this.authenticationToken);
+	            request.setHeader("Content-Type", "application/json");
+
+	            //Execute the REST Request.
+	            this.response = request.execute();
+
+	            //Is the request successful? (Status 200 is successful)
+	            if (this.response.statusCode === 200) {
+					//The response will be json, the Sections are in response->results.
+					
+	                var Sections = JSON.parse(this.response.contentAsString);
+					var portsOfAMachine = Sections.results;
+					if(portsOfAMachine && portsOfAMachine.length > 0)
+					{
+						for(var i in portsOfAMachine)
+						{
+							if(portsOfAMachine[i].ip_address_info)
+							{
+								var ipAddressInfo = portsOfAMachine[i].ip_address_info;
+								if(ipAddressInfo[0])
+								{
+									var ipAddress = ipAddressInfo[0].ip_addresses;
+									
+									if( ipAddress.indexOf(ipAddressOfPort) >= 0){
+										System.debug("Found IP "+ipAddressOfPort+" at lpord ID : "+portsOfAMachine[i].lport_attachment_id);
+										return portsOfAMachine[i].lport_attachment_id;
+									}
+								}
+							}
+						}
+					}
+				}
+				//Return false by default.
+				System.debug("LPort Attachment ID not found");
+	            return false;
+	        },
+			
+	        GetLportId: function (lportAttachmentId) {
+	            //GETs all Sections from NSX-T
+
+	            //Blank requestBody, because we wont send anything in the GET Method.
+	            this.requestBody = '';
+
+	            //We create the REST Request.
+	            var request = this.restHost.createRequest("GET", "/api/v1/logical-ports", this.requestBody);
+
+	            //Set the required params
+	            request.setHeader("Accept", "application/json");
+	            request.setHeader("Authorization", "Basic " + this.authenticationToken);
+	            request.setHeader("Content-Type", "application/json");
+
+	            //Execute the REST Request.
+	            this.response = request.execute();
+
+	            //Is the request successful? (Status 200 is successful)
+	            if (this.response.statusCode === 200) {
+	                //The response will be json, the Sections are in response->results.
+	                var Sections = JSON.parse(this.response.contentAsString);
+					var allLogicalPorts = Sections.results;
+					for(var i in allLogicalPorts)
+					{
+						if(allLogicalPorts[i].attachment && allLogicalPorts[i].attachment.id === lportAttachmentId)
+						{
+							System.debug("Got LPort ID: "+allLogicalPorts[i].id);
+							return allLogicalPorts[i].id;
+						}
+					}
+	            }
+				System.debug("LPort ID Not found");
+	            //Return false by default.
+	            return false;
+	        },
+	        GetRulesofSection: function (sectionId) {
+	            //GETs all rules of a given section.
+	            if (sectionId) {
+
+	                //Blank requestBody, because we wont send anything in the GET Method.
+	                var requestBody = '';
+
+	                //We create the REST Request.
+	                var request = this.restHost.createRequest("GET", "/api/v1/firewall/sections/" + sectionId + "/rules", requestBody);
+
+	                //Set the required params
+	                request.setHeader("Accept", "application/json");
+	                request.setHeader("Authorization", "Basic " + this.authenticationToken);
+	                request.setHeader("Content-Type", "application/json");
+
+	                //Execute the REST Request.
+	                this.response = request.execute();
+
+	                //Is the request successful? (Status 200 is successful)
+	                if (this.response.statusCode === 200) {
+	                    //The response will be json, the Sections are in response->results.
+	                    var rulesOfTheSection = JSON.parse(this.response.contentAsString);
+	                    return rulesOfTheSection.results;
+	                }
+	            }
+	            //Return false by default.
+	            return false;
+	        },
+	        CheckIfRuleExists: function (sectionId, inputSourceIDs, inputDestinationIDs, inputProtocol, inputPort, inputAction) {
+
+	            var protocolMatched = false;
+	            var allDestinationPortsMatched = false;
+	            var actionMatched = false;
+
+
+	            // Now the section Id should not be null OR false
+	            if (sectionId) {
+	                //Now we have the section ID where we need to check the rules.
+	                var sectionRules = this.GetRulesofSection(sectionId);
+
+	                //Check if we have section rules (or if false was returned).
+	                if (sectionRules) {
+	                    for (var iterations in sectionRules) {
+
+	                        if (sectionRules[iterations].action && sectionRules[iterations].action === inputAction) {
+	                            //This rule has same action as the action specified.
+	                            actionMatched = true;
+	                        }
+
+	                        if ((sectionRules[iterations].services)) {
+	                            var servicesInARule = sectionRules[iterations].services;
+	                            for (var serviceIterations in servicesInARule) {
+	                                if (servicesInARule[serviceIterations].service.l4_protocol && servicesInARule[serviceIterations].service.destination_ports) {
+	                                    if (servicesInARule[serviceIterations].service.l4_protocol == inputProtocol) {
+
+	                                        //This means the protocol matches
+	                                        protocolMatched = true;
+
+	                                        var destinationPortsFromRule = servicesInARule[serviceIterations].service.destination_ports;
+	                                        var destinationPortsMatchResults = new Array();
+
+	                                        for (var inputPortsIteration in inputPort) {
+	                                            //We assume that the source IP does not match to any in the rule.
+	                                            destinationPortsMatchResults[inputPortsIteration] = false;
+                                            
+	                                            for (var destinationPortsFromRuleIterations in destinationPortsFromRule) {
+	                                                //Check if any of the ports specified in destinationPort matches the inputPort
+	                                                if (destinationPortsFromRule[destinationPortsFromRuleIterations] === inputPort[inputPortsIteration]) {
+	                                                    //This means, there is a rule with matching source IP address.
+	                                                    destinationPortsMatchResults[inputPortsIteration] = true;
+	                                                }
+	                                            }
+	                                        }
+                                        
+	                                        //If we have a 'false' in the destinationPortsMatchResults, that means one of the ports didn't match
+	                                        if (destinationPortsMatchResults.indexOf(false) > -1) {
+	                                            allDestinationPortsMatched = false;
+	                                        }
+	                                        else {
+	                                            allDestinationPortsMatched = true;
+	                                        }
+	                                    }
+	                                }
+	                            }
+	                        }
+
+	                        //Check if all the source IDs in the rule match the provided source IDs
+
+	                        if ((sectionRules[iterations].sources)) {
+	                            var sourceIDsFromTheRule = sectionRules[iterations].sources;
+	                                var sourceIDMatchResults = new Array();
+
+	                                for (var inputSourceIDsIteration in inputSourceIDs) {
+	                                    //We assume that the source ID does not match to any in the rule.
+	                                    sourceIDMatchResults[inputSourceIDsIteration] = false;
+
+	                                    for (var sourceIDsFromTheRuleIterations in sourceIDsFromTheRule) {
+											//Check if source ID matches ANY of the Source ID from the RULE
+	                                        if (sourceIDsFromTheRule[sourceIDsFromTheRuleIterations].target_id === inputSourceIDs[inputSourceIDsIteration]) {
+	                                            //This means, there is a rule with matching source IDs
+	                                            sourceIDMatchResults[inputSourceIDsIteration] = true;
+	                                        }
+	                                    }
+	                                }
+	                        }
+	                        else {
+	                            //No Source IDs
+	                            return false;
+	                        }
+
+	                        //Check if all the destination IPs in the rule match the provided destination IPs
+	                        if ((sectionRules[iterations].destinations)) {
+
+	                            var destinationIDsFromTheRule = sectionRules[iterations].destinations;
+	                            var destinationIDMatchResults = new Array();
+
+	                            for (var inputDestinationIDsIteration in inputDestinationIDs) {
+	                                //We assume that the source IP does not match to any in the rule.
+	                                destinationIDMatchResults[inputDestinationIDsIteration] = false;
+
+	                                for (var destinationIDsFromTheRuleIterations in destinationIDsFromTheRule) {
+	                                    //Check if any of the ports specified in destinationPort matches the inputPort
+	                                    if (destinationIDsFromTheRule[destinationIDsFromTheRuleIterations].target_id === inputDestinationIDs[inputDestinationIDsIteration]) {
+	                                        //This means, there is a rule with matching source IP address.
+	                                        destinationIDMatchResults[inputDestinationIDsIteration] = true;
+	                                    }
+	                                }
+	                            }
+	                        }
+	                        else {
+	                            //No Destination IDs
+	                            return false;
+	                        }
+
+	                        var allSourceIDsMatched = null;
+	                        var alldestinationIDsMatched = null;
+
+	                        //If we have a 'false' in the sourceIPMatchResuts array -> allSourceIPs didnt match
+	                        if (sourceIDMatchResults.indexOf(false) > -1) {
+	                            allSourceIDsMatched = false;
+	                        }
+	                        else {
+	                            allSourceIDsMatched = true;
+	                        }
+
+
+	                        //If we have a 'false' in the destinationIDMatchResults array -> alldestinationIPs didnt match
+	                        if (destinationIDMatchResults.indexOf(false) > -1) {
+	                            alldestinationIDsMatched = false;
+	                        }
+	                        else {
+	                            alldestinationIDsMatched = true;
+	                        }
+
+	                        if (allSourceIDsMatched && alldestinationIDsMatched && protocolMatched && allDestinationPortsMatched && actionMatched) {
+	                            //This indicates that we have a rule with matching source IPs, Destination IPs, ports, protocol and action.
+	                            //We return the matching rule name.
+	                            return sectionRules[iterations].display_name;
+	                        }
+	                    }
+	                }
+	            }
+	            return false;
+	        },
+	        CreateDFWRule: function (requestNumber, sectionId, nsGroupId, sourceIDs, sourceTypes, destinationIDs, destinationTypes, protocol, ports, action, description, businessGroup) {
+				System.debug("Create DFW Rule: ");
+				System.debug("Request Number: "+requestNumber);
+				System.debug("Section ID: "+sectionId);
+				System.debug("NSGroup ID: "+nsGroupId);
+				System.debug("Source IDs: "+sourceIDs);
+				System.debug("Source Types: "+sourceTypes);
+				System.debug("Destination IDs: "+destinationIDs);
+				System.debug("Destination Types: "+destinationTypes);
+				System.debug("Protocol: "+protocol);
+				System.debug("Ports: "+ports);
+				System.debug("Action: "+action);
+				System.debug("user description:"+description);
+				var ruleName = 'Rule_' + requestNumber;
+				var sectionRevision = this.GetRevisionofSection(sectionId);
+			
+				//Creates Rule on a given Section
+				this.requestBody = '{"_revision": '+sectionRevision+',"display_name":"Rule_' + businessGroup + "_" + requestNumber + '","description":"Created by vRA for request number: ' + requestNumber + "-" +description+'","action":"' + action + '","direction": "IN_OUT",';
+			
+			
+			//Do we have a NSGroup? if so, we add applied_to.
+				if(nsGroupId){
+					this.requestBody += '"applied_tos":[{"target_id":"'+nsGroupId+'","target_type":"NSGroup"}],';
+				}
+			
+				if (sourceIDs.length > 0) {
+					//Now we add source entries.
+					this.requestBody += '"sources":[';
+			
+					//Add all the IPs provided in the form of { target_id, target_display_name,is_valid add target_type}
+					for (var iterations in sourceIDs) {
+						this.requestBody += '{"target_type":"'+sourceTypes[iterations]+'","target_id":"' + sourceIDs[iterations] + '"}';
+			
+						//Do not add a last comma if this is the last iteration.
+						if (iterations != (sourceIDs.length - 1)) {
+							this.requestBody += ',';
+						}
+					}
+					this.requestBody += '],';
+					//Now we add destination entries.
+				}
+			
+				if (destinationIDs.length > 0) {
+			
+					this.requestBody += '"destinations":[';
+			
+					//Add all the IPs provided in the form of { target_id, target_display_name,is_valid add target_type}
+					for (var iterations in destinationIDs) {
+						this.requestBody += '{"target_type":"'+destinationTypes[iterations]+'","target_id":"' + destinationIDs[iterations] + '"}';
+			
+						//Do not add a last comma if this is the last iteration.
+						if (iterations != (destinationIDs.length - 1)) {
+							this.requestBody += ',';
+						}
+					}
+					this.requestBody += '],';
+				}
+			
+				//Add service / protocol-port combination. Note,we do not support adding source ports yet.
+				this.requestBody += '"services":[{"service":{"l4_protocol":"' + protocol + '"'
+
+				if (ports.length > 0) {
+					this.requestBody += ',"destination_ports":[';
+					for (var iterations in ports) {
+						this.requestBody += '"' + ports[iterations] + '"';
+						//Do not add a last comma if this is the last iteration.
+			
+						if (iterations != (ports.length - 1)) {
+							this.requestBody += ',';
+						   }
+					}
+					this.requestBody += '],';
+				}
+				this.requestBody += '"resource_type":"L4PortSetNSService"}}],';
+			
+				this.requestBody += '"resource_type":"FirewallRule","ip_protocol":"IPV4_IPV6","logged":true,"sources_excluded": false,"disabled": false,"destinations_excluded": false}';
+
+				System.debug("Request body:");
+				System.debug(this.requestBody);
+				
+				//We create the REST Request.
+				var request = this.restHost.createRequest("POST", "/api/v1/firewall/sections/" + sectionId + "/rules", this.requestBody);
+			
+				//Set the required params
+				request.setHeader("Accept", "application/json");
+				request.setHeader("Authorization", "Basic " + this.authenticationToken);
+				request.setHeader("Content-Type", "application/json");
+			
+				//Execute the REST Request.
+				this.response = request.execute();
+			
+				//Is the request successful? (Status 200 is successful)
+				//Yes this method returns 200, even though this is POST. STRANGE!
+				if (this.response.statusCode === 200 || this.response.statusCode === 201) {
+					//The response will be json, the NSGroups are in response->results.
+					var createdRule = JSON.parse(this.response.contentAsString);
+					return createdRule;
+				}
+				//Return false by default.
+				return false;
+			},
+	        getVMfromIP: function (ip_address) {
+	            //Return the instance ID of VM from which has the IP Address as "ip_address"
+	            var returned_vm = System.getModule("com.vmware.indcoe.util").getVMFromIPAddress(ip_address.trim());
+	            if (returned_vm && returned_vm.instanceId) {
+	                return returned_vm;
+	            }
+	            return null;
+	        },
+	        isValidIPv4Address: function (ip_address) {
+	            //Whether the IP address is valid or not
+	            return System.getModule("com.vmware.indcoe.util").isValidIPv4Address(ip_address.trim());
+	        }
+	    }
+	    //This should always be the last line to return the object.
+	    return NSXT;]]></script>
+</dunes-script-module>

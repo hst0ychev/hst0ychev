@@ -1,0 +1,561 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="4ff8a25e-600c-44d2-99b2-f4287707b654" version="0.0.11" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Create a new User in AD]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="usersEmailId" type="string">
+      <description><![CDATA[The requesting User's Email Address.]]></description>
+    </param>
+    <param name="firstName" type="string">
+      <description><![CDATA[First name of the new user]]></description>
+    </param>
+    <param name="lastName" type="string">
+      <description><![CDATA[Last name of the new user]]></description>
+    </param>
+    <param name="emailAddress" type="string">
+      <description><![CDATA[Email address of the user]]></description>
+    </param>
+    <param name="password" type="SecureString">
+      <description><![CDATA[Password for the user]]></description>
+    </param>
+    <param name="confirmPassword" type="SecureString">
+      <description><![CDATA[Password for the user]]></description>
+    </param>
+    <param name="ouName" type="string">
+      <description><![CDATA[Primary OU of the user]]></description>
+    </param>
+    <param name="groupName" type="string">
+      <description><![CDATA[Primary Group of the user]]></description>
+    </param>
+    <param name="contactNumber" type="string">
+      <description><![CDATA[User's Mobile Number]]></description>
+    </param>
+    <param name="empType" type="string">
+      <description><![CDATA[Type of Employee (CRIS \ Vendor \ Outsourced)]]></description>
+    </param>
+    <param name="empID" type="string">
+      <description><![CDATA[Employee ID]]></description>
+    </param>
+    <param name="location" type="string">
+      <description><![CDATA[Where is the user located]]></description>
+    </param>
+    <param name="designation" type="string">
+      <description><![CDATA[Designation of the user]]></description>
+    </param>
+  </input>
+  <attrib name="adUsername" type="string" read-only="false" conf-id="66a86a5d-df46-4200-9c90-046802868f44" conf-key="username">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="adPassword" type="SecureString" read-only="false" conf-id="66a86a5d-df46-4200-9c90-046802868f44" conf-key="password">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="adServer" type="string" read-only="false" conf-id="66a86a5d-df46-4200-9c90-046802868f44" conf-key="adServer">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="psHost" type="PowerShell:PowerShellHost" read-only="false" conf-id="66a86a5d-df46-4200-9c90-046802868f44" conf-key="psHost">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='06fbc5cb-8c65-43b5-8657-370adbecf58c'&dunesName='PowerShell:PowerShellHost']]></value>
+  </attrib>
+  <attrib name="smtp_host" type="string" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_host">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="smtp_port" type="number" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_port">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="smtp_username" type="string" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_username">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="smtp_password" type="SecureString" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_password">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="smtp_from_id" type="string" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_from_id">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="smtp_from_name" type="string" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_from_name">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="use_ssl" type="boolean" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="use_ssl">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="use_start_tls" type="boolean" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="use_start_tls">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="smtp_to_address" type="Array/string" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_to_address_LDAPaaS">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="basePath_for_New_Users" type="string" read-only="false" conf-id="66a86a5d-df46-4200-9c90-046802868f44" conf-key="basePath_for_New_Users">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="vcacCafeHost" type="vCACCAFE:VCACHost" read-only="false" conf-id="66a86a5d-df46-4200-9c90-046802868f44" conf-key="vcacCafeHost">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="domain_name_for_new_account" type="string" read-only="false" conf-id="66a86a5d-df46-4200-9c90-046802868f44" conf-key="cris_domain_name">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Process Request]]></display-name>
+    <script encoded="false"><![CDATA[function SendEmail(subject, body) {
+
+	//Add the user's email to the list of email IDs to send email to.
+	if (usersEmailId && usersEmailId != "") {
+		smtp_to_address.push(usersEmailId);
+	}
+	
+	var commaSeparatedEmails = '';
+	for(var i in smtp_to_address)
+	{
+		commaSeparatedEmails += smtp_to_address[i]+',';
+	}
+	
+	//workflow ID of Library -> Mail -> 'Send notification'
+	var workflowId = '8D80808080808080808080808080808089808080012318760241416446ce5b52f';
+
+	//ready the workflow params
+	var workflowParameters = new Properties();
+	workflowParameters.put("smtpHost", smtp_host);
+	workflowParameters.put("smtpPort", smtp_port);
+	workflowParameters.put("username", smtp_username);
+	workflowParameters.put("password", smtp_password);
+	workflowParameters.put("fromName", smtp_from_name);
+	workflowParameters.put("fromAddress", smtp_from_id);
+	workflowParameters.put("toAddress", commaSeparatedEmails);
+	workflowParameters.put("subject", subject);
+	workflowParameters.put("content", body);
+	workflowParameters.put("useSsl", use_ssl);
+	workflowParameters.put("UseStartTls", use_start_tls);
+
+	//Run this workflow.
+	var workflowToLaunch = Server.getWorkflowWithId(workflowId);
+	
+	//Fetch a token.
+	var workflow_token = workflowToLaunch.execute(workflowParameters);
+	while (workflow_token.state === "running") {
+		System.sleep(3000);
+	}
+	System.log("Email sent");
+	//return after workflow finished 'running'
+	return true;
+}
+
+try {
+	//Try to fetch catalog request ID
+	catalogRequestId = System.getContext().getParameter("__asd_catalogRequestId");
+}
+catch (e) {
+	//If we did not get catalog request ID, we use boolean false
+	catalogRequestId = false;
+}
+
+if (catalogRequestId) {
+	//We got catalogRequest ID from the inputs, now we try to get request number from that.
+	System.log("Request Id by vRA:" + catalogRequestId);
+	var request = vCACCAFEEntitiesFinder.getCatalogItemRequest(vcacCafeHost, catalogRequestId);
+	requestNumber = request.getRequestNumber();
+}
+else {
+	var date = new Date();
+	requestNumber = date.getFullYear() + "_" + (date.getMonth() + 1) + "_" + date.getDate() + "_" + date.getHours() + "_" + date.getMinutes();
+	System.log("Using request number as current date-time since __asd_catalogRequestId was not found");
+}
+
+System.log("Request Number for this request:  " + requestNumber);
+
+var adObject = System.getModule("com.vmware.indcoe.active_directory").class(adUsername, adPassword, adServer, psHost);
+
+if (!adObject) {
+	var errorMsg = "Error creating AD Object, please check with admin team";
+	var subject = "Request #"+requestNumber+" failed - Critical Component Missing";
+	var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed.";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if(SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+// Actual workflow starts now...
+if(!firstName)
+{
+	var errorMsg = "User's first name not provided.";
+	var subject = "Request #"+requestNumber+" failed";
+	var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed.";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if(SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+if(!lastName)
+{
+	var errorMsg = "User's last name not provided.";
+	var subject = "Request #"+requestNumber+" failed";
+	var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed.";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if(SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+if(!emailAddress)
+{
+	var errorMsg = "User's Email Address was not provided..";
+	var subject = "Request #"+requestNumber+" failed";
+	var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed.";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if(SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+var loginName   = emailAddress.substring(0, emailAddress.lastIndexOf("@"));
+//loginName = loginName.replace(/[&\/\\\#\,\+\(\)\$\~\%\.\'\"\:\*\?\<\>\{\}\-\_]/g, '');
+//loginName = loginName.replace(/[&\/\\\#\,\+\(\)\$\~\%\'\"\:\*\?\<\>\{\}\-\_]/g, '');
+var domainName = emailAddress.substring(emailAddress.lastIndexOf("@") +1);
+
+if(!domainName || !loginName)
+{
+	var errorMsg = "Email ID provided was invalid.";
+	var subject = "Request #"+requestNumber+" failed";
+	var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed.";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if(SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+if(!contactNumber)
+{
+	var errorMsg = "User's contact number not provided.";
+	var subject = "Request #"+requestNumber+" failed";
+	var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed.";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if(SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+if(!empType)
+{
+	var errorMsg = "Employee Type not provided.";
+	var subject = "Request #"+requestNumber+" failed";
+	var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed.";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if(SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+if(empType != "CRIS" && empType != "Vendor" && empType != "Outsource")
+{
+	var errorMsg = "Employee Type is invalid.";
+	var subject = "Request #"+requestNumber+" failed";
+	var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed.";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if(SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+if(empType == "CRIS" && !empID)
+{
+	var errorMsg = "User's Employee ID not provided.";
+	var subject = "Request #"+requestNumber+" failed";
+	var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed.";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if(SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+if(!location)
+{
+	var errorMsg = "User's location not provided.";
+	var subject = "Request #"+requestNumber+" failed";
+	var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed.";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if(SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+if(location != "CP" && location != "DLI" && location != "SC" && location != "MUM" && location != "CHE" && location != "KOL")
+{
+	var errorMsg = "User's location selected is invalid";
+	var subject = "Request #"+requestNumber+" failed";
+	var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed.";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if(SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+if(!designation)
+{
+	var errorMsg = "User's designation not provided.";
+	var subject = "Request #"+requestNumber+" failed";
+	var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed.";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if(SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+if(designation != "JSE" && designation != "JNE" && designation != "ASE" && designation != "ANE" && designation != "SE" && designation != "NE" && designation != "SSE" && designation != "SNE" && designation != "PE" && designation != "SPE" && designation != "PPE" && designation != "CPE")
+{
+	var errorMsg = "User's designation is invalid";
+	var subject = "Request #"+requestNumber+" failed";
+	var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed.";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if(SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+if(!password || !confirmPassword)
+{
+	var errorMsg = "Passwords blank or not provided.";
+	var subject = "Request #"+requestNumber+" failed - Critical Component Missing";
+	var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed.";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if(SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+if(password !== confirmPassword)
+{
+	var errorMsg = "Passwords entered do not match.";
+	var subject = "Request #"+requestNumber+" failed";
+	var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed.";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if(SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+if(!ouName || ouName === "Error fetching OUs from AD")
+{
+	var errorMsg = "Error creating new group - Invalid OU Provided";
+	var subject = "Request #"+requestNumber+" failed";
+	var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed.";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if(SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+/*
+if(!groupName || groupName==="Error fetching current groups from AD")
+{
+	var errorMsg = "User's primary group not provided OR Invalid.";
+	var subject = "Request #"+requestNumber+" failed";
+	var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed.";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if(SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+*/
+
+if (adObject.CheckIfUserExists(loginName))
+{
+	var errorMsg = "The user: "+loginName+" already exists in AD";
+	var subject = "Request #"+requestNumber+" failed";
+	var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed.";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if(SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+System.log("Pre-checks passed, trying to create user");
+
+var description = "This user was created by "+usersEmailId+" for request number: "+requestNumber;
+
+adObject.SetBasePath(basePath_for_New_Users);
+
+try
+{
+//adObject.CreateUser(firstName, lastName, loginName, domainName, emailAddress, password, ouName ,description, contactNumber, empType, empID, location, designation)
+emailAddress = loginName+"@"+domainName;
+
+//adObject.CreateUser(firstName, lastName, loginName, domain_name_for_new_account, emailAddress, password, ouName ,description, contactNumber, empType, empID, location, designation)
+var loginname1=  loginName.replace(/[&\/\\\#\,\+\(\)\$\~\%\.\'\"\:\*\?\<\>\{\}\-\_]/g, '');
+adObject.CreateUser(firstName, lastName, loginname1, domain_name_for_new_account, emailAddress, password, ouName ,description, contactNumber, empType, empID, location, designation)
+
+}
+catch(error)
+{
+if(adObject.CheckIfUserExists(loginName))
+{
+		System.log("User Created but request failed due to complex password requirements");
+		var errorMsg = "The password does not meet the length, complexity, or history requirement of the AD";
+		var subject = "Request #"+requestNumber+" failed";
+		var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed.";
+		body += errorMsg;
+		body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+		SendEmail(subject, body);
+		
+		//Delete the created user.
+		adObject.DeleteUser(loginName);
+		throw errorMsg;
+	}
+	var errorMsg = "Some problems creating the user. Please contact Admin team.";
+	var subject = "Request #"+requestNumber+" failed";
+	var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed.";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if(SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+System.log("User "+loginname1+" created successfully");
+
+var msg = "User "+loginname1+" created successfully.";
+System.log(msg);
+var subject = "Request #"+requestNumber+" completed successfully.";
+var body = "Hello, <br/>The Request with request number: " + requestNumber + " has completed successfully.";
+body += msg;
+body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+SendEmail(subject, body);
+
+/*
+try
+{
+adObject.AddUserToAGroup(loginName,groupName);
+
+var message = "User "+loginName+" added in group "+groupName+" successfully";
+var subject = "Request #"+requestNumber+" completed successfully";
+var body = "Hello, <br/>The Request with request number: " + requestNumber + " has completed successfully.";
+body += message;
+body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+SendEmail(subject, body);
+
+System.log(message);
+
+}
+catch(error)
+{
+var errorMsg = "User created, however some problem occurred adding user "+loginName+" to the group: "+groupName;
+System.log(errorMsg);
+var subject = "Request #"+requestNumber+" completed partially.";
+var body = "Hello, <br/>The Request with request number: " + requestNumber + " has completed partially.";
+body += errorMsg;
+body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+SendEmail(subject, body);
+}
+*/]]></script>
+    <in-binding>
+      <bind name="usersEmailId" type="string" export-name="usersEmailId"/>
+      <bind name="adUsername" type="string" export-name="adUsername"/>
+      <bind name="adPassword" type="SecureString" export-name="adPassword"/>
+      <bind name="adServer" type="string" export-name="adServer"/>
+      <bind name="psHost" type="PowerShell:PowerShellHost" export-name="psHost"/>
+      <bind name="smtp_host" type="string" export-name="smtp_host"/>
+      <bind name="smtp_port" type="number" export-name="smtp_port"/>
+      <bind name="smtp_username" type="string" export-name="smtp_username"/>
+      <bind name="smtp_password" type="SecureString" export-name="smtp_password"/>
+      <bind name="smtp_from_id" type="string" export-name="smtp_from_id"/>
+      <bind name="smtp_from_name" type="string" export-name="smtp_from_name"/>
+      <bind name="use_ssl" type="boolean" export-name="use_ssl"/>
+      <bind name="use_start_tls" type="boolean" export-name="use_start_tls"/>
+      <bind name="basePath_for_New_Users" type="string" export-name="basePath_for_New_Users"/>
+      <bind name="smtp_to_address" type="Array/string" export-name="smtp_to_address"/>
+      <bind name="vcacCafeHost" type="vCACCAFE:VCACHost" export-name="vcacCafeHost"/>
+      <bind name="firstName" type="string" export-name="firstName"/>
+      <bind name="lastName" type="string" export-name="lastName"/>
+      <bind name="password" type="SecureString" export-name="password"/>
+      <bind name="confirmPassword" type="SecureString" export-name="confirmPassword"/>
+      <bind name="groupName" type="string" export-name="groupName"/>
+      <bind name="ouName" type="string" export-name="ouName"/>
+      <bind name="contactNumber" type="string" export-name="contactNumber"/>
+      <bind name="empType" type="string" export-name="empType"/>
+      <bind name="empID" type="string" export-name="empID"/>
+      <bind name="location" type="string" export-name="location"/>
+      <bind name="designation" type="string" export-name="designation"/>
+      <bind name="emailAddress" type="string" export-name="emailAddress"/>
+      <bind name="domain_name_for_new_account" type="string" export-name="domain_name_for_new_account"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="usersEmailId">
+      <desc><![CDATA[The requesting User's Email Address.]]></desc>
+    </p-param>
+    <p-param name="firstName">
+      <desc><![CDATA[First name of the new user]]></desc>
+    </p-param>
+    <p-param name="lastName">
+      <desc><![CDATA[Last name of the new user]]></desc>
+    </p-param>
+    <p-param name="emailAddress">
+      <desc><![CDATA[Login ID of the new user]]></desc>
+    </p-param>
+    <p-param name="password">
+      <desc><![CDATA[Password for the user]]></desc>
+    </p-param>
+    <p-param name="confirmPassword">
+      <desc><![CDATA[Password for the user]]></desc>
+    </p-param>
+    <p-param name="groupName">
+      <desc><![CDATA[Primary Group of the user]]></desc>
+    </p-param>
+    <p-param name="ouName">
+      <desc><![CDATA[Primary OU of the user]]></desc>
+    </p-param>
+    <p-param name="contactNumber">
+      <desc><![CDATA[User's Mobile Number]]></desc>
+    </p-param>
+    <p-param name="empType">
+      <desc><![CDATA[Type of Employee (CRIS \ Vendor \ Outsourced)]]></desc>
+    </p-param>
+    <p-param name="empID">
+      <desc><![CDATA[Employee ID]]></desc>
+    </p-param>
+    <p-param name="location">
+      <desc><![CDATA[Where is the user located]]></desc>
+    </p-param>
+    <p-param name="designation">
+      <desc><![CDATA[Designation of the user]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

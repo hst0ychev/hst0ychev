@@ -1,0 +1,206 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="c28fcef4-15ce-4010-b264-970e9d1d8cd3" version="0.0.8" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[SendLogs]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="SelectClient" type="boolean">
+      <description><![CDATA[Select client for send logs]]></description>
+    </param>
+    <param name="clientname" type="string">
+      <description><![CDATA[Commcell Client ]]></description>
+    </param>
+    <param name="SelectjobId" type="boolean"/>
+    <param name="jobID" type="number">
+      <description><![CDATA[Job Id]]></description>
+    </param>
+    <param name="email" type="string">
+      <description><![CDATA[Email Address]]></description>
+    </param>
+    <param name="AlsoNotify" type="string">
+      <description><![CDATA[Additional email to notify]]></description>
+    </param>
+  </input>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Scriptable task]]></display-name>
+    <script encoded="false"><![CDATA[//Validate inputs
+
+if(clientname == "" && jobID == null){
+
+	throw("Error: Please enter atleast one client or jobId for sending logs.");
+}
+
+
+//GetHost
+var restHost = System.getModule("com.commvault.utils").getHost();
+if(restHost == null)
+{
+    throw("Error: couldn't find the REST host, please add REST host on vRO with Commvault webservice URL. example: http://server1.company.com:81/SearchSvc/CVWebService.svc/");
+}
+
+//Prepare cvLogin
+var token = System.getModule("com.commvault.utils").getToken(restHost);
+if(token == -1)
+{
+    throw("Error: Failed to generate token. please check Commvault WebServer log for login request");
+}
+var notifyEmail = "";
+
+if( AlsoNotify != "user1.server.com,user2.server.com" && !(AlsoNotify === "")){
+	var emailValidator = AlsoNotify.search("@");
+	if(emailValidator == -1){
+		throw("Error:  Additional email not entered in correct format" );
+	
+	}
+	notifyEmail = AlsoNotify.split(",");
+}
+
+var TMMsg_CreateTaskReq = new XML('<TMMsg_CreateTaskReq/>');
+var processinginstructioninfo = new XML('<processinginstructioninfo/>');
+TMMsg_CreateTaskReq.appendChild(processinginstructioninfo);
+
+var taskInfo = new XML('<taskInfo/>');
+var task = new XML('<task/>');
+
+var taskFlags = new XML('<taskFlags/>');
+taskFlags.@disabled = false;
+task.appendChild(taskFlags);
+task.@policyType = "DATA_PROTECTION";
+task.@taskType="IMMEDIATE";
+task.@initiatedFrom="COMMANDLINE";
+
+taskInfo.appendChild(task);
+
+var associations = new XML('<associations/>')
+associations.@subclientName="";
+associations.@backupsetName="";
+associations.@instanceName="";
+associations.@appName="";
+associations.@clientName="";
+taskInfo.appendChild(associations);
+    
+var subTasks = new XML('<subTasks/>');
+var  subTask = new XML('<subTask/>');
+subTask.@subTaskType="ADMIN";
+subTask.@operationType="SEND_LOG_FILES";
+subTasks.appendChild(subTask);
+var options = new XML('<options/>');
+var restoreOptions = new XML('<restoreOptions/>');
+var virtualServerRstOption = new XML('<virtualServerRstOption/>');
+virtualServerRstOption.@isBlockLevelReplication= false
+restoreOptions.appendChild(virtualServerRstOption);
+options.appendChild(restoreOptions);
+
+var adminOpts =  new XML('<adminOpts/>');
+var selectiveDeleteOption =  new XML('<selectiveDeleteOption/>');
+adminOpts.appendChild(selectiveDeleteOption);
+var sendFilesXML = "";
+if(jobID == null && notifyEmail == "" ){
+	sendFilesXML = '<sendLogFilesOption><emailSubject>'+"Commcell Logs for client : "+ clientname+'</emailSubject><emailDescription></emailDescription><emailids>'+email+'</emailids><computersSelected>false</computersSelected><searchContentSelected>false</searchContentSelected><timeSelected>false</timeSelected><uploadLogsSelected>true</uploadLogsSelected><emailSelected>true</emailSelected><saveToFolderSelected>false</saveToFolderSelected><fingerPrint>true</fingerPrint><galaxyLogs>true</galaxyLogs><machineInformation>true</machineInformation><osLogs>true</osLogs><useDefaultUploadOption>true</useDefaultUploadOption><doNotIncludeLogs>true</doNotIncludeLogs><includeJobResults>false</includeJobResults><includeIndex>false</includeIndex><notifyMe>true</notifyMe><scrubLogFiles>false</scrubLogFiles><actionLogs>false</actionLogs><clients><clientName>' + clientname +'</clientName></clients></sendLogFilesOption>';
+}
+else if(jobID != null && notifyEmail== ""){
+	sendFilesXML = '<sendLogFilesOption><emailSubject>'+"Commcell Logs for job : "+ jobID+'</emailSubject><emailDescription></emailDescription><emailids>'+email+'</emailids><computersSelected>false</computersSelected><searchContentSelected>false</searchContentSelected><timeSelected>false</timeSelected><uploadLogsSelected>true</uploadLogsSelected><emailSelected>true</emailSelected><saveToFolderSelected>false</saveToFolderSelected><fingerPrint>true</fingerPrint><galaxyLogs>true</galaxyLogs><machineInformation>true</machineInformation><osLogs>true</osLogs><useDefaultUploadOption>true</useDefaultUploadOption><doNotIncludeLogs>true</doNotIncludeLogs><includeJobResults>false</includeJobResults><includeIndex>false</includeIndex><notifyMe>true</notifyMe><scrubLogFiles>false</scrubLogFiles><actionLogs>false</actionLogs><multiJobIds>' + jobID +'</multiJobIds></sendLogFilesOption>';
+}
+else if(jobID == null && notifyEmail.length != ""){
+	
+	sendFilesXML = "<sendLogFilesOption><emailSubject>";
+	
+	sendFilesXML = sendFilesXML + "Commcell Logs for client : ";
+	
+	sendFilesXML = sendFilesXML + clientname;
+	
+	sendFilesXML = sendFilesXML + "</emailSubject><emailDescription></emailDescription><emailids>";
+	
+	sendFilesXML = sendFilesXML + email;
+	
+	sendFilesXML = sendFilesXML + "</emailids>";
+	
+	for(var i=0;i<notifyEmail.length;i++){
+		sendFilesXML = sendFilesXML + "<emailids>";
+		sendFilesXML = sendFilesXML + notifyEmail[i];
+		sendFilesXML = sendFilesXML + "</emailids>";
+	
+	} 
+	
+	sendFilesXML = sendFilesXML + "<computersSelected>false</computersSelected><searchContentSelected>false</searchContentSelected><timeSelected>false</timeSelected><uploadLogsSelected>true</uploadLogsSelected><emailSelected>true</emailSelected><saveToFolderSelected>false</saveToFolderSelected><fingerPrint>true</fingerPrint><galaxyLogs>true</galaxyLogs><machineInformation>true</machineInformation><osLogs>true</osLogs><useDefaultUploadOption>true</useDefaultUploadOption><doNotIncludeLogs>true</doNotIncludeLogs><includeJobResults>false</includeJobResults><includeIndex>false</includeIndex><notifyMe>true</notifyMe><scrubLogFiles>false</scrubLogFiles><actionLogs>false</actionLogs><clients><clientName>";
+	sendFilesXML = sendFilesXML +clientname;
+	sendFilesXML = sendFilesXML + "</clientName></clients></sendLogFilesOption>";
+	
+}
+else if(jobID != null && notifyEmail.length != ""){
+	sendFilesXML = '<sendLogFilesOption><emailSubject>'+"Commcell Logs for job : "+ jobID+'</emailSubject><emailDescription></emailDescription><emailids>'+email+'</emailids>';
+	for(var i=0;i<notifyEmail.length;i++){
+		sendFilesXML = sendFilesXML + "<emailids>";
+		sendFilesXML = sendFilesXML + notifyEmail[i];
+		sendFilesXML = sendFilesXML + "</emailids>";
+	
+	} 
+	sendFilesXML = sendFilesXML + '<computersSelected>false</computersSelected><searchContentSelected>false</searchContentSelected><timeSelected>false</timeSelected><uploadLogsSelected>true</uploadLogsSelected><emailSelected>true</emailSelected><saveToFolderSelected>false</saveToFolderSelected><fingerPrint>true</fingerPrint><galaxyLogs>true</galaxyLogs><machineInformation>true</machineInformation><osLogs>true</osLogs><useDefaultUploadOption>true</useDefaultUploadOption><doNotIncludeLogs>true</doNotIncludeLogs><includeJobResults>false</includeJobResults><includeIndex>false</includeIndex><notifyMe>true</notifyMe><scrubLogFiles>false</scrubLogFiles><actionLogs>false</actionLogs><multiJobIds>' + jobID +'</multiJobIds></sendLogFilesOption>';
+
+}
+
+var sendLogFilesOption = new XML(sendFilesXML);
+adminOpts.appendChild(sendLogFilesOption);
+
+var contentIndexingOption =  new XML('<contentIndexingOption/>');
+contentIndexingOption.@subClientBasedAnalytics="false";
+adminOpts.appendChild(contentIndexingOption);
+options.appendChild(adminOpts);
+subTasks.appendChild(options);
+subTasks.@subTaskOperation="OVERWRITE";
+taskInfo.appendChild(subTasks);
+
+TMMsg_CreateTaskReq.appendChild(taskInfo);
+
+var sendLogsURL = "/CreateTask"
+		
+System.log("Executing Send logs operation " + sendLogsURL );
+
+var response = System.getModule("com.commvault.utils").processRESTRequest(sendLogsURL,"POST", TMMsg_CreateTaskReq, token, null, restHost);
+if(response.statusCode != 200)
+{
+	throw("Error: Failed to execute REST request to send commvault logs  " + response.contentAsString);
+}
+
+System.log("Send logs job response: " + response.contentAsString);
+]]></script>
+    <in-binding>
+      <bind name="email" type="string" export-name="email"/>
+      <bind name="jobID" type="number" export-name="jobID"/>
+      <bind name="clientname" type="string" export-name="clientname"/>
+      <bind name="AlsoNotify" type="string" export-name="AlsoNotify"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="SelectClient">
+      <desc><![CDATA[Send client logs]]></desc>
+    </p-param>
+    <p-param name="clientname">
+      <desc><![CDATA[Client]]></desc>
+      <p-qual kind="ognl" name="linkedEnumeration" type="Array/string"><![CDATA[GetAction("com.commvault.utils","getAllClients").call()]]></p-qual>
+      <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[false]]></p-qual>
+      <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#SelectClient]]></p-qual>
+    </p-param>
+    <p-param name="SelectjobId">
+      <desc><![CDATA[Send logs for job ID]]></desc>
+    </p-param>
+    <p-param name="jobID">
+      <desc><![CDATA[Job ID]]></desc>
+      <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#SelectjobId]]></p-qual>
+    </p-param>
+    <p-param name="email">
+      <desc><![CDATA[Email address]]></desc>
+      <p-qual kind="ognl" name="linkedEnumeration" type="Array/string"><![CDATA[GetAction("com.commvault.utils","getCVUserEmail").call()]]></p-qual>
+      <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+    </p-param>
+    <p-param name="AlsoNotify">
+      <desc><![CDATA[Additional email to notify
+( separated by , )]]></desc>
+      <p-qual kind="static" name="defaultValue" type="string"><![CDATA[user1.server.com,user2.server.com]]></p-qual>
+    </p-param>
+  </presentation>
+</workflow>

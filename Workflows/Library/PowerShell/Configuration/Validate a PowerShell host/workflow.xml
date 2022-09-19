@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="Workflow:name=generic" id="EF8180808080808080808080808080804F80808001270557368849c62c352aa82" version="5.0.0" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Validate a PowerShell host]]></display-name>
+  <description><![CDATA[Validates the specified PowerShell host's configuration.]]></description>
+  <ref-types><![CDATA[(PowerShell:PowerShellHost)]]></ref-types>
+  <position y="20.0" x="180.0"/>
+  <input>
+    <param name="host" type="PowerShell:PowerShellHost">
+      <description><![CDATA[Host to validate]]></description>
+    </param>
+  </input>
+  <output>
+    <param name="result" type="PowerShell:PowerShellHost"/>
+  </output>
+  <attrib name="errorCode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <workflow-item name="item1" type="end" end-mode="0">
+    <position y="130.0" x="180.0"/>
+  </workflow-item>
+  <workflow-item name="item2" throw-bind-name="errorCode" type="end" end-mode="1">
+    <position y="70.0" x="320.0"/>
+  </workflow-item>
+  <workflow-item name="item0" out-name="item1" catch-name="item2" throw-bind-name="errorCode" type="task" script-module="com.vmware.library.powershell.configuration/validatePowerShellHost">
+    <display-name><![CDATA[validatePowerShellHost]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.powershell.configuration").validatePowerShellHost(host) ;]]></script>
+    <in-binding>
+      <bind name="host" type="PowerShell:PowerShellHost" export-name="host"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="PowerShell:PowerShellHost" export-name="result"/>
+    </out-binding>
+    <description><![CDATA[Validates a PowerShell host.]]></description>
+    <position y="80.0" x="140.0"/>
+  </workflow-item>
+  <presentation>
+    <p-group>
+      <title><![CDATA[PowerShell Host]]></title>
+      <desc><![CDATA[Select a PowerShell host configuration to validate.]]></desc>
+      <p-param name="host">
+        <desc><![CDATA[PowerShell host]]></desc>
+        <p-qual name="contextualParameter" type="void"><![CDATA[]]></p-qual>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      </p-param>
+    </p-group>
+  </presentation>
+</workflow>

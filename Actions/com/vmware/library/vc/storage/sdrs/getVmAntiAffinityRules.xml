@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getVmAntiAffinityRules" result-type="Array/string" api-version="6.0.0" id="e6fdee47-8f73-4fca-adc1-4481dcdf5d12" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.storage.sdrs">
+  <param n="storagePod" t="VC:StoragePod"><![CDATA[Datastore cluster]]></param>
+  <script encoded="false"><![CDATA[var rules = storagePod.podStorageDrsEntry.storageDrsConfig.podConfig.rule;
+var ret = new Array();
+for (var i in rules) {
+	ret.push(rules[i].name);
+}
+return ret;]]></script>
+</dunes-script-module>

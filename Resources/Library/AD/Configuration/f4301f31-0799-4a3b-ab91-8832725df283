@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<endpoint pluginVersion="3.0.9">
+    <properties>
+        <property type="bool" name="SUB_DOMAIN_AUTO_CONNECT">false</property>
+        <property type="string" name="ALTERNATIVE_HOST_MODE">Single Server</property>
+        <property type="bool" name="FOLLOW_REFERRALS">false</property>
+        <property type="integer" name="PORT">389</property>
+        <property type="password" name="SHARED_SESSION_PASSWORD">vcoencrypted:{riv}QwgxRMrBgrYKloRKS+1BQLZEWlYa3T1y5+fX8MrHmL0=</property>
+        <property type="bool" name="USE_SSL">false</property>
+        <property type="string" name="HOST">pcpctad01.cloud.cris.in</property>
+        <property type="string" name="DEFAULT_DOMAIN">cloud.cris.in</property>
+        <property type="string" name="LDAP_BASE_NAME">DC=cloud,DC=cris,DC=in</property>
+        <property type="string" name="NAME"></property>
+        <property type="string" name="SHARED_SESSION_USERNAME">admin1@cloud.cris.in</property>
+        <property type="bool" name="SHARED_SESSION">true</property>
+    </properties>
+</endpoint>

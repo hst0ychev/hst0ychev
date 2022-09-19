@@ -1,0 +1,126 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item2" object-name="Workflow:name=generic" id="8F828080808080808080808080808080B880808001220976564066218f32d8ddf" version="1.2.2" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Create VMFS for all available disks]]></display-name>
+  <description><![CDATA[Creates a VMFS volume for all available disks of a specified host.]]></description>
+  <position y="20.0" x="180.0"/>
+  <input>
+    <param name="host" type="VC:HostSystem">
+      <description><![CDATA[Host on which the VMFS will be created]]></description>
+    </param>
+    <param name="vmfsVersion" type="number">
+      <description><![CDATA[VMFS version]]></description>
+    </param>
+  </input>
+  <output>
+    <param name="createdDatastores" type="Array/VC:Datastore">
+      <description><![CDATA[The created datastores (if any)]]></description>
+    </param>
+  </output>
+  <attrib name="errorMessage" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[The error message if there is any exception]]></description>
+  </attrib>
+  <workflow-item name="item0" out-name="item1" catch-name="item3" throw-bind-name="errorMessage" type="task">
+    <display-name><![CDATA[Create VMFS for all available disks]]></display-name>
+    <script encoded="false"><![CDATA[if(vmfsVersion !=3 && vmfsVersion !=5){
+	throw "Invalid VMFS version " + vmfsVersion;
+}
+
+createdDatastores = new Array();
+
+var hostDatastoreSystem = VcPlugin.convertToVimManagedObject( host, host.configManager.datastoreSystem );
+
+// Get available disks
+var freeDisks = hostDatastoreSystem.queryAvailableDisksForVmfs();
+if ( freeDisks != null  &&  freeDisks.length > 0 )  {
+	System.log( "Found " + freeDisks.length + " available disks for VMFS creation:" );
+	for each ( var disk in freeDisks )  {
+		try {
+			var devicePath = disk.devicePath;
+			// Compute the size of the disk in GB
+			var size = (disk.capacity.block * disk.capacity.blockSize) / 1024 / 1024 / 1024;
+	
+			// Generate the volume name
+			var volumeName = devicePath.substring( devicePath.lastIndexOf("/")+1 ).replace( new RegExp(":", "g"), "_" );
+	
+			// Log the creation
+			System.log( "\tA datastore for disk.devicePath : '" + devicePath + "' will be created (capacity : " + size + " GB, name : '" + volumeName + "')" );
+			Server.log( "A datastore will be created", "devicePath : '" + devicePath + "' - capacity : " + size + " GB, name : '" + volumeName + "'" );
+	
+			// Query the available datastore create options 
+			var vmfsDsCreateOptions;
+			var isAPIVersion5Compatible = System.getModule("com.vmware.library.vc.storage").isAPICompatible(host, "5");
+			if ( isAPIVersion5Compatible ) {
+			  	vmfsDsCreateOptions = hostDatastoreSystem.queryVmfsDatastoreCreateOptions( devicePath , vmfsVersion);
+			} else {
+				vmfsDsCreateOptions = hostDatastoreSystem.queryVmfsDatastoreCreateOptions( devicePath );
+			}
+	
+			// Set the datastore name to the disk name
+			vmfsDsCreateOptions[0].spec.vmfs.volumeName = volumeName;
+			var createdDs = hostDatastoreSystem.createVmfsDatastore( vmfsDsCreateOptions[0].spec );
+			createdDatastores.push( createdDs );
+		}
+		catch (ex) {
+			System.error("Unable to create the datastore. Reason: " + ex);
+			Server.error("Unable to create the datastore. Reason: " + ex);
+		}
+	}
+}
+else  {
+	System.log( "No available disk found" );
+}
+]]></script>
+    <in-binding>
+      <bind name="host" type="VC:HostSystem" export-name="host"/>
+      <bind name="vmfsVersion" type="number" export-name="vmfsVersion"/>
+    </in-binding>
+    <out-binding>
+      <bind name="createdDatastores" type="Array/VC:Datastore" export-name="createdDatastores"/>
+      <bind name="errorMessage" type="string" export-name="errorMessage"/>
+    </out-binding>
+    <position y="120.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item1" type="end" end-mode="0">
+    <position y="150.0" x="180.0"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item0" catch-name="item3" throw-bind-name="errorMessage" type="task" script-module="com.vmware.library.vc.storage/rescanAll">
+    <display-name><![CDATA[rescanAll]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+System.getModule("com.vmware.library.vc.storage").rescanAll(host) ;]]></script>
+    <in-binding>
+      <bind name="host" type="VC:HostSystem" export-name="host"/>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Rescans all HBA, VMFS and StorageSystem of a HostSystem.]]></description>
+    <position y="80.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item3" throw-bind-name="errorMessage" type="end" end-mode="1">
+    <position y="90.0" x="360.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Choose a host]]></title>
+      <p-group>
+        <title><![CDATA[Host]]></title>
+        <desc><![CDATA[Select a vCenter Server host.]]></desc>
+        <p-param name="host">
+          <desc><![CDATA[Host on which the VMFS will be created]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual kind="static" name="show-select-as" type="string"><![CDATA[list]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[File System Version]]></title>
+        <desc><![CDATA[Select the VMFS 5 option to enable additional capabilities, such as 2TB+ support. VMFS-5 is not supported by hosts with an ESX version older than 5.0.
+Select the VMFS 3 option if the datastore will be accessed by legacy hosts.]]></desc>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[GetAction("com.vmware.library.vc.storage","isAPICompatible").call( #host , "5" )]]></p-qual>
+        <p-param name="vmfsVersion">
+          <desc><![CDATA[VMFS version]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual kind="static" name="genericEnumeration" type="Array/number"><![CDATA[#{#string#5#;#string#3#}#]]></p-qual>
+        </p-param>
+      </p-group>
+    </p-step>
+  </presentation>
+</workflow>

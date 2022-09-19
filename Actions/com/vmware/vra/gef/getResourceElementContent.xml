@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getResourceElementContent" result-type="string" api-version="6.0.0" id="15080101-8569-4fd4-8ab3-c1d5bda10c12" version="0.0.0" allowed-operations="vf" category-name="com.vmware.vra.gef">
+  <description><![CDATA[Returns the content of a resource element. Returns null if the resource content is not found.]]></description>
+  <param n="resourcePath" t="string"><![CDATA[Path under which to look for the resource]]></param>
+  <param n="resourceName" t="string"><![CDATA[Name of the resource to look for]]></param>
+  <script encoded="false"><![CDATA[var category = Server.getResourceElementCategoryWithPath(resourcePath);
+
+for each (var resourceElement in category.resourceElements) 
+{
+	if (resourceElement.name == resourceName) 
+	{
+		return resourceElement.getContentAsMimeAttachment().content;
+	}
+}
+
+return null;]]></script>
+</dunes-script-module>

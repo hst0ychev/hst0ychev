@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="5b69df7a-1b6e-3bb3-b402-6b7bd862b7d9" version="1.0.3">
+  <display-name><![CDATA[vraConfig]]></display-name>
+  <atts>
+    <att name="cafeHost" type="vCACCAFE:VCACHost" read-only="false">
+      <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='afb159c2-d7c8-458e-8041-6d548231237b'&dunesName='vCACCAFE:VCACHost']]></value>
+      <description><![CDATA[VCAC Cafe Host]]></description>
+    </att>
+    <att name="vcacHost" type="vCAC:VCACHost" read-only="false">
+      <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='7678fd07-7e94-41fb-b504-826e693933a5'&dunesName='vCAC:VCACHost']]></value>
+      <description><![CDATA[VCAC Host]]></description>
+    </att>
+    <att name="reservationPolicies" type="Array/string" read-only="false">
+      <value encoded="n"><![CDATA[[31:string#Gold-Critical Production,22:string#Gold-Production,23:string#Gold-Development]]]></value>
+      <description><![CDATA[Please provide all the storage policies name for cluster 2]]></description>
+    </att>
+  </atts>
+</config-element>

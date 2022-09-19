@@ -1,0 +1,199 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item3" object-name="workflow:name=generic" id="44ca81a5-ccb1-489c-9870-9b0942d55840" version="0.0.6" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Schedule workflow]]></display-name>
+  <position y="45.40909090909091" x="125.0"/>
+  <input>
+    <param name="dailyTimeOff" type="string"/>
+    <param name="VirtualMachine" type="VC:VirtualMachine"/>
+    <param name="dailyTimeOn" type="string"/>
+  </input>
+  <attrib name="powerOnWf" type="Workflow" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/Workflow?id='1aeb333f-674c-401b-a4b7-3ae1718d2c63'&dunesName='Workflow']]></value>
+  </attrib>
+  <attrib name="userName" type="string" read-only="false" conf-id="7b7d48a6-af20-4a49-83b2-f06710981cb6" conf-key="username">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="password" type="SecureString" read-only="false" conf-id="7b7d48a6-af20-4a49-83b2-f06710981cb6" conf-key="password">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="powerOffWf" type="Workflow" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/Workflow?id='387e838a-e18e-4420-aaad-55a54016c080'&dunesName='Workflow']]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="564.5"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item1" type="task">
+    <display-name><![CDATA[Schedule Power on task]]></display-name>
+    <script encoded="false"><![CDATA[try{
+	//Converting time IST to UTC
+	var splitvalue = dailyTimeOn.split(":");
+	var splitHr = splitvalue[0];
+	var splitMin = splitvalue[1];
+	System.debug("Split hr above "+splitHr);
+	var newHr;
+	var count=0;
+	for(var i=0;i<5;i++){
+		System.debug("SplitHt "+splitHr);
+		if(splitHr == 00){
+			splitHr = 23;
+			continue;
+		}
+		if(splitHr == 01){
+			splitHr = 00;
+			continue;
+		}
+		count++;
+		System.debug("count "+count);
+		splitHr--;
+		newHr = splitHr;
+	}
+	System.debug("New Hr "+newHr);
+	var countMin = splitMin;
+	System.debug("Splited minutes :"+countMin)
+	for(var i=0;i<30;i++){
+		stringCount = countMin.toString()
+		if(stringCount == "0" || stringCount == "00"){
+			countMin = 59;
+			newHr--;
+			System.debug("Entered minutes if loop count minute value current "+countMin)
+			System.debug("Hour after decreased by (1) :"+newHr)
+			continue;
+		}
+		countMin--;
+		System.debug("count min after decreased "+countMin)
+	}
+	System.debug("final minutes "+countMin);
+	var newMin;
+	if(newHr.toString().indexOf(0)==-1 && (/^\d$/.test(newHr))){
+		newHr = "0"+newHr
+	}
+	if(countMin.toString().indexOf(0)==-1 && (/^\d$/.test(countMin))){
+		newMin = "0"+countMin
+	}else newMin = countMin
+	System.debug("New Hr "+newHr);
+	System.debug("New Min "+newMin);
+	var finalTime = newHr+":"+newMin+":"+"00"
+	System.debug("New hour "+newHr);
+	System.debug("Final time "+finalTime);
+	
+    var objProperties = new Properties();
+	objProperties.put("vm",VirtualMachine);
+    var strRecurrencePattern = finalTime; 
+    var strRecurrenceCycle = "every-days"; 
+    var scheduleDate = new Date();   
+	scheduleDate.setTime(scheduleDate.getTime())
+    var strUserName = userName;
+    var strPassWord = password;
+ 
+    var task  = powerOnWf.scheduleRecurrently(objProperties, strRecurrencePattern, strRecurrenceCycle, scheduleDate, null, strUserName, strPassWord);
+	task.restartInPast = true;
+	System.debug("state "+task.state)
+	System.debug("operation "+task.operation)
+	
+}
+catch ( objException ){
+    System.error ( objException );
+}]]></script>
+    <in-binding>
+      <bind name="VirtualMachine" type="VC:VirtualMachine" export-name="VirtualMachine"/>
+      <bind name="userName" type="string" export-name="userName"/>
+      <bind name="password" type="SecureString" export-name="password"/>
+      <bind name="powerOnWf" type="Workflow" export-name="powerOnWf"/>
+      <bind name="dailyTimeOn" type="string" export-name="dailyTimeOn"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="244.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Schedule Power off]]></display-name>
+    <script encoded="false"><![CDATA[try{
+	//Converting IST to UTC
+	var splitvalue = dailyTimeOff.split(":");
+	var splitHr = splitvalue[0];
+	var splitMin = splitvalue[1];
+	System.debug("Split hr above "+splitHr);
+	var newHr;
+	var count=0;
+	for(var i=0;i<5;i++){
+		System.debug("SplitHt "+splitHr);
+		if(splitHr == 00){
+			splitHr = 23;
+			continue;
+		}
+		if(splitHr == 01){
+			splitHr = 00;
+			continue;
+		}
+		count++;
+		System.debug("count "+count);
+		splitHr--;
+		newHr = splitHr;
+	}
+	System.debug("New Hr "+newHr);
+	var countMin = splitMin;
+	System.debug("Splited minutes :"+countMin)
+	for(var i=0;i<30;i++){
+		stringCount = countMin.toString()
+		if(stringCount == "0" || stringCount == "00"){
+			countMin = 59;
+			newHr--;
+			System.debug("Entered minutes if loop count minute value current "+countMin)
+			System.debug("Hour after decreased by (1) :"+newHr)
+			continue;
+		}
+		countMin--;
+		System.debug("count min after decreased "+countMin)
+	}
+	System.debug("final minutes "+countMin);
+	var newMin;
+	if(newHr.toString().indexOf(0)==-1 && (/^\d$/.test(newHr))){
+		newHr = "0"+newHr
+	}
+	if(countMin.toString().indexOf(0)==-1 && (/^\d$/.test(countMin))){
+		newMin = "0"+countMin
+	}else newMin = countMin
+	System.debug("New Hr "+newHr);
+	System.debug("New Min "+newMin);
+	var finalTime = newHr+":"+newMin+":"+"00"
+	System.debug("New hour "+newHr);
+	System.debug("Final time "+finalTime);
+	
+    var objProperties = new Properties();
+	objProperties.put("vm",VirtualMachine);
+    var strRecurrencePattern = finalTime; 
+    var strRecurrenceCycle = "every-days"; 
+    var scheduleDate = new Date();   
+	scheduleDate.setTime(scheduleDate.getTime())
+    var strUserName = userName;
+    var strPassWord = password; 
+    var task  = powerOffWf.scheduleRecurrently(objProperties, strRecurrencePattern, strRecurrenceCycle, scheduleDate, null, strUserName, strPassWord);
+	task.restartInPast = true;
+	System.debug("state "+task.state)
+	System.debug("operation "+task.operation)
+	
+}
+catch ( objException ){
+    System.error ( objException );
+}]]></script>
+    <in-binding>
+      <bind name="VirtualMachine" type="VC:VirtualMachine" export-name="VirtualMachine"/>
+      <bind name="userName" type="string" export-name="userName"/>
+      <bind name="password" type="SecureString" export-name="password"/>
+      <bind name="powerOffWf" type="Workflow" export-name="powerOffWf"/>
+      <bind name="dailyTimeOff" type="string" export-name="dailyTimeOff"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="384.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="dailyTimeOff">
+      <desc><![CDATA[dailyTimeOff]]></desc>
+    </p-param>
+    <p-param name="VirtualMachine">
+      <desc><![CDATA[VirtualMachine]]></desc>
+    </p-param>
+    <p-param name="dailyTimeOn">
+      <desc><![CDATA[dailyTimeOn]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

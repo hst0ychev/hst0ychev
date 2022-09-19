@@ -1,0 +1,319 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item5" object-name="workflow:name=generic" id="d03d3127-ace8-4452-9f6d-f1760ed7b78c" version="0.0.9" api-version="6.0.0" allowed-operations="vf" restartMode="0" resumeFromFailedMode="0">
+  <display-name><![CDATA[Update Active Directory server]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="adHost" type="AD:AdHost">
+      <description><![CDATA[Active Directory host for update]]></description>
+    </param>
+    <param name="host" type="string">
+      <description><![CDATA[LDAP Server Host/IP.]]></description>
+    </param>
+    <param name="port" type="number">
+      <description><![CDATA[Port (default: 389)]]></description>
+    </param>
+    <param name="ldapBase" type="string">
+      <description><![CDATA[Base DN]]></description>
+    </param>
+    <param name="useSSL" type="boolean">
+      <description><![CDATA[Use SSL]]></description>
+    </param>
+    <param name="defaultDomain" type="string">
+      <description><![CDATA[Default domain]]></description>
+    </param>
+    <param name="sharedUserName" type="string">
+      <description><![CDATA[User name for shared session]]></description>
+    </param>
+    <param name="sharedUserPassword" type="SecureString">
+      <description><![CDATA[Password for shared session]]></description>
+    </param>
+    <param name="name" type="string">
+      <description><![CDATA[Configuration name in vRO]]></description>
+    </param>
+    <param name="followReferrals" type="boolean">
+      <description><![CDATA[Indicates whether associated connections should attempt to follow any referrals that they encounter.]]></description>
+    </param>
+    <param name="connectTimeoutMillis" type="number">
+      <description><![CDATA[The maximum length of time in milliseconds to wait for the connection to be established before failing.]]></description>
+    </param>
+    <param name="subDomainAutoConnect" type="boolean">
+      <description><![CDATA[Shows subdomains in the inventory tree of the root domain. Can cause performance degradation if enabled.]]></description>
+    </param>
+    <param name="confirmSslCertificateImport" type="boolean">
+      <description><![CDATA[Ask for confirmation when importing SSL certificate.]]></description>
+    </param>
+    <param name="loadBalancingMode" type="string">
+      <description><![CDATA[ Client-side failover and load balancing. If the server set is configured with information about multiple directory servers, then it will be responsible for selecting which server to use and establishing the connection. If the initially-selected server is not available, then it may attempt to connect to one or more of the other defined servers before giving up and throwing an exception.  ]]></description>
+    </param>
+    <param name="alternativeHosts" type="Array/string">
+      <description><![CDATA[ The addresses of the directory servers to which the connections should be established.]]></description>
+    </param>
+  </input>
+  <output>
+    <param name="updatedAdHost" type="AD:AdHost"/>
+  </output>
+  <attrib name="useSharedSession" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[true]]></value>
+    <description><![CDATA[Use a shared session]]></description>
+  </attrib>
+  <attrib name="ignoreWarnings" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[true]]></value>
+    <description><![CDATA[If set to true, the certificate is accepted silently and the certificate is added to the trusted store]]></description>
+  </attrib>
+  <attrib name="url" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[URL]]></description>
+  </attrib>
+  <attrib name="errorMessage" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="configId" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <workflow-item name="item3" type="end" end-mode="0">
+    <position y="272.68181818181813" x="404.5"/>
+  </workflow-item>
+  <workflow-item name="item0" out-name="item8" type="link" linked-workflow-id="e971f744-9506-4e5b-a0b1-d0327466f7e1">
+    <display-name><![CDATA[Update an Active Directory server]]></display-name>
+    <in-binding>
+      <bind name="host" type="string" export-name="host">
+        <description><![CDATA[LDAP Server Host/IP.]]></description>
+      </bind>
+      <bind name="port" type="number" export-name="port">
+        <description><![CDATA[Port (default: 389)]]></description>
+      </bind>
+      <bind name="ldapBase" type="string" export-name="ldapBase">
+        <description><![CDATA[Base DN]]></description>
+      </bind>
+      <bind name="useSSL" type="boolean" export-name="useSSL">
+        <description><![CDATA[Use SSL]]></description>
+      </bind>
+      <bind name="defaultDomain" type="string" export-name="defaultDomain">
+        <description><![CDATA[Default domain]]></description>
+      </bind>
+      <bind name="useSharedSession" type="boolean" export-name="useSharedSession">
+        <description><![CDATA[Use a shared session]]></description>
+      </bind>
+      <bind name="sharedUserName" type="string" export-name="sharedUserName">
+        <description><![CDATA[User name for shared session]]></description>
+      </bind>
+      <bind name="sharedUserPassword" type="SecureString" export-name="sharedUserPassword">
+        <description><![CDATA[Password for shared session]]></description>
+      </bind>
+      <bind name="ignoreWarnings" type="boolean" export-name="ignoreWarnings"/>
+      <bind name="adServer" type="AD:AdHost" export-name="adHost"/>
+      <bind name="name" type="string" export-name="name"/>
+      <bind name="followReferrals" type="boolean" export-name="followReferrals"/>
+      <bind name="connectTimeoutMillis" type="number" export-name="connectTimeoutMillis"/>
+      <bind name="subDomainAutoConnect" type="boolean" export-name="subDomainAutoConnect"/>
+      <bind name="alternativeHosts" type="Array/string" export-name="alternativeHosts"/>
+      <bind name="loadBalancingMode" type="string" export-name="loadBalancingMode"/>
+    </in-binding>
+    <out-binding>
+      <bind name="configId" type="string" export-name="configId"/>
+    </out-binding>
+    <description><![CDATA[Modify an existing Active Direcotry configuration.]]></description>
+    <position y="164.5" x="264.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item2" type="task">
+    <display-name><![CDATA[Build URL]]></display-name>
+    <script encoded="false"><![CDATA[url = host + ':' + port;]]></script>
+    <in-binding>
+      <bind name="host" type="string" export-name="host"/>
+      <bind name="port" type="number" export-name="port"/>
+    </in-binding>
+    <out-binding>
+      <bind name="url" type="string" export-name="url"/>
+    </out-binding>
+    <position y="55.40909090909091" x="364.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item7" catch-name="item4" throw-bind-name="errorMessage" type="link" linked-workflow-id="c5a874a2-e8e7-480d-bdde-d1a80b8a3011">
+    <display-name><![CDATA[Import a certificate from URL]]></display-name>
+    <in-binding>
+      <bind name="url" type="string" export-name="url">
+        <description><![CDATA[URL or just host:port for non-HTTPS SSL services:]]></description>
+      </bind>
+      <bind name="ignoreWarnings" type="boolean" export-name="ignoreWarnings">
+        <description><![CDATA[If set to true, the certificate is accepted silently and the certificate is added to the trusted store]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Imports an SSL certificate into the server trust store.]]></description>
+    <position y="55.40909090909091" x="525.0"/>
+  </workflow-item>
+  <workflow-item name="item4" throw-bind-name="errorMessage" type="end" end-mode="1">
+    <position y="45.40909090909091" x="725.0"/>
+  </workflow-item>
+  <workflow-item name="item5" out-name="item1" type="condition" alt-out-name="item7" comparator="0">
+    <display-name><![CDATA[Is SSL?]]></display-name>
+    <script encoded="false"><![CDATA[//Generated by the system, cannot be edited
+return (useSSL == true) ;]]></script>
+    <in-binding>
+      <bind name="useSSL" type="boolean" export-name="useSSL"/>
+    </in-binding>
+    <condition name="useSSL" type="boolean" comparator="0" label="null">false</condition>
+    <position y="45.90909090909091" x="205.0"/>
+  </workflow-item>
+  <workflow-item name="item6" out-name="item3" type="link" linked-workflow-id="8a6abc61-9f1e-4b75-84e3-5f7ed902af57">
+    <display-name><![CDATA[Configure Active Directory server]]></display-name>
+    <in-binding>
+      <bind name="host" type="string" export-name="host">
+        <description><![CDATA[LDAP Server Host/IP.]]></description>
+      </bind>
+      <bind name="port" type="number" export-name="port">
+        <description><![CDATA[Port (default: 389)]]></description>
+      </bind>
+      <bind name="ldapBase" type="string" export-name="ldapBase">
+        <description><![CDATA[Base DN]]></description>
+      </bind>
+      <bind name="useSSL" type="boolean" export-name="useSSL">
+        <description><![CDATA[Use SSL]]></description>
+      </bind>
+      <bind name="defaultDomain" type="string" export-name="defaultDomain">
+        <description><![CDATA[Default domain]]></description>
+      </bind>
+      <bind name="useSharedSession" type="boolean" export-name="useSharedSession">
+        <description><![CDATA[Use a shared session]]></description>
+      </bind>
+      <bind name="sharedUserName" type="string" export-name="sharedUserName">
+        <description><![CDATA[User name for shared session]]></description>
+      </bind>
+      <bind name="sharedUserPassword" type="SecureString" export-name="sharedUserPassword">
+        <description><![CDATA[Password for shared session]]></description>
+      </bind>
+      <bind name="confirmSslCertificateImport" type="boolean" export-name="confirmSslCertificateImport">
+        <description><![CDATA[Ask for confirmation when importing SSL certificate.]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <position y="164.5" x="445.0"/>
+  </workflow-item>
+  <workflow-item name="item7" out-name="item0" type="custom-condition" alt-out-name="item6">
+    <display-name><![CDATA[Check if Update an Active Directory Wokflow is available]]></display-name>
+    <script encoded="false"><![CDATA[var updateADworkflow = Server.getWorkflowWithId("e971f744-9506-4e5b-a0b1-d0327466f7e1");
+
+return updateADworkflow != null;]]></script>
+    <in-binding/>
+    <position y="99.95454545454544" x="365.0"/>
+  </workflow-item>
+  <workflow-item name="item8" out-name="item3" type="task">
+    <display-name><![CDATA[Scriptable task]]></display-name>
+    <script encoded="false"><![CDATA[updatedAdHost = AD_HostManager.findHost(configId);]]></script>
+    <in-binding>
+      <bind name="configId" type="string" export-name="configId"/>
+    </in-binding>
+    <out-binding>
+      <bind name="updatedAdHost" type="AD:AdHost" export-name="updatedAdHost"/>
+    </out-binding>
+    <position y="219.04545454545453" x="324.5"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Active Directory server update]]></title>
+      <p-param name="adHost">
+        <desc><![CDATA[AD Host for update]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        <p-qual kind="ognl" name="linkedEnumeration" type="Array/AD:AdHost"><![CDATA[GetAction("com.vmware.vcac.asd.endpoints.ad","getAdHosts").call()]]></p-qual>
+        <p-qual kind="static" name="show-select-as" type="string"><![CDATA[list]]></p-qual>
+      </p-param>
+      <p-group>
+        <title><![CDATA[Active Directory server]]></title>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#adHost != null]]></p-qual>
+        <p-param name="host">
+          <desc><![CDATA[LDAP Server Host/IP.]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#adHost != null]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[#adHost.host]]></p-qual>
+        </p-param>
+        <p-param name="port">
+          <desc><![CDATA[Port (default: 389)]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#adHost != null]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="number"><![CDATA[#adHost.port == null ? "" : (#adHost.port > 0 ? #adHost.port : "")]]></p-qual>
+        </p-param>
+        <p-param name="ldapBase">
+          <desc><![CDATA[Base DN]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#adHost != null]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[#adHost.ldapBase]]></p-qual>
+        </p-param>
+        <p-param name="useSSL">
+          <desc><![CDATA[Use SSL]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#adHost != null]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="boolean"><![CDATA['true'.equalsIgnoreCase(#adHost.useSSL)]]></p-qual>
+        </p-param>
+        <p-param name="defaultDomain">
+          <desc><![CDATA[Default domain]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#adHost != null]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[#adHost.defaultDomain]]></p-qual>
+        </p-param>
+        <p-param name="confirmSslCertificateImport">
+          <desc><![CDATA[Ask for confirmation when importing SSL certificate.]]></desc>
+          <p-qual kind="static" name="defaultValue" type="boolean"><![CDATA[__NULL__]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[If the certificate is not imported into vRO a manual user action needs to be accepted inside vRO.]]></title>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#confirmSslCertificateImport]]></p-qual>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Shared Session]]></title>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#adHost != null]]></p-qual>
+        <p-param name="sharedUserName">
+          <desc><![CDATA[User name for shared session]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#adHost != null]]></p-qual>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[#adHost.sharedUserName]]></p-qual>
+        </p-param>
+        <p-param name="sharedUserPassword">
+          <desc><![CDATA[Password for shared session]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#adHost != null]]></p-qual>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Alternative hosts]]></title>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#adHost != null]]></p-qual>
+        <p-param name="loadBalancingMode">
+          <desc><![CDATA[ Client-side failover and load balancing. If the server set is configured with information about multiple directory servers, then it will be responsible for selecting which server to use and establishing the connection. If the initially-selected server is not available, then it may attempt to connect to one or more of the other defined servers before giving up and throwing an exception.  ]]></desc>
+          <p-qual kind="ognl" name="genericEnumeration" type="Array/string"><![CDATA[GetAction("com.vmware.library.microsoft.activeDirectory","getLdapLoadBalancingModes").call()]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[GetAction("com.vmware.library.microsoft.activeDirectory","getLoadBalancingMode").call( #adHost )]]></p-qual>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#adHost != null]]></p-qual>
+        </p-param>
+        <p-param name="alternativeHosts">
+          <desc><![CDATA[ The addresses of the directory servers to which the connections should be established.]]></desc>
+          <p-qual kind="ognl" name="dataBinding" type="Array/string"><![CDATA[GetAction("com.vmware.library.microsoft.activeDirectory","getAlternativeHosts").call( #adHost )]]></p-qual>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#adHost != null]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Options]]></title>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#adHost != null]]></p-qual>
+        <p-param name="name">
+          <desc><![CDATA[Configuration name in vRO]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#adHost != null]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[#adHost.name]]></p-qual>
+        </p-param>
+        <p-param name="followReferrals">
+          <desc><![CDATA[Indicates whether associated connections should attempt to follow any referrals that they encounter.]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#adHost != null]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="boolean"><![CDATA[#adHost.followReferrals]]></p-qual>
+        </p-param>
+        <p-param name="connectTimeoutMillis">
+          <desc><![CDATA[The maximum length of time in milliseconds to wait for the connection to be established before failing.]]></desc>
+          <p-qual kind="ognl" name="dataBinding" type="number"><![CDATA[#adHost.connectTimeoutMillis]]></p-qual>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#adHost != null]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Subdomain]]></title>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#adHost != null]]></p-qual>
+        <p-param name="subDomainAutoConnect">
+          <desc><![CDATA[Shows subdomains in the inventory tree of the root domain. Can cause performance degradation if enabled.]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#adHost != null]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="boolean"><![CDATA[#adHost.subDomainAutoConnect]]></p-qual>
+        </p-param>
+      </p-group>
+    </p-step>
+  </presentation>
+</workflow>

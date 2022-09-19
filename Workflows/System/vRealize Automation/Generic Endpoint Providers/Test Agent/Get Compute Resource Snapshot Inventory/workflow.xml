@@ -1,0 +1,68 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="a206d65c-dd5c-4fc3-a791-5b89ea7ae1db" version="0.1.2" api-version="6.0.0" allowed-operations="vf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Get Compute Resource Snapshot Inventory]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="EndpointIn" type="Any"/>
+    <param name="ComputeResourceIn" type="Any"/>
+  </input>
+  <output>
+    <param name="SnapshotsOut" type="Array/Any"/>
+  </output>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Collect Snapshots]]></display-name>
+    <script encoded="false"><![CDATA[System.log("EndpointIn: " + EndpointIn.toSource());
+System.log("ComputeResourceIn: " + ComputeResourceIn.toSource());
+SnapshotsOut = [];
+
+
+for(i = 0; i < 10; i++)
+{
+	var machineId = ComputeResourceIn.uniqueId + "-00" + i;
+	var machineName = ComputeResourceIn.name + "-vm-00" + i;
+	
+	var snapshot = GEFMachineSnapshot.build(machineId);
+	snapshot.createdDateTime = new Date(2015,4,1);
+	snapshot.description = "The first snapshot";
+	snapshot.name = machineName + "-snap1";
+	snapshot.uniqueId = machineName + "-snap-first";
+	snapshot.isCurrentSnapshot = true;
+	snapshot.isMemorySnapshot = true;
+	snapshot.parentUniqueId = null;
+	
+	SnapshotsOut.push(snapshot);
+	
+	var snapshot2 = GEFMachineSnapshot.build(machineId);
+	snapshot2.createdDateTime = new Date(2015,4,5);
+	snapshot2.description = "The second snapshot";
+	snapshot2.name = machineName + "-snap2";
+	snapshot2.uniqueId = machineName + "-snap-second";
+	snapshot2.isCurrentSnapshot = false;
+	snapshot2.isMemorySnapshot = false;
+	snapshot2.parentUniqueId = machineName + "-snap-first";
+	
+	SnapshotsOut.push(snapshot2);
+}
+
+System.log("SnapshotsOut: " + SnapshotsOut.toSource());]]></script>
+    <in-binding>
+      <bind name="EndpointIn" type="Any" export-name="EndpointIn"/>
+      <bind name="ComputeResourceIn" type="Any" export-name="ComputeResourceIn"/>
+    </in-binding>
+    <out-binding>
+      <bind name="SnapshotsOut" type="Array/Any" export-name="SnapshotsOut"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="EndpointIn">
+      <desc><![CDATA[EndpointIn]]></desc>
+    </p-param>
+    <p-param name="ComputeResourceIn">
+      <desc><![CDATA[MachineIn]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

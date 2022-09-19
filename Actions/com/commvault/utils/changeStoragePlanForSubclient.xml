@@ -1,0 +1,52 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="changeStoragePlanForSubclient" result-type="void" api-version="6.0.0" id="05085bda-9301-404b-99b1-26b1f1e0e53c" version="0.0.0" allowed-operations="evf" category-name="com.commvault.utils">
+  <description><![CDATA[Attach the provided storage policy to the subclient]]></description>
+  <param n="subclientID" t="string"><![CDATA[Subclient id]]></param>
+  <param n="token" t="string"><![CDATA[CV token for REST API]]></param>
+  <param n="planName" t="string"><![CDATA[Storage plan name]]></param>
+  <script encoded="false"><![CDATA[/*
+	Inputs
+	subclientID 	 	string  subclient id
+	token       	 	string  CV token for REST API authentication
+	planName            string  Storage plan name
+
+	API used
+	POST
+	/Subclient/subclientID
+	
+	Output
+	new storage plan and its storage policy gets attached to the given subclient id
+	
+*/
+
+
+var UpdateSubclientPropertiesURL = "/Subclient/" + subclientID;
+
+var UpdateSubclientPropertiesXML =  new XML('<App_UpdateSubClientPropertiesRequest/>');
+
+var subClientProperties = new XML('<subClientProperties/>');
+
+var planEntity = new XML('<planEntity/>');
+
+var planDetails = System.getModule("com.commvault.utils").getStoragePlanIdDetails(token,planName);
+planEntity.@planId = planDetails.get("planId");
+planEntity.@planName = planDetails.get("planName");
+planEntity.@planSubtype = planDetails.get("planSubtype");
+planEntity.@_type_ = planDetails.get("_type_");
+planEntity.@planType = planDetails.get("planType");
+
+subClientProperties.appendChild(planEntity);
+UpdateSubclientPropertiesXML.appendChild(subClientProperties);
+
+//System.log("Changing plan for subclient");
+//System.log(UpdateSubclientPropertiesXML);
+var response = System.getModule("com.commvault.utils").processRESTRequest(UpdateSubclientPropertiesURL,"POST",UpdateSubclientPropertiesXML,token,null,null);
+
+if(response.contentAsString != null){
+	System.log("Assigned new storage plan to the subclient");
+}
+else{
+	throw("Error: assigning new storage plan to the subclient");
+}
+]]></script>
+</dunes-script-module>

@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getCustomizationLinuxPrep" result-type="Any" api-version="6.0.0" id="ac2792a5-db6c-4451-8dc9-dc23e2efd7b1" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.vm.spec.identity">
+  <param n="domain" t="string"><![CDATA[The fully qualified domain name.]]></param>
+  <param n="hostName" t="Any"><![CDATA[The network host name of the (Linux) virtual machine.]]></param>
+  <script encoded="false"><![CDATA[var linuxPrep;
+try {
+	checkParams();
+	linuxPrep = new VcCustomizationLinuxPrep();
+	affectParams();
+	return linuxPrep;
+}
+catch (ex) {
+	throw "Unable to create VcCustomizationLinuxPrep: " + ex;
+}
+
+function affectParams() {
+	linuxPrep.domain = domain;
+	linuxPrep.hostName = hostName;
+}
+
+function checkParams() {
+	if (domain == null) domain = "";
+	if (hostName == null) throw "hostname cannot be null";
+	if (((hostName instanceof VcCustomizationCustomName) || (hostName instanceof VcCustomizationFixedName) ||
+		 (hostName instanceof VcCustomizationPrefixName) || (hostName instanceof VcCustomizationUnknownName) ||
+		 (hostName instanceof VcCustomizationVirtualMachineName)) == false) {
+		throw "hostName must be of type VcCustomizationCustomName, VcCustomizationFixedName, VcCustomizationPrefixName, VcCustomizationUnknownName, VcCustomizationVirtualMachineName";
+	}
+}]]></script>
+</dunes-script-module>

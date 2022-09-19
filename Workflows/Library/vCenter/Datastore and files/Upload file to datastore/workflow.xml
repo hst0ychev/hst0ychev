@@ -1,0 +1,65 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="ce43130e-79f1-4992-a169-e4e66a52f7ed" version="1.0.0" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Upload file to datastore]]></display-name>
+  <description><![CDATA[Uploads a file to an existing folder on a specific datastore. The uploaded file will overwrite any existing file with the same name in the same destination folder.]]></description>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="datacenter" type="VC:Datacenter"/>
+    <param name="datastore" type="VC:Datastore"/>
+    <param name="srcFilePath" type="string"/>
+    <param name="destFilePath" type="string"/>
+  </input>
+  <attrib name="errorCode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Error code in case of failure.]]></description>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="404.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" catch-name="item2" throw-bind-name="errorCode" type="task" script-module="com.vmware.library.vc.datastore.files/uploadFileToDatastore">
+    <display-name><![CDATA[uploadFileToDatastore]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+System.getModule("com.vmware.library.vc.datastore.files").uploadFileToDatastore(datacenter,datastore,srcFilePath,destFilePath) ;]]></script>
+    <in-binding>
+      <bind name="datacenter" type="VC:Datacenter" export-name="datacenter">
+        <description><![CDATA[Datacenter to use when uploading file.]]></description>
+      </bind>
+      <bind name="datastore" type="VC:Datastore" export-name="datastore">
+        <description><![CDATA[Datastore to use when uploading file.]]></description>
+      </bind>
+      <bind name="srcFilePath" type="string" export-name="srcFilePath">
+        <description><![CDATA[Source file path]]></description>
+      </bind>
+      <bind name="destFilePath" type="string" export-name="destFilePath">
+        <description><![CDATA[Destination file path]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Uploads a file to an existing folder on a specific datastore.]]></description>
+    <position y="55.90909090909091" x="205.0"/>
+  </workflow-item>
+  <workflow-item name="item2" throw-bind-name="errorCode" type="end" end-mode="1">
+    <position y="109.04545454545453" x="245.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[File upload details]]></title>
+      <p-param name="datacenter">
+        <desc><![CDATA[Datacenter]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      </p-param>
+      <p-param name="datastore">
+        <desc><![CDATA[Datastore]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      </p-param>
+      <p-param name="srcFilePath">
+        <desc><![CDATA[Source file path]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      </p-param>
+      <p-param name="destFilePath">
+        <desc><![CDATA[Destination file path]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      </p-param>
+    </p-step>
+  </presentation>
+</workflow>

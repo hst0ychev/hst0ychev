@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="Workflow:name=generic" id="8B81808080808080808080808080808085808080012995053491651398b094fa1" version="1.0.1" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Subscribe to queues]]></display-name>
+  <description><![CDATA[Creates a new subscription elements.]]></description>
+  <ref-types><![CDATA[(AMQP:Broker)]]></ref-types>
+  <position y="20.0" x="160.0"/>
+  <input>
+    <param name="broker" type="AMQP:Broker">
+      <description><![CDATA[Broker to add subscription to]]></description>
+    </param>
+    <param name="queues" type="Array/string">
+      <description><![CDATA[Queues available in the broker for message subscription]]></description>
+    </param>
+    <param name="name" type="string">
+      <description><![CDATA[User-friendly name for this subscription]]></description>
+    </param>
+  </input>
+  <output>
+    <param name="subscription" type="AMQP:Subscription">
+      <description><![CDATA[The created subscription]]></description>
+    </param>
+  </output>
+  <attrib name="errorCode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <workflow-item name="item0" out-name="item1" catch-name="item2" throw-bind-name="errorCode" type="task">
+    <display-name><![CDATA[Create a subscription]]></display-name>
+    <script encoded="false"><![CDATA[var props = {name: name};
+subscription = broker.subscribe(queues, props);]]></script>
+    <in-binding>
+      <bind name="broker" type="AMQP:Broker" export-name="broker"/>
+      <bind name="queues" type="Array/string" export-name="queues"/>
+      <bind name="name" type="string" export-name="name"/>
+    </in-binding>
+    <out-binding>
+      <bind name="subscription" type="AMQP:Subscription" export-name="subscription"/>
+    </out-binding>
+    <position y="100.0" x="120.0"/>
+  </workflow-item>
+  <workflow-item name="item1" type="end" end-mode="0">
+    <position y="150.0" x="160.0"/>
+  </workflow-item>
+  <workflow-item name="item2" throw-bind-name="errorCode" type="end" end-mode="1">
+    <position y="90.0" x="280.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Subscribe to queues]]></title>
+      <p-group>
+        <title><![CDATA[Subscription]]></title>
+        <desc><![CDATA[Type a name to display.]]></desc>
+        <p-param name="name">
+          <desc><![CDATA[Name]]></desc>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[AMQP Broker]]></title>
+        <desc><![CDATA[Select a broker to add subscription.]]></desc>
+        <p-param name="broker">
+          <desc><![CDATA[Broker]]></desc>
+          <p-qual name="contextualParameter" type="void"><![CDATA[]]></p-qual>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Queues]]></title>
+        <desc><![CDATA[Select all queues for message subscription.]]></desc>
+        <p-param name="queues">
+          <desc><![CDATA[Queues]]></desc>
+        </p-param>
+      </p-group>
+    </p-step>
+  </presentation>
+</workflow>

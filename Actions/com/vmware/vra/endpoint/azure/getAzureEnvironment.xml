@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getAzureEnvironment" result-type="Array/string" api-version="6.0.0" id="e024eb59-5c57-4d84-a0c5-d1e72c772cae" version="7.6.0" allowed-operations="vf" category-name="com.vmware.vra.endpoint.azure">
+  <param n="connection" t="Azure:Connection"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var result = [];
+var existingValue = connection.azureEnvironment;
+
+// Mainly for previous versions. This field will not be there.
+if (existingValue == null || existingValue == "") {
+   result.push("AZURE");
+   result.push("AZURE_CHINA");
+   result.push("AZURE_GERMANY");
+   result.push("AZURE_US_GOVERNMENT");
+} else {
+   result.push(existingValue);
+}
+
+return result;]]></script>
+</dunes-script-module>

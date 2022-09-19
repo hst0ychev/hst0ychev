@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getVirtualEthernetCardNetworkBackingInfo" result-type="Any" api-version="6.0.0" id="5ea3ecdc-c5c6-495e-889a-b44f03fb7028" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.vm.spec.config.device.backing.device">
+  <param n="deviceName" t="string"><![CDATA[The name of the device on the host system.]]></param>
+  <param n="network" t="VC:Network"><![CDATA[Reference to the network managed object to which this backing applies. This is not used during configuration.]]></param>
+  <script encoded="false"><![CDATA[if (deviceName == null) 
+	deviceName = network.name;
+	
+var backing = new VcVirtualEthernetCardNetworkBackingInfo();
+backing.deviceName = deviceName;
+//backing.network = network.reference; Not used during configuration
+return backing;]]></script>
+</dunes-script-module>

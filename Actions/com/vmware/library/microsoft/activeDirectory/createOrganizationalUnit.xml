@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="createOrganizationalUnit" result-type="void" api-version="6.0.0" id="368180808080808080808080808080809280808001270557368849c62c352aa82" version="1.1.1" allowed-operations="vfe" category-name="com.vmware.library.microsoft.activeDirectory">
+  <description><![CDATA[Create an OU in an existing OU]]></description>
+  <param n="ouName" t="string"><![CDATA[The name for the OU]]></param>
+  <param n="container" t="AD:OrganizationalUnit"><![CDATA[Existing OU for the new OU]]></param>
+  <script encoded="false"><![CDATA[container.createOrganizationalUnit(ouName);]]></script>
+</dunes-script-module>

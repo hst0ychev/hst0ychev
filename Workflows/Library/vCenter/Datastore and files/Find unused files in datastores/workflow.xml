@@ -1,0 +1,145 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="Workflow:name=generic" id="85808080808080808080808080808080ED8080800123780023911323ba1c368d4" version="1.2.0" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Find unused files in datastores]]></display-name>
+  <description><![CDATA[Searches the vCenter Server environment for all unused disks (*.vmdk), virtual machines (*.vmx), and template (*.vmtx) files that are not associated with any vCenter Server instances registered with Orchestrator.]]></description>
+  <position y="10.0" x="360.0"/>
+  <output>
+    <param name="diskFiles" type="Properties">
+      <description><![CDATA[VMDK files]]></description>
+    </param>
+    <param name="vmFiles" type="Properties">
+      <description><![CDATA[VMX and VMTX files]]></description>
+    </param>
+    <param name="orphanedFound" type="boolean">
+      <description><![CDATA[Orphan virtual machines present?]]></description>
+    </param>
+    <param name="orphanedVMs" type="Array/VC:VirtualMachine">
+      <description><![CDATA[Array of orphan virtual machines]]></description>
+    </param>
+  </output>
+  <attrib name="allDiskFiles" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[All the VMDK files found]]></description>
+  </attrib>
+  <attrib name="allVmFiles" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[All the VMX and VMTX files found]]></description>
+  </attrib>
+  <workflow-item name="item0" out-name="item1" type="link" linked-workflow-id="85808080808080808080808080808080F28080800123780023911323ba1c368d4">
+    <display-name><![CDATA[Get all config, template and disks files on VMs]]></display-name>
+    <in-binding/>
+    <out-binding>
+      <bind name="diskFiles" type="Properties" export-name="allDiskFiles"/>
+      <bind name="vmFiles" type="Properties" export-name="allVmFiles"/>
+    </out-binding>
+    <position y="100.0" x="320.0"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item2" type="task">
+    <display-name><![CDATA[Get All vm from All VCenters]]></display-name>
+    <script encoded="false"><![CDATA[var vcs = VcPlugin.allSdkConnections;
+var allVms = new Array();
+orphanedVMs = new Array();
+orphanedFound = false;
+for each (var vc in vcs) {
+	var vms = vc.getAllVirtualMachines();
+	allVms = allVms.concat(vms);
+}
+
+for each (var vm in allVms) {
+	// remove config file from vmFiles
+	try {
+		var filename = vm.config.files.vmPathName;
+		if(vm.summary.runtime.connectionState == VcVirtualMachineConnectionState.orphaned){
+			orphanedVMs.push(vm);
+		}
+		vmFiles.remove(filename);
+	}
+	catch (ex) {
+		try {
+			System.error("Error getting files from VM '" + vm.name + "', exception : " + ex);
+		}
+		catch (subEx) {
+			System.error("Error getting files from VM '" + vm.id + "', exception : " + ex);
+		}
+		continue;
+	}
+	
+	// remove all disk files from disk files
+	try {
+		var devices = vm.config.hardware.device;
+		for each(var device in devices) {
+			if (device instanceof VcVirtualDisk) {
+				try {
+					var diskFilename = device.backing.fileName;
+					diskFiles.remove(diskFilename);
+				}
+				catch (ex) {
+					try {
+						System.error("Error getting files from a disk from VM '" + vm.name + "', exception : " + ex);
+					}
+					catch (eex) {
+						System.error("Error getting files from a disk from VM '" + vm.id + "', exception : " + ex);
+					}
+					continue;
+				}
+			}
+		}
+		
+		
+	}
+	catch (ex) {
+		try {
+			System.error("Error getting devices from VM '" + vm.name + "', exception : " + ex);
+		}
+		catch (subEx) {
+			System.error("Error getting devices from VM '" + vm.id + "', exception : " + ex);
+		}
+		continue;
+	}
+	
+	var snapshots = System.getModule("com.vmware.library.vc.vm.snapshot").getAllSnapshotsOfVM(vm) ;
+	if(snapshots.length>0){
+		for each(var snapshotRef in snapshots){
+			var snapshot = VcPlugin.convertToVimManagedObject(vm,snapshotRef);
+			var snapshotDevices = snapshot.config.hardware.device;
+			for each(var snapshotDevice in snapshotDevices) {
+				if (snapshotDevice instanceof VcVirtualDisk) {
+					try {
+						var diskFilename = snapshotDevice.backing.fileName;
+						diskFiles.remove(diskFilename);
+					}
+					catch (ex) {
+						try {
+							System.error("Error getting files from a disk from VM '" + vm.name + "', exception : " + ex);
+						}
+						catch (eex) {
+							System.error("Error getting files from a disk from VM '" + vm.id + "', exception : " + ex);
+						}
+						continue;
+					}
+				}
+			}
+		}
+	}
+}
+if(orphanedVMs.length>0){
+	orphanedFound=true;
+}
+		]]></script>
+    <in-binding>
+      <bind name="diskFiles" type="Properties" export-name="allDiskFiles"/>
+      <bind name="vmFiles" type="Properties" export-name="allVmFiles"/>
+    </in-binding>
+    <out-binding>
+      <bind name="diskFiles" type="Properties" export-name="diskFiles"/>
+      <bind name="vmFiles" type="Properties" export-name="vmFiles"/>
+      <bind name="orphanedFound" type="boolean" export-name="orphanedFound"/>
+      <bind name="orphanedVMs" type="Array/VC:VirtualMachine" export-name="orphanedVMs"/>
+    </out-binding>
+    <position y="160.0" x="320.0"/>
+  </workflow-item>
+  <workflow-item name="item2" type="end" end-mode="0">
+    <position y="210.0" x="360.0"/>
+  </workflow-item>
+  <presentation/>
+</workflow>

@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="createRecurrentTask" result-type="Task" api-version="6.0.0" id="8B808080808080808080808080808080FC80808001297259131125b940b51f82d" version="1.1.0" allowed-operations="vfe" category-name="com.vmware.library.tasks">
+  <description><![CDATA[Create a recurrent Task. Return the newly created task
+
+Valid values for recurrenceCycle:
+one-time: run the task only one time. The recurrencePattern is ignored, the start date is mandatory
+every-minutes: The pattern represents all the seconds on the minutes when the task start
+every-hours: The pattern represents all the minutes:seconds on the minutes when the task start
+every-days: The pattern represents all the hours:minutes:seconds on the minutes when the task start
+every-weeks: The pattern represents all the day hours:minutes:seconds on the minutes when the task start
+every-months: The pattern represents all the day of the month hours:minutes:seconds on the minutes when the task start
+
+recurrencePattern sample:
+if cycle is one-time : ignored
+if cycle is every-minutes : "00" or "00, 30"
+if cycle is every-hours : "00:00" or "18:30:00"
+if cycle is every-days : "18:30:00, 19:30:00"
+if cycle is every-weeks : "Mon 00:00:00, Wed 18:00:00"
+if cycle is every-months: "14 00:00:00, 28 18:00:00"]]></description>
+  <param n="workflowToCall" t="Workflow"><![CDATA[[Mandatory] The workflow to call at task execution]]></param>
+  <param n="startDate" t="Date"><![CDATA[Start date of the task]]></param>
+  <param n="endDate" t="Date"><![CDATA[End date if any]]></param>
+  <param n="recurrencePattern" t="string"><![CDATA[The recurrence pattern, if any. See Action description for more info]]></param>
+  <param n="recurrenceCycle" t="string"><![CDATA[The recurrence cycle mode, if any. See Action description for more info]]></param>
+  <param n="workflowArguments" t="Properties"><![CDATA[[Mandatory] Properties corresponding to the parameters for the workflow execution]]></param>
+  <param n="username" t="string"><![CDATA[Username of the user to execute the workflow. If null or empty, use the current user]]></param>
+  <param n="password" t="string"><![CDATA[Password for the username]]></param>
+  <script encoded="false"><![CDATA[if (startDate != null && startDate < new Date()) {
+	throw "Start startDate in the past!";
+}
+recurrenceCycle = recurrenceCycle.toLowerCase();
+if (recurrenceCycle != null && recurrenceCycle != "" && 
+	recurrenceCycle != "one-time" && 
+	recurrenceCycle != "every-minutes" && 
+	recurrenceCycle != "every-hours" && 
+	recurrenceCycle != "every-days" && 
+	recurrenceCycle != "every-weeks" && 
+	recurrenceCycle != "every-months") {
+	
+	throw "recurrenceCycle " + recurrenceCycle + " not supported";
+}
+
+var task = workflowToCall.scheduleRecurrently(workflowArguments , recurrencePattern , recurrenceCycle , startDate , endDate , username , password);
+
+return task;]]></script>
+</dunes-script-module>

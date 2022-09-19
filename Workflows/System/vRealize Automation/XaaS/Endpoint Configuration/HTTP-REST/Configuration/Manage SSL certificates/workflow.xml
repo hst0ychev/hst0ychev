@@ -1,0 +1,124 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="Workflow:name=generic" id="a1fae3b5-305e-4995-9cfd-2353f589c1ba" version="1.0.4" api-version="6.0.0" allowed-operations="vf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Manage SSL certificates]]></display-name>
+  <description><![CDATA[Verifies a host URL and, if required, shows a user interaction message for SSL certificates user approval.]]></description>
+  <position y="20.0" x="180.0"/>
+  <input>
+    <param name="url" type="string">
+      <description><![CDATA[The URL which should be validated]]></description>
+    </param>
+    <param name="proxySettings" type="Properties">
+      <description><![CDATA[Proxy settings]]></description>
+    </param>
+  </input>
+  <attrib name="errorCode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="hostValidator" type="Any" read-only="false">
+    <value encoded="n"><![CDATA[string#]]></value>
+  </attrib>
+  <attrib name="certificateInfo" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="installCertificates" type="string" read-only="false">
+    <value encoded="n"><![CDATA[Install this certificate and do not display any security warnings for this server]]></value>
+  </attrib>
+  <workflow-item name="item0" out-name="item3" catch-name="item1" throw-bind-name="errorCode" type="task">
+    <display-name><![CDATA[Get URL certificates]]></display-name>
+    <script encoded="false"><![CDATA[System.log("url: " + url);
+try {
+	hostValidator = new RESTHostValidator(url);
+	if (proxySettings != null && proxySettings.get("HTTP.PROXY_HOST") != null){
+   	    var proxyHost = proxySettings.get("HTTP.PROXY_HOST");
+   	    var proxyPort = parseInt( proxySettings.get("HTTP.PROXY_PORT"));
+		System.log("Using proxy: " + proxyHost  + " on port "  + proxyPort);
+		var proxy = RESTHostValidator.createProxy(proxyHost,proxyPort);
+		hostValidator.useProxy(proxy);
+	}
+	hostValidator.validateUrl();
+} catch (err) {
+	System.error( "Provided url is invalid '" + url + "'" );
+}
+certificateInfo = hostValidator.getCertificateInfo();
+System.log("Certificate information: " + certificateInfo);
+
+]]></script>
+    <in-binding>
+      <bind name="certificateInfo" type="Properties" export-name="certificateInfo"/>
+      <bind name="url" type="string" export-name="url"/>
+      <bind name="proxySettings" type="Properties" export-name="proxySettings"/>
+    </in-binding>
+    <out-binding>
+      <bind name="hostValidator" type="Any" export-name="hostValidator"/>
+      <bind name="certificateInfo" type="Properties" export-name="certificateInfo"/>
+    </out-binding>
+    <position y="80.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item1" throw-bind-name="errorCode" type="end" end-mode="1">
+    <position y="70.0" x="300.0"/>
+  </workflow-item>
+  <workflow-item name="item5" out-name="item6" catch-name="item7" throw-bind-name="errorCode" type="task">
+    <display-name><![CDATA[Install certificate]]></display-name>
+    <script encoded="false"><![CDATA[System.log("installCertificates: " + installCertificates);
+System.log("Test: " + (/^Install/).test(installCertificates));
+if ( (/^Install/).test(installCertificates) ) {
+	hostValidator.installCertificates();
+} else {
+	throw "UserError: User cancel";
+}
+
+]]></script>
+    <in-binding>
+      <bind name="hostValidator" type="Any" export-name="hostValidator"/>
+      <bind name="installCertificates" type="string" export-name="installCertificates"/>
+    </in-binding>
+    <out-binding/>
+    <position y="200.0" x="380.0"/>
+  </workflow-item>
+  <workflow-item name="item6" type="end" end-mode="0">
+    <position y="190.0" x="300.0"/>
+  </workflow-item>
+  <workflow-item name="item7" throw-bind-name="errorCode" type="end" end-mode="1">
+    <position y="250.0" x="300.0"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item4" type="custom-condition" alt-out-name="item5">
+    <display-name><![CDATA[Decision]]></display-name>
+    <script encoded="false"><![CDATA[if (certificateInfo != null) {
+	System.log("Is certificate trusted: " + certificateInfo.get("certificatesTrusted"));
+	System.log("Is host name verified: " + certificateInfo.get("hostNameVerified"));
+	return (certificateInfo.get("certificatesTrusted") && certificateInfo.get("hostNameVerified"));
+} else {
+	System.log("Certificate info is null, not an HTTPS");
+	return true;
+}]]></script>
+    <in-binding>
+      <bind name="certificateInfo" type="Properties" export-name="certificateInfo"/>
+    </in-binding>
+    <position y="130.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item6" catch-name="item7" throw-bind-name="errorCode" type="task">
+    <display-name><![CDATA[Save certificate]]></display-name>
+    <script encoded="false"><![CDATA[if ( certificateInfo != null ) {
+	//only install somehting when certificates available, and they actually will be installed only once
+	hostValidator.installCertificates();
+}]]></script>
+    <in-binding>
+      <bind name="hostValidator" type="Any" export-name="hostValidator"/>
+      <bind name="certificateInfo" type="Properties" export-name="certificateInfo"/>
+    </in-binding>
+    <out-binding/>
+    <position y="200.0" x="140.0"/>
+  </workflow-item>
+  <presentation>
+    <p-group>
+      <title><![CDATA[Validate a URL]]></title>
+      <desc><![CDATA[Specify a URL address to validate. Validation checks server certificate and shows user interaction if it is HTTPS.]]></desc>
+      <p-param name="url">
+        <desc><![CDATA[URL]]></desc>
+      </p-param>
+    </p-group>
+    <p-param name="proxySettings">
+      <desc><![CDATA[Proxy settings]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

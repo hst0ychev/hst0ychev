@@ -1,0 +1,5 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getLoadBalancerBackendpool" result-type="Array/string" api-version="6.0.0" id="72b88ec8-6d6a-46c1-aa69-a55367a7c1d6" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.azure">
+  <param n="azureLoadBalancer" t="Azure:LoadBalancer"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[return AzureLoadBalancerManager.getLoadBalancerBackendPool(azureLoadBalancer);]]></script>
+</dunes-script-module>

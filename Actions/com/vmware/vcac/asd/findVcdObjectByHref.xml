@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="findVcdObjectByHref" result-type="Any" api-version="6.0.0" id="05d9901f-95de-4d2d-9129-3c86661ffef1" version="0.0.1" allowed-operations="vf" category-name="com.vmware.vcac.asd">
+  <description><![CDATA[Looks up through all VCD hosts for a object of the given type with the given href.]]></description>
+  <param n="type" t="string"><![CDATA[]]></param>
+  <param n="vcdObjectHref" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var VCD_DELIMETER = '////';
+
+if (vcdObjectHref && type) {	
+	var hosts = VclHostManager.getHostList();
+	for (var i in hosts) {
+		var host = hosts[i];
+		var hostId = System.getObjectId(host);
+		var idx = hostId.indexOf(VCD_DELIMETER);
+		if (idx > -1) {
+			hostId = hostId.substring(0, idx);
+		}
+		var vcdObjectId = hostId + VCD_DELIMETER + vcdObjectHref;
+		
+		var vcdObject = Server.findForType(type, vcdObjectId);
+		if (vcdObject) {
+			return vcdObject;
+		}
+	}
+}
+
+return null;
+]]></script>
+</dunes-script-module>

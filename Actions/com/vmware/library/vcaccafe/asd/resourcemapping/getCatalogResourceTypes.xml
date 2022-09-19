@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getCatalogResourceTypes" result-type="Array/Any" api-version="6.0.0" id="238e6a6a-d2d5-4874-8172-255e84688634" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.asd.resourcemapping">
+  <param n="host" t="vCACCAFE:VCACHost"><![CDATA[vRA CAFE host]]></param>
+  <script encoded="false"><![CDATA[System.log("Getting catalog resource types...");
+var resourceTypes = vCACCAFEEntitiesFinder.getCatalogResourceTypes(host);
+System.log("Getting catalog resource types finished successfully");
+return resourceTypes;]]></script>
+</dunes-script-module>

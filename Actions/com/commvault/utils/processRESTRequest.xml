@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="processRESTRequest" result-type="void" api-version="6.0.0" id="de2a1b0d-07b9-493c-b3a6-2bded708e7e9" version="0.0.0" allowed-operations="evf" category-name="com.commvault.utils">
+  <description><![CDATA[action to process the rest request]]></description>
+  <param n="requestEndpoint" t="string"><![CDATA[]]></param>
+  <param n="requestType" t="string"><![CDATA[]]></param>
+  <param n="requestContent" t="string"><![CDATA[]]></param>
+  <param n="token" t="string"><![CDATA[]]></param>
+  <param n="pagingInfo" t="string"><![CDATA[]]></param>
+  <param n="RESTHost" t="REST:RESTHost"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[
+/*
+
+	Inputs-
+	requestEndPoint - Request URL
+	requestType - Type of REST request(eg, POST, GET, PUT, DELETE)
+	requestContent - request payload XML
+	token - CV token for authorization
+	
+	Output-
+	result of request response.
+	
+*/
+//System.log("Executing processRESTRequest module");
+//System.log("REST request token: "+token);
+var result = "";
+var restHost = System.getModule("com.commvault.utils").getHost();
+if(RESTHost!= null){
+	restHost = RESTHost;
+	System.log(" RESTHOST in process rest request " + restHost);
+}
+if(restHost != null)
+{	
+	var pageSize = "0,10000";
+	var request = restHost.createRequest(requestType, requestEndpoint, requestContent);
+	if(token != null)
+	{
+		request.setHeader("Authtoken",token);
+	}
+	if(pagingInfo != null){
+		request.setHeader("pagingInfo",pagingInfo);
+	}
+	else{
+		request.setHeader("pagingInfo",pageSize);
+	}
+	System.log("processing the request url: " + request.fullUrl);
+	var response = request.execute();
+
+	if (response.contentAsString != null){
+		result = new Properties();
+		result.put("statusCode", response.statusCode);
+		result.put("contentLength", response.contentLength);
+		result.put("headers", response.getAllHeaders());
+		result.put("contentAsString", response.contentAsString);
+		
+	}
+}
+else
+{
+	result = null;
+	throw("Error: Couldn't find the Simpana REST host");
+}
+System.log("result " + result);
+return result;]]></script>
+</dunes-script-module>

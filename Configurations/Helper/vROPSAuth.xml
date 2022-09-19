@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="323ab8b9-b901-4d9b-904e-ee381267931e" version="0.0.0">
+  <display-name><![CDATA[vROPSAuth]]></display-name>
+  <atts>
+    <att name="username" type="string" read-only="false">
+      <value encoded="n"><![CDATA[admin]]></value>
+    </att>
+    <att name="password" type="SecureString" read-only="false">
+      <value encoded="n"><![CDATA[__NULL__]]></value>
+    </att>
+    <att name="vROPSRest" type="REST:RESTHost" read-only="false">
+      <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='9a586ce9-3e3c-4a76-a1eb-344e9b7078a4'&dunesName='REST:RESTHost']]></value>
+    </att>
+  </atts>
+</config-element>

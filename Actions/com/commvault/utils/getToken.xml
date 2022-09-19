@@ -1,0 +1,94 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getToken" result-type="void" api-version="6.0.0" id="d1c3178e-f96d-4049-aaa5-f749ab987296" version="0.0.0" allowed-operations="evf" category-name="com.commvault.utils">
+  <description><![CDATA[this action returns the token to be used for REST API authentication.]]></description>
+  <param n="host" t="REST:RESTHost"><![CDATA[REST host]]></param>
+  <script encoded="false"><![CDATA[/*
+	this action returns the token to be used for REST API authentication.
+	
+	inputs- 
+	host - REST host to be used for rest apis
+	
+	output-
+	string - token if the login was successful with the user name password provided for the host
+			 -1 if the token not found in response
+*/
+
+//var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",encode:function(e){var t="";var n,r,i,s,o,u,a;var f=0;e=Base64._utf8_encode(e);while(f<e.length){n=e.charCodeAt(f++);r=e.charCodeAt(f++);i=e.charCodeAt(f++);s=n>>2;o=(n&3)<<4|r>>4;u=(r&15)<<2|i>>6;a=i&63;if(isNaN(r)){u=a=64}else if(isNaN(i)){a=64}t=t+this._keyStr.charAt(s)+this._keyStr.charAt(o)+this._keyStr.charAt(u)+this._keyStr.charAt(a)}return t},decode:function(e){var t="";var n,r,i;var s,o,u,a;var f=0;e=e.replace(/[^A-Za-z0-9\+\/\=]/g,"");while(f<e.length){s=this._keyStr.indexOf(e.charAt(f++));o=this._keyStr.indexOf(e.charAt(f++));u=this._keyStr.indexOf(e.charAt(f++));a=this._keyStr.indexOf(e.charAt(f++));n=s<<2|o>>4;r=(o&15)<<4|u>>2;i=(u&3)<<6|a;t=t+String.fromCharCode(n);if(u!=64){t=t+String.fromCharCode(r)}if(a!=64){t=t+String.fromCharCode(i)}}t=Base64._utf8_decode(t);return t},_utf8_encode:function(e){e=e.replace(/\r\n/g,"\n");var t="";for(var n=0;n<e.length;n++){var r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r)}else if(r>127&&r<2048){t+=String.fromCharCode(r>>6|192);t+=String.fromCharCode(r&63|128)}else{t+=String.fromCharCode(r>>12|224);t+=String.fromCharCode(r>>6&63|128);t+=String.fromCharCode(r&63|128)}}return t},_utf8_decode:function(e){var t="";var n=0;var r=c1=c2=0;while(n<e.length){r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r);n++}else if(r>191&&r<224){c2=e.charCodeAt(n+1);t+=String.fromCharCode((r&31)<<6|c2&63);n+=2}else{c2=e.charCodeAt(n+1);c3=e.charCodeAt(n+2);t+=String.fromCharCode((r&15)<<12|(c2&63)<<6|c3&63);n+=3}}return t}}
+
+//Prepare cvLogin
+var operationUrl = "Login";
+var requestType = "POST";
+//var csName = host.name;
+var csUser;
+var csPwd;
+
+//Commvault Login
+var category = Server.getConfigurationElementCategoryWithPath("CRIS")
+if (category == null)
+		{
+		    throw "Configuration element category '" + categoryPath + "' not found or empty!";
+		}
+		
+	var elements = category.configurationElements;
+        System.log("elements " + elements);
+        //retrieve names
+        for (i = 0; i < elements.length; i++) {
+	              if (elements[i].name == "Commvault_Baas") {
+                 System.log("elements " + elements[i].name);
+				  //found required element
+                    System.log("elements " +elements[i].getAttributeWithKey("Commvault_Baas").value );
+                    System.log("elements " +elements[i].getAttributeWithKey("username").value );
+					csUser=elements[i].getAttributeWithKey("username").value;
+					System.log("elements " +elements[i].getAttributeWithKey("password").value );
+					csPwd=elements[i].getAttributeWithKey("password").value;
+					}
+					}
+
+//
+
+
+var creds = host.authentication;
+var csUser = creds.username;
+//var csUser = "admin";
+//var csPwd ="Builder!12";
+System.log("CS USER " + csUser);
+csUser = csUser.replace("\\","\\\\");
+//System.log("host password: " + creds.password);
+//var csPwd = creds.password;
+System.log("CS Password : " + csPwd);
+var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",encode:function(e){var t="";var n,r,i,s,o,u,a;var f=0;e=Base64._utf8_encode(e);while(f<e.length){n=e.charCodeAt(f++);r=e.charCodeAt(f++);i=e.charCodeAt(f++);s=n>>2;o=(n&3)<<4|r>>4;u=(r&15)<<2|i>>6;a=i&63;if(isNaN(r)){u=a=64}else if(isNaN(i)){a=64}t=t+this._keyStr.charAt(s)+this._keyStr.charAt(o)+this._keyStr.charAt(u)+this._keyStr.charAt(a)}return t},decode:function(e){var t="";var n,r,i;var s,o,u,a;var f=0;e=e.replace(/[^A-Za-z0-9\+\/\=]/g,"");while(f<e.length){s=this._keyStr.indexOf(e.charAt(f++));o=this._keyStr.indexOf(e.charAt(f++));u=this._keyStr.indexOf(e.charAt(f++));a=this._keyStr.indexOf(e.charAt(f++));n=s<<2|o>>4;r=(o&15)<<4|u>>2;i=(u&3)<<6|a;t=t+String.fromCharCode(n);if(u!=64){t=t+String.fromCharCode(r)}if(a!=64){t=t+String.fromCharCode(i)}}t=Base64._utf8_decode(t);return t},_utf8_encode:function(e){e=e.replace(/\r\n/g,"\n");var t="";for(var n=0;n<e.length;n++){var r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r)}else if(r>127&&r<2048){t+=String.fromCharCode(r>>6|192);t+=String.fromCharCode(r&63|128)}else{t+=String.fromCharCode(r>>12|224);t+=String.fromCharCode(r>>6&63|128);t+=String.fromCharCode(r&63|128)}}return t},_utf8_decode:function(e){var t="";var n=0;var r=c1=c2=0;while(n<e.length){r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r);n++}else if(r>191&&r<224){c2=e.charCodeAt(n+1);t+=String.fromCharCode((r&31)<<6|c2&63);n+=2}else{c2=e.charCodeAt(n+1);c3=e.charCodeAt(n+2);t+=String.fromCharCode((r&15)<<12|(c2&63)<<6|c3&63);n+=3}}return t}}
+//Encode the pwd			
+csPwd = Base64.encode(csPwd);
+
+var requestContent = "<DM2ContentIndexing_CheckCredentialReq mode=\"Webconsole\" domain=\"\" username="+"\""+csUser+"\""+"  password="+ "\""+csPwd+"\"" + " />";
+var request = host.createRequest(requestType, operationUrl, requestContent);
+
+var response = request.execute();
+//System.log("REQUEST " +  request);
+result = new Properties();
+result.put("statusCode", response.statusCode);
+result.put("contentLength", response.contentLength);
+result.put("headers", response.getAllHeaders());
+result.put("contentAsString", response.contentAsString);
+
+//Process Login token
+var temp = result.contentAsString;
+//System.log("Response of login " + temp);
+var document = XMLManager.fromString(result.contentAsString);
+var list = document.getElementsByTagName("DM2ContentIndexing_CheckCredentialResp");
+var token = "";
+for(var i = 0; i < list.length ; i++)
+{	
+	//System.log("INSIDE THE RESPONSE ");
+	token = list.item(i).getAttribute("token");
+}
+if (token == "" )
+{
+	System.log("Error : CV login failed, please verify the credentials and make sure the Commvault Services are running.");
+	token = -1;
+}
+System.log("Token used for login " + token);
+return token;
+
+]]></script>
+</dunes-script-module>

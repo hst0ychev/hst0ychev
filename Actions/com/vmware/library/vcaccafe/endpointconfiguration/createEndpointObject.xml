@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="createEndpointObject" result-type="vCACCAFE:Endpoint" api-version="6.0.0" id="f2414e3e-9419-4d63-aef4-9b84e7280f44" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.endpointconfiguration">
+  <param n="endpointType" t="string"><![CDATA[The type of the endpoint.]]></param>
+  <param n="name" t="string"><![CDATA[The name of the endpoint.]]></param>
+  <param n="description" t="string"><![CDATA[The description of the endpoint]]></param>
+  <param n="address" t="string"><![CDATA[The address of the endpoint.]]></param>
+  <param n="username" t="string"><![CDATA[The username that will be used for the endpoint.]]></param>
+  <param n="password" t="SecureString"><![CDATA[The password that will be used for the endpoint.]]></param>
+  <script encoded="false"><![CDATA[var endpointObject = vCACCAFEEndpointConfigurationHelper.createEndpointObject(name , description , address , username , password , endpointType);
+
+if (endpointObject == null)
+{
+	throw "Failed to create endpoint object";
+}
+
+return endpointObject;]]></script>
+</dunes-script-module>

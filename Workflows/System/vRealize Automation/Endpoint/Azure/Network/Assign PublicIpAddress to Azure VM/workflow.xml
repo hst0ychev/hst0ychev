@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="d2939db6-8be2-4dde-a9c3-a1a59c899b58" version="7.5.0" api-version="6.0.0" allowed-operations="vf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Assign PublicIpAddress to Azure VM]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="azureVm" type="Azure:VirtualMachine"/>
+    <param name="publicIpNameWithResGrpName" type="string"/>
+    <param name="currentAddressWithRgNameAssignment" type="string"/>
+  </input>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Scriptable task]]></display-name>
+    <script encoded="false"><![CDATA[var primaryNic = AzureNetworkInterfaceManager.getPrimaryNetworkInterfaceByVirtualMachine(azureVm);
+var rg = null;
+var publicIp = null;
+
+var sid = azureVm.internalIdString.split(",")[0];
+
+var connection = AzureConnectionManager.getConnectionBySid(sid);
+
+if (publicIpNameWithResGrpName == null || publicIpNameWithResGrpName == "") {
+    System.log("PublicIpAddress has been removed from NIC's configuration.");
+    AzureNetworkInterfaceManager.detachPublicIpAddress(primaryNic);
+} else {
+    var parts = publicIpNameWithResGrpName.split(" @ ");
+    System.log("PublicIpAddress with name '" + parts[0] + "' part of ResourceGroup with name '" + parts[1] + "' is selected.");
+    rg = AzureResourceGroupManager.getResourceGroupByConnectionAndName(connection, parts[1]);
+    publicIp = AzurePublicIPAddressManager.getPublicIpAddressByResourceGroupAndName(rg, parts[0]);
+    AzureNetworkInterfaceManager.attachPublicIpAddress(primaryNic, publicIp);
+}]]></script>
+    <in-binding>
+      <bind name="azureVm" type="Azure:VirtualMachine" export-name="azureVm"/>
+      <bind name="publicIpNameWithResGrpName" type="string" export-name="publicIpNameWithResGrpName"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="azureVm">
+      <desc><![CDATA[azureVm]]></desc>
+    </p-param>
+    <p-param name="currentAddressWithRgNameAssignment">
+      <desc><![CDATA[Currently assigned Public IP Address name]]></desc>
+    </p-param>
+    <p-param name="publicIpNameWithResGrpName">
+      <desc><![CDATA[publicIpNameWithResourceGroupName]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

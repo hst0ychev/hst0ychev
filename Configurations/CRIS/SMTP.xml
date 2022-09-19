@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="0afdf55e-f4c5-4b91-93da-c7f809643af2" version="0.0.1">
+  <display-name><![CDATA[SMTP]]></display-name>
+  <atts>
+    <att name="smtp_host" type="string" read-only="false">
+      <value encoded="n"><![CDATA[10.77.32.47]]></value>
+      <description><![CDATA[The SMTP host from where emails will be sent]]></description>
+    </att>
+    <att name="smtp_port" type="number" read-only="false">
+      <value encoded="n"><![CDATA[25.0]]></value>
+      <description><![CDATA[The SMTP port from where the emails are sent]]></description>
+    </att>
+    <att name="smtp_username" type="string" read-only="false">
+      <value encoded="n"><![CDATA[cloudsupport@cris.org.in]]></value>
+      <description><![CDATA[The username used to log in to SMTP host]]></description>
+    </att>
+    <att name="smtp_password" type="SecureString" read-only="false">
+      <value encoded="n"><![CDATA[__NULL__]]></value>
+      <description><![CDATA[The password of the user specified in "smtp_username"]]></description>
+    </att>
+    <att name="smtp_from_id" type="string" read-only="false">
+      <value encoded="n"><![CDATA[cloudsupport@cris.org.in]]></value>
+      <description><![CDATA[From this ID, the mails will be sent]]></description>
+    </att>
+    <att name="smtp_from_name" type="string" read-only="false">
+      <value encoded="n"><![CDATA[CRIS vRA]]></value>
+      <description><![CDATA[The name shown for the ID]]></description>
+    </att>
+    <att name="use_ssl" type="boolean" read-only="false">
+      <value encoded="n"><![CDATA[__NULL__]]></value>
+      <description><![CDATA[Do you want to use SSL communication?]]></description>
+    </att>
+    <att name="use_start_tls" type="boolean" read-only="false">
+      <value encoded="n"><![CDATA[__NULL__]]></value>
+      <description><![CDATA[Do you want to use TLS?]]></description>
+    </att>
+    <att name="smtp_to_address_DFWaaS" type="Array/string" read-only="false">
+      <value encoded="n"><![CDATA[[34:string#criscloud_alert@cris.org.in]]]></value>
+      <description><![CDATA[Email IDs to send email to whenever a new DFW request is completed]]></description>
+    </att>
+    <att name="smtp_to_address_LDAPaaS" type="Array/string" read-only="false">
+      <value encoded="n"><![CDATA[[34:string#criscloud_alert@cris.org.in]]]></value>
+      <description><![CDATA[Email IDs to send email for LDAPaaS Requests]]></description>
+    </att>
+    <att name="smtp_to_address_FQDNaaS" type="Array/string" read-only="false">
+      <value encoded="n"><![CDATA[[34:string#criscloud_alert@cris.org.in]]]></value>
+      <description><![CDATA[Email IDs to send email to, for FQDNaaS Workflows]]></description>
+    </att>
+    <att name="smtp_to_address_LBaaS" type="Array/string" read-only="false">
+      <value encoded="n"><![CDATA[[34:string#criscloud_alert@cris.org.in]]]></value>
+      <description><![CDATA[Email IDs to send email to, for LBaaS Workflows]]></description>
+    </att>
+  </atts>
+</config-element>

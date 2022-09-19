@@ -1,0 +1,110 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item2" object-name="workflow:name=generic" id="92d4b81e-556f-4877-b0cd-49ff2ef3cdd0" version="0.1.4" api-version="6.0.0" allowed-operations="vf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Create Snapshot]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="EndpointIn" type="Any"/>
+    <param name="MachineIn" type="Any"/>
+    <param name="SnapshotIn" type="Any"/>
+  </input>
+  <output>
+    <param name="MachineOut" type="Any"/>
+    <param name="SnapshotsOut" type="Array/Any"/>
+  </output>
+  <attrib name="computeResource" type="Any" read-only="false">
+    <value encoded="n"><![CDATA[Any#__NULL__]]></value>
+  </attrib>
+  <attrib name="currentSnapshots" type="Array/Any" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="664.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Create Snapshot]]></display-name>
+    <script encoded="false"><![CDATA[System.log("EndpointIn: " + EndpointIn.toSource());
+System.log("MachineIn: " + MachineIn.toSource());
+System.log("SnapshotIn: " + SnapshotIn.toSource());
+
+MachineOut = MachineIn;
+
+var machineId = MachineIn.uniqueId;
+var machineName = MachineIn.machineName;
+
+var snapshot = GEFMachineSnapshot.build(machineId);
+snapshot.createdDateTime = new Date(2015,4,1);
+snapshot.description = SnapshotIn.description;
+snapshot.name = SnapshotIn.name;
+snapshot.uniqueId = machineName + Date.now();
+snapshot.isCurrentSnapshot = true;
+snapshot.isMemorySnapshot = SnapshotIn.isMemorySnapshot;
+
+if(currentSnapshots == null)
+{
+	SnapShotsOut = [];
+}
+else
+{
+	SnapShotsOut = currentSnapshots;
+}
+
+for each (var snap in SnapShotsOut)
+{
+	if(snap.isCurrentSnapshot)
+	{
+		// make the current our parent
+		snapshot.parentUniqueId = snap.uniqueId;
+	}
+	snap.isCurrentSnapshot = false;
+}
+
+SnapShotsOut.push(snapshot);
+
+System.log("MachineOut: " + MachineOut.toSource());
+System.log("SnapShotsOut: " + SnapShotsOut.toSource());]]></script>
+    <in-binding>
+      <bind name="EndpointIn" type="Any" export-name="EndpointIn"/>
+      <bind name="MachineIn" type="Any" export-name="MachineIn"/>
+      <bind name="SnapshotIn" type="Any" export-name="SnapshotIn"/>
+      <bind name="currentSnapshots" type="Array/Any" export-name="currentSnapshots"/>
+    </in-binding>
+    <out-binding>
+      <bind name="MachineOut" type="Any" export-name="MachineOut"/>
+      <bind name="SnapShotsOut" type="Array/Any" export-name="SnapshotsOut"/>
+    </out-binding>
+    <position y="55.40909090909091" x="484.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item3" type="task">
+    <display-name><![CDATA[Get ComputeResource]]></display-name>
+    <script encoded="false"><![CDATA[computeResource = MachineIn.computeResource;]]></script>
+    <in-binding>
+      <bind name="MachineIn" type="Any" export-name="MachineIn"/>
+    </in-binding>
+    <out-binding>
+      <bind name="computeResource" type="Any" export-name="computeResource"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item1" type="link" linked-workflow-id="a206d65c-dd5c-4fc3-a791-5b89ea7ae1db">
+    <display-name><![CDATA[GetComputeResourceSnapshotInventory]]></display-name>
+    <in-binding>
+      <bind name="EndpointIn" type="Any" export-name="EndpointIn"/>
+      <bind name="ComputeResourceIn" type="Any" export-name="computeResource"/>
+    </in-binding>
+    <out-binding>
+      <bind name="SnapshotsOut" type="Array/Any" export-name="currentSnapshots"/>
+    </out-binding>
+    <position y="55.40909090909091" x="344.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="EndpointIn">
+      <desc><![CDATA[EndpointIn]]></desc>
+    </p-param>
+    <p-param name="MachineIn">
+      <desc><![CDATA[MachineIn]]></desc>
+    </p-param>
+    <p-param name="SnapshotIn">
+      <desc><![CDATA[SnapshotIn]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

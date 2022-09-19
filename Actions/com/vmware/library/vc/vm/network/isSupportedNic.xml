@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="isSupportedNic" result-type="boolean" api-version="6.0.0" id="973290e7-1db4-47df-92dc-70024a3c9cb9" version="0.1.2" allowed-operations="vf" category-name="com.vmware.library.vc.vm.network">
+  <description><![CDATA[Checks whether the given object is instance of supported Network interface controller]]></description>
+  <param n="nic" t="Any"><![CDATA[Object to test]]></param>
+  <script encoded="false"><![CDATA[return (nic instanceof VcVirtualE1000
+    || nic instanceof VcVirtualE1000e
+    || nic instanceof VcVirtualPCNet32
+    || nic instanceof VcVirtualVmxnet
+    || nic instanceof VcVirtualVmxnet2
+    || nic instanceof VcVirtualVmxnet3
+    || nic instanceof VcVirtualSriovEthernetCard);
+]]></script>
+</dunes-script-module>

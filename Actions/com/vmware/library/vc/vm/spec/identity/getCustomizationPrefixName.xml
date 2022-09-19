@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getCustomizationPrefixName" result-type="Any" api-version="6.0.0" id="2bb9b771-f27c-4421-ad37-fdd7c51662c5" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.vm.spec.identity">
+  <param n="base" t="string"><![CDATA[Base prefix, to which a unique number is appended.]]></param>
+  <script encoded="false"><![CDATA[try {
+	if (base == null) throw "base cannot be null";
+	return new VcCustomizationPrefixName(base);
+}
+catch (ex) {
+	throw "Unable to create VcCustomizationPrefixName: " + ex;
+}]]></script>
+</dunes-script-module>

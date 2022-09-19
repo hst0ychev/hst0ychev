@@ -1,0 +1,337 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item16" object-name="workflow:name=generic" id="8ccbc6a4-1549-4406-afb0-a8a683c0cdeb" version="7.5.0" api-version="6.0.0" allowed-operations="vf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Generate Azure Machine Name]]></display-name>
+  <error-handler name="item11" throw-bind-name="errorCode">
+    <position y="136.3181818181818" x="45.0"/>
+  </error-handler>
+  <position y="36.31818181818181" x="45.0"/>
+  <input>
+    <param name="connection" type="Azure:Connection"/>
+    <param name="resourceGroupName" type="string"/>
+    <param name="machineNamingFormat" type="string"/>
+    <param name="numberOfDigits" type="number">
+      <description><![CDATA[Number of digits to use if such a prefix doesn't exist already. If null it will be fetched from the configuration.]]></description>
+    </param>
+    <param name="lowestNumber" type="number">
+      <description><![CDATA[Lowest number to start with. If null it will be fetched from the configuration.]]></description>
+    </param>
+  </input>
+  <output>
+    <param name="machineName" type="string"/>
+  </output>
+  <attrib name="lockId" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="namingModule" type="Module" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/Module?id='ff80808156d66a5c0156d67603c21dfe'&dunesName='Module'&name='com.vmware.vra.endpoint.azure']]></value>
+  </attrib>
+  <attrib name="namingFormatUsedForNumbering" type="CompositeType(format:string,numberOfDigits:number,lastNumberUsed:number,lowestNumber:number):azureNamingFormat" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="currentName" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Current machine name generated during the flow.]]></description>
+  </attrib>
+  <attrib name="errorCode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="maxNameGenerationAttempts" type="number" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="currentNameGeneratonAttempt" type="number" read-only="false">
+    <value encoded="n"><![CDATA[1.0]]></value>
+    <description><![CDATA[Counter which generation attept was performed]]></description>
+  </attrib>
+  <attrib name="retryMessage" type="string" read-only="false">
+    <value encoded="n"><![CDATA[Retrying to generate a new name after the name validation failed...]]></value>
+  </attrib>
+  <attrib name="defaultLowestNumber" type="number" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="defaultNumberOfDigits" type="number" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="machineNaming" type="ConfigurationElement" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <workflow-note x="598.0" y="16.181818181818173" w="324.0" h="217.0" color="ebebebff">
+    <description><![CDATA[Generate and Validate name]]></description>
+  </workflow-note>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="36.31818181818181" x="1424.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item15" type="task">
+    <display-name><![CDATA[lock]]></display-name>
+    <script encoded="false"><![CDATA[LockingSystem.lockAndWait(lockId, workflow.id);
+System.debug("Obtained lock for Azure Machine Naming");]]></script>
+    <in-binding>
+      <bind name="lockId" type="string" export-name="lockId"/>
+    </in-binding>
+    <out-binding/>
+    <position y="46.31818181818181" x="284.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item3" type="task">
+    <display-name><![CDATA[generate name]]></display-name>
+    <script encoded="false"><![CDATA[var nextNumberPadded = namingModule.determineNextNumberToUsePaddedWithZeros(namingFormatUsedForNumbering);
+System.debug("Next number generated = " + nextNumberPadded);
+namingFormatUsedForNumbering.put("lastNumberUsed", Number(nextNumberPadded));
+
+currentName = namingFormatUsedForNumbering.format + nextNumberPadded;
+System.debug("Currently generated name to validate = " + currentName);]]></script>
+    <in-binding>
+      <bind name="namingModule" type="Module" export-name="namingModule"/>
+      <bind name="namingFormatUsedForNumbering" type="CompositeType(format:string,numberOfDigits:number,lastNumberUsed:number,lowestNumber:number):azureNamingFormat" export-name="namingFormatUsedForNumbering"/>
+    </in-binding>
+    <out-binding>
+      <bind name="namingFormatUsedForNumbering" type="CompositeType(format:string,numberOfDigits:number,lastNumberUsed:number,lowestNumber:number):azureNamingFormat" export-name="namingFormatUsedForNumbering"/>
+      <bind name="currentName" type="string" export-name="currentName"/>
+    </out-binding>
+    <position y="46.31818181818181" x="644.5"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item12" catch-name="item4" throw-bind-name="errorCode" type="task">
+    <display-name><![CDATA[validate name]]></display-name>
+    <script encoded="false"><![CDATA[System.log("Validating machine with name '" + currentName + "' doesn't exist in resource group '" + resourceGroupName + "'.");
+
+var found = false;
+if (resourceGroupName != null) {
+    try {
+        var rg = getResourceGroupByConnectionAndName(connection, resourceGroupName);
+        var vm = AzureVirtualMachineManager.getVirtualMachineByResourceGroupAndVmName(rg, vmName);
+
+        if (vm != null) {
+            found = true;
+        }
+    } catch (err) {
+         // Ignore not found errors.
+    }
+} else {
+    System.log("No resource group name provided. New resource group will be created. Don't validate for machine existence");
+}
+
+if (found) {
+    throw currentName + "  already exists in resource group '" + resourceGroupName + "'.";
+}]]></script>
+    <in-binding>
+      <bind name="connection" type="Azure:Connection" export-name="connection"/>
+      <bind name="currentName" type="string" export-name="currentName"/>
+      <bind name="resourceGroupName" type="string" export-name="resourceGroupName"/>
+    </in-binding>
+    <out-binding/>
+    <position y="46.31818181818181" x="784.5"/>
+  </workflow-item>
+  <workflow-item name="item4" prototype-id="system-error" out-name="item6" type="task" interaction="l">
+    <display-name><![CDATA[System error]]></display-name>
+    <script encoded="false"><![CDATA[//Auto-generated script
+System.error(text);
+]]></script>
+    <in-binding>
+      <bind name="text" type="String" export-name="errorCode">
+        <description><![CDATA[The text to log]]></description>
+      </bind>
+      <bind name="errorCode" type="string" explicitly-not-bound="true"/>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Log the input text to the console log with level 'error']]></description>
+    <position y="109.95454545454544" x="784.5"/>
+  </workflow-item>
+  <workflow-item name="item6" out-name="item9" type="custom-condition" alt-out-name="item8">
+    <display-name><![CDATA[should retry?]]></display-name>
+    <script encoded="false"><![CDATA[return currentNameGeneratonAttempt < maxNameGenerationAttempts;]]></script>
+    <in-binding>
+      <bind name="maxNameGenerationAttempts" type="number" export-name="maxNameGenerationAttempts"/>
+      <bind name="currentNameGeneratonAttempt" type="number" export-name="currentNameGeneratonAttempt"/>
+    </in-binding>
+    <position y="163.59090909090907" x="784.5"/>
+  </workflow-item>
+  <workflow-item name="item8" out-name="item7" throw-bind-name="errorCode" type="task">
+    <display-name><![CDATA[unlock]]></display-name>
+    <script encoded="false"><![CDATA[LockingSystem.unlock(lockId, workflow.id);
+System.debug("Released lock for Azure Machine Naming");]]></script>
+    <in-binding>
+      <bind name="lockId" type="string" export-name="lockId"/>
+    </in-binding>
+    <out-binding/>
+    <position y="173.59090909090907" x="924.5"/>
+  </workflow-item>
+  <workflow-item name="item7" business-status="Name Validation failed" throw-bind-name="errorCode" type="end" end-mode="1">
+    <position y="163.59090909090907" x="1104.5"/>
+  </workflow-item>
+  <workflow-item name="item9" prototype-id="system-warning" out-name="item5" type="task" interaction="l">
+    <display-name><![CDATA[System warning]]></display-name>
+    <script encoded="false"><![CDATA[//Auto-generated script
+System.warn(text);
+]]></script>
+    <in-binding>
+      <bind name="text" type="String" export-name="retryMessage">
+        <description><![CDATA[The text to log]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Log the input text to the console log with level 'warn']]></description>
+    <position y="173.59090909090907" x="644.5"/>
+  </workflow-item>
+  <workflow-item name="item5" prototype-id="increase-counter" out-name="item2" content-mode="x" type="task">
+    <display-name><![CDATA[Increase counter]]></display-name>
+    <script encoded="false"><![CDATA[//Auto-generated script
+counter = counter+1;]]></script>
+    <in-binding>
+      <bind name="counter" type="number" export-name="currentNameGeneratonAttempt">
+        <description><![CDATA[counter to increment]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="counter" type="number" export-name="currentNameGeneratonAttempt">
+        <description><![CDATA[counter incremented]]></description>
+      </bind>
+    </out-binding>
+    <description><![CDATA[Increment a counter by one]]></description>
+    <position y="109.95454545454544" x="644.5"/>
+  </workflow-item>
+  <workflow-item name="item10" throw-bind-name="errorCode" type="end" end-mode="1">
+    <position y="136.3181818181818" x="324.5"/>
+  </workflow-item>
+  <workflow-item name="item11" out-name="item10" type="task">
+    <display-name><![CDATA[unlock]]></display-name>
+    <script encoded="false"><![CDATA[LockingSystem.unlock(lockId, workflow.id);
+System.debug("Released lock for Azure Machine Naming");]]></script>
+    <in-binding>
+      <bind name="lockId" type="string" export-name="lockId"/>
+    </in-binding>
+    <out-binding/>
+    <position y="146.3181818181818" x="145.0"/>
+  </workflow-item>
+  <workflow-item name="item12" out-name="item13" type="task">
+    <display-name><![CDATA[save naming format]]></display-name>
+    <script encoded="false"><![CDATA[var machineNamingData = machineNaming.getAttributeWithKey("namingData").value;
+
+
+if (!replaceExisting(machineNamingData, namingFormatUsedForNumbering)) {
+    System.log("Saving a new format to the list of tracked formats for '" + namingFormatUsedForNumbering.format + "'");
+    machineNamingData.push(namingFormatUsedForNumbering);
+}
+
+machineNaming.setAttributeWithKey("namingData", machineNamingData);
+machineNaming.reload();
+
+function replaceExisting(namingFormats, namingFormat) {
+    for each (var existingFormat in namingFormats) {
+        if (existingFormat.format === namingFormat.format) {
+            System.debug("Updating an existing format with a new number (" + namingFormat.lastNumberUsed + ") as the 'lastNumberUsed'");
+            existingFormat.put("lastNumberUsed", namingFormat.lastNumberUsed);
+            return true;
+        }
+    }
+    return false;
+}
+]]></script>
+    <in-binding>
+      <bind name="namingFormatUsedForNumbering" type="CompositeType(format:string,numberOfDigits:number,lastNumberUsed:number,lowestNumber:number):azureNamingFormat" export-name="namingFormatUsedForNumbering"/>
+      <bind name="machineNaming" type="ConfigurationElement" export-name="machineNaming"/>
+    </in-binding>
+    <out-binding>
+      <bind name="machineNaming" type="ConfigurationElement" export-name="machineNaming"/>
+    </out-binding>
+    <position y="46.31818181818181" x="964.5"/>
+  </workflow-item>
+  <workflow-item name="item13" out-name="item14" type="task">
+    <display-name><![CDATA[set machineName out]]></display-name>
+    <script encoded="false"><![CDATA[machineName = currentName;
+System.log("Name generated and validated successfully - " + machineName);]]></script>
+    <in-binding>
+      <bind name="currentName" type="string" export-name="currentName"/>
+    </in-binding>
+    <out-binding>
+      <bind name="machineName" type="string" export-name="machineName"/>
+    </out-binding>
+    <position y="46.31818181818181" x="1104.5"/>
+  </workflow-item>
+  <workflow-item name="item14" out-name="item0" throw-bind-name="errorCode" type="task">
+    <display-name><![CDATA[unlock]]></display-name>
+    <script encoded="false"><![CDATA[LockingSystem.unlock(lockId, workflow.id);
+System.debug("Released lock for Azure Machine Naming");]]></script>
+    <in-binding>
+      <bind name="lockId" type="string" export-name="lockId"/>
+    </in-binding>
+    <out-binding/>
+    <position y="46.31818181818181" x="1244.5"/>
+  </workflow-item>
+  <workflow-item name="item15" out-name="item2" type="task">
+    <display-name><![CDATA[get naming format]]></display-name>
+    <script encoded="false"><![CDATA[var machineNamingData = machineNaming.getAttributeWithKey("namingData").value;
+
+for each (var namingFormat in machineNamingData) {
+    if (namingFormat.format === machineNamingFormat) {
+        namingFormatUsedForNumbering = namingFormat;
+        break;
+    }
+}
+
+// Initialize new naming format.
+if (namingFormatUsedForNumbering == null) {
+    namingFormatUsedForNumbering = new Properties();
+    namingFormatUsedForNumbering.put("format", machineNamingFormat);
+    namingFormatUsedForNumbering.put("numberOfDigits", numberOfDigits != null ? numberOfDigits : defaultNumberOfDigits);
+    namingFormatUsedForNumbering.put("lowestNumber", lowestNumber != null ? lowestNumber : defaultLowestNumber);
+    namingFormatUsedForNumbering.put("lastNumberUsed", null);
+}]]></script>
+    <in-binding>
+      <bind name="machineNamingFormat" type="string" export-name="machineNamingFormat"/>
+      <bind name="defaultLowestNumber" type="number" export-name="defaultLowestNumber"/>
+      <bind name="defaultNumberOfDigits" type="number" export-name="defaultNumberOfDigits"/>
+      <bind name="machineNaming" type="ConfigurationElement" export-name="machineNaming"/>
+      <bind name="numberOfDigits" type="number" export-name="numberOfDigits">
+        <description><![CDATA[Number of digits to use if such a prefix doesn't exist already. If null it will be fetched from the configuration.]]></description>
+      </bind>
+      <bind name="lowestNumber" type="number" export-name="lowestNumber">
+        <description><![CDATA[Lowest number to start with. If null it will be fetched from the configuration.]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="namingFormatUsedForNumbering" type="CompositeType(format:string,numberOfDigits:number,lastNumberUsed:number,lowestNumber:number):azureNamingFormat" export-name="namingFormatUsedForNumbering"/>
+    </out-binding>
+    <position y="46.31818181818181" x="424.5"/>
+  </workflow-item>
+  <workflow-item name="item16" out-name="item1" type="task">
+    <display-name><![CDATA[init configuration]]></display-name>
+    <script encoded="false"><![CDATA[var attributeResults = System.getModule("com.vmware.vra.endpoint.azure.configuration").getAzureConfigurations({
+    'Machine Naming': ["_self", "lockId", "maxNameGenerationAttempts", "defaultLowestNumber", "defaultNumberOfDigits"]
+});
+
+machineNaming = attributeResults["Machine Naming"]["_self"];
+
+lockId = attributeResults["Machine Naming"]["lockId"];
+maxNameGenerationAttempts = attributeResults["Machine Naming"]["maxNameGenerationAttempts"];
+defaultLowestNumber = attributeResults["Machine Naming"]["defaultLowestNumber"];
+defaultNumberOfDigits = attributeResults["Machine Naming"]["defaultNumberOfDigits"];
+
+if (machineNaming == null) {
+    throw "Machine Naming configuration not found."
+}]]></script>
+    <in-binding/>
+    <out-binding>
+      <bind name="lockId" type="string" export-name="lockId"/>
+      <bind name="maxNameGenerationAttempts" type="number" export-name="maxNameGenerationAttempts"/>
+      <bind name="defaultLowestNumber" type="number" export-name="defaultLowestNumber"/>
+      <bind name="defaultNumberOfDigits" type="number" export-name="defaultNumberOfDigits"/>
+      <bind name="machineNaming" type="ConfigurationElement" export-name="machineNaming"/>
+    </out-binding>
+    <position y="46.31818181818181" x="144.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="connection">
+      <desc><![CDATA[connection]]></desc>
+    </p-param>
+    <p-param name="resourceGroupName">
+      <desc><![CDATA[resourceGroupName]]></desc>
+    </p-param>
+    <p-param name="machineNamingFormat">
+      <desc><![CDATA[machineNamingFormat]]></desc>
+    </p-param>
+    <p-param name="numberOfDigits">
+      <desc><![CDATA[Number of digits to use if such a prefix doesn't exist already. If null it will be fetched from the configuration.]]></desc>
+    </p-param>
+    <p-param name="lowestNumber">
+      <desc><![CDATA[Lowest number to start with. If null it will be fetched from the configuration.]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

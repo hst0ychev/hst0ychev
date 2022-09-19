@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="addHostIdentityStore" result-type="vCACCAFE:IdentityStore" api-version="6.0.0" id="f2dfa22a-cbfe-411b-99a3-d9881dd073bb" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.tenant">
+  <param n="host" t="vCACCAFE:VCACHost"><![CDATA[Host]]></param>
+  <param n="name" t="string"><![CDATA[Name]]></param>
+  <param n="type" t="string"><![CDATA[Type]]></param>
+  <param n="url" t="string"><![CDATA[URL]]></param>
+  <param n="domain" t="string"><![CDATA[Domain]]></param>
+  <param n="userNameDn" t="string"><![CDATA[Login user DN]]></param>
+  <param n="password" t="SecureString"><![CDATA[Password]]></param>
+  <param n="subdomains" t="Array/string"><![CDATA[Subdomains]]></param>
+  <param n="groupBaseSearchDns" t="Array/string"><![CDATA[Group base search DNs]]></param>
+  <param n="userBaseSearchDns" t="Array/string"><![CDATA[User base search DNs]]></param>
+  <script encoded="false"><![CDATA[var store = new vCACCAFEIdentityStore();
+store.setName(name);
+store.setType(vCACCAFEIdentityStoreType.fromValue(type));
+store.setUrl(url);
+store.setDomain(domain);
+store.setUserNameDn(userNameDn);
+store.setPassword(password);
+vCACCAFEEntityHelper.addElementsToList(store , "getSubdomains", subdomains);
+vCACCAFEEntityHelper.addElementsToList(store , "getGroupBaseSearchDns", groupBaseSearchDns);
+if ((userBaseSearchDns == null) || (userBaseSearchDns.length == 0)) {
+	vCACCAFEEntityHelper.addElementsToList(store , "getUserBaseSearchDns", groupBaseSearchDns);
+} else {
+    vCACCAFEEntityHelper.addElementsToList(store , "getUserBaseSearchDns", userBaseSearchDns);
+}
+
+System.log("Adding identity store '" + name + "'...");
+var service = host.createAuthenticationClient().getAuthenticationIdentityStoreClientService();
+service.createIdentityStore(host.tenant, store);
+System.log("Identity store '" + name + "' added.");
+
+return vCACCAFEEntitiesFinder.getIdentityStoreFromHost(host, domain);]]></script>
+</dunes-script-module>

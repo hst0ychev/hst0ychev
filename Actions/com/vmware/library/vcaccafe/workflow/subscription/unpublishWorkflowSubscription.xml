@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="unpublishWorkflowSubscription" result-type="vCACCAFE:WorkflowSubscription" api-version="6.0.0" id="044809bc-5879-4d70-83ae-7e5d0679a4f4" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.workflow.subscription">
+  <param n="workflowSubscription" t="vCACCAFE:WorkflowSubscription"><![CDATA[Workflow subscription to unpublish]]></param>
+  <script encoded="false"><![CDATA[System.getModule("com.vmware.library.vcaccafe.util").validateObject(workflowSubscription, "System workflow subscription");
+var unpublishedWfSubscription;
+var service;
+var host = vCACCAFEEntitiesFinder.getHostForEntity(workflowSubscription);
+System.log("Unpublishing workflow subscription...");
+if(workflowSubscription.getTenantId()) {
+	service = host.createEventClient().getEventTenantWorkflowSubscriptionService();
+	service.updateTenantSubscriptionStatus(host.tenant, workflowSubscription.getId(), vCACCAFEDesignerPublishStatus.DRAFT);
+	unpublishedWfSubscription = vCACCAFEEntitiesFinder.getTenantWorkflowSubscription(host, workflowSubscription.getId());
+} else {
+	service = host.createEventClient().getEventSystemWorkflowSubscriptionService();
+	workflowSubscription.setStatus(vCACCAFEDesignerPublishStatus.DRAFT);
+	service.updateSystemSubscription(workflowSubscription);
+	unpublishedWfSubscription = vCACCAFEEntitiesFinder.getSystemWorkflowSubscription(host, workflowSubscription.getId());
+}
+System.log("Workflow subscription " + workflowSubscription.getName() + " unpublished.");
+return unpublishedWfSubscription;]]></script>
+</dunes-script-module>

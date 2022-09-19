@@ -1,0 +1,71 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="4310f443-67c4-4391-84db-846111b0d624" version="0.0.1" api-version="6.0.0" allowed-operations="vf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Map to vCloud:vApp]]></display-name>
+  <description><![CDATA[Workflow used by XaaS to map vRealize Automation resource of type IaaS vCloud vApp to Orchestrator vCloud vApp.]]></description>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="vAppProperties" type="Properties"/>
+  </input>
+  <output>
+    <param name="vApp" type="vCloud:VApp"/>
+  </output>
+  <attrib name="foundVApp" type="vCloud:VApp" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[The found vapp]]></description>
+  </attrib>
+  <attrib name="vAppHref" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="vcdType" type="string" read-only="true">
+    <value encoded="n"><![CDATA[vCloud:vApp]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="664.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item2" type="task">
+    <display-name><![CDATA[Extract href]]></display-name>
+    <script encoded="false"><![CDATA[vAppHref = vmProperties.get('EXTERNAL_REFERENCE_ID');]]></script>
+    <in-binding>
+      <bind name="vmProperties" type="Properties" export-name="vAppProperties"/>
+    </in-binding>
+    <out-binding>
+      <bind name="vAppHref" type="string" export-name="vAppHref"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item0" type="task">
+    <display-name><![CDATA[Assign result]]></display-name>
+    <script encoded="false"><![CDATA[if (!foundVApp) {
+	System.warn('No vApps with href ' + vAppHref + ' were found');
+} 	
+	
+vApp = foundVApp;]]></script>
+    <in-binding>
+      <bind name="vAppHref" type="string" export-name="vAppHref"/>
+      <bind name="foundVApp" type="vCloud:VApp" export-name="foundVApp"/>
+    </in-binding>
+    <out-binding>
+      <bind name="vApp" type="vCloud:VApp" export-name="vApp"/>
+    </out-binding>
+    <position y="55.90909090909091" x="485.0"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item3" type="task" script-module="com.vmware.vcac.asd/findVcdObjectByHref">
+    <display-name><![CDATA[findVcdObjectByHref]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.vcac.asd").findVcdObjectByHref(type,vcdObjectHref) ;]]></script>
+    <in-binding>
+      <bind name="type" type="string" export-name="vcdType"/>
+      <bind name="vcdObjectHref" type="string" export-name="vAppHref"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Any" export-name="foundVApp"/>
+    </out-binding>
+    <description><![CDATA[Looks up through all VCD hosts for a object of the given type with the given href.]]></description>
+    <position y="55.90909090909091" x="345.0"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="vAppProperties">
+      <desc><![CDATA[vCAC_VC_VM]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

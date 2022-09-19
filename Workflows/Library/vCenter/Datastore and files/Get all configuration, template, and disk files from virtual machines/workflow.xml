@@ -1,0 +1,272 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="Workflow:name=generic" id="85808080808080808080808080808080F28080800123780023911323ba1c368d4" version="1.2.0" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Get all configuration, template, and disk files from virtual machines]]></display-name>
+  <description><![CDATA[Creates a list of all virtual machine descriptor files and a list of all virtual machine disk files, for all datastores.]]></description>
+  <position y="0.0" x="340.0"/>
+  <output>
+    <param name="diskFiles" type="Properties">
+      <description><![CDATA[VMDK files]]></description>
+    </param>
+    <param name="vmFiles" type="Properties">
+      <description><![CDATA[VMX and VMTX files]]></description>
+    </param>
+  </output>
+  <attrib name="datastores" type="Array/VC:Datastore" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Array of datastores]]></description>
+  </attrib>
+  <attrib name="currentDatastoreIndex" type="number" read-only="false">
+    <value encoded="n"><![CDATA[0.0]]></value>
+    <description><![CDATA[Index of the current datastore in the array]]></description>
+  </attrib>
+  <attrib name="currentDatastore" type="VC:Datastore" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Datastore currently being processed]]></description>
+  </attrib>
+  <attrib name="vmdkFiles" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[VMDK files]]></description>
+  </attrib>
+  <attrib name="vmxFiles" type="Properties" read-only="false">
+    <description><![CDATA[VMX files]]></description>
+  </attrib>
+  <attrib name="vmdks" type="Array/string" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Array of VMDK files]]></description>
+  </attrib>
+  <attrib name="vmtxs" type="Array/string" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Array of VMX files]]></description>
+  </attrib>
+  <attrib name="vmxs" type="Array/string" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Array of VMTX files]]></description>
+  </attrib>
+  <attrib name="errorCode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Error code]]></description>
+  </attrib>
+  <workflow-note x="10.0" y="230.0" w="180.0" h="190.0">
+    <description><![CDATA[Get files on datastores]]></description>
+  </workflow-note>
+  <workflow-note x="260.0" y="230.0" w="170.0" h="190.0" color="ffbfdfff">
+    <description><![CDATA[Continue on error after logging]]></description>
+  </workflow-note>
+  <workflow-item name="item0" out-name="item1" type="task">
+    <display-name><![CDATA[Get all datastores on all VCenter]]></display-name>
+    <script encoded="false"><![CDATA[var result = new Properties();
+var vcs = VcPlugin.allSdkConnections;
+for each (var vc in vcs) {
+	var hostSystems = vc.getAllHostSystems()
+	for each (var host in hostSystems) {
+		dsList = host.datastore;
+		for each (var datastore in dsList){
+			result.put(datastore.info.name, datastore);
+		}
+	}
+}
+var keys = result.keys;
+var datastores = new Array();
+for each (var key in keys) {
+	System.log("Found datastore named: '" + key + "'");
+	datastores.push(result.get(key));
+}]]></script>
+    <in-binding/>
+    <out-binding>
+      <bind name="datastores" type="Array/VC:Datastore" export-name="datastores"/>
+    </out-binding>
+    <position y="60.0" x="300.0"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item2" type="custom-condition" alt-out-name="item11">
+    <display-name><![CDATA[For each datastore]]></display-name>
+    <script encoded="false"><![CDATA[return datastores != null && currentDatastoreIndex < datastores.length;]]></script>
+    <in-binding>
+      <bind name="datastores" type="Array/VC:Datastore" export-name="datastores"/>
+      <bind name="currentDatastoreIndex" type="number" export-name="currentDatastoreIndex"/>
+    </in-binding>
+    <position y="110.0" x="300.0"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item13" type="task">
+    <display-name><![CDATA[Get next datastore]]></display-name>
+    <script encoded="false"><![CDATA[currentDatastore = datastores[currentDatastoreIndex];]]></script>
+    <in-binding>
+      <bind name="datastores" type="Array/VC:Datastore" export-name="datastores"/>
+      <bind name="currentDatastoreIndex" type="number" export-name="currentDatastoreIndex"/>
+    </in-binding>
+    <out-binding>
+      <bind name="currentDatastore" type="VC:Datastore" export-name="currentDatastore"/>
+    </out-binding>
+    <position y="120.0" x="60.0"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item1" content-mode="x" type="task">
+    <display-name><![CDATA[Increase counter]]></display-name>
+    <script encoded="false"><![CDATA[//Auto-generated script
+counter = counter+1;]]></script>
+    <in-binding>
+      <bind name="counter" type="number" export-name="currentDatastoreIndex">
+        <description><![CDATA[counter to increment]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="counter" type="number" export-name="currentDatastoreIndex">
+        <description><![CDATA[counter incremented]]></description>
+      </bind>
+    </out-binding>
+    <description><![CDATA[Increment a counter by one]]></description>
+    <position y="300.0" x="540.0"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item5" catch-name="item7" throw-bind-name="errorCode" type="task" script-module="com.vmware.library.vc.datastore.files/getAllVmdkFile">
+    <display-name><![CDATA[getAllVmdkFile]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.vc.datastore.files").getAllVmdkFile(datastore) ;]]></script>
+    <in-binding>
+      <bind name="datastore" type="VC:Datastore" export-name="currentDatastore"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Array/string" export-name="vmdks"/>
+    </out-binding>
+    <position y="260.0" x="60.0"/>
+  </workflow-item>
+  <workflow-item name="item5" out-name="item14" catch-name="item8" throw-bind-name="errorCode" type="task" script-module="com.vmware.library.vc.datastore.files/getAllTemplateConfigFile">
+    <display-name><![CDATA[getAllTemplateConfigFile]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.vc.datastore.files").getAllTemplateConfigFile(datastore) ;]]></script>
+    <in-binding>
+      <bind name="datastore" type="VC:Datastore" export-name="currentDatastore"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Array/string" export-name="vmtxs"/>
+    </out-binding>
+    <position y="320.0" x="60.0"/>
+  </workflow-item>
+  <workflow-item name="item7" out-name="item5" content-mode="y" type="task" interaction="l">
+    <display-name><![CDATA[System+Server error]]></display-name>
+    <script encoded="false"><![CDATA[//Auto-generated script
+System.error(text + " - " + object);
+Server.error(text, object);
+]]></script>
+    <in-binding>
+      <bind name="text" type="String" export-name="errorCode">
+        <description><![CDATA[The text to log]]></description>
+      </bind>
+      <bind name="object" type="Array/VC:Datastore" export-name="datastores">
+        <description><![CDATA[The text to log and additional info]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Log the input text to the console and the server log with level 'error']]></description>
+    <position y="260.0" x="300.0"/>
+  </workflow-item>
+  <workflow-item name="item8" out-name="item14" content-mode="y" type="task" interaction="l">
+    <display-name><![CDATA[System+Server error]]></display-name>
+    <script encoded="false"><![CDATA[//Auto-generated script
+System.error(text + " - " + object);
+Server.error(text, object);
+]]></script>
+    <in-binding>
+      <bind name="text" type="String" export-name="errorCode">
+        <description><![CDATA[The text to log]]></description>
+      </bind>
+      <bind name="object" type="VC:Datastore" export-name="currentDatastore">
+        <description><![CDATA[The text to log and additional info]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Log the input text to the console and the server log with level 'error']]></description>
+    <position y="320.0" x="300.0"/>
+  </workflow-item>
+  <workflow-item name="item9" out-name="item10" content-mode="y" type="task" interaction="l">
+    <display-name><![CDATA[System+Server error]]></display-name>
+    <script encoded="false"><![CDATA[//Auto-generated script
+System.error(text + " - " + object);
+Server.error(text, object);
+]]></script>
+    <in-binding>
+      <bind name="text" type="String" export-name="errorCode">
+        <description><![CDATA[The text to log]]></description>
+      </bind>
+      <bind name="object" type="VC:Datastore" export-name="currentDatastore">
+        <description><![CDATA[The text to log and additional info]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Log the input text to the console and the server log with level 'error']]></description>
+    <position y="380.0" x="300.0"/>
+  </workflow-item>
+  <workflow-item name="item10" out-name="item3" type="task">
+    <display-name><![CDATA[Compute result]]></display-name>
+    <script encoded="false"><![CDATA[if (vmdkFiles == null) vmdkFiles = new Properties();
+if (vmxFiles == null) vmxFiles = new Properties();
+
+for (var i in vmdks) {
+	//ignore esx console
+	var index = vmdks[i].lastIndexOf( "/" );
+	var fname = vmdks[i].substring( index+1, vmdks[i].length );
+	if (fname != "esxconsole.vmdk") {
+		vmdkFiles.put(vmdks[i], vmdks[i]);
+	}
+}
+
+for (var i in vmtxs) {
+	vmxFiles.put(vmtxs[i], vmtxs[i]);
+}
+
+for (var i in vmxs) {
+	vmxFiles.put(vmxs[i], vmxs[i]);
+}]]></script>
+    <in-binding>
+      <bind name="vmdkFiles" type="Properties" export-name="vmdkFiles"/>
+      <bind name="vmxFiles" type="Properties" export-name="vmxFiles"/>
+      <bind name="vmdks" type="Array/string" export-name="vmdks"/>
+      <bind name="vmtxs" type="Array/string" export-name="vmtxs"/>
+      <bind name="vmxs" type="Array/string" export-name="vmxs"/>
+    </in-binding>
+    <out-binding>
+      <bind name="vmdkFiles" type="Properties" export-name="vmdkFiles"/>
+      <bind name="vmxFiles" type="Properties" export-name="vmxFiles"/>
+    </out-binding>
+    <position y="460.0" x="300.0"/>
+  </workflow-item>
+  <workflow-item name="item11" out-name="item12" type="task">
+    <display-name><![CDATA[Result]]></display-name>
+    <script encoded="false"><![CDATA[diskFiles = vmdkFiles;
+vmFiles = vmxFiles;]]></script>
+    <in-binding>
+      <bind name="vmdkFiles" type="Properties" export-name="vmdkFiles"/>
+      <bind name="vmxFiles" type="Properties" export-name="vmxFiles"/>
+    </in-binding>
+    <out-binding>
+      <bind name="diskFiles" type="Properties" export-name="diskFiles"/>
+      <bind name="vmFiles" type="Properties" export-name="vmFiles"/>
+    </out-binding>
+    <position y="120.0" x="600.0"/>
+  </workflow-item>
+  <workflow-item name="item12" type="end" end-mode="0">
+    <position y="110.0" x="820.0"/>
+  </workflow-item>
+  <workflow-item name="item13" out-name="item4" type="custom-condition" alt-out-name="item3">
+    <display-name><![CDATA[isDatastore valid ?]]></display-name>
+    <script encoded="false"><![CDATA[if (currentDatastore.summary.accessible) {
+	return true;
+}
+return false;]]></script>
+    <in-binding>
+      <bind name="currentDatastore" type="VC:Datastore" export-name="currentDatastore"/>
+    </in-binding>
+    <position y="170.0" x="60.0"/>
+  </workflow-item>
+  <workflow-item name="item14" out-name="item10" catch-name="item9" throw-bind-name="errorCode" type="task" script-module="com.vmware.library.vc.datastore.files/getAllConfigFile">
+    <display-name><![CDATA[getAllConfigFile]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.vc.datastore.files").getAllConfigFile(datastore) ;]]></script>
+    <in-binding>
+      <bind name="datastore" type="VC:Datastore" export-name="currentDatastore"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Array/string" export-name="vmxs"/>
+    </out-binding>
+    <description><![CDATA[Get all VMX files on a datastore (using API to browse the datastore directly)]]></description>
+    <position y="380.0" x="60.0"/>
+  </workflow-item>
+  <presentation/>
+</workflow>

@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="GetResourceOperationById" result-type="vCACCAFE:ConsumerResourceOperation" api-version="6.0.0" id="30275774-3492-48b7-8a3e-d99e19f6fb08" version="0.0.0" allowed-operations="evf" category-name="com.vmware.indcoe.library.vrautil">
+  <param n="catalogResource" t="vCACCAFE:CatalogResource"><![CDATA[]]></param>
+  <param n="resourceOperationBindingId" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[/*
+Get a resource operation from a catalog resource by binding id
+*/
+var resourceOperation;
+var resourceActions = vCACCAFEEntitiesFinder.getCatalogResourceActions(catalogResource);
+for (var i = 0; i < resourceActions.length; i++) {
+	if (resourceActions[i].bindingId == resourceOperationBindingId){
+		//Set the resource operation	
+		resourceOperation = resourceActions[i]
+		System.log("Resource action name "+resourceOperation.name +" - Icon id "+resourceOperation.iconId)
+		return resourceOperation;
+	}
+}
+if (!resourceOperation) {
+	throw "Resource action " + resourceOperationBindingId + " not available for this machine, check the VM State";
+}
+
+]]></script>
+</dunes-script-module>

@@ -1,0 +1,109 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getCVUserEmail" result-type="Array/string" api-version="6.0.0" id="7d84ddf8-4e08-4a86-836c-9c82d2841159" version="0.0.0" allowed-operations="evf" category-name="com.commvault.utils">
+  <script encoded="false"><![CDATA[System.log("executing getHost() module");
+var hosts = RESTHostManager.getHosts();
+System.log("HOSTS FOUND ARE : " + hosts);
+var host = ""
+if (hosts.length > 0)
+{
+	for(var i =0;  i < hosts.length; i++ )
+	{
+		host = (RESTHostManager.getHost(hosts[i]));
+		if (((host.url).search("CVWebService.svc")) != -1)
+		{
+			break;
+		}
+	}
+}
+else
+{
+	throw ("Error: couldn't find the REST host, please add REST host on vRO with Commvault webservice URL. example: http://server1.company.com:81/SearchSvc/CVWebService.svc/");
+}
+var csUser = "";
+if(hosts != ""){
+
+	System.log("executing getToken module.");
+	var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",encode:function(e){var t="";var n,r,i,s,o,u,a;var f=0;e=Base64._utf8_encode(e);while(f<e.length){n=e.charCodeAt(f++);r=e.charCodeAt(f++);i=e.charCodeAt(f++);s=n>>2;o=(n&3)<<4|r>>4;u=(r&15)<<2|i>>6;a=i&63;if(isNaN(r)){u=a=64}else if(isNaN(i)){a=64}t=t+this._keyStr.charAt(s)+this._keyStr.charAt(o)+this._keyStr.charAt(u)+this._keyStr.charAt(a)}return t},decode:function(e){var t="";var n,r,i;var s,o,u,a;var f=0;e=e.replace(/[^A-Za-z0-9\+\/\=]/g,"");while(f<e.length){s=this._keyStr.indexOf(e.charAt(f++));o=this._keyStr.indexOf(e.charAt(f++));u=this._keyStr.indexOf(e.charAt(f++));a=this._keyStr.indexOf(e.charAt(f++));n=s<<2|o>>4;r=(o&15)<<4|u>>2;i=(u&3)<<6|a;t=t+String.fromCharCode(n);if(u!=64){t=t+String.fromCharCode(r)}if(a!=64){t=t+String.fromCharCode(i)}}t=Base64._utf8_decode(t);return t},_utf8_encode:function(e){e=e.replace(/\r\n/g,"\n");var t="";for(var n=0;n<e.length;n++){var r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r)}else if(r>127&&r<2048){t+=String.fromCharCode(r>>6|192);t+=String.fromCharCode(r&63|128)}else{t+=String.fromCharCode(r>>12|224);t+=String.fromCharCode(r>>6&63|128);t+=String.fromCharCode(r&63|128)}}return t},_utf8_decode:function(e){var t="";var n=0;var r=c1=c2=0;while(n<e.length){r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r);n++}else if(r>191&&r<224){c2=e.charCodeAt(n+1);t+=String.fromCharCode((r&31)<<6|c2&63);n+=2}else{c2=e.charCodeAt(n+1);c3=e.charCodeAt(n+2);t+=String.fromCharCode((r&15)<<12|(c2&63)<<6|c3&63);n+=3}}return t}}
+	
+	//Prepare cvLogin
+	var operationUrl = "Login";
+	var requestType = "POST";
+	var csName = host.name;
+	var creds = host.authentication;
+	csUser = creds.username;
+	//csUser = csUser.replace("\\","\\\\");
+	var csPwd = creds.password;
+	//Encode the pwd			
+	csPwd = Base64.encode(csPwd);
+	System.log("CS USER NAME " +  csUser);
+	var requestContent = "<DM2ContentIndexing_CheckCredentialReq mode=\"Webconsole\" domain=\"\" username="+"\""+csUser+"\""+"  password="+ "\""+csPwd+"\"" + " />";
+	System.log("REQUEST CONTENT");
+	System.log(requestContent);
+	var request = host.createRequest(requestType, operationUrl, requestContent);
+	
+	System.log("request: " + request.fullUrl);
+	var response = request.execute();
+	
+	result = new Properties();
+	result.put("statusCode", response.statusCode);
+	result.put("contentLength", response.contentLength);
+	result.put("headers", response.getAllHeaders());
+	result.put("contentAsString", response.contentAsString);
+	
+	//Process Login token
+	var temp = result.contentAsString;
+	System.log("RESPONSE");
+	System.log(temp);
+	var document = XMLManager.fromString(result.contentAsString);
+	var list = document.getElementsByTagName("DM2ContentIndexing_CheckCredentialResp");
+	var token = "";
+	for(var i = 0; i < list.length ; i++)
+	{
+		token = list.item(i).getAttribute("token");
+	}
+	if (token == "" )
+	{
+		throw("CV login failed");
+		token = -1;
+	}
+
+
+}
+System.log("TOKEN " + token);
+
+var getUsersURL = "/User?level=10";
+
+System.log("Get users operation : " + getUsersURL );
+
+var response = System.getModule("com.commvault.utils").processRESTRequest(getUsersURL,"GET",null,token, null, null);
+if(response.statusCode != 200)
+{
+	throw("Error: Failed to execute REST request to get users. Recieved status:  "+ response.contentAsString);
+}
+
+var document = XMLManager.fromString(response.contentAsString);
+var list = document.getElementsByTagName("users");
+var total = list.length;
+System.log("total" + total);
+if(total ==0 ){
+	throw("Error: No users found. Please check the configuration.");
+
+}
+
+var email = [];
+
+for(var i = 0; i < total ; i++)
+{
+	var userEntity = list.item(i).getElementsByTagName("userEntity");
+	var userName= userEntity.item(0).getAttribute("userName");
+	//SP17
+	if(userName.toLowerCase() == csUser.toLowerCase()){
+		var emailId = list.item(i).getAttribute("email");
+		email.push(emailId);
+		break;
+	
+	}
+	
+}
+return email;]]></script>
+</dunes-script-module>

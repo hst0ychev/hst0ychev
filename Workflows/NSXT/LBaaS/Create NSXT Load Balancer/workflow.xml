@@ -1,0 +1,885 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="bd6b5c31-41a7-4e39-b840-9aa84d9178e2" version="0.0.12" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Create NSXT Load Balancer]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="vsName" type="string"/>
+    <param name="appProfType" type="string"/>
+    <param name="layer" type="string"/>
+    <param name="persisOption" type="string"/>
+    <param name="monitorOption" type="string"/>
+    <param name="monitorPort" type="string"/>
+    <param name="serverName" type="string"/>
+    <param name="serverIP" type="string"/>
+    <param name="serverName2" type="string"/>
+    <param name="serverIP2" type="string"/>
+    <param name="serverName3" type="string"/>
+    <param name="serverIP3" type="string"/>
+    <param name="vsProtocol" type="string"/>
+    <param name="vsPort" type="string"/>
+    <param name="toAddress" type="string"/>
+    <param name="persistOption" type="boolean"/>
+    <param name="addMember3" type="boolean"/>
+    <param name="addMember2" type="boolean"/>
+    <param name="addMember" type="boolean"/>
+    <param name="cookieMode" type="string"/>
+    <param name="networkProfName" type="string"/>
+    <param name="poolAlgorithm" type="string"/>
+    <param name="addMember4" type="boolean"/>
+    <param name="serverName4" type="string"/>
+    <param name="serverIP4" type="string"/>
+  </input>
+  <attrib name="smtpHost" type="string" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_host">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="smtpPort" type="number" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_port">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="fromName" type="string" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_from_name">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="fromAddress" type="string" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_from_id">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="ccAddress" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="subject" type="string" read-only="false">
+    <value encoded="n"><![CDATA[Create NSXT Load Balancer Request]]></value>
+  </attrib>
+  <attrib name="lbServiceName" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="username" type="string" read-only="false" conf-id="b076846e-b485-4746-92c6-455f2f4b048d" conf-key="username">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="password" type="SecureString" read-only="false" conf-id="b076846e-b485-4746-92c6-455f2f4b048d" conf-key="password">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="vcaccafeHost" type="vCACCAFE:VCACHost" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='e8dc59dd-9ae4-44aa-86ad-50240e6c34d3'&dunesName='vCACCAFE:VCACHost']]></value>
+  </attrib>
+  <attrib name="vCACHost" type="vCAC:VCACHost" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='7678fd07-7e94-41fb-b504-826e693933a5'&dunesName='vCAC:VCACHost']]></value>
+  </attrib>
+  <attrib name="mailUsername" type="string" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_username">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="mailPassword" type="SecureString" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_password">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="useSsl" type="boolean" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="use_ssl">
+    <value encoded="n"><![CDATA[false]]></value>
+  </attrib>
+  <attrib name="useStartTls" type="boolean" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="use_start_tls">
+    <value encoded="n"><![CDATA[false]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="424.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Scriptable task]]></display-name>
+    <script encoded="false"><![CDATA[function SendEmail(body){
+
+	//Add the user's email to the list of email IDs to send email to.
+	var smtpToAddress = new Array();
+	if (toAddress && toAddress != "")
+	{
+		smtpToAddress.push(toAddress);
+	}
+
+	var commaSeparatedEmails = '';
+	for (var i in smtpToAddress)
+	{
+		commaSeparatedEmails += smtpToAddress[i] + ',';
+	}
+
+	//workflow ID of Library -> Mail -> 'Send notification'
+	var workflowId = '8D80808080808080808080808080808089808080012318760241416446ce5b52f';
+
+	//ready the workflow params
+	var workflowParameters = new Properties();
+	workflowParameters.put("smtpHost", smtpHost);
+	workflowParameters.put("smtpPort", smtpPort);
+	workflowParameters.put("username", mailUsername);
+	workflowParameters.put("password",mailPassword);
+	workflowParameters.put("fromName",fromName);
+	workflowParameters.put("fromAddress",fromAddress);
+	workflowParameters.put("toAddress", commaSeparatedEmails);
+	workflowParameters.put("subject", subject);
+	workflowParameters.put("content", body);
+	workflowParameters.put("useSsl", useSsl);
+	workflowParameters.put("UseStartTls", useStartTls);
+
+	//Run this workflow.
+	var workflowToLaunch = Server.getWorkflowWithId(workflowId);
+
+	//Fetch a token.
+	var workflow_token = workflowToLaunch.execute(workflowParameters);
+	while (workflow_token.state === "running")
+	{
+		System.sleep(3000);
+	}
+	System.log("Email sent");
+	//return after workflow finished 'running'
+	return true;
+}
+
+//Remove space from input
+vsName = vsName.replace(" ","");
+/** 
+Get Authentication token
+**/
+var authenticationToken = System.getModule("com.vmware.indcoe.util").base64encode(username + ":" + password)
+var header = new Properties()
+header.put("Authorization", "Basic " +authenticationToken);
+
+/** 
+	Creating Object 
+**/
+var actionResult = System.getModule("com.vmware.indcoe.library.vrautil").GetIPFromNetworkProfile(networkProfName,vCACHost) ;
+var propResult = actionResult.getIpAndUpdate()
+var nwProfIP = propResult.get("ipAddress");
+/**
+	Get vRA catalog item request Number
+**/
+var requestId = System.getContext().getParameter("__asd_catalogRequestId"); 
+System.log("Request Id :"+requestId);
+var request = vCACCAFEEntitiesFinder.getCatalogItemRequest( vcaccafeHost , requestId);
+var requestNumber = request.getRequestNumber();
+System.log("Request Number " + requestNumber); 
+
+/**Default Mail content **/
+var content = "";
+content+="<html><table>\n";
+content+="<tr><td>\n";
+content+="Dear User,<br></br>";
+content+="</td></tr>";
+content+="<tr><td>";
+content+="<pre>	Creating LoadBalancer Request is failed, kindly contact Admin with below request number</pre>";
+content+="</td></tr>";	
+content+="<tr><td>";
+content+="<pre> Request Number :"+requestNumber+"</pre>";
+content+="</td></tr>";
+content+="<tr><td>";
+content+="Best Regards";
+content+="</td></tr>";
+content+="<tr><td>";
+content+="	Team";
+content+="</td></tr>";
+content+="</table></html>";
+
+/**
+	Get the NSX T REST host from configuration element
+**/
+var restHost;
+var category = Server.getConfigurationElementCategoryWithPath("Helper")
+//die in a fire if non-existent
+if (category == null) {
+    throw "Configuration element category '" + categoryPath + "' not found or empty!";
+}
+//get _all_ the elements
+var elements = category.configurationElements;
+var elementName = "NSXTHost";
+var attributeName = "nsxtHost"
+//retrieve names
+for (i = 0; i < elements.length; i++) {
+     if (elements[i].name == elementName) {
+         //found required element
+         restHost = elements[i].getAttributeWithKey(attributeName).value;
+         if (restHost != null) {
+             System.debug("Found attribute '" + attributeName + "' in '" + elementName + "' with value '" +restHost + "'");
+         }
+     }
+}
+/**
+Creating object
+**/
+var lbIncludeObject = System.getModule("com.vmware.indcoe.library.nsxlbgeneric").LoadBalancerIncludes(restHost,header);
+/*
+Create Application Profile
+Either FastTCP or FastUDP or HTTP profile
+*/
+var appProfName = vsName+requestNumber+"appProfile";
+var appProfContent;
+if(layer == "layer4"){
+	var appProf = '{"display_name":"none","description":"none","resource_type":"none","close_timeout":"none","ha_flow_mirroring_enabled":"none","idle_timeout":"none"}';
+	var appProfJson = JSON.parse(appProf);
+	appProfJson.display_name = appProfName;
+	appProfJson.description = appProfName;
+	appProfJson.close_timeout = 8;
+	appProfJson.ha_flow_mirroring_enabled = false;
+	appProfJson.idle_timeout = 1800;
+	if(appProfType =="fasttcp"){
+		appProfJson.resource_type ="LbFastTcpProfile";
+	}else if(appProfType =="fastudp"){
+		appProfJson.resource_type ="LbFastUdpProfile";
+	}
+	appProfContent = JSON.stringify(appProfJson);
+	System.debug("App profile content :"+appProfContent);
+}else if(layer == "layer7"){
+	var appProfContent ={"resource_type" : "LbHttpProfile",
+	    "description" : appProfName,
+	    "display_name" :appProfName,
+	    "ntlm" : false,
+	    "request_header_size" : 1024,
+	    "http_redirect_to_https" : false,
+	    "idle_timeout" : 15,
+	}
+	appProfContent = JSON.stringify(appProfContent)
+}
+
+//Calling method to create application profile
+
+System.debug("Final App profile content "+appProfContent);
+var appProfResult = lbIncludeObject.createAppProfile(appProfContent);
+if(appProfResult["statusCode"] == 200 || appProfResult["statusCode"] == 201){
+	System.debug("Application Profile REST completed "+appProfResult["contentAsString"]);
+}else{
+	SendEmail(content);
+	throw "Rest operation in complete"+appProfResult["contentAsString"];
+}
+/** Get newly created Application Profile ID **/
+var exAppProfiles = lbIncludeObject.getAppProfiles(null);
+var exAppProfileId = null;
+if(exAppProfiles["statusCode"] == 200 || exAppProfiles["statusCode"] == 201){
+	System.debug("Application Profile REST completed "+exAppProfiles["contentAsString"]);
+	for(var i in exAppProfiles["contentAsObject"].results){
+		if(exAppProfiles["contentAsObject"].results[i].display_name == appProfName){
+			exAppProfileId = exAppProfiles["contentAsObject"].results[i].id
+			System.debug("Application profile id "+exAppProfileId);
+			break;
+		}
+	}
+}else{
+	SendEmail(content);
+	throw "Rest operation in complete"+exAppProfiles["contentAsString"];
+}
+
+/** 
+Create Persistence profile based on layer option
+**/
+var persisContent;
+var exPersisProfileId = null;
+var persisProfileName = vsName+requestNumber+"perprofile"
+if(layer == "layer7"){
+	System.debug("Entered into "+layer);
+	var cookieName = vsName+requestNumber+"cookie"
+	//If persistence has cookie and sourceip options
+	if(persisOption = "cookie"){
+		var cookieProfile = '{"resource_type":"none","display_name":"none","persistence_shared":"none","cookie_mode":"none","cookie_garble":"none","cookie_fallback":"none","cookie_name":"none"}'
+		var persisJson = JSON.parse(cookieProfile);
+		persisJson.resource_type = "LbCookiePersistenceProfile";
+		persisJson.display_name = persisProfileName;
+		persisJson.persistence_shared = false;
+		if(cookieMode =="insert"){
+			persisJson.cookie_mode = "INSERT";
+		}else if(cookieMode =="prefix"){
+			persisJson.cookie_mode ="PREFIX"
+		}else if(cookieMode =="rewrite"){
+			persisJson.cookie_mode ="REWRITE"
+		}
+		persisJson.cookie_garble = true;
+		persisJson.cookie_fallback = true;
+		persisJson.cookie_name = cookieName;
+		//Final content
+		persisContent = JSON.stringify(persisJson);
+	}else if(persisOption =="sourceip"){
+		var sourceProfile = '{"resource_type":"none","display_name":"none","persistence_shared":"none","timeout":"none","ha_persistence_mirroring_enabled":"none","purge":"none"}'
+		var sourceJson = JSON.parse(sourceProfile)
+		sourceJson.resource_type = "LbSourceIpPersistenceProfile";
+		sourceJson.display_name = persisProfileName;
+		sourceJson.persistence_shared = false;
+		sourceJson.timeout = 300
+		sourceJson.ha_persistence_mirroring_enabled = false
+		sourceJson.purge = "FULL";
+		persisContent = JSON.stringify(sourceJson);
+	}
+	System.debug("Final persistence content "+persisContent);
+	var persisResult = lbIncludeObject.createPersisProfile(persisContent)
+	if(persisResult["statusCode"] == 200 || persisResult["statusCode"] == 201){
+		System.debug("Persistence Profile REST completed "+persisResult["contentAsString"]);
+	}else{
+		SendEmail(content);
+		throw "Rest operation in complete"+persisResult["contentAsString"];
+	}
+	/**
+	Get newly created Persistence profile
+	**/
+	var exPersisProfiles = lbIncludeObject.getPersisProfiles(null);	
+	if(exPersisProfiles["statusCode"] == 200 || exPersisProfiles["statusCode"] == 201){
+		System.debug("Persistence Profile REST completed "+exPersisProfiles["contentAsString"]);
+		for(var i in exPersisProfiles["contentAsObject"].results){
+			if(exPersisProfiles["contentAsObject"].results[i].display_name == persisProfileName){
+				exPersisProfileId = exPersisProfiles["contentAsObject"].results[i].id
+				System.debug("Persistence Id "+exPersisProfileId);
+				break;
+			}
+		}
+	}else{
+		SendEmail(content);
+		throw "Rest operation in complete"+exPersisProfiles["contentAsString"];
+	}
+	
+}else if(layer == "layer4" && persistOption){
+	var sourceProfile = '{"resource_type":"none","display_name":"none","persistence_shared":"none","timeout":"none","ha_persistence_mirroring_enabled":"none","purge":"none"}'
+		var sourceJson = JSON.parse(sourceProfile)
+		sourceJson.resource_type = "LbSourceIpPersistenceProfile";
+		sourceJson.display_name = persisProfileName;
+		sourceJson.persistence_shared = false;
+		sourceJson.timeout = 300
+		sourceJson.ha_persistence_mirroring_enabled = false
+		sourceJson.purge = "FULL";
+		persisContent = JSON.stringify(sourceJson);
+		System.debug("Final persistence content "+persisContent);
+		var persisResult = lbIncludeObject.createPersisProfile(persisContent)
+		if(persisResult["statusCode"] == 200 || persisResult["statusCode"] == 201){
+			System.debug("Persistence Profile REST completed "+persisResult["contentAsString"]);
+		}else{
+			SendEmail(content);
+			throw "Rest operation in complete"+persisResult["contentAsString"];
+		}
+		/**
+		Get newly created Persistence profile
+		**/
+		var exPersisProfiles = lbIncludeObject.getPersisProfiles(null);	
+		if(exPersisProfiles["statusCode"] == 200 || exPersisProfiles["statusCode"] == 201){
+			System.debug("Persistence Profile REST completed "+exPersisProfiles["contentAsString"]);
+			for(var i in exPersisProfiles["contentAsObject"].results){
+				if(exPersisProfiles["contentAsObject"].results[i].display_name == persisProfileName){
+					exPersisProfileId = exPersisProfiles["contentAsObject"].results[i].id
+					System.debug("Persistence Id "+exPersisProfileId);
+					break;
+				}
+			}
+		}else{
+			SendEmail(content);
+			throw "Rest operation in complete"+exPersisProfiles["contentAsString"];
+		}
+}
+/** Create Monitor **/
+var monitorContent;
+var monitorName = vsName+requestNumber+"monitor"
+var monitorId;
+if(monitorOption =="http"){
+	monitorContent = {"resource_type" : "LbHttpMonitor",
+          "description" : "LB_Http_Monitor",
+          "display_name" : monitorName,
+          "monitor_port" : monitorPort,
+          "interval" : 1,
+          "timeout" : 1,
+          "rise_count" : 1,
+          "fall_count" : 1,
+          "response_status_codes" : [ 200 ],
+          "request_version" : "HTTP_VERSION_1_1",
+          "request_method" : "GET",
+          "request_url" : "/"
+	}
+}else if(monitorOption == "https"){
+	monitorContent ={"resource_type": "LbHttpsMonitor",            
+            "display_name": monitorName,
+            "monitor_port": monitorPort,
+            "interval": 5,
+            "timeout": 15,
+            "rise_count": 3,
+            "fall_count": 3,
+            "response_status_codes": [200],
+            "server_auth": "IGNORE",
+            "is_secure": true,
+            "request_method": "GET",
+            "request_url": "/",
+            "request_version": "HTTP_VERSION_1_1",
+			"ciphers": [],
+			"certificate_chain_depth": 3,
+			"protocols": []
+	}
+}else if(monitorOption == "icmp"){
+	monitorContent ={"resource_type": "LbIcmpMonitor",
+            "display_name": monitorName,
+			"monitor_port": monitorPort,
+            "interval": 5,
+            "timeout": 15,
+            "rise_count": 3,
+            "fall_count": 3,
+            "data_length": 56	
+	}
+}else if(monitorOption == "passive"){
+	monitorContent ={"resource_type": "LbPassiveMonitor",            
+            "display_name": monitorName,
+            "max_fails": 5,
+            "timeout": 5
+	}
+}else if(monitorOption == "tcp"){
+	monitorContent ={
+            "resource_type": "LbTcpMonitor",            
+            "display_name": monitorName,
+			"monitor_port": monitorPort,
+            "interval": 5,
+            "timeout": 15,
+            "rise_count": 3,
+            "fall_count": 3
+	}
+}
+//Call function to create monitor
+var monitorJson = JSON.stringify(monitorContent)
+System.debug("Final Monitor content "+monitorJson);
+var monitorResult = lbIncludeObject.createMonitor(monitorJson);
+if(monitorResult["statusCode"] == 200 || monitorResult["statusCode"] == 201){
+		System.debug("Create Monitor REST completed "+monitorResult["contentAsString"]);
+}else{
+	SendEmail(content);
+	throw "Rest operation in complete"+monitorResult["contentAsString"];
+}
+/** Get newly created Monitor Id**/
+var exMonitors = lbIncludeObject.getMonitors(null);
+if(exMonitors["statusCode"] == 200 || exMonitors["statusCode"] == 201){
+		System.debug("Get All Monitor REST completed "+exMonitors["contentAsString"]);
+		for(var i in exMonitors["contentAsObject"].results){
+			if(exMonitors["contentAsObject"].results[i].display_name == monitorName){
+				monitorId = exMonitors["contentAsObject"].results[i].id
+				System.debug("Monitor Id "+monitorId);
+				break;
+			}
+		}
+}else{
+	SendEmail(content);
+	throw "Rest operation in complete"+exMonitors["contentAsString"];
+}
+
+/**
+Create pool members 
+**/
+var poolName = vsName+requestNumber+"pool"
+var poolContent;
+var poolId;
+if(addMember && addMember2 && addMember3 && addMember4){
+	poolContent = {
+		 "algorithm":""+poolAlgorithm+"",
+		 "members":[
+		 {
+		  "display_name":serverName,
+		  "backup_member":"false",
+		  "weight":1,
+		  "admin_state":"ENABLED",
+		  "ip_address":serverIP
+		 },
+		 {
+		  "display_name":serverName2,
+		  "backup_member":"false",
+		  "weight":1,
+		  "admin_state":"ENABLED",
+		  "ip_address":serverIP2
+		 },
+		 {
+		  "display_name":serverName3,
+		  "backup_member":"false",
+		  "weight":1,
+		  "admin_state":"ENABLED",
+		  "ip_address":serverIP3
+		 },{
+		  "display_name":serverName4,
+		  "backup_member":"false",
+		  "weight":1,
+		  "admin_state":"ENABLED",
+		  "ip_address":serverIP4
+		 }
+		 ],
+		 "tcp_multiplexing_number":6,
+		 "tcp_multiplexing_enabled":"false",
+		 "min_active_members":1,
+		 "display_name":poolName,
+		 "description":poolName
+	}
+		
+}else if(addMember && addMember2 && addMember3){
+	poolContent = {
+		 "algorithm":""+poolAlgorithm+"",
+		 "members":[
+		 {
+		  "display_name":serverName,
+		  "backup_member":"false",
+		  "weight":1,
+		  "admin_state":"ENABLED",
+		  "ip_address":serverIP
+		 },
+		 {
+		  "display_name":serverName2,
+		  "backup_member":"false",
+		  "weight":1,
+		  "admin_state":"ENABLED",
+		  "ip_address":serverIP2
+		 },
+		 {
+		  "display_name":serverName3,
+		  "backup_member":"false",
+		  "weight":1,
+		  "admin_state":"ENABLED",
+		  "ip_address":serverIP3
+		 }],
+		 "tcp_multiplexing_number":6,
+		 "tcp_multiplexing_enabled":"false",
+		 "min_active_members":1,
+		 "display_name":poolName,
+		 "description":poolName
+	}
+}
+else if(addMember && addMember2){
+	poolContent ={"algorithm":""+poolAlgorithm+"",
+		 "members":[
+		 {
+		  "display_name":serverName,
+		  "backup_member":"false",
+		  "weight":1,
+		  "admin_state":"ENABLED",
+		  "ip_address":serverIP
+		 },
+		 {
+		  "display_name":serverName2,
+		  "backup_member":"false",
+		  "weight":1,
+		  "admin_state":"ENABLED",
+		  "ip_address":serverIP2
+		 }],
+		 "tcp_multiplexing_number":6,
+		 "tcp_multiplexing_enabled":"false",
+		 "min_active_members":1,
+		 "display_name":poolName,
+		 "description":poolName
+		
+	}
+}else if(addMember){
+	poolContent ={"algorithm":""+poolAlgorithm+"",
+		 "members":[
+		 {
+		  "display_name":serverName,
+		  "backup_member":"false",
+		  "weight":1,
+		  "admin_state":"ENABLED",
+		  "ip_address":serverIP
+		 }],
+		 "tcp_multiplexing_number":6,
+		 "tcp_multiplexing_enabled":"false",
+		 "min_active_members":1,
+		 "display_name":poolName,
+		 "description":poolName
+		
+	}
+}
+System.debug("Pool content "+poolContent);
+//var poolJsonContent = JSON.parse(poolContent);
+if(monitorOption =="passive"){
+	poolContent["passive_monitor_id"] = monitorId
+}else{
+	poolContent["active_monitor_ids"] = [monitorId];
+}
+var finalPoolContent = JSON.stringify(poolContent)
+System.log("Final Pool Content "+finalPoolContent);
+var poolResult = lbIncludeObject.createPoolMem(finalPoolContent)
+/** Pool Result **/
+if(poolResult["statusCode"] == 200 || poolResult["statusCode"] == 201){
+		System.debug("Create Pool and members REST completed "+poolResult["contentAsString"]);
+}else{
+	SendEmail(content);
+	throw "Rest operation in complete"+poolResult["contentAsString"];
+}
+/** 
+Get newly created pool id
+**/
+var exPools = lbIncludeObject.getPools(null);
+if(exPools["statusCode"] == 200 || exPools["statusCode"] == 201){
+	System.debug("Create Pool and members REST completed "+exPools["contentAsString"]);
+	for(var i in exPools["contentAsObject"].results){
+		if(exPools["contentAsObject"].results[i].display_name == poolName){
+			poolId = exPools["contentAsObject"].results[i].id
+			System.debug("Pool Id"+poolId);
+			break;
+		}
+	}	
+}else{
+	SendEmail(content);
+	throw "Rest operation in complete"+exPools["contentAsString"];
+}
+
+/** 
+Create Virtual Server 
+**/
+var vsFName = vsName+requestNumber
+var vsId;
+var vsContent ={
+	 "ip_protocol":vsProtocol,
+	 "enabled":"true",
+	 "pool_id":poolId,
+	 "default_pool_member_port" : vsPort,
+	 "ip_address":nwProfIP,
+	 "port":vsPort,
+	 "display_name":vsFName,
+	 "description":vsFName +" created through automation"
+}
+//var vsJsonContent = JSON.parse(vsContent);
+if(layer == "layer7"){
+	vsContent["application_profile_id"]= exAppProfileId
+	vsContent["persistence_profile_id"] = exPersisProfileId
+}else if(layer == "layer4" && persistOption){
+	vsContent["application_profile_id"] = exAppProfileId
+	vsContent["persistence_profile_id"]  = exPersisProfileId
+}else{
+	vsContent["application_profile_id"]= exAppProfileId
+}
+var vsFinalJson = JSON.stringify(vsContent)
+System.debug("Fianl virtual server content "+vsFinalJson);
+var vsResult = lbIncludeObject.createLBVirtualServer(vsFinalJson)
+/** Pool Result **/
+if(vsResult["statusCode"] == 200 || vsResult["statusCode"] == 201){
+		System.debug("Create Virtual Server completed "+vsResult["contentAsString"]);
+}else{
+	SendEmail(content);
+	throw "Rest operation in complete"+vsResult["contentAsString"];
+}
+/** Get newly created pool id
+**/
+var exVS = lbIncludeObject.getLBVirtualServer(null);
+if(exVS["statusCode"] == 200 || exVS["statusCode"] == 201){
+		System.debug("Create Virtual Server completed "+exVS["contentAsString"]);
+		for(var i in exVS["contentAsObject"].results){
+			if(exVS["contentAsObject"].results[i].display_name == vsFName){
+				vsId = exVS["contentAsObject"].results[i].id
+				System.debug("virtual server id "+vsId);
+				break;
+			}
+		}
+}else{
+	SendEmail(content);
+	throw "Rest operation in complete"+exVS["contentAsString"];
+}
+/**
+Get Service Name from config element
+**/
+
+var category = Server.getConfigurationElementCategoryWithPath("Helper")
+//die in a fire if non-existent
+if (category == null) {
+    throw "Configuration element category '" + categoryPath + "' not found or empty!";
+}
+//get _all_ the elements
+var elements = category.configurationElements;
+var elementName = "LBServiceName";
+var attributeName = "tndServiceName"
+var attributeName1 = "prodServiceName"
+//retrieve names
+for (i = 0; i < elements.length; i++) {
+     if (elements[i].name == elementName) {
+         //found required element
+		if(networkProfName.lastIndexOf("tnd")!=-1){
+         	lbServiceName = elements[i].getAttributeWithKey(attributeName).value;
+		}else if(networkProfName.lastIndexOf("prod")!=-1){
+			lbServiceName = elements[i].getAttributeWithKey(attributeName1).value;
+		}
+		
+     }
+}
+/**
+Get Existing Load Balancer as we need to bind newly created virtual server into Load Balancer in NSX-T
+**/
+var exLBServices = lbIncludeObject.getLBService(null)
+var exLBServiceId;
+if(exLBServices["statusCode"] == 200 || exLBServices["statusCode"] == 201){
+	System.debug("Get All LB services "+exLBServices["contentAsString"]);
+	for(var i in exLBServices["contentAsObject"].results){
+		if(exLBServices["contentAsObject"].results[i].display_name == lbServiceName){
+			exLBServiceId = exLBServices["contentAsObject"].results[i].id
+			System.debug("Existing LB service id "+exLBServiceId);
+			break;
+		}
+	}
+}else{
+	SendEmail(content);
+	throw "Rest operation in complete"+exLBServices["contentAsString"];
+}
+
+/**
+Get SPecific Load balancer service content
+**/
+
+var exSpecificService = lbIncludeObject.getLBSpecificService(exLBServiceId,null);
+if(exSpecificService["statusCode"] == 200 || exSpecificService["statusCode"] == 201){
+	System.debug("Specific LB service details "+exSpecificService["contentAsString"]);
+}else{
+	SendEmail(content);
+	throw "Rest operation in complete"+exSpecificService["contentAsString"];
+}
+//Push newly created virtual server id into the existing Load Balancer service
+var lbServiceJson = JSON.parse(exSpecificService["contentAsString"])
+try{
+	
+	lbServiceJson.virtual_server_ids.push(vsId);
+}catch(e){
+	var arrayvsId = [vsId]
+	lbServiceJson["virtual_server_ids"] = arrayvsId;
+}
+
+
+/**
+Update Load Balancer service
+**/
+var updateJson = JSON.stringify(lbServiceJson)
+System.debug("Final LB service content "+updateJson);
+var updateLBService = lbIncludeObject.updateLBService(exLBServiceId,updateJson)
+if(updateLBService["statusCode"] == 200 || updateLBService["statusCode"] == 201){
+	System.debug("Update LB Service completed "+updateLBService["contentAsString"]);
+}else{
+	SendEmail(content);
+	throw "Rest operation in complete"+updateLBService["contentAsString"];
+}
+/**
+After successful creation of LB updating Network profile on vRA
+**/
+var usedIpFlag = propResult.get("usedIP");
+if(usedIpFlag == true){
+	System.getModule("com.vmware.indcoe.library.vrautil").UpdateExistingIPRangeNw(nwProfIP,vCACHost) ;
+}else{
+	System.getModule("com.vmware.indcoe.library.vrautil").ReserveIPFromNw(nwProfIP,networkProfName,vCACHost) ;
+}
+var mailBody = "";
+mailBody+="<html><table>\n";
+mailBody+="<tr><td>\n";
+mailBody+="Dear User,<br></br>";
+mailBody+="</td></tr>";
+mailBody+="<tr><td>";
+mailBody+="<pre>	Load Balancer Creation is successfull</pre>";
+mailBody+="</td></tr>";	
+mailBody+="<tr><td>";
+mailBody+="<pre>	Reference vRA Request Number:"+requestNumber+"</pre>";
+mailBody+="<pre>	Load Balancer VIP			:"+nwProfIP+"</pre>";
+mailBody+="<pre>	Load Balancer Name			:"+vsFName+"</pre>";
+mailBody+="</td></tr>";
+mailBody+="<tr><td>";
+mailBody+="Best Regards";
+mailBody+="</td></tr>";
+mailBody+="<tr><td>";
+mailBody+="	Team";
+mailBody+="</td></tr>";
+mailBody+="</table></html>";
+SendEmail(mailBody);]]></script>
+    <in-binding>
+      <bind name="smtpHost" type="string" export-name="smtpHost"/>
+      <bind name="smtpPort" type="number" export-name="smtpPort"/>
+      <bind name="fromName" type="string" export-name="fromName"/>
+      <bind name="fromAddress" type="string" export-name="fromAddress"/>
+      <bind name="toAddress" type="string" export-name="toAddress"/>
+      <bind name="ccAddress" type="string" export-name="ccAddress"/>
+      <bind name="subject" type="string" export-name="subject"/>
+      <bind name="vsName" type="string" export-name="vsName"/>
+      <bind name="appProfType" type="string" export-name="appProfType"/>
+      <bind name="layer" type="string" export-name="layer"/>
+      <bind name="persisOption" type="string" export-name="persisOption"/>
+      <bind name="monitorOption" type="string" export-name="monitorOption"/>
+      <bind name="monitorPort" type="string" export-name="monitorPort"/>
+      <bind name="serverName" type="string" export-name="serverName"/>
+      <bind name="serverIP" type="string" export-name="serverIP"/>
+      <bind name="serverName2" type="string" export-name="serverName2"/>
+      <bind name="serverIP2" type="string" export-name="serverIP2"/>
+      <bind name="serverName3" type="string" export-name="serverName3"/>
+      <bind name="serverIP3" type="string" export-name="serverIP3"/>
+      <bind name="vsProtocol" type="string" export-name="vsProtocol"/>
+      <bind name="vsPort" type="string" export-name="vsPort"/>
+      <bind name="networkProfName" type="string" export-name="networkProfName"/>
+      <bind name="lbServiceName" type="string" export-name="lbServiceName"/>
+      <bind name="username" type="string" export-name="username"/>
+      <bind name="password" type="SecureString" export-name="password"/>
+      <bind name="vcaccafeHost" type="vCACCAFE:VCACHost" export-name="vcaccafeHost"/>
+      <bind name="persistOption" type="boolean" export-name="persistOption"/>
+      <bind name="addMember3" type="boolean" export-name="addMember3"/>
+      <bind name="addMember2" type="boolean" export-name="addMember2"/>
+      <bind name="addMember" type="boolean" export-name="addMember"/>
+      <bind name="cookieMode" type="string" export-name="cookieMode"/>
+      <bind name="vCACHost" type="vCAC:VCACHost" export-name="vCACHost"/>
+      <bind name="poolAlgorithm" type="string" export-name="poolAlgorithm"/>
+      <bind name="addMember4" type="boolean" export-name="addMember4"/>
+      <bind name="serverName4" type="string" export-name="serverName4"/>
+      <bind name="serverIP4" type="string" export-name="serverIP4"/>
+      <bind name="mailUsername" type="string" export-name="mailUsername"/>
+      <bind name="mailPassword" type="SecureString" export-name="mailPassword"/>
+      <bind name="useSsl" type="boolean" export-name="useSsl"/>
+      <bind name="useStartTls" type="boolean" export-name="useStartTls"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="224.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="vsName">
+      <desc><![CDATA[vsName]]></desc>
+    </p-param>
+    <p-param name="appProfType">
+      <desc><![CDATA[appProfType]]></desc>
+    </p-param>
+    <p-param name="layer">
+      <desc><![CDATA[layer]]></desc>
+    </p-param>
+    <p-param name="persisOption">
+      <desc><![CDATA[persisOption]]></desc>
+    </p-param>
+    <p-param name="monitorOption">
+      <desc><![CDATA[monitorOption]]></desc>
+    </p-param>
+    <p-param name="monitorPort">
+      <desc><![CDATA[monitorPort]]></desc>
+    </p-param>
+    <p-param name="serverName">
+      <desc><![CDATA[serverName]]></desc>
+    </p-param>
+    <p-param name="serverIP">
+      <desc><![CDATA[serverIP]]></desc>
+    </p-param>
+    <p-param name="serverName2">
+      <desc><![CDATA[serverName2]]></desc>
+    </p-param>
+    <p-param name="serverIP2">
+      <desc><![CDATA[serverIP2]]></desc>
+    </p-param>
+    <p-param name="serverName3">
+      <desc><![CDATA[serverName3]]></desc>
+    </p-param>
+    <p-param name="serverIP3">
+      <desc><![CDATA[serverIP3]]></desc>
+    </p-param>
+    <p-param name="vsProtocol">
+      <desc><![CDATA[vsProtocol]]></desc>
+    </p-param>
+    <p-param name="vsPort">
+      <desc><![CDATA[vsPort]]></desc>
+    </p-param>
+    <p-param name="toAddress">
+      <desc><![CDATA[toAddress]]></desc>
+    </p-param>
+    <p-param name="persistOption">
+      <desc><![CDATA[persistOption]]></desc>
+    </p-param>
+    <p-param name="addMember3">
+      <desc><![CDATA[addMember3]]></desc>
+    </p-param>
+    <p-param name="addMember2">
+      <desc><![CDATA[addMember2]]></desc>
+    </p-param>
+    <p-param name="addMember">
+      <desc><![CDATA[addMember]]></desc>
+    </p-param>
+    <p-param name="cookieMode">
+      <desc><![CDATA[cookieMode]]></desc>
+    </p-param>
+    <p-param name="networkProfName">
+      <desc><![CDATA[networkProfName]]></desc>
+    </p-param>
+    <p-param name="poolAlgorithm">
+      <desc><![CDATA[poolAlgorithm]]></desc>
+    </p-param>
+    <p-param name="addMember4">
+      <desc><![CDATA[addMember4]]></desc>
+    </p-param>
+    <p-param name="serverName4">
+      <desc><![CDATA[serverName4]]></desc>
+    </p-param>
+    <p-param name="serverIP4">
+      <desc><![CDATA[serverIP4]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

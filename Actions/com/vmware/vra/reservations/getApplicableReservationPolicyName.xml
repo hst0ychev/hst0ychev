@@ -1,0 +1,60 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getApplicableReservationPolicyName" result-type="Properties" api-version="6.0.0" id="a1d5ce93-7d47-41a4-b2a6-d18e4623486f" version="0.0.6" allowed-operations="evf" category-name="com.vmware.vra.reservations">
+  <description><![CDATA[To use this action for a custom property the name of the property should be ReservationPolicyID]]></description>
+  <param n="blueprint" t="string"><![CDATA[]]></param>
+  <param n="component" t="string"><![CDATA[]]></param>
+  <param n="user" t="string"><![CDATA[]]></param>
+  <param n="tenant" t="string"><![CDATA[]]></param>
+  <param n="subtenantId" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var IDS_PER_PAGE_LIMIT = 100;
+
+
+
+var host = vCACCAFEHostManager.getDefaultHostForTenant(tenant , true);
+var reservationPolicyService = host.createReservationClient().getReservationReservationPolicyService();
+
+var reservations = System.getModule("com.vmware.vra.reservations").getReservationsForUserAndComponent(user,tenant,host, blueprint, component, subtenantId);
+
+// get reservation filtered by reservations
+var reservationPolicies = [];
+if (reservations.length !== 0) {
+	var totalPages = reservations.length / IDS_PER_PAGE_LIMIT + 1;
+	for (var page = 0; page < totalPages; page++) {
+		var from = page * IDS_PER_PAGE_LIMIT;
+		var to = from + IDS_PER_PAGE_LIMIT;
+		var reservationPolicyFilter = getReservationPolicyFilterForReservations(reservations.slice(from, to));
+		if (reservationPolicyFilter) {
+			Array.prototype.push.apply(reservationPolicies,
+				reservationPolicyService.getAllReservationPolicies(reservationPolicyFilter).getContent());
+		}
+	}
+}
+
+var reservationPolicyProperties = new Properties();
+for each(var reservationPolicy in reservationPolicies) {
+	reservationPolicyProperties.put(reservationPolicy.getId(),reservationPolicy.getName());
+}
+return reservationPolicyProperties;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+function getReservationPolicyFilterForReservations(reservations) {
+	var query = new vCACCAFEOdataQuery();
+
+	var queryParams = [];
+	for each (var reservation in reservations) {
+		queryParams.push(vCACCAFEFilterParam.equal("id" , vCACCAFEFilterParam.string(reservation.getReservationPolicyId())));
+	}
+
+	if(queryParams.length > 1) {
+		query.addFilter([vCACCAFEFilterParam.or(queryParams)]);
+	} else if(queryParams.length == 1){
+		query.addFilter(queryParams);
+	} else {
+		return null;
+	}
+
+	return new vCACCAFEPageOdataRequest(1 , IDS_PER_PAGE_LIMIT, query);
+}
+
+]]></script>
+</dunes-script-module>

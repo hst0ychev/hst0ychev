@@ -1,0 +1,153 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="Workflow:name=generic" id="22916a43-23f4-41c0-a6a5-d94b49781f6b" version="1.0.2" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Invoke a dynamic REST operation]]></display-name>
+  <description><![CDATA[Invokes a REST operation. Users can dynamically provide all parameters needed for request execution.]]></description>
+  <position y="50.0" x="160.0"/>
+  <input>
+    <param name="content" type="string">
+      <description><![CDATA[Input content]]></description>
+    </param>
+    <param name="contentType" type="string">
+      <description><![CDATA[Input content type]]></description>
+    </param>
+    <param name="baseUrl" type="string">
+      <description><![CDATA[The base URL for the REST request]]></description>
+    </param>
+    <param name="user" type="string">
+      <description><![CDATA[Basic HTTP AuthN Username]]></description>
+    </param>
+    <param name="password" type="SecureString">
+      <description><![CDATA[Basic HTTP AuthN Password]]></description>
+    </param>
+    <param name="queryString" type="string">
+      <description><![CDATA[REST request query string (URL parameters and values)]]></description>
+    </param>
+    <param name="httpMethod" type="string"/>
+  </input>
+  <output>
+    <param name="statusCode" type="number">
+      <description><![CDATA[Status code of the HTTP request]]></description>
+    </param>
+    <param name="contentLength" type="number">
+      <description><![CDATA[Length of the request response]]></description>
+    </param>
+    <param name="headers" type="Properties">
+      <description><![CDATA[Response headers]]></description>
+    </param>
+    <param name="contentAsString" type="string">
+      <description><![CDATA[Response content as string]]></description>
+    </param>
+  </output>
+  <attrib name="errorCode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="statusCodeAttribute" type="number" read-only="false"/>
+  <workflow-item name="item0" out-name="item3" catch-name="item2" throw-bind-name="errorCode" type="task">
+    <display-name><![CDATA[REST call]]></display-name>
+    <script encoded="false"><![CDATA[var restHost = RESTHostManager.createHost("DynamicRequest");
+var transientHost = RESTHostManager.createTransientHostFrom(restHost);
+transientHost.url = baseUrl;
+
+if (user != null && user != "") {
+	var authParams = ["Per User Session", user, password];
+    var authenticationObject = RESTAuthenticationManager.createAuthentication("Basic", authParams);
+    transientHost.authentication = authenticationObject;
+}
+
+var requestUrl = baseUrl + queryString;
+System.log("Request full URL: " + requestUrl);
+var request = transientHost.createRequest(httpMethod, queryString, content);
+request.contentType = contentType;
+
+var response;
+
+if (user != null && user != "") {
+    System.log("Executing REST request with dynamic credentials: " + user);
+    System.log("Query string: " + request.url);
+    System.log("Base URL: " + request.host.url);
+    response = request.executeWithCredentials(user, password);
+} else {
+    response = request.execute();
+}
+
+System.log("Content as string: " + response.contentAsString);
+
+statusCode = response.statusCode;
+statusCodeAttribute = statusCode;
+System.log("Status code: " + statusCode);
+contentLength = response.contentLength;
+headers = response.getAllHeaders();
+contentAsString = response.contentAsString;
+System.log("Content as string: " + contentAsString);
+
+]]></script>
+    <in-binding>
+      <bind name="statusCodeAttribute" type="number" export-name="statusCodeAttribute"/>
+      <bind name="content" type="string" export-name="content"/>
+      <bind name="contentType" type="string" export-name="contentType"/>
+      <bind name="baseUrl" type="string" export-name="baseUrl"/>
+      <bind name="user" type="string" export-name="user"/>
+      <bind name="password" type="SecureString" export-name="password"/>
+      <bind name="queryString" type="string" export-name="queryString"/>
+      <bind name="errorCode" type="string" export-name="errorCode"/>
+      <bind name="httpMethod" type="string" export-name="httpMethod"/>
+    </in-binding>
+    <out-binding>
+      <bind name="statusCode" type="number" export-name="statusCode"/>
+      <bind name="contentLength" type="number" export-name="contentLength"/>
+      <bind name="headers" type="Properties" export-name="headers"/>
+      <bind name="contentAsString" type="string" export-name="contentAsString"/>
+      <bind name="statusCodeAttribute" type="number" export-name="statusCodeAttribute"/>
+    </out-binding>
+    <position y="100.0" x="120.0"/>
+  </workflow-item>
+  <workflow-item name="item1" type="end" end-mode="0">
+    <position y="230.0" x="160.0"/>
+  </workflow-item>
+  <workflow-item name="item2" throw-bind-name="errorCode" type="end" end-mode="1">
+    <position y="170.0" x="260.0"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item1" type="custom-condition" alt-out-name="item2">
+    <display-name><![CDATA[Check status code]]></display-name>
+    <script encoded="false"><![CDATA[if ( statusCodeAttribute >= 400 ) {
+    System.log("400");
+	throw "HTTPError: status code: " + statusCodeAttribute;
+} else {
+    System.log("OK");
+	return true;
+}	]]></script>
+    <in-binding>
+      <bind name="statusCodeAttribute" type="number" export-name="statusCodeAttribute"/>
+    </in-binding>
+    <position y="170.0" x="120.0"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="baseUrl">
+      <desc><![CDATA[The base URL for the REST request]]></desc>
+    </p-param>
+    <p-param name="queryString">
+      <desc><![CDATA[REST request query string (URL parameters and values)]]></desc>
+    </p-param>
+    <p-param name="httpMethod">
+      <desc><![CDATA[HTTP Method for the request]]></desc>
+      <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#GET#;#string#POST#;#string#PUT#;#string#DELETE#;#string#OPTIONS#;#string#HEAD#;#string#PATCH#;#string#TRACE#}#]]></p-qual>
+    </p-param>
+    <p-param name="contentType">
+      <desc><![CDATA[Content type]]></desc>
+      <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[#restOperation.defaultContentType]]></p-qual>
+      <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[(#httpMethod=="POST"||#httpMethod=="PUT"||#httpMethod=="PATCH"||#httpMethod=="DELETE")]]></p-qual>
+    </p-param>
+    <p-param name="content">
+      <desc><![CDATA[Content]]></desc>
+      <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[false]]></p-qual>
+      <p-qual name="textInput" type="void"><![CDATA[]]></p-qual>
+      <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[(#httpMethod=="POST"||#httpMethod=="PUT"||#httpMethod=="PATCH"||#httpMethod=="DELETE")]]></p-qual>
+    </p-param>
+    <p-param name="user">
+      <desc><![CDATA[Basic HTTP AuthN Username]]></desc>
+    </p-param>
+    <p-param name="password">
+      <desc><![CDATA[Basic HTTP AuthN Password]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="enumerationToStrings" result-type="Array/string" api-version="6.0.0" id="d00f3797-b205-4e7c-bd76-61ca82a689c8" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.util">
+  <param n="enumeration" t="string"><![CDATA[vCAC enumeration name]]></param>
+  <script encoded="false"><![CDATA[var names = new Array();
+
+var values = eval(enumeration + ".values()");
+if (values != null) {
+	for (var i = 0; i < values.length; i++) {
+		names.push(values[i].value());
+	}
+}
+
+return names;]]></script>
+</dunes-script-module>

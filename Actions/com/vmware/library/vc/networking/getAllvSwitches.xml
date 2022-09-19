@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getAllvSwitches" result-type="Array/string" api-version="6.0.0" id="5395939c-01d8-4de3-833a-7ff5f8242d6a" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.networking">
+  <param n="host" t="VC:HostSystem"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var vSwitches = new Array();
+if ( host != null ) {
+	var temp = VcPlugin.toManagedObject(host, host.configManager.networkSystem).networkInfo.vswitch;
+	if ( temp != null ) {
+		for(var i in temp) {
+			vSwitches.push(temp[i].name);
+		}
+	}
+}
+return vSwitches;]]></script>
+</dunes-script-module>

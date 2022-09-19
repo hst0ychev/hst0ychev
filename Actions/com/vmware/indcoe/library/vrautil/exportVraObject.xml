@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="exportVraObject" result-type="void" api-version="6.0.0" id="f244f483-489b-38a6-914a-ea468a4fb527" version="2.9.10" allowed-operations="evf" category-name="com.vmware.indcoe.library.vrautil">
+  <description><![CDATA[@deprecated Use VraObjectType.getByName().exportTo()]]></description>
+  <param n="host" t="vCACCAFE:VCACHost"><![CDATA[]]></param>
+  <param n="type" t="string"><![CDATA[]]></param>
+  <param n="name" t="string"><![CDATA[]]></param>
+  <param n="category" t="ResourceElementCategory"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var clazz = System.getModule("com.vmware.pscoe.library.vra")[type](host);
+var obj = clazz.getByName(name);
+var jsonModel = JSON.stringify(obj);
+jsonModel = System.getModule("com.vmware.pscoe.library.util").removeControlChars(jsonModel);
+System.getModule("com.vmware.pscoe.library.util").exportJsonToResourceElement(category, name, jsonModel);
+]]></script>
+</dunes-script-module>

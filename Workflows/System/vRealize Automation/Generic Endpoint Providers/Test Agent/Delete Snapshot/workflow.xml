@@ -1,0 +1,66 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="c7c2d37e-b048-4368-a58e-d332cda1cffe" version="0.0.7" api-version="6.0.0" allowed-operations="vf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Delete Snapshot]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="EndpointIn" type="Any"/>
+    <param name="MachineIn" type="Any"/>
+    <param name="SnapshotIn" type="Any"/>
+  </input>
+  <output>
+    <param name="MachineOut" type="Any"/>
+    <param name="SnapshotsOut" type="Array/Any"/>
+  </output>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Delete Snapshot]]></display-name>
+    <script encoded="false"><![CDATA[System.log("EndpointIn: " + EndpointIn.toSource());
+System.log("MachineIn: " + MachineIn.toSource());
+System.log("SnapshotIn: " + SnapshotIn.toSource());
+
+SnapShotsOut = [];
+
+var machineId = MachineIn.uniqueId;
+var machineName = MachineIn.machineName;
+
+var snapshot = GEFMachineSnapshot.build(machineId);
+snapshot.createdDateTime = new Date(2015,4,1);
+snapshot.description = "The first snapshot";
+snapshot.name = machineName + "-snap1";
+snapshot.uniqueId = machineName + Date.now();
+
+SnapShotsOut.push(snapshot);
+
+var snapshot2 = GEFMachineSnapshot.build(machineId);
+snapshot2.createdDateTime = new Date(2015,4,5);
+snapshot2.description = "The second snapshot";
+snapshot2.name = machineName + "-snap2";
+snapshot2.uniqueId = machineName + Date.now();
+
+SnapShotsOut.push(snapshot2);
+MachineOut = MachineIn;]]></script>
+    <in-binding>
+      <bind name="EndpointIn" type="Any" export-name="EndpointIn"/>
+      <bind name="MachineIn" type="Any" export-name="MachineIn"/>
+      <bind name="SnapshotIn" type="Any" export-name="SnapshotIn"/>
+    </in-binding>
+    <out-binding>
+      <bind name="MachineOut" type="Any" export-name="MachineOut"/>
+      <bind name="SnapShotsOut" type="Array/Any" export-name="SnapshotsOut"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="EndpointIn">
+      <desc><![CDATA[EndpointIn]]></desc>
+    </p-param>
+    <p-param name="MachineIn">
+      <desc><![CDATA[MachineIn]]></desc>
+    </p-param>
+    <p-param name="SnapshotIn">
+      <desc><![CDATA[SnapshotIn]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="updateSOAPHostWithEndpointURL" result-type="SOAP:Host" api-version="6.0.0" id="9f547a0d-636e-420c-9986-40b2eee1df83" version="1.0.1" allowed-operations="vfe" category-name="com.vmware.library.soap.configuration">
+  <description><![CDATA[Updates a SOAP host with a preferred endpoint address. The new endpoint address will be used when sending and receiving SOAP messages instead of the endpoint addresses defined within the WSDL.]]></description>
+  <param n="soapHost" t="SOAP:Host"><![CDATA[SOAP host to update with a preferred endpoint address.]]></param>
+  <param n="endpointURL" t="string"><![CDATA[Preferred endpoint address to use when sending and receiving SOAP messages.]]></param>
+  <script encoded="false"><![CDATA[System.log("Setting endpoint URL: " + endpointURL + "  for host: " + soapHost);
+
+soapHost.preferredEndpointURL = endpointURL;
+soapHost = SOAPHostManager.updateHost(soapHost);
+
+System.log("SOAP host '" + soapHost + "' updated with preferred endpoint URL: " + endpointURL);
+return soapHost;
+]]></script>
+</dunes-script-module>

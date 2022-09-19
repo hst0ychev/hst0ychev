@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="createVirtualScsiControllerConfigSpec" result-type="Any" api-version="6.0.0" id="b1905fcb-8e22-40f4-a76e-63f3da97803e" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.vm.spec.config.device">
+  <param n="type" t="string"><![CDATA[Controller type ("LSI" ,"PARA","SAS"or "BUS")]]></param>
+  <script encoded="false"><![CDATA[// Create SCSI controller
+var controller = null;
+if ( type != null  &&  "LSI".equalsIgnoreCase( type.toUpperCase() ) == true )  {
+	controller = new VcVirtualLsiLogicController();
+}else if(type != null  &&  "PARA".equalsIgnoreCase( type.toUpperCase() ) == true){
+	controller = new VcParaVirtualSCSIController();
+}else if(type != null  &&  "SAS".equalsIgnoreCase( type.toUpperCase() ) == true){
+	controller = new VcVirtualLsiLogicSASController();
+}
+else  {
+	controller = new VcVirtualBusLogicController();
+}
+controller.key = 0;
+controller.device = new Array(0);
+controller.busNumber = 0;
+controller.sharedBus = VcVirtualSCSISharing.noSharing;
+// Create SCSI controller ConfigSpec
+var deviceConfigSpec = new VcVirtualDeviceConfigSpec();
+deviceConfigSpec.device = controller;
+deviceConfigSpec.operation = VcVirtualDeviceConfigSpecOperation.add;
+
+return deviceConfigSpec;]]></script>
+</dunes-script-module>

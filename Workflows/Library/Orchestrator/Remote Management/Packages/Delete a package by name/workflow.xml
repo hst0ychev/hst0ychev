@@ -1,0 +1,75 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="Workflow:name=generic" id="E18080808080808080808080808080808180808001297796784030ce882292c2a" version="1.2.3" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Delete a package by name]]></display-name>
+  <description><![CDATA[Deletes a package and its content by name on a remote Orchestrator server.]]></description>
+  <position y="20.0" x="180.0"/>
+  <input>
+    <param name="packageName" type="string">
+      <description><![CDATA[Package name]]></description>
+    </param>
+    <param name="servers" type="Array/VCO:RemoteServer">
+      <description><![CDATA[Target server]]></description>
+    </param>
+    <param name="keepShared" type="boolean">
+      <description><![CDATA[Keep package shared content]]></description>
+    </param>
+  </input>
+  <output>
+    <param name="errors" type="Array/string"/>
+  </output>
+  <workflow-item name="item2" type="end" end-mode="0">
+    <position y="210.0" x="180.0"/>
+  </workflow-item>
+  <workflow-item name="item0" out-name="item2" type="task">
+    <display-name><![CDATA[Delete a package]]></display-name>
+    <script encoded="false"><![CDATA[var errors = new Array()
+System.log("==== Deleting package [" + packageName +"] ====" );
+for (var i in servers )
+{
+	var server = servers[i];
+	try {
+		VCODeploymentManager.deletePackageWithContentByName(server, packageName, keepShared)
+		System.log("-- " + server.host + "-- DELETED" );
+	} catch (e)
+	{
+		errors.push("-- " + server.host + "-- FAILED" );
+		System.error("-- " + server.host + "-- FAILED" );
+
+		errors.push("Error: " + e.message);
+		System.error("Error: " + e.message);
+	}
+}]]></script>
+    <in-binding>
+      <bind name="packageName" type="string" export-name="packageName"/>
+      <bind name="servers" type="Array/VCO:RemoteServer" export-name="servers"/>
+      <bind name="keepShared" type="boolean" export-name="keepShared"/>
+    </in-binding>
+    <out-binding>
+      <bind name="errors" type="Array/string" export-name="errors"/>
+    </out-binding>
+    <position y="120.0" x="140.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Delete a package by name]]></title>
+      <p-group>
+        <title><![CDATA[Remote package details]]></title>
+        <desc><![CDATA[Specify the package to delete and the vCO servers to delete the package from.
+Select whether to keep the shared elements from the package or not.]]></desc>
+        <p-param name="packageName">
+          <desc><![CDATA[Package name]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+        <p-param name="servers">
+          <desc><![CDATA[Remote vCO servers]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual kind="ognl" name="ognlValidator" type="String"><![CDATA[#servers!=null && #servers.length>0]]></p-qual>
+        </p-param>
+        <p-param name="keepShared">
+          <desc><![CDATA[Keep shared content]]></desc>
+          <p-qual kind="static" name="defaultValue" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+      </p-group>
+    </p-step>
+  </presentation>
+</workflow>

@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="deactivateService" result-type="void" api-version="6.0.0" id="937f459d-7f45-4e44-8152-a96174c4443f" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.catalog.service">
+  <param n="service" t="vCACCAFE:Service"><![CDATA[The service to be deleted]]></param>
+  <script encoded="false"><![CDATA[var host = vCACCAFEEntitiesFinder.getHostForEntity(service);
+var client = host.createCatalogClient().getCatalogServiceAdminService();
+
+service.setStatus(vCACCAFEStatus.RETIRED);
+
+System.log("Deactivating service...");
+client.updateService(service);
+System.log("Service: " + service.getName() + " deactivated.");]]></script>
+</dunes-script-module>

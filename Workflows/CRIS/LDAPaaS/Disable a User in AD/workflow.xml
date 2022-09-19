@@ -1,0 +1,219 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="71618e54-6abc-40fd-8b6a-8f6d8a50755d" version="0.0.1" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Disable a User in AD]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="usersEmailId" type="string">
+      <description><![CDATA[The requesting User's Email Address.]]></description>
+    </param>
+    <param name="userName" type="string">
+      <description><![CDATA[Username of the user]]></description>
+    </param>
+  </input>
+  <attrib name="adUsername" type="string" read-only="false" conf-id="66a86a5d-df46-4200-9c90-046802868f44" conf-key="username">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="adPassword" type="SecureString" read-only="false" conf-id="66a86a5d-df46-4200-9c90-046802868f44" conf-key="password">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="adServer" type="string" read-only="false" conf-id="66a86a5d-df46-4200-9c90-046802868f44" conf-key="adServer">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="psHost" type="PowerShell:PowerShellHost" read-only="false" conf-id="66a86a5d-df46-4200-9c90-046802868f44" conf-key="psHost">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='06fbc5cb-8c65-43b5-8657-370adbecf58c'&dunesName='PowerShell:PowerShellHost']]></value>
+  </attrib>
+  <attrib name="smtp_host" type="string" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_host">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="smtp_port" type="number" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_port">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="smtp_username" type="string" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_username">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="smtp_password" type="SecureString" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_password">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="smtp_from_id" type="string" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_from_id">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="smtp_from_name" type="string" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_from_name">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="use_ssl" type="boolean" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="use_ssl">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="use_start_tls" type="boolean" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="use_start_tls">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="smtp_to_address" type="Array/string" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_to_address_LDAPaaS">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="vcacCafeHost" type="vCACCAFE:VCACHost" read-only="false" conf-id="66a86a5d-df46-4200-9c90-046802868f44" conf-key="vcacCafeHost">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Process Request]]></display-name>
+    <script encoded="false"><![CDATA[function SendEmail(subject, body) {
+
+	//Add the user's email to the list of email IDs to send email to.
+	if (usersEmailId && usersEmailId != "") {
+		smtp_to_address.push(usersEmailId);
+	}
+	
+	var commaSeparatedEmails = '';
+	for(var i in smtp_to_address)
+	{
+		commaSeparatedEmails += smtp_to_address[i]+',';
+	}
+	
+	//workflow ID of Library -> Mail -> 'Send notification'
+	var workflowId = '8D80808080808080808080808080808089808080012318760241416446ce5b52f';
+
+	//ready the workflow params
+	var workflowParameters = new Properties();
+	workflowParameters.put("smtpHost", smtp_host);
+	workflowParameters.put("smtpPort", smtp_port);
+	workflowParameters.put("username", smtp_username);
+	workflowParameters.put("password", smtp_password);
+	workflowParameters.put("fromName", smtp_from_name);
+	workflowParameters.put("fromAddress", smtp_from_id);
+	workflowParameters.put("toAddress", commaSeparatedEmails);
+	workflowParameters.put("subject", subject);
+	workflowParameters.put("content", body);
+	workflowParameters.put("useSsl", use_ssl);
+	workflowParameters.put("UseStartTls", use_start_tls);
+
+	//Run this workflow.
+	var workflowToLaunch = Server.getWorkflowWithId(workflowId);
+	
+	//Fetch a token.
+	var workflow_token = workflowToLaunch.execute(workflowParameters);
+	while (workflow_token.state === "running") {
+		System.sleep(3000);
+	}
+	System.log("Email sent");
+	//return after workflow finished 'running'
+	return true;
+}
+
+try {
+	//Try to fetch catalog request ID
+	catalogRequestId = System.getContext().getParameter("__asd_catalogRequestId");
+}
+catch (e) {
+	//If we did not get catalog request ID, we use boolean false
+	catalogRequestId = false;
+}
+
+if (catalogRequestId) {
+	//We got catalogRequest ID from the inputs, now we try to get request number from that.
+	System.log("Request Id by vRA:" + catalogRequestId);
+	var request = vCACCAFEEntitiesFinder.getCatalogItemRequest(vcacCafeHost, catalogRequestId);
+	requestNumber = request.getRequestNumber();
+}
+else {
+	var date = new Date();
+	requestNumber = date.getFullYear() + "_" + (date.getMonth() + 1) + "_" + date.getDate() + "_" + date.getHours() + "_" + date.getMinutes();
+	System.log("Using request number as current date-time since __asd_catalogRequestId was not found");
+}
+
+System.log("Request Number for this request:  " + requestNumber);
+
+var adObject = System.getModule("com.vmware.indcoe.active_directory").class(adUsername, adPassword, adServer, psHost);
+
+if (!adObject) {
+	var errorMsg = "Error creating AD Object, please check with admin team";
+	var subject = "Request #"+requestNumber+" failed";
+	var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed.";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if(SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+// Actual workflow starts now...
+
+if (!userName) {
+	var errorMsg = "Error creating new group - Username not provided";
+	var subject = "Request #"+requestNumber+" failed";
+	var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed.";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if(SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+if (!adObject.CheckIfUserExists(userName))
+{
+	var errorMsg = "The user: "+userName+" provided does not exist in AD";
+	var subject = "Request #"+requestNumber+" failed";
+	var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed.";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if(SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+System.log("Trying to disable user "+userName+" in AD");
+if(!adObject.DisableUser(userName))
+{
+	var errorMsg = "Some unexpected error occurred disabling user in AD";
+	var subject = "Request #"+requestNumber+" failed";
+	var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed.";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if(SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+var message = "User '"+userName+"' disabled successfully";
+var subject = "Request #"+requestNumber+" completed successfully";
+var body = "Hello, <br/>The Request with request number: " + requestNumber + " has completed successfully.";
+body += message;
+body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+SendEmail(subject, body);
+
+System.log(message);
+]]></script>
+    <in-binding>
+      <bind name="usersEmailId" type="string" export-name="usersEmailId"/>
+      <bind name="adUsername" type="string" export-name="adUsername"/>
+      <bind name="adPassword" type="SecureString" export-name="adPassword"/>
+      <bind name="adServer" type="string" export-name="adServer"/>
+      <bind name="psHost" type="PowerShell:PowerShellHost" export-name="psHost"/>
+      <bind name="smtp_host" type="string" export-name="smtp_host"/>
+      <bind name="smtp_port" type="number" export-name="smtp_port"/>
+      <bind name="smtp_username" type="string" export-name="smtp_username"/>
+      <bind name="smtp_password" type="SecureString" export-name="smtp_password"/>
+      <bind name="smtp_from_id" type="string" export-name="smtp_from_id"/>
+      <bind name="smtp_from_name" type="string" export-name="smtp_from_name"/>
+      <bind name="use_ssl" type="boolean" export-name="use_ssl"/>
+      <bind name="use_start_tls" type="boolean" export-name="use_start_tls"/>
+      <bind name="userName" type="string" export-name="userName"/>
+      <bind name="smtp_to_address" type="Array/string" export-name="smtp_to_address"/>
+      <bind name="vcacCafeHost" type="vCACCAFE:VCACHost" export-name="vcacCafeHost"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="usersEmailId">
+      <desc><![CDATA[The requesting User's Email Address.]]></desc>
+    </p-param>
+    <p-param name="userName">
+      <desc><![CDATA[Username of the user]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

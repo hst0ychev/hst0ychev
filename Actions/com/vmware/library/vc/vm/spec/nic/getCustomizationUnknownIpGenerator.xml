@@ -1,0 +1,4 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getCustomizationUnknownIpGenerator" result-type="Any" api-version="6.0.0" id="f469f96e-2de2-4226-a020-95e2522aa2e8" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.vm.spec.nic">
+  <script encoded="false"><![CDATA[return new VcCustomizationUnknownIpGenerator();]]></script>
+</dunes-script-module>

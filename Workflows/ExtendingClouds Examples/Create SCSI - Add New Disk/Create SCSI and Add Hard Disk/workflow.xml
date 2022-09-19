@@ -1,0 +1,327 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item3" object-name="workflow:name=generic" id="6071e945-9f8f-4c2b-9e5d-f07148486656" version="0.0.33" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Create SCSI and Add Hard Disk]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="vm" type="VC:VirtualMachine">
+      <description><![CDATA[Virtual machine to which to add the disk]]></description>
+    </param>
+    <param name="diskSize" type="number">
+      <description><![CDATA[Disk size (in GB)]]></description>
+    </param>
+    <param name="diskMode" type="VC:VirtualDiskMode">
+      <description><![CDATA[Disk persistence mode]]></description>
+    </param>
+    <param name="thinProvisioned" type="boolean">
+      <description><![CDATA[Use thin provisioning?]]></description>
+    </param>
+    <param name="scsiType" type="string">
+      <description><![CDATA[Enter one of the following - LSI, PARA, SAS, BUS]]></description>
+    </param>
+  </input>
+  <attrib name="task" type="VC:Task" read-only="false">
+    <description><![CDATA[Task to Wait for]]></description>
+  </attrib>
+  <attrib name="progress" type="boolean" read-only="false">
+    <description><![CDATA[Log progess while waiting for the task]]></description>
+  </attrib>
+  <attrib name="pollRate" type="number" read-only="false">
+    <value encoded="n"><![CDATA[10.0]]></value>
+    <description><![CDATA[Polling rate for the task state [seconds]]]></description>
+  </attrib>
+  <attrib name="actionResult" type="Any" read-only="false"/>
+  <attrib name="scsiBusNumber" type="number" read-only="false">
+    <value encoded="n"><![CDATA[0.0]]></value>
+  </attrib>
+  <attrib name="diskIndex" type="number" read-only="false">
+    <value encoded="n"><![CDATA[1.0]]></value>
+    <description><![CDATA[Disk index]]></description>
+  </attrib>
+  <attrib name="datastore" type="VC:Datastore" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Datastore in which to put the virtual disk file]]></description>
+  </attrib>
+  <attrib name="folderName" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Virtual machine folder name]]></description>
+  </attrib>
+  <attrib name="folderId" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Virtual machine folder ID]]></description>
+  </attrib>
+  <attrib name="runningHostName" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Name of host running the virtual machine]]></description>
+  </attrib>
+  <attrib name="runningHostId" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[ID of host running the virtual machine]]></description>
+  </attrib>
+  <attrib name="resourcePoolName" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Resource pool name]]></description>
+  </attrib>
+  <attrib name="resourcePoolId" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Resource pool ID]]></description>
+  </attrib>
+  <attrib name="clusterName" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Cluster name]]></description>
+  </attrib>
+  <attrib name="clusterId" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Cluster ID]]></description>
+  </attrib>
+  <attrib name="computeResourceId" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Compute resource ID]]></description>
+  </attrib>
+  <attrib name="datastoresName" type="Array/string" read-only="false">
+    <description><![CDATA[Datastore name]]></description>
+  </attrib>
+  <attrib name="datastoresId" type="Array/string" read-only="false">
+    <description><![CDATA[Datastore ID]]></description>
+  </attrib>
+  <attrib name="diskSizes" type="Array/number" read-only="false">
+    <description><![CDATA[Disk sizes]]></description>
+  </attrib>
+  <attrib name="cpuCount" type="number" read-only="false">
+    <description><![CDATA[Number of CPUs]]></description>
+  </attrib>
+  <attrib name="memoryMB" type="number" read-only="false">
+    <description><![CDATA[Memory in MB]]></description>
+  </attrib>
+  <attrib name="ipAddresses" type="Array/string" read-only="false">
+    <description><![CDATA[IP addresses]]></description>
+  </attrib>
+  <attrib name="networks" type="Array/string" read-only="false">
+    <description><![CDATA[Networks]]></description>
+  </attrib>
+  <attrib name="folder" type="VC:VmFolder" read-only="false">
+    <description><![CDATA[Virtual machine folder]]></description>
+  </attrib>
+  <attrib name="host" type="VC:HostSystem" read-only="false">
+    <description><![CDATA[Host]]></description>
+  </attrib>
+  <attrib name="resourcePool" type="VC:ResourcePool" read-only="false">
+    <description><![CDATA[Resource Pool]]></description>
+  </attrib>
+  <attrib name="cluster" type="VC:ClusterComputeResource" read-only="false">
+    <description><![CDATA[Cluster]]></description>
+  </attrib>
+  <attrib name="computeResource" type="VC:ComputeResource" read-only="false">
+    <description><![CDATA[Compute resource]]></description>
+  </attrib>
+  <attrib name="datastores" type="Array/VC:Datastore" read-only="false">
+    <description><![CDATA[Array of datastores]]></description>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="824.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item2" type="task">
+    <display-name><![CDATA[Build SCSI task]]></display-name>
+    <script encoded="false"><![CDATA[var devices = vm.config.hardware.device;
+var numControllers = new Array();
+
+System.log("Getting devices");
+for each ( var device in devices ) {
+	//System.log(device);
+	var label=device.deviceInfo.label;
+	//System.log(label);
+	if (label.indexOf("SCSI controller") >=0) {
+		System.log("Found SCSI Controller " + label);
+		numControllers.push(label);
+	}	
+}
+
+scsiBusNumber=numControllers.length
+if (scsiBusNumber=="7")
+{
+	System.log("The next SCSI Controller is reserved, auto incrementing to 8");
+	scsiBusNumber="8";
+}
+System.log("The next SCSI Controller should be " + scsiBusNumber);
+
+// Create task to add next available SCSI Controller
+var configSpec = new VcVirtualMachineConfigSpec();
+var deviceConfigSpecs = new Array();
+var deviceConfigSpec;
+var ii = 0;
+
+// add scsi controller
+System.log("Setting the action to next available scsi controller");
+deviceConfigSpec = System.getModule("extendingclouds.actions").createVirtualScsiControllerConfigSpec_extendingclouds_dyanmic( scsiType , scsiBusNumber );
+deviceConfigSpecs[ii++] = deviceConfigSpec;
+
+// List of devices
+configSpec.deviceChange = deviceConfigSpecs;
+
+System.log("Setting task configuration and moving to execute the task");
+// launch create VMtask
+task = vm.reconfigVM_Task( configSpec );]]></script>
+    <in-binding>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vm"/>
+      <bind name="scsiType" type="string" export-name="scsiType"/>
+      <bind name="scsiBusNumber" type="number" export-name="scsiBusNumber"/>
+    </in-binding>
+    <out-binding>
+      <bind name="task" type="VC:Task" export-name="task"/>
+      <bind name="scsiBusNumber" type="number" export-name="scsiBusNumber"/>
+    </out-binding>
+    <position y="55.40909090909091" x="344.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item4" throw-bind-name="actionResult" type="task" script-module="com.vmware.library.vc.basic/vim3WaitTaskEnd">
+    <display-name><![CDATA[vim3WaitTaskEnd]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.vc.basic").vim3WaitTaskEnd(task,progress,pollRate) ;]]></script>
+    <in-binding>
+      <bind name="task" type="VC:Task" export-name="task">
+        <description><![CDATA[Task to Wait for]]></description>
+      </bind>
+      <bind name="progress" type="boolean" export-name="progress">
+        <description><![CDATA[Log progess while waiting for the task]]></description>
+      </bind>
+      <bind name="pollRate" type="number" export-name="pollRate">
+        <description><![CDATA[Polling rate for the task state [seconds]]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Any" export-name="actionResult"/>
+    </out-binding>
+    <description><![CDATA[Wait for a VC Task to end.
+When task ended, return the task result if any. ]]></description>
+    <position y="55.40909090909091" x="484.5"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item0" type="link" linked-workflow-id="13b668c5-0373-424a-b1aa-87d4d58ae3ad">
+    <display-name><![CDATA[Add disk extendingclouds]]></display-name>
+    <in-binding>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vm">
+        <description><![CDATA[Virtual machine to which to add the disk]]></description>
+      </bind>
+      <bind name="datastore" type="VC:Datastore" export-name="datastore">
+        <description><![CDATA[Datastore in which to put the virtual disk file]]></description>
+      </bind>
+      <bind name="diskIndex" type="number" export-name="diskIndex">
+        <description><![CDATA[Disk index]]></description>
+      </bind>
+      <bind name="diskSize" type="number" export-name="diskSize">
+        <description><![CDATA[Disk size (in GB)]]></description>
+      </bind>
+      <bind name="diskMode" type="VC:VirtualDiskMode" export-name="diskMode">
+        <description><![CDATA[Disk persistence mode]]></description>
+      </bind>
+      <bind name="scsiBusNumber" type="number" export-name="scsiBusNumber">
+        <description><![CDATA[SCSI controller bus number]]></description>
+      </bind>
+      <bind name="thinProvisioned" type="boolean" export-name="thinProvisioned">
+        <description><![CDATA[Use thin provisioning?]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Adds a virtual disk to a virtual machine.]]></description>
+    <position y="55.40909090909091" x="644.5"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item1" type="link" linked-workflow-id="9f6c2c59-6a3f-4854-8437-34e15acb552d">
+    <display-name><![CDATA[Extract virtual machine info extendingclouds]]></display-name>
+    <in-binding>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vm">
+        <description><![CDATA[Virtual machine from which to extract information]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="folderName" type="string" export-name="folderName">
+        <description><![CDATA[Virtual machine folder name]]></description>
+      </bind>
+      <bind name="folderId" type="string" export-name="folderId">
+        <description><![CDATA[Virtual machine folder ID]]></description>
+      </bind>
+      <bind name="runningHostName" type="string" export-name="runningHostName">
+        <description><![CDATA[Name of host running the virtual machine]]></description>
+      </bind>
+      <bind name="runningHostId" type="string" export-name="runningHostId">
+        <description><![CDATA[ID of host running the virtual machine]]></description>
+      </bind>
+      <bind name="resourcePoolName" type="string" export-name="resourcePoolName">
+        <description><![CDATA[Resource pool name]]></description>
+      </bind>
+      <bind name="resourcePoolId" type="string" export-name="resourcePoolId">
+        <description><![CDATA[Resource pool ID]]></description>
+      </bind>
+      <bind name="clusterName" type="string" export-name="clusterName">
+        <description><![CDATA[Cluster name]]></description>
+      </bind>
+      <bind name="clusterId" type="string" export-name="clusterId">
+        <description><![CDATA[Cluster ID]]></description>
+      </bind>
+      <bind name="computeResourceId" type="string" export-name="computeResourceId">
+        <description><![CDATA[Compute resource ID]]></description>
+      </bind>
+      <bind name="datastoresName" type="Array/string" export-name="datastoresName">
+        <description><![CDATA[Datastore name]]></description>
+      </bind>
+      <bind name="datastoresId" type="Array/string" export-name="datastoresId">
+        <description><![CDATA[Datastore ID]]></description>
+      </bind>
+      <bind name="diskSizes" type="Array/number" export-name="diskSizes">
+        <description><![CDATA[Disk sizes]]></description>
+      </bind>
+      <bind name="cpuCount" type="number" export-name="cpuCount">
+        <description><![CDATA[Number of CPUs]]></description>
+      </bind>
+      <bind name="memoryMB" type="number" export-name="memoryMB">
+        <description><![CDATA[Memory in MB]]></description>
+      </bind>
+      <bind name="ipAddresses" type="Array/string" export-name="ipAddresses">
+        <description><![CDATA[IP addresses]]></description>
+      </bind>
+      <bind name="networks" type="Array/string" export-name="networks">
+        <description><![CDATA[Networks]]></description>
+      </bind>
+      <bind name="folder" type="VC:VmFolder" export-name="folder">
+        <description><![CDATA[Virtual machine folder]]></description>
+      </bind>
+      <bind name="host" type="VC:HostSystem" export-name="host">
+        <description><![CDATA[Host]]></description>
+      </bind>
+      <bind name="resourcePool" type="VC:ResourcePool" export-name="resourcePool">
+        <description><![CDATA[Resource Pool]]></description>
+      </bind>
+      <bind name="cluster" type="VC:ClusterComputeResource" export-name="cluster">
+        <description><![CDATA[Cluster]]></description>
+      </bind>
+      <bind name="computeResource" type="VC:ComputeResource" export-name="computeResource">
+        <description><![CDATA[Compute resource]]></description>
+      </bind>
+      <bind name="datastores" type="Array/VC:Datastore" export-name="datastores">
+        <description><![CDATA[Array of datastores]]></description>
+      </bind>
+      <bind name="datastore" type="VC:Datastore" export-name="datastore"/>
+    </out-binding>
+    <description><![CDATA[Returns the virtual machine folder, host system, resource pool, compute resource, datastore, hard drives sizes, CPU and memory, network, and IP address for a given virtual machine. Note: Might require VMware Tools.]]></description>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="vm">
+      <desc><![CDATA[Virtual machine to which to add the disk]]></desc>
+      <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+    </p-param>
+    <p-param name="diskSize">
+      <desc><![CDATA[Disk size (in GB)]]></desc>
+      <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+    </p-param>
+    <p-param name="diskMode">
+      <desc><![CDATA[Disk persistence mode]]></desc>
+      <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+    </p-param>
+    <p-param name="thinProvisioned">
+      <desc><![CDATA[Use thin provisioning?]]></desc>
+    </p-param>
+    <p-param name="scsiType">
+      <desc><![CDATA[Enter LSI, PARA, SAS, or BUS]]></desc>
+      <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      <p-qual kind="static" name="defaultValue" type="string"><![CDATA[LSI]]></p-qual>
+      <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#LSI#;#string#PARA#;#string#SAS#;#string#BUS#}#]]></p-qual>
+    </p-param>
+  </presentation>
+</workflow>

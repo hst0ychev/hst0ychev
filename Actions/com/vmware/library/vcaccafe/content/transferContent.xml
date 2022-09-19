@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="transferContent" result-type="void" api-version="6.0.0" id="d0b3530b-a006-48aa-917d-99f20545a7ba" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.content">
+  <param n="sourceHost" t="vCACCAFE:VCACHost"><![CDATA[Source vRA host]]></param>
+  <param n="targetHost" t="vCACCAFE:VCACHost"><![CDATA[Target vRA host]]></param>
+  <script encoded="false"><![CDATA[var filter =  {
+    "tenantId": sourceHost.tenant,
+    "jsonAccepted": false
+};
+System.log("Source host: " + sourceHost.url);
+System.log("Source tenant: " + sourceHost.tenant);
+
+var contentClientExport = sourceHost.createContentManagementClient();
+System.log("Exporting...");
+var content = contentClientExport.getFile("content/bundles/filters", filter);
+System.log("Export successful");
+
+System.log("--------------------------------");
+
+System.log("Target host: " + targetHost.url);
+System.log("Target tenant: " + targetHost.tenant);
+
+var contentClientImport = targetHost.createContentManagementClient();
+System.log("Importing...");
+contentClientImport.postFile("content/bundles", content);
+System.log("Import successful");]]></script>
+</dunes-script-module>

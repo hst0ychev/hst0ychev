@@ -1,0 +1,126 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="ChangeTemplateInRequest" result-type="Any" api-version="6.0.0" id="202bf1a3-5d91-3d99-b28c-b9b586d80f17" version="1.0.0" allowed-operations="evf" category-name="com.vmware.indcoe.library.vrautil">
+  <param n="cafeHost" t="vCACCAFE:VCACHost"><![CDATA[]]></param>
+  <param n="category" t="string"><![CDATA[]]></param>
+  <param n="elementName" t="string"><![CDATA[]]></param>
+  <param n="vcacHost" t="vCAC:VCACHost"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var TemplateResult ={
+    
+    cafeHost:cafeHost,
+    category:category,
+    elementName:elementName,
+	vcacHost:vcacHost,
+    changeScaleOutTemplate : function(payload){
+        //Get the payload parameters 
+        var machine=payload.get("machine");
+        var vmId = machine.get("id");
+        var virtualMachineName = machine.get("name");
+        //calling vmProperties function to get all the properties
+        var vcacVMProp = vmProperties(vmId,vcacHost);
+        /**
+         * Creating funciton to change template details in sclae out request.
+         * During machine building stage changing CloneFrom property.
+        **/
+        changeCloneFrom(vcacVMProp,virtualMachineName,cafeHost,category,elementName)
+        function changeCloneFrom(vcacVMProp,virtualMachineName,cafeHost,category,elementName){        
+            //Get Vcac VM
+            var vcacVM;
+			var referenceId;
+            var allVMs = Server.findAllForType("vCAC:VirtualMachine",null);
+            for(var vm in allVMs){
+                if(allVMs[vm].virtualMachineName == virtualMachineName){
+                    vcacVM = allVMs[vm];
+					referenceId = vcacVM.externalReferenceId
+					System.debug("Reference Id "+referenceId);
+                }
+            }
+            //Checking whether this request made by catalog blueprint or scale out resource action
+            var provisionOrScale = false;
+            var reqId = vcacVMProp.get("__Cafe.Root.Request.Id");
+			System.debug("Request Id "+reqId);
+            var deploymentId = "";
+            var deploymentName = "";
+            var templateName;
+            try {
+                request = vCACCAFEEntitiesFinder.getCatalogItemRequest(cafeHost,reqId);
+                provisionOrScale = false;				
+            } catch(ex) {   
+				System.debug("Unable to find catalog request with ID: " + reqId + ". Checking if this is Scale Out/In.");	
+				var scaleOutRequest = vCACCAFEEntitiesFinder.getResourceActionRequest(cafeHost,reqId);
+			    var catalogResource = vCACCAFEEntitiesFinder.getCatalogResource(cafeHost, scaleOutRequest.resourceRef.getId());
+			    var CatalogResource = System.getModule("com.vmware.indcoe.library.vrautil").CatalogResource(cafeHost);
+			    var deployment = CatalogResource.getDeploymentByRequestId(catalogResource.requestId);
+			    System.debug("Deployment with Name found '"+deployment.name+"'");
+			    System.debug("Deployment with ID found '"+deployment.id+"'");
+			    deploymentName = deployment.name;
+			    System.debug("Deployment with Name found '"+deploymentName+"'");           
+                provisionOrScale = true;
+            }
+            //If request made by catalog blueprint end the process else continue to change CloneFrom prop
+            var props = new Properties();
+            if(!provisionOrScale){
+                System.debug("Provision of virtual machine From Blueprint");
+            }else{
+                
+                //Getting template name from resource element
+                var category = Server.getResourceElementCategoryWithPath(category)
+                var resourceElements = category.resourceElements
+                for(var j in resourceElements){
+                    if(resourceElements[j].name == elementName){
+                        var mimeAttach = resourceElements[j].getContentAsMimeAttachment()
+                        var content = mimeAttach.content
+                        var jsonContent = JSON.parse(content)
+                        var templateDetails = jsonContent.templateDetails
+                        for(var i in templateDetails){
+                            if(templateDetails[i].deploymentName == deploymentName){
+                                templateName = templateDetails[i].templateName
+								System.debug("Template Name "+templateName);
+                                break;
+                            }
+                        }
+                    }
+                }
+                //Prepare vcac vm entities
+                System.log("Set custom properties to change template details");
+                var entity = vcacVM.getEntity();
+                var hostId = entity.hostId;
+                var modelName = entity.modelName;
+                var entitySetName = entity.entitySetName;
+                var entityIdString = entity.keyString;
+                var entityKey = entity.entityKey;	
+                
+                System.debug("entityKey "+JSON.stringify(entity.entityKey));
+                System.debug("hostId : " + hostId);
+                System.debug("modelName : " + modelName);
+                System.debug("entitySetName : " + entitySetName);
+                System.debug("entityIdString : " + entityIdString);
+                System.debug("entityKey : " + entityKey);
+                
+                var propertyName = "CloneFrom";
+                var propertyValue = templateName;
+                
+                System.getModule("com.vmware.library.vcac").addUpdatePropertyFromVirtualMachineEntity(vcacHost,entity,propertyName,propertyValue,false,false,false,false);
+            }
+        }
+        //Function for get the vcac vm properties
+        function vmProperties(vmId,vCACHost){
+            var properties = new Properties();
+            properties.put("VirtualMachineID",vmId);
+            var virtualMachineEntity = vCACEntityManager.readModelEntity(vCACHost.id, "ManagementModelEntities.svc", "VirtualMachines", properties, null);
+            System.log("virtualMachineEntity"+virtualMachineEntity);
+            var vCACVmProperties = new Properties();
+            var virtualMachinePropertiesEntities = virtualMachineEntity.getLink(vCACHost, "VirtualMachineProperties");
+            for(var i in virtualMachinePropertiesEntities) {
+                var propertyName = virtualMachinePropertiesEntities[i].getProperty("PropertyName");
+                var propertyValue = virtualMachinePropertiesEntities[i].getProperty("PropertyValue");
+                System.log("Found property " + propertyName + " = " + propertyValue);
+                vCACVmProperties.put(propertyName, propertyValue);
+            }
+        return vCACVmProperties
+        }
+    }
+
+}
+return TemplateResult
+]]></script>
+</dunes-script-module>

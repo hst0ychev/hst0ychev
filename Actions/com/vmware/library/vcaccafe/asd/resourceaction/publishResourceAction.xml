@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="publishResourceAction" result-type="void" api-version="6.0.0" id="69917904-3ae8-4552-9dbd-6cc871b21987" version="1.0.2" allowed-operations="vf" category-name="com.vmware.library.vcaccafe.asd.resourceaction">
+  <description><![CDATA[Publishes a resource action.]]></description>
+  <param n="resourceAction" t="vCACCAFE:ResourceAction"><![CDATA[Resource action to be published]]></param>
+  <script encoded="false"><![CDATA[System.getModule("com.vmware.library.vcaccafe.util").validateObject(resourceAction, "Resource action");
+var host = vCACCAFEEntitiesFinder.getHostForEntity(resourceAction);
+var resourceOperationClient = host.createAdvancedDesignerClient().getAdvancedDesignerCsResourceOperationService();
+
+System.log("Publishing resource action " + resourceAction.getName() + "...");
+resourceOperationClient.updateResourceOperationStatus(resourceAction.getId(), vCACCAFEDesignerPublishStatus.PUBLISHED);
+System.log("Resource action " + resourceAction.getName() + " published.");]]></script>
+</dunes-script-module>

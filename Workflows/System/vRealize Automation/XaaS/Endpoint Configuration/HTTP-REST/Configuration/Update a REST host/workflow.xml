@@ -1,0 +1,479 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item8" object-name="Workflow:name=generic" id="6109936b-54ae-43fd-84b8-594a5bc03347" version="1.0.8" api-version="6.0.0" allowed-operations="vf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Update a REST host]]></display-name>
+  <description><![CDATA[Updates a REST host from the plug-in's inventory.]]></description>
+  <ref-types><![CDATA[(REST:RESTHost)]]></ref-types>
+  <position y="18.136363636363633" x="25.0"/>
+  <input>
+    <param name="host" type="REST:RESTHost">
+      <description><![CDATA[REST host to update]]></description>
+    </param>
+    <param name="name" type="string">
+      <description><![CDATA[New host's name]]></description>
+    </param>
+    <param name="url" type="string">
+      <description><![CDATA[New host's base URL]]></description>
+    </param>
+    <param name="authentication" type="string">
+      <description><![CDATA[New host's authentication type]]></description>
+    </param>
+    <param name="authUserName" type="string">
+      <description><![CDATA[Authentication user name]]></description>
+    </param>
+    <param name="authPassword" type="SecureString">
+      <description><![CDATA[Authentication password]]></description>
+    </param>
+    <param name="consumerKey" type="string">
+      <description><![CDATA[Consumer key]]></description>
+    </param>
+    <param name="consumerSecret" type="SecureString">
+      <description><![CDATA[Consumer secret]]></description>
+    </param>
+    <param name="accessToken" type="string">
+      <description><![CDATA[Access token]]></description>
+    </param>
+    <param name="accessTokenSecret" type="SecureString">
+      <description><![CDATA[Access token secret]]></description>
+    </param>
+    <param name="connectionTimeout" type="number">
+      <description><![CDATA[Connection timeout]]></description>
+    </param>
+    <param name="operationTimeout" type="number">
+      <description><![CDATA[Operation timeout]]></description>
+    </param>
+    <param name="oauth2Token" type="string">
+      <description><![CDATA[OAuth 2.0 token]]></description>
+    </param>
+    <param name="workstation" type="string">
+      <description><![CDATA[Workstation for NTLM authentication]]></description>
+    </param>
+    <param name="domain" type="string">
+      <description><![CDATA[Domain for NTLM authentication]]></description>
+    </param>
+    <param name="useProxy" type="boolean">
+      <description><![CDATA[Use proxy]]></description>
+    </param>
+    <param name="proxyHost" type="string">
+      <description><![CDATA[Proxy host]]></description>
+    </param>
+    <param name="proxyPort" type="number">
+      <description><![CDATA[Proxy port]]></description>
+    </param>
+    <param name="proxyAuthPassword" type="SecureString">
+      <description><![CDATA[Proxy password]]></description>
+    </param>
+    <param name="proxySessionMode" type="string">
+      <description><![CDATA[Proxy session mode]]></description>
+    </param>
+    <param name="proxyAuthentication" type="string">
+      <description><![CDATA[Proxy Authenitcation Type]]></description>
+    </param>
+    <param name="proxyAuthUserName" type="string">
+      <description><![CDATA[Proxy user name]]></description>
+    </param>
+    <param name="hostVerification" type="boolean">
+      <description><![CDATA[Verify whether the target hostname matches the names stored inside the server's X.509 certificate]]></description>
+    </param>
+    <param name="key" type="Configurator:Key">
+      <description><![CDATA[The PrivateKeyEntry to use for client certificate authentication.]]></description>
+    </param>
+    <param name="ignoreCertificateWarnings" type="boolean">
+      <description><![CDATA[Ignore certificate warnings]]></description>
+    </param>
+    <param name="autoUrlRedirection" type="boolean">
+      <description><![CDATA[Automatical URL redirection]]></description>
+    </param>
+  </input>
+  <output>
+    <param name="updatedRestHost" type="REST:RESTHost">
+      <description><![CDATA[The updated REST host]]></description>
+    </param>
+  </output>
+  <attrib name="sessionMode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[Shared Session]]></value>
+    <description><![CDATA[Session mode]]></description>
+  </attrib>
+  <attrib name="proxySettings" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Configured proxy settings]]></description>
+  </attrib>
+  <attrib name="host1" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="keystoreList" type="Configurator:Keystores" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='Keystores'&dunesName='Configurator:Keystores']]></value>
+  </attrib>
+  <workflow-item name="item1" type="end" end-mode="0">
+    <position y="18.136363636363633" x="904.5"/>
+  </workflow-item>
+  <workflow-item name="item6" out-name="item1" type="link" linked-workflow-id="918080808080808080808080808080809F80808001299080088268176866967b3">
+    <display-name><![CDATA[Update a REST host]]></display-name>
+    <in-binding>
+      <bind name="host" type="REST:RESTHost" export-name="host">
+        <description><![CDATA[REST host to update]]></description>
+      </bind>
+      <bind name="name" type="string" export-name="name">
+        <description><![CDATA[New host's name]]></description>
+      </bind>
+      <bind name="url" type="string" export-name="url">
+        <description><![CDATA[New host's base URL]]></description>
+      </bind>
+      <bind name="authentication" type="string" export-name="authentication">
+        <description><![CDATA[New host's authentication type]]></description>
+      </bind>
+      <bind name="authUserName" type="string" export-name="authUserName">
+        <description><![CDATA[Authentication user name]]></description>
+      </bind>
+      <bind name="authPassword" type="SecureString" export-name="authPassword">
+        <description><![CDATA[Authentication password]]></description>
+      </bind>
+      <bind name="consumerKey" type="string" export-name="consumerKey">
+        <description><![CDATA[Consumer key]]></description>
+      </bind>
+      <bind name="consumerSecret" type="SecureString" export-name="consumerSecret">
+        <description><![CDATA[Consumer secret]]></description>
+      </bind>
+      <bind name="accessToken" type="string" export-name="accessToken">
+        <description><![CDATA[Access token]]></description>
+      </bind>
+      <bind name="accessTokenSecret" type="SecureString" export-name="accessTokenSecret">
+        <description><![CDATA[Access token secret]]></description>
+      </bind>
+      <bind name="connectionTimeout" type="number" export-name="connectionTimeout">
+        <description><![CDATA[Connection timeout]]></description>
+      </bind>
+      <bind name="operationTimeout" type="number" export-name="operationTimeout">
+        <description><![CDATA[Operation timeout]]></description>
+      </bind>
+      <bind name="sessionMode" type="string" export-name="sessionMode">
+        <description><![CDATA[Session mode]]></description>
+      </bind>
+      <bind name="oauth2Token" type="string" export-name="oauth2Token">
+        <description><![CDATA[OAuth 2.0 token]]></description>
+      </bind>
+      <bind name="workstation" type="string" export-name="workstation">
+        <description><![CDATA[Workstation for NTLM authentication]]></description>
+      </bind>
+      <bind name="domain" type="string" export-name="domain">
+        <description><![CDATA[Domain for NTLM authentication]]></description>
+      </bind>
+      <bind name="useProxy" type="boolean" export-name="useProxy">
+        <description><![CDATA[Use proxy]]></description>
+      </bind>
+      <bind name="proxyHost" type="string" export-name="proxyHost">
+        <description><![CDATA[Proxy host]]></description>
+      </bind>
+      <bind name="proxyPort" type="number" export-name="proxyPort">
+        <description><![CDATA[Proxy port]]></description>
+      </bind>
+      <bind name="ignoreWarnings" type="boolean" export-name="ignoreCertificateWarnings"/>
+      <bind name="hostVerification" type="boolean" export-name="hostVerification"/>
+      <bind name="proxyAuthPassword" type="SecureString" export-name="proxyAuthPassword"/>
+      <bind name="proxySessionMode" type="string" export-name="proxySessionMode"/>
+      <bind name="proxyAuthentication" type="string" export-name="proxyAuthentication"/>
+      <bind name="proxyAuthUserName" type="string" export-name="proxyAuthUserName"/>
+      <bind name="key" type="Configurator:Key" export-name="key"/>
+      <bind name="autoUrlRedirection" type="boolean" export-name="autoUrlRedirection"/>
+    </in-binding>
+    <out-binding>
+      <bind name="updatedRestHost" type="REST:RESTHost" export-name="updatedRestHost">
+        <description><![CDATA[The updated REST host]]></description>
+      </bind>
+    </out-binding>
+    <description><![CDATA[Updates a REST host from the plug-in's inventory.]]></description>
+    <position y="28.136363636363633" x="664.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item6" type="link" linked-workflow-id="b006447c-c041-4d51-8726-9f30b9709284">
+    <display-name><![CDATA[Import a certificate from URL using proxy server]]></display-name>
+    <in-binding>
+      <bind name="url" type="string" export-name="host1">
+        <description><![CDATA[URL or just host:port for non-HTTPS SSL services:]]></description>
+      </bind>
+      <bind name="ignoreWarnings" type="boolean" export-name="ignoreCertificateWarnings">
+        <description><![CDATA[If set to true, the certificate is accepted silently and the certificate is added to the trusted store]]></description>
+      </bind>
+      <bind name="proxyHost" type="string" export-name="proxyHost">
+        <description><![CDATA[Proxy host]]></description>
+      </bind>
+      <bind name="proxyPort" type="number" export-name="proxyPort">
+        <description><![CDATA[Proxy port]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Imports an SSL certificate into the server trust store.]]></description>
+    <position y="264.5" x="664.5"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item6" type="link" linked-workflow-id="c5a874a2-e8e7-480d-bdde-d1a80b8a3011">
+    <display-name><![CDATA[Import a certificate from URL]]></display-name>
+    <in-binding>
+      <bind name="url" type="string" export-name="host1">
+        <description><![CDATA[URL or just host:port for non-HTTPS SSL services:]]></description>
+      </bind>
+      <bind name="ignoreWarnings" type="boolean" export-name="ignoreCertificateWarnings">
+        <description><![CDATA[If set to true, the certificate is accepted silently and the certificate is added to the trusted store]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Imports an SSL certificate into the server trust store.]]></description>
+    <position y="173.59090909090907" x="424.5"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item0" type="condition" alt-out-name="item3" comparator="0">
+    <display-name><![CDATA[is useProxy?]]></display-name>
+    <script encoded="false"><![CDATA[//Generated by the system, cannot be edited
+return (useProxy == true) ;]]></script>
+    <in-binding>
+      <bind name="useProxy" type="boolean" export-name="useProxy"/>
+    </in-binding>
+    <condition name="useProxy" type="boolean" comparator="0" label="null">false</condition>
+    <position y="163.59090909090907" x="184.5"/>
+  </workflow-item>
+  <workflow-item name="item0" out-name="item2" type="custom-condition" alt-out-name="item5">
+    <display-name><![CDATA[is 'Import a certificate from URL using proxy server' exists?]]></display-name>
+    <script encoded="false"><![CDATA[var importWorkflow = Server.getWorkflowWithId("b006447c-c041-4d51-8726-9f30b9709284");
+if (importWorkflow != null) {
+	return true;
+} else {
+	return false;
+} ]]></script>
+    <in-binding/>
+    <position y="254.5" x="185.0"/>
+  </workflow-item>
+  <workflow-item name="item5" out-name="item7" type="task">
+    <display-name><![CDATA[prepare proxy settings]]></display-name>
+    <script encoded="false"><![CDATA[var proxySettings = new Properties();
+proxySettings.put("HTTP.PROXY_HOST", proxyHost);
+proxySettings.put("HTTP.PROXY_PORT", proxyPort);]]></script>
+    <in-binding>
+      <bind name="proxyHost" type="string" export-name="proxyHost"/>
+      <bind name="proxyPort" type="number" export-name="proxyPort"/>
+    </in-binding>
+    <out-binding>
+      <bind name="proxySettings" type="Properties" export-name="proxySettings"/>
+    </out-binding>
+    <position y="219.04545454545453" x="364.5"/>
+  </workflow-item>
+  <workflow-item name="item7" out-name="item6" type="link" linked-workflow-id="a1fae3b5-305e-4995-9cfd-2353f589c1ba">
+    <display-name><![CDATA[Manage SSL certificates]]></display-name>
+    <in-binding>
+      <bind name="url" type="string" export-name="url">
+        <description><![CDATA[The URL which should be validated]]></description>
+      </bind>
+      <bind name="proxySettings" type="Properties" export-name="proxySettings">
+        <description><![CDATA[Proxy settings]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Verifies a host URL and, if required, shows a user interaction message for SSL certificates user approval.]]></description>
+    <position y="219.04545454545453" x="525.0"/>
+  </workflow-item>
+  <workflow-item name="item8" out-name="item9" type="custom-condition" alt-out-name="item6">
+    <display-name><![CDATA[is SSL?]]></display-name>
+    <script encoded="false"><![CDATA[return (/^https:/).test(url);]]></script>
+    <in-binding>
+      <bind name="url" type="string" export-name="url"/>
+    </in-binding>
+    <position y="18.136363636363633" x="185.0"/>
+  </workflow-item>
+  <workflow-item name="item9" out-name="item4" type="task">
+    <display-name><![CDATA[get host from base url]]></display-name>
+    <script encoded="false"><![CDATA[host1 = url.substring(8, url.length);
+var end = host1.indexOf("/");
+if (end != -1) {
+	host1 = host1.substring(0, end);
+}
+System.log(url);]]></script>
+    <in-binding>
+      <bind name="url" type="string" export-name="url"/>
+    </in-binding>
+    <out-binding>
+      <bind name="host1" type="string" export-name="host1"/>
+    </out-binding>
+    <position y="100.86363636363636" x="185.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[REST host update]]></title>
+      <p-param name="host">
+        <desc><![CDATA[Host to be updated]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        <p-qual name="contextualParameter" type="void"><![CDATA[]]></p-qual>
+      </p-param>
+      <p-group>
+        <title><![CDATA[Host Properties]]></title>
+        <desc><![CDATA[Properties of the host. The name is the host unique identifier.]]></desc>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#host != null]]></p-qual>
+        <p-param name="name">
+          <desc><![CDATA[Name]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#host != null]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[(#host != null ? #host.name : "")]]></p-qual>
+        </p-param>
+        <p-param name="url">
+          <desc><![CDATA[URL]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#host != null]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[(#host != null ? #host.url : "")]]></p-qual>
+        </p-param>
+        <p-param name="connectionTimeout">
+          <desc><![CDATA[Connection timeout (seconds)]]></desc>
+          <p-qual kind="static" name="minNumberValue" type="Number"><![CDATA[0]]></p-qual>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#host != null]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="number"><![CDATA[(#host != null ? #host.connectionTimeout : 30.0)]]></p-qual>
+        </p-param>
+        <p-param name="operationTimeout">
+          <desc><![CDATA[Operation timeout (seconds)]]></desc>
+          <p-qual kind="static" name="minNumberValue" type="Number"><![CDATA[0]]></p-qual>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#host != null]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="number"><![CDATA[(#host != null ? #host.operationTimeout : 60.0)]]></p-qual>
+        </p-param>
+        <p-param name="ignoreCertificateWarnings">
+          <desc><![CDATA[Ignore certificate warnings]]></desc>
+          <p-qual kind="static" name="defaultValue" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+        <p-param name="autoUrlRedirection">
+          <desc><![CDATA[Automatical URL redirection]]></desc>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[If the certificate is not imported into vRO a manual user action needs to be accepted inside vRO.]]></title>
+        <p-qual kind="ognl" name="notVisible" type="boolean"><![CDATA[#ignoreCertificateWarnings]]></p-qual>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Proxy settings]]></title>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#host != null]]></p-qual>
+        <p-param name="useProxy">
+          <desc><![CDATA[Use proxy]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#host != null]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="boolean"><![CDATA[#host.proxyHost != null && #host.proxyHost != ""]]></p-qual>
+        </p-param>
+        <p-param name="proxyHost">
+          <desc><![CDATA[Proxy host]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#useProxy && #host != null]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[(#host != null ? #host.proxyHost : "")]]></p-qual>
+        </p-param>
+        <p-param name="proxyPort">
+          <desc><![CDATA[Proxy port]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#useProxy && #host != null]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="number"><![CDATA[(#host != null ? (#host.proxyPort > 0 ? #host.proxyPort : "") : "")]]></p-qual>
+        </p-param>
+        <p-param name="proxyAuthentication">
+          <desc><![CDATA[Proxy Authenitcation Type]]></desc>
+          <p-qual kind="ognl" name="mandatory" type="boolean"><![CDATA[#useProxy]]></p-qual>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#useProxy]]></p-qual>
+          <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#NONE#;#string#Basic#;#string#Digest#;#string#NTLM#;#string#OAuth 1.0#;#string#OAuth 2.0#}#]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Proxy credentials]]></title>
+        <p-param name="proxySessionMode">
+          <desc><![CDATA[Proxy session mode]]></desc>
+          <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#Shared Session#;#string#Per User Session#}#]]></p-qual>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#useProxy && #proxyAuthentication != "NONE" && #proxyAuthentication != "OAuth 1.0" && #proxyAuthentication != "OAuth 2.0"]]></p-qual>
+        </p-param>
+        <p-param name="proxyAuthUserName">
+          <desc><![CDATA[Proxy user name]]></desc>
+          <p-qual kind="ognl" name="mandatory" type="boolean"><![CDATA[#useProxy && (#proxySessionMode == "Shared Session")]]></p-qual>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#useProxy && (#proxySessionMode == "Shared Session")]]></p-qual>
+        </p-param>
+        <p-param name="proxyAuthPassword">
+          <desc><![CDATA[Proxy password]]></desc>
+          <p-qual kind="ognl" name="mandatory" type="boolean"><![CDATA[#useProxy && (#proxySessionMode == "Shared Session")]]></p-qual>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#useProxy && (#proxySessionMode == "Shared Session")]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[SSL]]></title>
+        <p-param name="hostVerification">
+          <desc><![CDATA[Verify whether the target hostname matches the names stored inside the server's X.509 certificate]]></desc>
+          <p-qual kind="static" name="defaultValue" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+        <p-param name="key">
+          <desc><![CDATA[The PrivateKeyEntry to use for client certificate authentication.]]></desc>
+          <p-qual kind="ognl" name="sdkRootObject" type="any"><![CDATA[#keystoreList]]></p-qual>
+        </p-param>
+      </p-group>
+    </p-step>
+    <p-step>
+      <title><![CDATA[Host Authentication]]></title>
+      <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#host != null]]></p-qual>
+      <p-param name="authentication">
+        <desc><![CDATA[Authentication type]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#NONE#;#string#OAuth 1.0#;#string#OAuth 2.0#;#string#Basic#;#string#Digest#;#string#NTLM#;#string#Kerberos#}#]]></p-qual>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#host != null]]></p-qual>
+        <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[GetAction("com.vmware.library.http-rest.configuration","getRESTHostAuthenticationType").call(#host)]]></p-qual>
+      </p-param>
+      <p-group>
+        <title><![CDATA[User credentials]]></title>
+        <desc><![CDATA[User credentials for Shared Session.]]></desc>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#authentication!="NONE"&&#authentication!="OAuth 1.0"&&#authentication!="OAuth 2.0"]]></p-qual>
+        <p-param name="authUserName">
+          <desc><![CDATA[Authentication user name]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#authentication!="NONE"&&#authentication!="OAuth 1.0"&&#authentication!="OAuth 2.0" && #host != null]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[GetAction("com.vmware.library.http-rest.configuration","getRESTHostAuthenticationProperty").call( #host , 1.0, #authentication, (#authentication=="Basic" || #authentication=="Digest" || #authentication=="NTLM" ) )]]></p-qual>
+        </p-param>
+        <p-param name="authPassword">
+          <desc><![CDATA[Authentication password]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#authentication!="NONE"&&#authentication!="OAuth 1.0"&&#authentication!="OAuth 2.0" && #host != null]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="SecureString"><![CDATA[GetAction("com.vmware.library.http-rest.configuration","getRESTHostAuthenticationProperty").call( #host , 2.0, #authentication, (#authentication=="Basic" || #authentication=="Digest" || #authentication=="NTLM") )]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[OAuth 1.0]]></title>
+        <desc><![CDATA[OAuth (http://oauth.net/) authentication properties.]]></desc>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#authentication=="OAuth 1.0"]]></p-qual>
+        <p-param name="consumerKey">
+          <desc><![CDATA[Consumer key]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#authentication=="OAuth 1.0" && #host != null]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[GetAction("com.vmware.library.http-rest.configuration","getRESTHostAuthenticationProperty").call( #host , 0.0, #authentication, (#authentication=="OAuth 1.0") )]]></p-qual>
+        </p-param>
+        <p-param name="consumerSecret">
+          <desc><![CDATA[Consumer secret]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#authentication=="OAuth 1.0" && #host != null]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="SecureString"><![CDATA[GetAction("com.vmware.library.http-rest.configuration","getRESTHostAuthenticationProperty").call( #host , 1.0, #authentication, (#authentication=="OAuth 1.0") )]]></p-qual>
+        </p-param>
+        <p-param name="accessToken">
+          <desc><![CDATA[Access token]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#authentication=="OAuth 1.0" && #host != null]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[GetAction("com.vmware.library.http-rest.configuration","getRESTHostAuthenticationProperty").call( #host , 2.0, #authentication, (#authentication=="OAuth 1.0") )]]></p-qual>
+        </p-param>
+        <p-param name="accessTokenSecret">
+          <desc><![CDATA[Access token secret]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#authentication=="OAuth 1.0" && #host != null]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="SecureString"><![CDATA[GetAction("com.vmware.library.http-rest.configuration","getRESTHostAuthenticationProperty").call( #host , 3.0, #authentication, (#authentication=="OAuth 1.0") )]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[OAuth 2.0]]></title>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#authentication=="OAuth 2.0"]]></p-qual>
+        <p-param name="oauth2Token">
+          <desc><![CDATA[Token]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#authentication=="OAuth 2.0" && #host != null]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[GetAction("com.vmware.library.http-rest.configuration","getRESTHostAuthenticationProperty").call( #host , 0.0, #authentication, (#authentication=="OAuth 2.0"))]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[NTLM]]></title>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#authentication=="NTLM"]]></p-qual>
+        <p-param name="workstation">
+          <desc><![CDATA[Workstation for NTLM authentication]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#authentication=="NTLM" && #host != null]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[GetAction("com.vmware.library.http-rest.configuration","getRESTHostAuthenticationProperty").call( #host , 3.0, #authentication, (#authentication=="NTLM") )]]></p-qual>
+        </p-param>
+        <p-param name="domain">
+          <desc><![CDATA[Domain for NTLM authentication]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#authentication=="NTLM" && #host != null]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[GetAction("com.vmware.library.http-rest.configuration","getRESTHostAuthenticationProperty").call( #host , 4.0, #authentication, (#authentication=="NTLM") )]]></p-qual>
+        </p-param>
+      </p-group>
+    </p-step>
+  </presentation>
+</workflow>

@@ -1,0 +1,159 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="Workflow:name=generic" id="B6808080808080808080808080808080B8808080013050415040353c595e3a533" version="1.0.0" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Generate CRUD workflows for a table]]></display-name>
+  <description><![CDATA[Generates Create, Read, Update and Delete workflows for a particular table.]]></description>
+  <ref-types><![CDATA[(SQL:Table)]]></ref-types>
+  <position y="20.0" x="180.0"/>
+  <input>
+    <param name="category" type="WorkflowCategory">
+      <description><![CDATA[Workflow Category object]]></description>
+    </param>
+    <param name="table" type="SQL:Table">
+      <description><![CDATA[Table object]]></description>
+    </param>
+    <param name="overwriteWorkflows" type="boolean">
+      <description><![CDATA[Overwrite existing workflows]]></description>
+    </param>
+    <param name="readOnlyColumns" type="Array/SQL:Column">
+      <description><![CDATA[Read-only columns]]></description>
+    </param>
+  </input>
+  <output>
+    <param name="actionResult" type="Array/Workflow">
+      <description><![CDATA[An array of generated workflows]]></description>
+    </param>
+  </output>
+  <attrib name="errorCode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[An error message or code]]></description>
+  </attrib>
+  <attrib name="createWorkflow" type="Workflow" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[A workflow instance create table operation]]></description>
+  </attrib>
+  <attrib name="readWorkflow" type="Workflow" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[A workflow instance read table operation]]></description>
+  </attrib>
+  <attrib name="updateWorkflow" type="Workflow" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[A workflow instance update table operation]]></description>
+  </attrib>
+  <attrib name="deleteWorkflow" type="Workflow" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[A workflow instance remove/drop table operation]]></description>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="370.0" x="180.0"/>
+  </workflow-item>
+  <workflow-item name="item2" throw-bind-name="errorCode" type="end" end-mode="1">
+    <position y="170.0" x="360.0"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item3" catch-name="item2" throw-bind-name="errorCode" type="task" script-module="com.vmware.library.sql/generateCreateWorkflow">
+    <display-name><![CDATA[generateCreateWorkflow]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.sql").generateCreateWorkflow(table,category,overwriteWorkflow,readOnlyColumns) ;]]></script>
+    <in-binding>
+      <bind name="table" type="SQL:Table" export-name="table"/>
+      <bind name="category" type="WorkflowCategory" export-name="category"/>
+      <bind name="overwriteWorkflow" type="boolean" export-name="overwriteWorkflows"/>
+      <bind name="readOnlyColumns" type="Array/SQL:Column" export-name="readOnlyColumns"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Workflow" export-name="createWorkflow"/>
+    </out-binding>
+    <position y="80.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item6" out-name="item0" type="task">
+    <display-name><![CDATA[Preapare output]]></display-name>
+    <script encoded="false"><![CDATA[actionResult = new Array(4);
+actionResult[0] = createWorkflow;
+actionResult[1] = readWorkflow;
+actionResult[2] = updateWorkflow;
+actionResult[3] = deleteWorkflow;]]></script>
+    <in-binding>
+      <bind name="createWorkflow" type="Workflow" export-name="createWorkflow"/>
+      <bind name="readWorkflow" type="Workflow" export-name="readWorkflow"/>
+      <bind name="updateWorkflow" type="Workflow" export-name="updateWorkflow"/>
+      <bind name="deleteWorkflow" type="Workflow" export-name="deleteWorkflow"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Array/Workflow" export-name="actionResult"/>
+    </out-binding>
+    <position y="320.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item4" catch-name="item2" throw-bind-name="errorCode" type="task" script-module="com.vmware.library.sql/generateReadWorkflow">
+    <display-name><![CDATA[generateReadWorkflow]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.sql").generateReadWorkflow(table,category,overwriteWorkflow) ;]]></script>
+    <in-binding>
+      <bind name="table" type="SQL:Table" export-name="table"/>
+      <bind name="category" type="WorkflowCategory" export-name="category"/>
+      <bind name="overwriteWorkflow" type="boolean" export-name="overwriteWorkflows"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Workflow" export-name="readWorkflow"/>
+    </out-binding>
+    <description><![CDATA[Generates read table record workflow]]></description>
+    <position y="140.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item5" catch-name="item2" throw-bind-name="errorCode" type="task" script-module="com.vmware.library.sql/generateUpdateWorkflow">
+    <display-name><![CDATA[generateUpdateWorkflow]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.sql").generateUpdateWorkflow(table,category,overwriteWorkflow,readOnlyColumns) ;]]></script>
+    <in-binding>
+      <bind name="table" type="SQL:Table" export-name="table"/>
+      <bind name="category" type="WorkflowCategory" export-name="category"/>
+      <bind name="overwriteWorkflow" type="boolean" export-name="overwriteWorkflows"/>
+      <bind name="readOnlyColumns" type="Array/SQL:Column" export-name="readOnlyColumns"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Workflow" export-name="updateWorkflow"/>
+    </out-binding>
+    <position y="200.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item5" out-name="item6" catch-name="item2" throw-bind-name="errorCode" type="task" script-module="com.vmware.library.sql/generateDeleteWorkflow">
+    <display-name><![CDATA[generateDeleteWorkflow]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.sql").generateDeleteWorkflow(table,category,overwriteWorkflow) ;]]></script>
+    <in-binding>
+      <bind name="table" type="SQL:Table" export-name="table"/>
+      <bind name="category" type="WorkflowCategory" export-name="category"/>
+      <bind name="overwriteWorkflow" type="boolean" export-name="overwriteWorkflows"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Workflow" export-name="deleteWorkflow"/>
+    </out-binding>
+    <position y="260.0" x="140.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Generate CRUD workflows]]></title>
+      <p-group>
+        <title><![CDATA[Insert table and destination]]></title>
+        <desc><![CDATA[Generates the four base workflows for Create/ Read/ Update/ Delete. These workflows are bound to the selected table.]]></desc>
+        <p-param name="table">
+          <desc><![CDATA[Table]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual kind="ognl" name="ognlValidator" type="String"><![CDATA[GetAction("com.vmware.library.sql","areTableColumns").call(#table, #readOnlyColumns)]]></p-qual>
+          <p-qual kind="static" name="contextualParameter" type="void"><![CDATA[__NULL__]]></p-qual>
+        </p-param>
+        <p-param name="category">
+          <desc><![CDATA[Destination directory]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+        <p-param name="overwriteWorkflows">
+          <desc><![CDATA[Overwrite existing workflows]]></desc>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Select read-only columns]]></title>
+        <desc><![CDATA[Columns that remain not populated in the database table]]></desc>
+        <p-param name="readOnlyColumns">
+          <desc><![CDATA[Read-only columns]]></desc>
+          <p-qual kind="ognl" name="sdkRootObject" type="any"><![CDATA[#table]]></p-qual>
+        </p-param>
+      </p-group>
+    </p-step>
+  </presentation>
+</workflow>

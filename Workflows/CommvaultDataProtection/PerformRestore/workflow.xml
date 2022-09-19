@@ -1,0 +1,462 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="e0e93b93-2c8f-49ad-809b-aaae29a8fbfd" version="0.0.6" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[PerformRestore]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="vCACVm" type="VC:VirtualMachine">
+      <description><![CDATA[Virtual Machine]]></description>
+    </param>
+    <param name="Backup" type="string">
+      <description><![CDATA[Backup Job Range]]></description>
+    </param>
+    <param name="JobDetails" type="string">
+      <description><![CDATA[Job Details]]></description>
+    </param>
+  </input>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Scriptable task]]></display-name>
+    <script encoded="false"><![CDATA[var  requestType = "POST";
+var browseUrl = "DoBrowse"
+var  getClientIdUrl = "Client";
+var  getbackupSetIdUrl = "Backupset?clientId=";
+var getSubClientIdUrl = "Subclient?clientId=";
+var getProxyListUrl = "Instance";
+var restoreUrl = "CreateTask";//"/v2/vsa/vm/";
+
+var vmBrowseUrl = "VM?forUser=true&status=0";
+
+//Globals
+var vCenterName = "";
+var vcClientName = "";
+var backupSetName = "";
+var vcClientID = "";
+var backupSetId = "";
+var subClientName = "";
+var subClientId = "";
+var instanceID = "";
+var copyPrecedence = "0";
+var appId = "106";
+var vmName = vCACVm.name;
+var vmUUID = "";
+var vsaProxyId = "";
+var vsaProxyName = "";
+var newVMName = "";
+var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",encode:function(e){var t="";var n,r,i,s,o,u,a;var f=0;e=Base64._utf8_encode(e);while(f<e.length){n=e.charCodeAt(f++);r=e.charCodeAt(f++);i=e.charCodeAt(f++);s=n>>2;o=(n&3)<<4|r>>4;u=(r&15)<<2|i>>6;a=i&63;if(isNaN(r)){u=a=64}else if(isNaN(i)){a=64}t=t+this._keyStr.charAt(s)+this._keyStr.charAt(o)+this._keyStr.charAt(u)+this._keyStr.charAt(a)}return t},decode:function(e){var t="";var n,r,i;var s,o,u,a;var f=0;e=e.replace(/[^A-Za-z0-9\+\/\=]/g,"");while(f<e.length){s=this._keyStr.indexOf(e.charAt(f++));o=this._keyStr.indexOf(e.charAt(f++));u=this._keyStr.indexOf(e.charAt(f++));a=this._keyStr.indexOf(e.charAt(f++));n=s<<2|o>>4;r=(o&15)<<4|u>>2;i=(u&3)<<6|a;t=t+String.fromCharCode(n);if(u!=64){t=t+String.fromCharCode(r)}if(a!=64){t=t+String.fromCharCode(i)}}t=Base64._utf8_decode(t);return t},_utf8_encode:function(e){e=e.replace(/\r\n/g,"\n");var t="";for(var n=0;n<e.length;n++){var r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r)}else if(r>127&&r<2048){t+=String.fromCharCode(r>>6|192);t+=String.fromCharCode(r&63|128)}else{t+=String.fromCharCode(r>>12|224);t+=String.fromCharCode(r>>6&63|128);t+=String.fromCharCode(r&63|128)}}return t},_utf8_decode:function(e){var t="";var n=0;var r=c1=c2=0;while(n<e.length){r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r);n++}else if(r>191&&r<224){c2=e.charCodeAt(n+1);t+=String.fromCharCode((r&31)<<6|c2&63);n+=2}else{c2=e.charCodeAt(n+1);c3=e.charCodeAt(n+2);t+=String.fromCharCode((r&15)<<12|(c2&63)<<6|c3&63);n+=3}}return t}}
+var status = "";
+var pageSize = "0,1000";
+
+//Restore Variables
+var destESXServer = "";
+var destDatastore = "";
+var destresourcePoolPath = "";
+var inventoryPath = "";
+var disklist = [];
+var inplaceFlag = "true";
+var unconditionalOverwrite = "1";
+var bFoundSubclient = false;
+var bFoundBackupset = false;
+
+//Get VM and Host Details
+var moRefId = vCACVm.config.instanceUuid;
+var type  = 'VC:VirtualMachine';
+
+vCenterName =  vCACVm.vimHost.id;
+vcClientName = vCenterName;
+var objArray = Server.findAllForType("vCAC:VirtualMachine", "VMUniqueID eq '" + moRefId + "'");
+if (objArray.length == 0)
+{
+	throw ("Error: couldn't find vCAC:VirtualMachine matching VC:VirtualMachine "+ vCACVm.name);
+}
+var vmEntity =  objArray[0].getEntity();
+
+var bpName = vmEntity.getProperty("BlueprintName");
+if (bpName != null)
+{
+	System.log("Expected BluePrint Name : " + bpName);
+}
+else
+{
+	throw ("Error: couldn't find Blueprint name for the VM selected " + vCACVm.name);
+}
+
+//Get all VCACCAFE blueprint names to match the passed Blueprint name
+
+var bps = Server.findAllForType("VCACCAFE:CompositeBlueprint");
+if (bps.length > 0)
+{
+	for(var i = 0; i< bps.length; i++){
+		System.log("BP " + bps[i].name);
+		if(bps[i].name == bpName)
+		{
+			//System.log("Found Tentant name from Blueprint used " + bps[i].tenantId);
+			backupSetName = bps[i].tenantId;
+			break;
+			
+		}
+	}
+}
+if (backupSetName == null)
+{
+	throw("Error: BackupSet name couldn't be resolved, tenant id null");
+	
+}
+
+//log all variables
+System.log("=================================Init============================");
+System.log("vCenter Host Name : " + vcClientName);
+System.log("VM Name : " + vCACVm.name);
+System.log("VM UUID : " + moRefId);
+System.log("VM Moref : " + vCACVm.id);
+System.log("VM Blueprint Name : " + bpName);
+System.log("VM Tenant : " + backupSetName);
+System.log("==========================End Init==========================");
+
+
+//Get REST host URL and credentials
+
+//Prepare cvLogin
+
+var restHost = System.getModule("com.commvault.utils").getHost();
+if(restHost == null)
+{
+    throw("Error: couldn't find the REST host, please add REST host on vRO with Commvault webservice URL. example: http://server1.company.com:81/SearchSvc/CVWebService.svc/");
+}
+System.log("HOST: " +restHost);
+
+//Get token
+var token = System.getModule("com.commvault.utils").getToken(restHost);
+if(token == -1)
+{
+    throw("Error: Failed to generate token. please check Commvault WebServer log for login request");
+}
+
+
+//Get Client ID
+vcClientID = System.getModule("com.commvault.utils").getClientId(token,vcClientName);
+if (vcClientID == -1)
+{
+	throw("Error: Could not find Virtualization client configured in commcell with the End point name. Please configure Virtualization client with the name as End point name in VRA");
+}
+
+//Get BackupSet ID
+
+var Ids = System.getModule("com.commvault.utils").getBackupSet(token, vcClientID, backupSetName); //This will get BackupSetId and instanceId
+if ( Ids != -1)
+{
+    //BackupSet exists, also check for Subclient
+    aID  = Ids.split(",");
+	instanceID = aID[1];
+	//System.log("type of of instance id :" + typeof(instanceID));
+	backupSetId = aID[0];
+	System.log("BackupSetId exists, backupsetId and Instance Id found: "+ Ids);
+	bFoundBackupset = true;
+    
+}
+if (bFoundBackupset == false)
+{
+	throw("Backupset Id not found, cannot continue.");
+}
+
+//Get Subclient Id
+var subclientInfo =  System.getModule("com.commvault.utils").browseVM(token);
+var subclientName = "";
+var subclientId = "";
+
+if (subclientInfo != ""){
+	info = subclientInfo.split(",");
+	subclientName = info[0];
+	subclientId = info[1];
+	System.log("Found the subclient for the vm " + vmName + " Name and ID of subclient is " + subclientName + "" + subclientId);
+	bFoundSubclient = true;
+	
+}
+if(bFoundSubclient == false){
+	var err_msg =  "Error: subclient info not found, vm ";
+	var err_msg = err_msg.concat(vmName, " may not have been backed up");
+	System.log(err_msg);
+	throw(err_msg);
+}
+
+//Get proxy members from Instance
+var ProxyIdName = System.getModule("com.commvault.utils").getProxyMember(instanceID,token,restHost);
+if(ProxyIdName == "" ){
+	
+	throw("Error: Failed to get the proxy member info");
+}
+else{
+	var vsaProxyInfo = ProxyIdName.split(",");
+	var vsaProxyId = vsaProxyInfo[0];
+	var vsaProxyName = vsaProxyInfo[1];
+	System.log("proxy id is " + vsaProxyId + " proxy name is " +  vsaProxyName );
+
+}
+
+var JobDetailsArray = JobDetails.split(";",1);
+var selectedJobId = JobDetailsArray[0].split(":",2)[1];
+var jobID = selectedJobId.replace(/ /g,'');
+System.log("Job Id selected for restore is " + jobID+" job");
+
+var jobStartEndTime = System.getModule("com.commvault.utils").getJobDetails(jobID,token);
+//System.log("Start End time " +  jobStartEndTime);
+
+var jobStartEndTimeList = jobStartEndTime.split(";");
+var fromTime = jobStartEndTimeList[0];
+var toTime = jobStartEndTimeList[1];
+
+/*if(Backup == "Latest Backup"){
+	fromTime = 0;
+	toTime = 0;
+}*/
+
+System.log("from time " + fromTime + " to time " +  toTime);
+
+var SubclientDestinationInfo = System.getModule("com.commvault.utils").subclientBrowse(token,subclientId,toTime);
+if(SubclientDestinationInfo == "" ){
+	
+	throw("Error: Failed to get the proxy member info");
+}
+else{
+	var subclientInfo = SubclientDestinationInfo.split(",");
+	destDatastore = subclientInfo[0];
+	destESXServer = subclientInfo[1];
+	destresourcePoolPath = subclientInfo[2];
+	inventoryPath = subclientInfo[3];
+	
+	//System.log("Destination DS is  " + destDatastore + " ESX Server is  " +  destESXServer + " resourcePoolPath is  "  + destresourcePoolPath + " inventory path is " + inventoryPath);
+}
+
+//Perform VMDetails browse
+var vmDetailsUrl = "Subclient/"+subclientId+"/Browse?path=%5C"+vmUUID+"&fromTime="+fromTime+"&toTime="+toTime+"&restoreIndex=true&showDeletedFiles=false&vsDiskBrowse=true";
+System.log("Executing VM details browse URL "+ vmDetailsUrl);
+
+
+var request = restHost.createRequest("GET", vmDetailsUrl, "");
+request.setHeader("Authtoken",token);
+var response = request.execute();
+
+var document = XMLManager.fromString(response.contentAsString);
+var list = document.getElementsByTagName("dataResultSet");
+for(var i = 0; i < list.length ; i++)
+{
+
+	if((list.item(i).getAttribute("name")).indexOf(".vmdk")> -1)
+	{
+		var diskname = list.item(i).getAttribute("name");
+		var advancedData = list.item(i).getChildNodes();
+		for(var j = 0; j < advancedData.length; j++)
+		{
+
+			if (advancedData.item(j).nodeName == "advancedData")
+			{
+				
+				var browseMetadata = advancedData.item(j).getChildNodes();
+				for(var k = 0 ; k < browseMetadata.length; k++)
+				{
+					if(browseMetadata.item(k).nodeName == "browseMetaData")
+					{
+						var vsMetadata = browseMetadata.item(k).getChildNodes();
+						for(var l =0; l < vsMetadata.length; l++)
+						{
+								if(vsMetadata.item(l).nodeName == "virtualServerMetaData")
+								{
+									disklist.push(vsMetadata.item(l).getAttribute("datastore")+"|"+ diskname);
+								}
+	
+						}
+					}
+					
+				}
+			}
+		}
+		
+	}
+	
+
+}
+
+
+// Construct Restore XML
+
+var restoreXML = new XML('<TMMsg_CreateTaskReq><taskInfo/></TMMsg_CreateTaskReq>');
+//Associations block
+var associations = new XML('<associations><appName/><commcellName/><csGUID/><flags/><hostName/><instanceName/><subclientName/></associations>');
+associations.@backupsetName = backupSetName;
+associations.@applicationId = appId;
+associations.@subclientId = subClientId;
+associations.@backupsetId = backupSetId;
+associations.@clientId = vcClientID;
+associations.@clientName = vcClientName;
+associations.@instanceId = instanceID;
+restoreXML.taskInfo.appendChild(associations);
+restoreXML.taskInfo.associations.appName = "Virtual Server";
+restoreXML.taskInfo.associations.subclientName = subclientName;
+restoreXML.taskInfo.associations.instanceName = "VMware";
+
+//SubTasks block
+var subTasks = new XML('<subTasks><subTaskOperation/></subTasks>');
+restoreXML.taskInfo.appendChild(subTasks);
+restoreXML.taskInfo.subTasks.subTaskOperation = "OVERWRITE";
+
+var options = new XML('<options/>');
+restoreXML.taskInfo.subTasks.appendChild(options);
+
+var restoreOptions = new XML('<restoreOptions/>');
+restoreXML.taskInfo.subTasks.options.appendChild(restoreOptions);
+
+var browseOption = new XML('<browseOption/>');
+browseOption.@fromTime="0";
+browseOption.@toTime=toTime;
+browseOption.@listMedia="0";
+browseOption.@useExactIndex="0";
+browseOption.@noImage="1";
+restoreXML.taskInfo.subTasks.options.restoreOptions.appendChild(browseOption);
+
+var backupSet = new XML('<backupset/>');
+restoreXML.taskInfo.subTasks.options.restoreOptions.browseOption.appendChild(backupSet);
+restoreXML.taskInfo.subTasks.options.restoreOptions.browseOption.backupset.backupsetId = backupSetId;
+restoreXML.taskInfo.subTasks.options.restoreOptions.browseOption.backupset.clientName = vCenterName;
+
+var mediaOption = new XML('<mediaOption/>');
+restoreXML.taskInfo.subTasks.options.restoreOptions.browseOption.appendChild(mediaOption);
+
+var timeRange = new XML('<timeRange/>');
+timeRange.@_type_="54";
+timeRange.@fromTime="0";
+timeRange.@toTime=toTime;
+restoreXML.taskInfo.subTasks.options.restoreOptions.browseOption.appendChild(timeRange);
+
+var copyPrecedence = new XML('<copyPrecedence/>');
+copyPrecedence.@copyPrecedenceApplicable = "false";
+restoreXML.taskInfo.subTasks.options.restoreOptions.browseOption.mediaOption.appendChild(copyPrecedence);
+
+var destination = new XML('<destination/>');
+destination.@inPlace = inplaceFlag;
+if (inplaceFlag == "true")
+{
+	newVMName = vmName;
+}
+
+destination.@isLegalHold = "0";
+restoreXML.taskInfo.subTasks.options.restoreOptions.appendChild(destination);
+destClient = new XML('<destClient/>');
+destClient.@clientId = vsaProxyId;
+destClient.@clientName = vsaProxyName;
+restoreXML.taskInfo.subTasks.options.restoreOptions.destination.appendChild(destClient);
+
+var volumeRstOption = new XML('<volumeRstOption />');
+volumeRstOption.@volumeLeveRestore = "0";
+volumeRstOption.@volumeLevelRestoreType = "VIRTUAL_MACHINE";
+volumeRstOption.@destinationVendor = "VMW";
+restoreXML.taskInfo.subTasks.options.restoreOptions.appendChild(volumeRstOption);
+
+var virtualServerRstOption = new XML('<virtualServerRstOption/>');
+//virtualServerRstOption.@esxServer = destESXServer;
+virtualServerRstOption.@isDiskBrowse = "1";
+virtualServerRstOption.@isFileBrowse = "0";
+virtualServerRstOption.@isVolumeBrowse = "0";
+virtualServerRstOption.@viewType = "DEFAULT";
+virtualServerRstOption.@isAttachToNewVM ="0";
+virtualServerRstOption.@isBlockLevelReplication = "0";
+restoreXML.taskInfo.subTasks.options.restoreOptions.appendChild(virtualServerRstOption);
+
+diskLevelVMRestoreOption = new XML('<diskLevelVMRestoreOption/>');
+diskLevelVMRestoreOption.@dataCenterName = "";
+diskLevelVMRestoreOption.@esxServerName = "172.24.25.180";
+diskLevelVMRestoreOption.@diskOption = "Auto";
+diskLevelVMRestoreOption.@esxServerName = vCenterName;
+//diskLevelVMRestoreOption.@hostOrCluster = destESXServer;
+diskLevelVMRestoreOption.@passUnconditionalOverride = unconditionalOverwrite;
+diskLevelVMRestoreOption.@powerOnVmAfterRestore = "1";
+diskLevelVMRestoreOption.@useVcloudCredentials = "0";
+diskLevelVMRestoreOption.@delayMigrationMinutes = "0";
+//diskLevelVMRestoreOption.@registerWithFailoverCluster = "false";
+diskLevelVMRestoreOption.@transportMode = "Auto";
+//diskLevelVMRestoreOption.@vmFolderName = "";
+//diskLevelVMRestoreOption.@vmName = "";
+restoreXML.taskInfo.subTasks.options.restoreOptions.virtualServerRstOption.appendChild(diskLevelVMRestoreOption);
+
+advancedRestoreOptions = new XML('<advancedRestoreOptions/>');
+advancedRestoreOptions.@Datastore = destDatastore;
+advancedRestoreOptions.@esxHost = destESXServer;
+advancedRestoreOptions.@guid = vmUUID;
+advancedRestoreOptions.@name = vmName;
+advancedRestoreOptions.@newName = newVMName;
+advancedRestoreOptions.@resourcePoolPath = destresourcePoolPath;
+advancedRestoreOptions.@FolderPath = inventoryPath;
+restoreXML.taskInfo.subTasks.options.restoreOptions.virtualServerRstOption.diskLevelVMRestoreOption.appendChild(advancedRestoreOptions);
+
+for each (var disk in disklist)
+{
+
+	disks = new XML('<disks/>');
+	disks.@Datastore = disk.split("|")[0];
+	disks.@name = disk.split("|")[1];
+	restoreXML.taskInfo.subTasks.options.restoreOptions.virtualServerRstOption.diskLevelVMRestoreOption.advancedRestoreOptions.appendChild(disks);
+}
+
+
+var fileOption = new XML('<fileOption/>');
+restoreXML.taskInfo.subTasks.options.restoreOptions.appendChild(fileOption);
+
+var sourceItem = new XML('<sourceItem/>');
+sourceItem.@val = "\\"+vmUUID;
+restoreXML.taskInfo.subTasks.options.restoreOptions.fileOption.appendChild(sourceItem);
+
+subTask = new XML('<subTask/>');
+restoreXML.taskInfo.subTasks.appendChild(subTask);
+
+restoreXML.taskInfo.subTasks.subTask.operationType = "RESTORE";
+restoreXML.taskInfo.subTasks.subTask.subTaskType = "RESTORE";
+
+task = new XML('<task/>');
+restoreXML.taskInfo.appendChild(task);
+restoreXML.taskInfo.task.initiatedFrom = "COMMANDLINE";
+restoreXML.taskInfo.task.policyType = "DATA_PROTECTION";
+restoreXML.taskInfo.task.taskType = "IMMEDIATE";
+
+taskFlags = new XML('<taskFlags/>');
+restoreXML.taskInfo.task.appendChild(taskFlags);
+restoreXML.taskInfo.task.taskFlags.disabled = "false";
+
+System.log(restoreXML);
+
+/*
+var restoreXML = new XML('<Api_VMRestoreReq></Api_VMRestoreReq>');
+restoreXML.powerOnVmAfterRestore = "true";
+restoreXML.passUnconditionalOverride = "true";
+restoreXML.jobId = jobID;
+restoreXML.inPlaceRestore ="true";
+
+restoreUrl = restoreUrl + "/" + vmUUID + "/" + "recover";*/
+
+
+var request = restHost.createRequest(requestType, restoreUrl, restoreXML);
+request.setHeader("Authtoken",token);
+var response = request.execute();
+System.log("Restore job response: " + response.contentAsString);
+]]></script>
+    <in-binding>
+      <bind name="Backup" type="string" export-name="Backup"/>
+      <bind name="JobDetails" type="string" export-name="JobDetails"/>
+      <bind name="vCACVm" type="VC:VirtualMachine" export-name="vCACVm"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="vCACVm">
+      <desc><![CDATA[Virtual Machine]]></desc>
+    </p-param>
+    <p-param name="Backup">
+      <desc><![CDATA[Backup Job Range]]></desc>
+      <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#Latest Backup#;#string#Last 30 days#;#string#Last 6 months#;#string#Last 1 year#}#]]></p-qual>
+    </p-param>
+    <p-param name="JobDetails">
+      <desc><![CDATA[Job Details]]></desc>
+      <p-qual kind="ognl" name="linkedEnumeration" type="Array/string"><![CDATA[GetAction("com.commvault.utils","getClientBackupJobDetails").call( #vCACVm , #Backup )]]></p-qual>
+    </p-param>
+  </presentation>
+</workflow>

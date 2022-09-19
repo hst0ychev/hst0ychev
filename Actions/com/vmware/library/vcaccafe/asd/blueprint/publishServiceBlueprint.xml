@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="publishServiceBlueprint" result-type="void" api-version="6.0.0" id="5ef0c09a-71ce-4df6-bb37-021247700b52" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.asd.blueprint">
+  <param n="blueprint" t="vCACCAFE:ServiceBlueprint"><![CDATA[Service blueprint to be published]]></param>
+  <script encoded="false"><![CDATA[System.getModule("com.vmware.library.vcaccafe.util").validateObject(blueprint, "Service blueprint");
+var host = vCACCAFEEntitiesFinder.getHostForEntity(blueprint);
+var blueprintService = host.createAdvancedDesignerClient().getAdvancedDesignerServiceBlueprintService();
+
+System.log("Publishing service blueprint " + blueprint.getName() + "...");
+blueprintService.updateServiceBlueprintStatus(host.tenant, blueprint.getId() , vCACCAFEDesignerPublishStatus.PUBLISHED);
+System.log("Published service blueprint " + blueprint.getName() + ".");]]></script>
+</dunes-script-module>

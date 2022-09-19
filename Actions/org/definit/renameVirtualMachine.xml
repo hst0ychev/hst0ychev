@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="renameVirtualMachine" result-type="void" api-version="6.0.0" id="d5581337-704c-4f2a-a346-cb81c929fdc6" version="0.0.1" allowed-operations="evf" category-name="org.definit">
+  <param n="virtualMachineEntity" t="vCAC:Entity"><![CDATA[vRealize Entity to be updated]]></param>
+  <param n="newHostname" t="string"><![CDATA[New hostname]]></param>
+  <script encoded="false"><![CDATA[// Credit to Ted Spinks
+// http://blogs.vmware.com/management/2015/09/manage-hostnames-with-vrealize-automation-part-2.html
+
+System.log(workflow.currentWorkflow.name+": Updating VirtualMachineName to '" + newHostname + "'.");
+
+//Get the properties of the vCAC VM Entity object (different than vCAC custom properties)
+var vmEntityProps = virtualMachineEntity.getProperties();
+
+//Change the VirtualMachineName property by deleting it and re-adding it
+vmEntityProps.remove('VirtualMachineName');
+vmEntityProps.put('VirtualMachineName', newHostname);
+
+//Update the Entity object to save the change
+var hostId = virtualMachineEntity.hostId;
+var modelName = virtualMachineEntity.modelName;
+var entitySetName = virtualMachineEntity.entitySetName;
+var entityIdString = virtualMachineEntity.keyString;
+var actionResult = System.getModule("com.vmware.library.vcac").updateVCACEntity(hostId,modelName,entitySetName,entityIdString,vmEntityProps,null,null);
+
+System.log(workflow.currentWorkflow.name+": Update of VirtualMachineName finished.");
+
+return actionResult;]]></script>
+</dunes-script-module>

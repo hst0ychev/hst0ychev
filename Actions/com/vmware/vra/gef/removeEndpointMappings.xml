@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="removeEndpointMappings" result-type="void" api-version="6.0.0" id="529d4e49-f973-41f7-a9eb-b54fbccc9f05" version="0.0.1" allowed-operations="vf" category-name="com.vmware.vra.gef">
+  <description><![CDATA[Returns the Properties which represents all of the Endpoint configurations.  Each entry  contains an endpoint name and a list of key-value mappings from the operationType to the Workflow itself.
+
+Ex: 
+endpointName: {
+    cloneMachine: endpointCloneMachineWorkflow
+    disposeMachine: endpointDisposeMachineWorkflow
+    ...
+}
+  ]]></description>
+  <param n="endpointName" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var category = Server.getResourceElementCategoryWithPath("Library/GEF/Providers");
+for each (var resourceElement in category.resourceElements) {
+	if (resourceElement.name == endpointName) {		
+		System.log("Removing: " + resourceElement.name);
+		Server.removeResourceElement(resourceElement);		
+	}
+}
+]]></script>
+</dunes-script-module>

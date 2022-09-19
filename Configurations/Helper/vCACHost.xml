@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="8f368667-13ac-4498-850f-ae6734e9e98b" version="0.0.0">
+  <display-name><![CDATA[vCACHost]]></display-name>
+  <atts>
+    <att name="vcacHost" type="vCAC:VCACHost" read-only="false">
+      <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='7678fd07-7e94-41fb-b504-826e693933a5'&dunesName='vCAC:VCACHost']]></value>
+    </att>
+    <att name="vcaccafeHost" type="vCACCAFE:VCACHost" read-only="false">
+      <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='e8dc59dd-9ae4-44aa-86ad-50240e6c34d3'&dunesName='vCACCAFE:VCACHost']]></value>
+    </att>
+  </atts>
+</config-element>

@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="mapToVCVM" result-type="VC:VirtualMachine" api-version="6.0.0" id="5c32a472-1eee-4d56-8ab1-76c92e7a5c51" version="1.0.0" allowed-operations="vf" category-name="com.vmware.vcac.asd.mappings">
+  <description><![CDATA[Action used by XaaS to map vRealize Automation resource of type IaaS VC Virtual Machine to Orchestrator VC Virtual Machine.]]></description>
+  <param n="vmProperties" t="Properties"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var vmUuid = vmProperties.get('VirtualMachine.Admin.UUID');
+if(!vmUuid){
+	throw "VirtualMachine.Admin.UUID value is null!";
+}
+
+var endpointUuid = vmProperties.get('endpointExternalReferenceId');
+
+if(endpointUuid){
+	return System.getModule("com.vmware.vcac.asd").findVcVmByVcAndVmUuid(endpointUuid, vmUuid);
+} else {
+	System.warn("endpointExternalReferenceId is null. Searching in all vCenter Hosts.");
+	return System.getModule("com.vmware.vcac.asd").findVcVmByUuid(vmUuid);
+}]]></script>
+</dunes-script-module>

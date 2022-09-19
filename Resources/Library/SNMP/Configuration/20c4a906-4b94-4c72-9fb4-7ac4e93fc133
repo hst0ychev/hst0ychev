@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<endpoint nativeId="ded79368-d7de-40cd-bb50-48390a01311c" pluginVersion="1.0.3">
+    <properties>
+        <property type="string" name="configurations">&lt;devices&gt;
+  &lt;entry&gt;
+    &lt;string&gt;vROPS Master&lt;/string&gt;
+    &lt;v1v2Device&gt;
+      &lt;name&gt;vROPS Master&lt;/name&gt;
+      &lt;address&gt;10.77.16.75&lt;/address&gt;
+      &lt;port&gt;4000&lt;/port&gt;
+      &lt;version&gt;V2C&lt;/version&gt;
+      &lt;queries/&gt;
+      &lt;community&gt;public&lt;/community&gt;
+    &lt;/v1v2Device&gt;
+  &lt;/entry&gt;
+  &lt;entry&gt;
+    &lt;string&gt;vROPS Master R port1&lt;/string&gt;
+    &lt;v1v2Device&gt;
+      &lt;name&gt;vROPS Master R port1&lt;/name&gt;
+      &lt;address&gt;10.77.16.76&lt;/address&gt;
+      &lt;port&gt;4001&lt;/port&gt;
+      &lt;version&gt;V2C&lt;/version&gt;
+      &lt;queries/&gt;
+      &lt;community&gt;public&lt;/community&gt;
+    &lt;/v1v2Device&gt;
+  &lt;/entry&gt;
+  &lt;entry&gt;
+    &lt;string&gt;vROPS Master R&lt;/string&gt;
+    &lt;v1v2Device&gt;
+      &lt;name&gt;vROPS Master R&lt;/name&gt;
+      &lt;address&gt;10.77.16.76&lt;/address&gt;
+      &lt;port&gt;4000&lt;/port&gt;
+      &lt;version&gt;V2C&lt;/version&gt;
+      &lt;queries/&gt;
+      &lt;community&gt;public&lt;/community&gt;
+    &lt;/v1v2Device&gt;
+  &lt;/entry&gt;
+  &lt;entry&gt;
+    &lt;string&gt;vROPS Master port1&lt;/string&gt;
+    &lt;v1v2Device&gt;
+      &lt;name&gt;vROPS Master port1&lt;/name&gt;
+      &lt;address&gt;10.77.16.75&lt;/address&gt;
+      &lt;port&gt;4001&lt;/port&gt;
+      &lt;version&gt;V2C&lt;/version&gt;
+      &lt;queries/&gt;
+      &lt;community&gt;public&lt;/community&gt;
+    &lt;/v1v2Device&gt;
+  &lt;/entry&gt;
+  &lt;trapPort&gt;4000&lt;/trapPort&gt;
+&lt;/devices&gt;</property>
+    </properties>
+</endpoint>

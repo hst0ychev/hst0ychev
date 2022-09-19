@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getPrivateKeyEntryById" result-type="Configurator:Key" api-version="6.0.0" id="cccb17f3-c170-45dc-a5bd-8d973aed92b5" version="1.0.0" allowed-operations="vf" category-name="com.vmware.library.http-rest.configuration">
+  <param n="keyId" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var result = Server.findForType("Configurator:Key", keyId);
+if (result != null) {
+    System.log("Found key for id: " + keyId);
+} else {
+    System.log("Key for id not found: " + keyId);
+}
+return result;]]></script>
+</dunes-script-module>

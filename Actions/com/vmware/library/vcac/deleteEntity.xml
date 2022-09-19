@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="deleteEntity" result-type="void" api-version="6.0.0" id="92d71166-ef3c-4f3d-971c-b6a120ac1f84" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcac">
+  <param n="entity" t="vCAC:Entity"><![CDATA[vCloud Automation Center host]]></param>
+  <script encoded="false"><![CDATA[var entityKey = entity.entityKey;
+var entityKeyId = entityKey.get("Id");
+
+System.log("Delete Entity " + entity.entitySetName + " with id " + entity.keyString);
+try {
+vCACEntityManager.deleteModelEntityBySerializedKey(entity.hostId , entity.modelName , entity.entitySetName , entity.keyString , null);
+} catch(e) {System.log(e)}]]></script>
+</dunes-script-module>

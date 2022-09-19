@@ -1,0 +1,70 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getVirtualDeviceConfigSpec" result-type="Any" api-version="6.0.0" id="a29969c2-9ef2-43d5-8fe6-bc4c3e66f1d5" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.vm.spec.config">
+  <param n="device" t="Any"><![CDATA[VimVirtualDevice: Device specification, with all necessary properties set.]]></param>
+  <param n="fileOperation" t="VC:VirtualDeviceConfigSpecFileOperation"><![CDATA[[Optional] Type of operation being performed on the backing of the specified virtual device. If no file operation is specified in the VirtualDeviceSpec, then any backing filenames in the VirtualDevice must refer to files that already exist.]]></param>
+  <param n="operation" t="VC:VirtualDeviceConfigSpecOperation"><![CDATA[[Optional] Type of operation being performed on the specified virtual device. If no operation is specified, the spec. is ignored.]]></param>
+  <script encoded="false"><![CDATA[var configSpec = new VcVirtualDeviceConfigSpec();
+if (device != null) {
+	if (testDeviceType(device)) {
+		configSpec.device = device;
+	}
+}
+else {
+	throw "ReferenceError: device cannot be null";
+}
+if (fileOperation != null) {
+	if (fileOperation instanceof VcVirtualDeviceConfigSpecFileOperation) {
+		configSpec.fileOperation = fileOperation;
+	}
+	else {
+		throw "TypeError: fileOperation must be of type 'VcVirtualDeviceConfigSpecFileOperation'";
+	}
+}
+if (operation != null) {
+	//if (operation instanceof VcVirtualDeviceConfigSpecOperation) {
+		configSpec.operation = VcVirtualDeviceConfigSpecOperation.fromString(operation.name);
+//	}
+//	else {
+//		throw new TypeError("operation must be of type 'VcVirtualDeviceConfigSpecOperation'");
+//	}
+}
+return configSpec;
+	
+	
+
+function testDeviceType (device) {
+	if (device instanceof VcVirtualCdrom) return true;
+	
+	if (device instanceof VcVirtualIDEController) return true;
+	if (device instanceof VcVirtualPCIController) return true;
+	if (device instanceof VcVirtualPS2Controller) return true;
+	if (device instanceof VcVirtualSCSIController) return true;
+	if (device instanceof VcVirtualSIOController) return true;
+	if (device instanceof VcVirtualUSBController) return true;
+
+	if (device instanceof VcVirtualDisk) return true;
+	
+	if (System.getModule("com.vmware.library.vc.vm.network").isSupportedNic(device)) return true;
+	
+	if (device instanceof VcVirtualFloppy) return true;
+	
+	if (device instanceof VcVirtualKeyboard) return true;
+	
+	if (device instanceof VcVirtualMachineVideoCard) return true;
+	
+	if (device instanceof VcVirtualParallelPort) return true;
+	
+	if (device instanceof VcVirtualPointingDevice) return true;
+	
+	if (device instanceof VcVirtualSCSIPassthrough) return true;
+	
+	if (device instanceof VcVirtualSerialPort) return true;
+	
+	if (device instanceof VcVirtualEnsoniq1371) return true;
+	if (device instanceof VcVirtualSoundBlaster16) return true; 
+	
+	if (device instanceof VcVirtualUSB) return true; 
+
+	throw "TypeError: Device is not of a supported virtual device type";
+}]]></script>
+</dunes-script-module>

@@ -1,0 +1,5 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getAutoUrlRedirectEnabled" result-type="boolean" api-version="6.0.0" id="da104d0a-603c-4c13-be52-6de94e18fc05" version="0.0.1" allowed-operations="vf" category-name="com.vmware.library.http-rest.configuration">
+  <param n="host" t="REST:RESTHost"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[return host.getAutoUrlRedirectEnabled();]]></script>
+</dunes-script-module>

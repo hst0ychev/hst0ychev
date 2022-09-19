@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="c288d3eb-1e5d-40a0-9016-e3af29a1ff9e" version="0.0.4" api-version="6.0.0" allowed-operations="vf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Remove Endpoint]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="endpointName" type="string">
+      <description><![CDATA[Endpoint Name]]></description>
+    </param>
+  </input>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task" script-module="com.vmware.vra.gef/removeEndpointMappings">
+    <display-name><![CDATA[removeEndpointMappings]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+System.getModule("com.vmware.vra.gef").removeEndpointMappings(endpointName) ;]]></script>
+    <in-binding>
+      <bind name="endpointName" type="string" export-name="endpointName"/>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Returns the Properties which represents all of the Endpoint configurations.  Each entry  contains an endpoint name and a list of key-value mappings from the operationType to the Workflow itself.
+
+Ex: 
+endpointName: {
+    cloneMachine: endpointCloneMachineWorkflow
+    disposeMachine: endpointDisposeMachineWorkflow
+    ...
+}
+  ]]></description>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="endpointName">
+      <desc><![CDATA[Endpoint Name]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

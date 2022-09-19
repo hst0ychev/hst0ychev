@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="importCompositeBlueprint" result-type="string" api-version="6.0.0" id="fff7332c-705c-486f-a082-d8e105c41766" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.composition.blueprint">
+  <param n="host" t="vCACCAFE:VCACHost"><![CDATA[vRA CAFE host]]></param>
+  <param n="file" t="MimeAttachment"><![CDATA[Composite blueprint yaml file]]></param>
+  <script encoded="false"><![CDATA[System.log("Importing a composite blueprint...");
+var id = vCACCAFECompositeBlueprintHelper.importBlueprint(host, file);
+System.log("Import successful");
+return id;]]></script>
+</dunes-script-module>

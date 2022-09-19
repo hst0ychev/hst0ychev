@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getEndpointExternalRefIdByVm" result-type="string" api-version="6.0.0" id="399eb8a8-4e2e-4f26-9d0d-a69530ff662f" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcac">
+  <param n="host" t="vCAC:VCACHost"><![CDATA[vCAC Host]]></param>
+  <param n="vmId" t="string"><![CDATA[Virtual machine ID]]></param>
+  <script encoded="false"><![CDATA[if (!host) {
+	throw "vCAC host cannot be null.";
+}
+
+var filter = "VirtualMachineID eq (guid'" + vmId + "')";
+var expand = 'Host/ManagementEndpoint';
+var result = vCACEntityManager.readModelEntitiesBySystemExpandQuery(host.id, "ManagementModelEntities.svc", "VirtualMachines", filter, expand, null, null, 1, 0, null)[0];
+var endpointRefId = result.getLink(host, "Host")[0].getLink(host, "ManagementEndpoint")[0].getProperty('ExternalReferenceId');
+return endpointRefId;]]></script>
+</dunes-script-module>

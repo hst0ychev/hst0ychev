@@ -1,0 +1,215 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="0dae8cf3-4f5a-4113-a3ab-b36df2e7af7e" version="0.0.7" api-version="6.0.0" allowed-operations="vf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Configure Endpoint Mappings For Virtual]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <attrib name="endpointName" type="string" read-only="false">
+    <value encoded="n"><![CDATA[GenericEndpointVirtualTestAgent]]></value>
+    <description><![CDATA[Endpoint shortname]]></description>
+  </attrib>
+  <attrib name="cloneMachineWF" type="Workflow" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/Workflow?id='84fb94dd-91f4-47ca-8853-14383e2bbdee'&dunesName='Workflow']]></value>
+    <description><![CDATA[Clone Machine workflow]]></description>
+  </attrib>
+  <attrib name="customizeMachineWF" type="Workflow" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/Workflow?id='f27bc451-77f5-485a-bb8e-7f8d3987da0f'&dunesName='Workflow']]></value>
+    <description><![CDATA[Customize Machine workflow]]></description>
+  </attrib>
+  <attrib name="createMultiMachineWF" type="Workflow" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/Workflow?id='3c5cec3b-f66c-4063-9135-c2b641a14327'&dunesName='Workflow']]></value>
+    <description><![CDATA[Create Multi-Machine workflow]]></description>
+  </attrib>
+  <attrib name="disposeMachineWF" type="Workflow" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/Workflow?id='353c7aa4-a12b-4520-becb-8c3d2ffeb70f'&dunesName='Workflow']]></value>
+    <description><![CDATA[Dispose Machine workflow]]></description>
+  </attrib>
+  <attrib name="disposeMultiMachineWF" type="Workflow" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/Workflow?id='4bbde4e8-78d6-4a4a-8deb-56ceda45e499'&dunesName='Workflow']]></value>
+    <description><![CDATA[Dispose Multi-Machine workflow]]></description>
+  </attrib>
+  <attrib name="registerMachineWF" type="Workflow" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/Workflow?id='56baac98-1110-4fc2-ab6c-7a75fbed8633'&dunesName='Workflow']]></value>
+    <description><![CDATA[Register Machine workflow]]></description>
+  </attrib>
+  <attrib name="getComputeResourcesWF" type="Workflow" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/Workflow?id='f2552641-b28f-41dd-b799-4bd9ccd26ada'&dunesName='Workflow']]></value>
+    <description><![CDATA[Collect Compute Resources workflow]]></description>
+  </attrib>
+  <attrib name="getTemplatesWF" type="Workflow" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/Workflow?id='a9d10dc9-03ad-4776-afb7-a8a1b1b122f3'&dunesName='Workflow']]></value>
+    <description><![CDATA[Collect Templates workflow]]></description>
+  </attrib>
+  <attrib name="getComputeResourceInventoryWF" type="Workflow" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/Workflow?id='b811c738-39f7-41ea-94c4-d78fa227b109'&dunesName='Workflow']]></value>
+    <description><![CDATA[Collect Compute Resources Inventory workflow]]></description>
+  </attrib>
+  <attrib name="getMachinesWF" type="Workflow" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/Workflow?id='147a2b70-83fc-4cb1-9da3-41ad358d1de0'&dunesName='Workflow']]></value>
+    <description><![CDATA[Collect Machines workflow]]></description>
+  </attrib>
+  <attrib name="getMachineStatesWF" type="Workflow" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/Workflow?id='beb1a470-c00b-4657-9aad-0e5cda38c733'&dunesName='Workflow']]></value>
+    <description><![CDATA[Collect Machine States workflow]]></description>
+  </attrib>
+  <attrib name="setPowerStateWF" type="Workflow" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/Workflow?id='6b4ac3bd-a468-48a5-b25b-a0e9c978955f'&dunesName='Workflow']]></value>
+    <description><![CDATA[Set Power State workflow]]></description>
+  </attrib>
+  <attrib name="getPowerStateWF" type="Workflow" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/Workflow?id='966b8ee9-9580-4ab2-80c5-afc4315d2111'&dunesName='Workflow']]></value>
+    <description><![CDATA[Get Power State workflow]]></description>
+  </attrib>
+  <attrib name="updateDescriptionWF" type="Workflow" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/Workflow?id='6d9890f0-f8a7-4269-bb90-535aa7c91bff'&dunesName='Workflow']]></value>
+    <description><![CDATA[Update Description workflow]]></description>
+  </attrib>
+  <attrib name="finalizePhysicalProvisioningWF" type="Workflow" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/Workflow?id='902b8a37-e5ea-40ef-b1d6-06dc8ce9472c'&dunesName='Workflow']]></value>
+    <description><![CDATA[Finalize Physical Provisioning workflow]]></description>
+  </attrib>
+  <attrib name="applySnapshotWF" type="Workflow" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/Workflow?id='be01e662-256f-4560-aaf4-19459d12b0ed'&dunesName='Workflow']]></value>
+    <description><![CDATA[Apply Snapshot workflow]]></description>
+  </attrib>
+  <attrib name="deleteSnapshotWF" type="Workflow" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/Workflow?id='c7c2d37e-b048-4368-a58e-d332cda1cffe'&dunesName='Workflow']]></value>
+    <description><![CDATA[Delete Snapshot workflow]]></description>
+  </attrib>
+  <attrib name="installToolsWF" type="Workflow" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/Workflow?id='d3ea9752-7dc7-49ee-bba7-9a7507654783'&dunesName='Workflow']]></value>
+    <description><![CDATA[Install Tools workflow]]></description>
+  </attrib>
+  <attrib name="moveMachineWF" type="Workflow" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/Workflow?id='ddf8b309-9316-45cc-97c8-d1c10219f4e3'&dunesName='Workflow']]></value>
+    <description><![CDATA[Move Machine workflow]]></description>
+  </attrib>
+  <attrib name="updateOwnerWF" type="Workflow" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/Workflow?id='ccb230b9-002c-4f51-a773-c403da2e2714'&dunesName='Workflow']]></value>
+    <description><![CDATA[Update Owner workflow]]></description>
+  </attrib>
+  <attrib name="renameMachineWF" type="Workflow" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/Workflow?id='e7afb222-2a40-40f6-bffc-9e8f0725dc6d'&dunesName='Workflow']]></value>
+    <description><![CDATA[Rename Machine workflow]]></description>
+  </attrib>
+  <attrib name="initalizePhysicalProvisioningWF" type="Workflow" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/Workflow?id='8041be12-0b0b-4257-80ac-534f4a944695'&dunesName='Workflow']]></value>
+    <description><![CDATA[Initialize Physical Provisioning workflow]]></description>
+  </attrib>
+  <attrib name="unmountCDWF" type="Workflow" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/Workflow?id='498ea8bd-c96e-4bfa-9ef1-1b73d5235cdf'&dunesName='Workflow']]></value>
+    <description><![CDATA[Unmount CD workflow]]></description>
+  </attrib>
+  <attrib name="mountCDWF" type="Workflow" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/Workflow?id='df2940c9-6846-45eb-8423-2452d1dc4527'&dunesName='Workflow']]></value>
+    <description><![CDATA[Mount CD workflow]]></description>
+  </attrib>
+  <attrib name="getComputeResourcePerformanceWF" type="Workflow" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/Workflow?id='88825a22-b6e8-4e79-b998-49b19784fc34'&dunesName='Workflow']]></value>
+    <description><![CDATA[Collect Machine Performance Data workflow]]></description>
+  </attrib>
+  <attrib name="createSnapshotWF" type="Workflow" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/Workflow?id='92d4b81e-556f-4877-b0cd-49ff2ef3cdd0'&dunesName='Workflow']]></value>
+    <description><![CDATA[Create Snapshot workflow]]></description>
+  </attrib>
+  <attrib name="linkCloneMachineWF" type="Workflow" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/Workflow?id='19c3147a-907e-47c9-af3b-677712e56857'&dunesName='Workflow']]></value>
+    <description><![CDATA[Link Clone Machine workflow]]></description>
+  </attrib>
+  <attrib name="setCustomAttributesWF" type="Workflow" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/Workflow?id='700b5aad-005e-4315-a4a0-715fd2c69848'&dunesName='Workflow']]></value>
+    <description><![CDATA[Set Custom Attreibutes workflow]]></description>
+  </attrib>
+  <attrib name="getComputeResourceSnapshotInventoryWF" type="Workflow" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/Workflow?id='a206d65c-dd5c-4fc3-a791-5b89ea7ae1db'&dunesName='Workflow']]></value>
+    <description><![CDATA[Collect Machine Snapshots workflow]]></description>
+  </attrib>
+  <attrib name="fileLevelCloneMachineWF" type="Workflow" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/Workflow?id='575664e8-a971-464f-8776-4b95c58b834e'&dunesName='Workflow']]></value>
+    <description><![CDATA[File Level Clone Machine workflow]]></description>
+  </attrib>
+  <attrib name="getComputeResourceTemplatesWF" type="Workflow" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/Workflow?id='33346b11-0e75-42d1-bba4-b631efa20a1c'&dunesName='Workflow']]></value>
+    <description><![CDATA[Get Templates for Compute Resource]]></description>
+  </attrib>
+  <attrib name="createMachineWF" type="Workflow" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/Workflow?id='0c5bc943-0177-4bcf-be05-34dc1ecf1d25'&dunesName='Workflow']]></value>
+    <description><![CDATA[Create Machine workflow]]></description>
+  </attrib>
+  <attrib name="getComputeResourceInstanceTypeInventoryWF" type="Workflow" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/Workflow?id='92721053-f764-49ca-9d9b-9242dc155484'&dunesName='Workflow']]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="link" linked-workflow-id="14018467-7819-4cd2-85a1-d59ca1e39a5f">
+    <display-name><![CDATA[Configure Endpoint]]></display-name>
+    <in-binding>
+      <bind name="endpointName" type="string" export-name="endpointName">
+        <description><![CDATA[Endpoint shortname]]></description>
+      </bind>
+      <bind name="createMachineWF" type="Workflow" export-name="createMachineWF">
+        <description><![CDATA[Create Machine workflow]]></description>
+      </bind>
+      <bind name="cloneMachineWF" type="Workflow" export-name="cloneMachineWF">
+        <description><![CDATA[Clone Machine workflow]]></description>
+      </bind>
+      <bind name="customizeMachineWF" type="Workflow" export-name="customizeMachineWF">
+        <description><![CDATA[Customize Machine workflow]]></description>
+      </bind>
+      <bind name="createMultiMachineWF" type="Workflow" export-name="createMultiMachineWF">
+        <description><![CDATA[Create Multi-Machine workflow]]></description>
+      </bind>
+      <bind name="disposeMachineWF" type="Workflow" export-name="disposeMachineWF">
+        <description><![CDATA[Dispose Machine workflow]]></description>
+      </bind>
+      <bind name="disposeMultiMachineWF" type="Workflow" export-name="disposeMultiMachineWF">
+        <description><![CDATA[Dispose Multi-Machine workflow]]></description>
+      </bind>
+      <bind name="registerMachineWF" type="Workflow" export-name="registerMachineWF">
+        <description><![CDATA[Register Machine workflow]]></description>
+      </bind>
+      <bind name="getComputeResourcesWF" type="Workflow" export-name="getComputeResourcesWF">
+        <description><![CDATA[Collect Compute Resources workflow]]></description>
+      </bind>
+      <bind name="getTemplatesWF" type="Workflow" export-name="getTemplatesWF">
+        <description><![CDATA[Collect Templates workflow]]></description>
+      </bind>
+      <bind name="getComputeResourceInventoryWF" type="Workflow" export-name="getComputeResourceInventoryWF">
+        <description><![CDATA[Collect Compute Resources Inventory workflow]]></description>
+      </bind>
+      <bind name="getMachinesWF" type="Workflow" export-name="getMachinesWF">
+        <description><![CDATA[Collect Machines workflow]]></description>
+      </bind>
+      <bind name="getMachineStatesWF" type="Workflow" export-name="getMachineStatesWF">
+        <description><![CDATA[Collect Machine States workflow]]></description>
+      </bind>
+      <bind name="setPowerStateWF" type="Workflow" export-name="setPowerStateWF">
+        <description><![CDATA[Set Power State workflow]]></description>
+      </bind>
+      <bind name="getPowerStateWF" type="Workflow" export-name="getPowerStateWF">
+        <description><![CDATA[Get Power State workflow]]></description>
+      </bind>
+      <bind name="updateDescriptionWF" type="Workflow" export-name="updateDescriptionWF"/>
+      <bind name="finalizePhysicalProvisioningWF" type="Workflow" export-name="finalizePhysicalProvisioningWF"/>
+      <bind name="applySnapshotWF" type="Workflow" export-name="applySnapshotWF"/>
+      <bind name="deleteSnapshotWF" type="Workflow" export-name="deleteSnapshotWF"/>
+      <bind name="installToolsWF" type="Workflow" export-name="installToolsWF"/>
+      <bind name="moveMachineWF" type="Workflow" export-name="moveMachineWF"/>
+      <bind name="updateOwnerWF" type="Workflow" export-name="updateOwnerWF"/>
+      <bind name="renameMachineWF" type="Workflow" export-name="renameMachineWF"/>
+      <bind name="initalizePhysicalProvisioningWF" type="Workflow" export-name="initalizePhysicalProvisioningWF"/>
+      <bind name="unmountCDWF" type="Workflow" export-name="unmountCDWF"/>
+      <bind name="mountCDWF" type="Workflow" export-name="mountCDWF"/>
+      <bind name="getComputeResourcePerformanceWF" type="Workflow" export-name="getComputeResourcePerformanceWF"/>
+      <bind name="createSnapshotWF" type="Workflow" export-name="createSnapshotWF"/>
+      <bind name="linkCloneMachineWF" type="Workflow" export-name="linkCloneMachineWF"/>
+      <bind name="setCustomAttributesWF" type="Workflow" export-name="setCustomAttributesWF"/>
+      <bind name="getComputeResourceSnapshotInventoryWF" type="Workflow" export-name="getComputeResourceSnapshotInventoryWF"/>
+      <bind name="fileLevelCloneMachineWF" type="Workflow" export-name="fileLevelCloneMachineWF"/>
+      <bind name="getComputeResourceTemplatesWF" type="Workflow" export-name="getComputeResourceTemplatesWF"/>
+      <bind name="getComputeResourceInstanceTypeInventoryWF" type="Workflow" export-name="getComputeResourceInstanceTypeInventoryWF"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation/>
+</workflow>

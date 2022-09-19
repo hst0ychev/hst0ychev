@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="d81b7720-82b5-49c3-9662-5a8f0db70a61" version="1.0.0">
+  <display-name><![CDATA[RAIDType]]></display-name>
+  <atts>
+    <att name="None" type="string" read-only="false">
+      <value encoded="n"><![CDATA[NONE]]></value>
+    </att>
+    <att name="RAID-6" type="string" read-only="false">
+      <value encoded="n"><![CDATA[R6]]></value>
+    </att>
+    <att name="RAID-1" type="string" read-only="false">
+      <value encoded="n"><![CDATA[R1]]></value>
+    </att>
+    <att name="RAID-5" type="string" read-only="false">
+      <value encoded="n"><![CDATA[R5]]></value>
+    </att>
+    <att name="RAID-0" type="string" read-only="false">
+      <value encoded="n"><![CDATA[R0]]></value>
+    </att>
+  </atts>
+</config-element>

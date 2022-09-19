@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="setOrCreateCustomField" result-type="void" api-version="6.0.0" id="9d6f7123-ceb5-4565-a57e-685f464294d3" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.customattribute">
+  <param n="managedEntity" t="Any"><![CDATA[]]></param>
+  <param n="customFieldName" t="string"><![CDATA[]]></param>
+  <param n="newCustomFieldValue" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var customFieldValue = System.getModule("com.vmware.library.vc.customattribute").getCustomField(managedEntity, customFieldName);
+
+var vimHost = managedEntity.vimHost;
+
+var key;
+if (customFieldValue == null) {
+	// Custom field does not exist --> create it
+	var customFieldDef = vimHost.customFieldsManager.addCustomFieldDef(customFieldName);
+	System.sleep(3*1000);
+	key = customFieldDef.key;	
+}
+else {
+	var customFieldDefs = vimHost.customFieldsManager.field;
+	for (var i = 0; i < customFieldDefs.length; i++) {
+		if (customFieldDefs[i].name == customFieldName) {
+			key = customFieldDefs[i].key;
+			break;
+		}
+	}	
+}
+
+vimHost.customFieldsManager.setField(managedEntity, key, newCustomFieldValue);]]></script>
+</dunes-script-module>

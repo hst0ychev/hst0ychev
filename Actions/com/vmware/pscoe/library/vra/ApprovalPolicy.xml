@@ -1,0 +1,105 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="ApprovalPolicy" result-type="Any" api-version="6.0.0" id="9623fd35-b6a3-314e-baad-066630bf3444" version="2.9.10" allowed-operations="evf" category-name="com.vmware.pscoe.library.vra">
+  <description><![CDATA[Tenant ApprovalPolicy class]]></description>
+  <param n="host" t="vCACCAFE:VCACHost"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var CafeRestClient = System.getModule("com.vmware.pscoe.library.vra").CafeRestClient(host, vCACCAFEServicesEnum.APPROVAL_SERVICE);
+var restClient = new CafeRestClient("policies");
+
+/**
+ * Constructor
+ *
+ * @param {JSON}
+ *            apJson - JSON from which to create the new approval policy
+ */
+var ApprovalPolicy = function (apJson) {
+	for (var key in apJson) {
+		this[key] = apJson[key];
+	}
+	/**
+	 * Create or update the new approval policy
+	 */
+	this.save = function () {
+		try {
+			this.id = restClient.createOrUpdate(this, true);
+		} catch (e) {
+			if ((e + "").match(/HttpMessageConverter/)) {
+				// workaround this error on create: InternalError: Could not extract response:
+				// no suitable HttpMessageConverter found for response type [class java.lang.Object]
+				// and content type [application/xml;charset=UTF-8]
+				this.id = ApprovalPolicy.getByName(this.name).id;
+			}
+		}
+	};
+
+	/**
+	 * Delete the new approval policy
+	 */
+	this.delete = function () {
+		restClient.delete(this.id);
+	};
+
+	/**
+	 * Update the approval policy
+	 */
+	this.update = function (json) {
+		this.id = restClient.update(json);
+	};
+};
+
+/**
+ * Get an approval policy by its id
+ *
+ * @return {ApprovalPolicy} - the approval policy if existing
+ */
+ApprovalPolicy.getById = function (apID) {
+	var ap = restClient.get(apID);
+	if (!ap) {
+		return null;
+	}
+
+	return new ApprovalPolicy(ap);
+};
+
+/**
+ * Get an approval policy by its name
+ *
+ * @return {ApprovalPolicy} - the approval policy if existing
+ */
+ApprovalPolicy.getByName = function (apName) {
+	var ap = restClient.getByName(apName);
+	if (!ap) {
+		return null;
+	}
+
+	return new ApprovalPolicy(ap);
+};
+
+
+ApprovalPolicy.getAll = function () {
+	var apJson = restClient.getAll();
+	if (!apJson || !apJson.content) {
+		return null;
+	}
+
+	var listOfPolicies = [];
+	for (var i in apJson.content) {
+		var ap = apJson.content[i];
+		listOfPolicies.push(new ApprovalPolicy(ap));
+	}
+
+	return listOfPolicies;
+};
+
+ApprovalPolicy.importFrom = function (resourceElement, allTenants) {
+	return System.getModule("com.vmware.pscoe.library.vra.import.export").importVraObject(
+		host, "ApprovalPolicy", resourceElement, allTenants);
+};
+
+ApprovalPolicy.exportTo = function (name, resourceElementCategory) {
+	System.getModule("com.vmware.pscoe.library.vra.import.export").exportVraObject(
+		host, "ApprovalPolicy", name, resourceElementCategory);
+};
+
+return ApprovalPolicy;
+]]></script>
+</dunes-script-module>

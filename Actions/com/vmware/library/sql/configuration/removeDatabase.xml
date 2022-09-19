@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="removeDatabase" result-type="SQL:Database" api-version="6.0.0" id="54e5e835-f5fa-4ace-8dde-9185b0ea7ff7" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.sql.configuration">
+  <param n="database" t="SQL:Database"><![CDATA[A database instance]]></param>
+  <script encoded="false"><![CDATA[var item = SQLDatabaseManager.removeDatabase(database);
+
+System.log("Database object removed: " + item);
+
+return item;]]></script>
+</dunes-script-module>

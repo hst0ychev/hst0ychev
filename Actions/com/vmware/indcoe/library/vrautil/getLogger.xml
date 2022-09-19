@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getLogger" result-type="Any" api-version="6.0.0" id="34d12b1f-2a8a-3c68-b560-984e8f1d025e" version="1.0.0" allowed-operations="evf" category-name="com.vmware.indcoe.library.vrautil">
+  <param n="name" t="Any"><![CDATA[]]></param>
+  <param n="options" t="Any"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var Logger	= System.getModule("com.vmware.indcoe.library.vrautil").Logger();
+return new Logger(name, options);
+]]></script>
+</dunes-script-module>

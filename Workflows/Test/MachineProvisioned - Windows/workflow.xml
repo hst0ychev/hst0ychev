@@ -1,0 +1,441 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="401f4f2f-c725-4e5d-bda6-fbd0200c4023" version="0.0.1" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[MachineProvisioned - Windows]]></display-name>
+  <description><![CDATA[If errors are encountered, this workflow will send an email alert and then wait a specified amoung of time before allowing the VM to be destroyed.
+This wait time is specified in the following Configuration Element:
+Provisioning -> waitOnErrorBeforeDisposing
+
+If you set this wait time above 20 minutes or so, be sure to increase the timeout for MachineProvisioned in 2 places:
+1) Any Event Subscriptions for MachineProvisioned (blank = unlimited)
+2) The IaaS server's ManagerService.exe.config file (default = 30 min)
+
+Instructions for updating the IaaS server's ManagerService.exe.config are here:
+https://pubs.vmware.com/vra-70/index.jsp?topic=%2Fcom.vmware.vra.extensibility.doc%2FGUID-246CD2CE-0940-40C9-B813-8510C4DC6A3F.html
+]]></description>
+  <error-handler name="item4" throw-bind-name="errorCode">
+    <position y="172.68181818181816" x="145.0"/>
+  </error-handler>
+  <position y="81.77272727272727" x="45.0"/>
+  <input>
+    <param name="payload" type="Properties"/>
+  </input>
+  <output>
+    <param name="virtualMachineAddOrUpdateProperties" type="Properties">
+      <description><![CDATA[Updates to any of the vRA custom properties]]></description>
+    </param>
+    <param name="scriptExitCodeOut" type="number"/>
+    <param name="scriptOutputTextOut" type="string"/>
+  </output>
+  <attrib name="logPayload" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[true]]></value>
+    <description><![CDATA[Determines if the contents of the payload input will be logged]]></description>
+  </attrib>
+  <attrib name="vcVm" type="VC:VirtualMachine" read-only="false">
+    <description><![CDATA[vCenter VM (null for BuildingMachine)]]></description>
+  </attrib>
+  <attrib name="vcacEntity" type="vCAC:Entity" read-only="false">
+    <description><![CDATA[vCAC Entity object of the target VM]]></description>
+  </attrib>
+  <attrib name="vcacHost" type="vCAC:VCACHost" read-only="false">
+    <description><![CDATA[IaaS Host of the target VM]]></description>
+  </attrib>
+  <attrib name="customProperties" type="Properties" read-only="false">
+    <description><![CDATA[vRA Custom Properties of the target VM]]></description>
+  </attrib>
+  <attrib name="vcacVm" type="vCAC:VirtualMachine" read-only="false">
+    <description><![CDATA[vCAC VM object ofthe target VM]]></description>
+  </attrib>
+  <attrib name="vmName" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[The name of the target VM in vRA and vCenter]]></description>
+  </attrib>
+  <attrib name="errorCode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Exception variable]]></description>
+  </attrib>
+  <attrib name="emailErrorCode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Holds any error that might occur during the "Handle Errors" email]]></description>
+  </attrib>
+  <attrib name="adObjectName" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Name of the user or group in AD to add to the local group]]></description>
+  </attrib>
+  <attrib name="sleepTime" type="number" read-only="false">
+    <value encoded="n"><![CDATA[60.0]]></value>
+    <description><![CDATA[Time to sleep in seconds]]></description>
+  </attrib>
+  <attrib name="domain" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Domain that the server is joined to]]></description>
+  </attrib>
+  <attrib name="ipAddress" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[IP Address for the server]]></description>
+  </attrib>
+  <attrib name="operatingSystem" type="string" read-only="false">
+    <value encoded="n"><![CDATA[Windows]]></value>
+  </attrib>
+  <attrib name="errorCountMax" type="number" read-only="false">
+    <value encoded="n"><![CDATA[5.0]]></value>
+  </attrib>
+  <attrib name="errorSleepTime" type="number" read-only="false">
+    <value encoded="n"><![CDATA[30.0]]></value>
+  </attrib>
+  <attrib name="errorCount" type="number" read-only="false">
+    <value encoded="n"><![CDATA[0.0]]></value>
+  </attrib>
+  <attrib name="owningGroup" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="env" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="servDesc" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="app" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="numDataDisks" type="number" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="disk1Label" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="disk1Size" type="number" read-only="false"/>
+  <attrib name="disk1Letter" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="disk2Letter" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="disk2Label" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="disk2Size" type="number" read-only="false"/>
+  <attrib name="disk3Letter" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="disk3Label" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="disk3Size" type="number" read-only="false"/>
+  <attrib name="disk4Label" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="disk4Size" type="number" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="disk4Letter" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="disk5Label" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="disk5Size" type="number" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="disk5Letter" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="disk6Label" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="disk6Size" type="number" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="disk6Letter" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="1444.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item0" type="task">
+    <display-name><![CDATA[Add/Update Props]]></display-name>
+    <script encoded="false"><![CDATA[//Update or add any Custom Properties here
+// Event Broker Workflow Subscription must be set to Blocking.  To change an existing 
+// subscription from non-Blocking to Blocking, delete it and re-create it.
+
+//Preserve any custom property additions from previous workflows in this LifeCycle state
+var newProps = payload.get("virtualMachineAddOrUpdateProperties");
+if (!newProps) {
+	newProps = new Properties();
+}
+
+//Example custom property addition:
+//newProps.put('VirtualMachine.Network0.Name', 'dvPortGroup');
+
+virtualMachineAddOrUpdateProperties = newProps;]]></script>
+    <in-binding>
+      <bind name="payload" type="Properties" export-name="payload"/>
+    </in-binding>
+    <out-binding>
+      <bind name="virtualMachineAddOrUpdateProperties" type="Properties" export-name="virtualMachineAddOrUpdateProperties">
+        <description><![CDATA[Custom or system properties that were modified by the vRO workflow and returned to vRA]]></description>
+      </bind>
+    </out-binding>
+    <position y="55.40909090909091" x="1304.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item6" type="link" linked-workflow-id="b8a3f3e0-b05a-4d54-831c-94b2f02ce37a">
+    <display-name><![CDATA[Get Lifecycle Objects]]></display-name>
+    <in-binding>
+      <bind name="payload" type="Properties" export-name="payload">
+        <description><![CDATA[Input object from the vRA Event Subscription]]></description>
+      </bind>
+      <bind name="logPayload" type="boolean" export-name="logPayload">
+        <description><![CDATA[Determines if the contents of the payload input will be logged]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="vcVm" type="VC:VirtualMachine" export-name="vcVm">
+        <description><![CDATA[vCenter VM (null for BuildingMachine)]]></description>
+      </bind>
+      <bind name="vcacEntity" type="vCAC:Entity" export-name="vcacEntity">
+        <description><![CDATA[vCAC Entity object of the target VM]]></description>
+      </bind>
+      <bind name="vcacHost" type="vCAC:VCACHost" export-name="vcacHost">
+        <description><![CDATA[IaaS Host of the target VM]]></description>
+      </bind>
+      <bind name="customProperties" type="Properties" export-name="customProperties">
+        <description><![CDATA[vRA Custom Properties of the target VM]]></description>
+      </bind>
+      <bind name="vcacVm" type="vCAC:VirtualMachine" export-name="vcacVm">
+        <description><![CDATA[vCAC VM object ofthe target VM]]></description>
+      </bind>
+      <bind name="vmName" type="string" export-name="vmName">
+        <description><![CDATA[The name of the target VM in vRA and vCenter]]></description>
+      </bind>
+    </out-binding>
+    <description><![CDATA[Uses the vRA 7 'payload' input to get most the vRA 6 workflow input objects,
+such as the Custom Properties, vCenter VM, vCAC VM, etc.]]></description>
+    <position y="91.77272727272727" x="105.0"/>
+  </workflow-item>
+  <workflow-item name="item3" throw-bind-name="errorCode" type="end" end-mode="1">
+    <position y="172.68181818181816" x="604.5"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item3" catch-name="item3" throw-bind-name="emailErrorCode" type="link" linked-workflow-id="54b5e6f3-f866-4f7b-a9d7-7197db5acf98">
+    <display-name><![CDATA[Handle Errors]]></display-name>
+    <in-binding>
+      <bind name="errorCode" type="string" export-name="errorCode">
+        <description><![CDATA[Error message to include in the alert email Body]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <position y="182.68181818181816" x="364.5"/>
+  </workflow-item>
+  <workflow-item name="item6" out-name="item7" type="task">
+    <display-name><![CDATA[Define Variables]]></display-name>
+    <script encoded="false"><![CDATA[var adObjectName = customProperties.get("BT.AdminGroup");
+var ipAddress = customProperties.get("VirtualMachine.Network0.Address");
+var domain = customProperties.get("Tag.Domain");
+var environment = customProperties.get("Tag.Environment");
+var servDesc = customProperties.get("__Notes");
+var app = customProperties.get("Tag.Application");
+var owningGroup = customProperties.get("BT.AdminGroup");
+var dataDisks = customProperties.get("numDataDisks");
+
+// Set environment Solarwinds Name
+var env;
+switch(environment) {
+	case "prd":
+		env = "Prod";
+		break;
+	case "dev":
+		env = "Dev";
+		break;
+	case "tst":
+		env = "Test";
+		break;
+}
+
+// Change numDataDisks to integer
+numDataDisks = Number(dataDisks);
+
+// Get Data Disk Values
+var disk1Label = customProperties.get("dataDisk1Label");
+var disk2Label = customProperties.get("dataDisk2Label");
+var disk3Label = customProperties.get("dataDisk3Label");
+var disk4Label = customProperties.get("dataDisk4Label");
+var disk5Label = customProperties.get("dataDisk5Label");
+var disk6Label = customProperties.get("dataDisk6Label");
+var disk1Size = customProperties.get("dataDisk1Capacity");
+var disk2Size = customProperties.get("dataDisk2Capacity");
+var disk3Size = customProperties.get("dataDisk3Capacity");
+var disk4Size = customProperties.get("dataDisk4Capacity");
+var disk5Size = customProperties.get("dataDisk5Capacity");
+var disk6Size = customProperties.get("dataDisk6Capacity");
+var disk1Letter = customProperties.get("dataDisk1Letter");
+var disk2Letter = customProperties.get("dataDisk2Letter");
+var disk3Letter = customProperties.get("dataDisk3Letter");
+var disk4Letter = customProperties.get("dataDisk4Letter");
+var disk5Letter = customProperties.get("dataDisk5Letter");
+var disk6Letter = customProperties.get("dataDisk6Letter");
+]]></script>
+    <in-binding>
+      <bind name="customProperties" type="Properties" export-name="customProperties"/>
+    </in-binding>
+    <out-binding>
+      <bind name="adObjectName" type="string" export-name="adObjectName"/>
+      <bind name="domain" type="string" export-name="domain"/>
+      <bind name="ipAddress" type="string" export-name="ipAddress"/>
+      <bind name="owningGroup" type="string" export-name="owningGroup"/>
+      <bind name="env" type="string" export-name="env"/>
+      <bind name="servDesc" type="string" export-name="servDesc"/>
+      <bind name="app" type="string" export-name="app"/>
+      <bind name="numDataDisks" type="number" export-name="numDataDisks"/>
+      <bind name="disk1Label" type="string" export-name="disk1Label"/>
+      <bind name="disk1Size" type="number" export-name="disk1Size"/>
+      <bind name="disk1Letter" type="string" export-name="disk1Letter"/>
+      <bind name="disk2Letter" type="string" export-name="disk2Letter"/>
+      <bind name="disk2Label" type="string" export-name="disk2Label"/>
+      <bind name="disk2Size" type="number" export-name="disk2Size"/>
+      <bind name="disk3Letter" type="string" export-name="disk3Letter"/>
+      <bind name="disk3Label" type="string" export-name="disk3Label"/>
+      <bind name="disk3Size" type="number" export-name="disk3Size"/>
+      <bind name="disk4Label" type="string" export-name="disk4Label"/>
+      <bind name="disk4Size" type="number" export-name="disk4Size"/>
+      <bind name="disk4Letter" type="string" export-name="disk4Letter"/>
+      <bind name="disk5Label" type="string" export-name="disk5Label"/>
+      <bind name="disk5Size" type="number" export-name="disk5Size"/>
+      <bind name="disk5Letter" type="string" export-name="disk5Letter"/>
+      <bind name="disk6Label" type="string" export-name="disk6Label"/>
+      <bind name="disk6Size" type="number" export-name="disk6Size"/>
+      <bind name="disk6Letter" type="string" export-name="disk6Letter"/>
+    </out-binding>
+    <position y="91.77272727272727" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item7" prototype-id="sleep" out-name="item5" content-mode="x" type="task">
+    <display-name><![CDATA[Sleep]]></display-name>
+    <script encoded="false"><![CDATA[//Auto-generated script
+if ( sleepTime != null )  {
+	System.sleep(sleepTime*1000);
+}
+else  {
+	throw "'sleepTime' is NULL";
+}
+]]></script>
+    <in-binding>
+      <bind name="sleepTime" type="number" export-name="sleepTime">
+        <description><![CDATA[Time to sleep in seconds]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Sleep a given number of seconds]]></description>
+    <position y="46.31818181818181" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item8" out-name="item13" type="link" linked-workflow-id="c1e2bbf1-3b35-4775-a979-2ff4598f97c3">
+    <display-name><![CDATA[Add Node for Monitoring]]></display-name>
+    <in-binding>
+      <bind name="serverName" type="string" export-name="vmName">
+        <description><![CDATA[Name of server]]></description>
+      </bind>
+      <bind name="domain" type="string" export-name="domain">
+        <description><![CDATA[Domain that the server is joined to]]></description>
+      </bind>
+      <bind name="ipAddress" type="string" export-name="ipAddress">
+        <description><![CDATA[IP Address for the server]]></description>
+      </bind>
+      <bind name="operatingSystem" type="string" export-name="operatingSystem"/>
+      <bind name="owningGroup" type="string" export-name="owningGroup"/>
+      <bind name="env" type="string" export-name="env"/>
+      <bind name="servDesc" type="string" export-name="servDesc"/>
+      <bind name="app" type="string" export-name="app"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="1004.5"/>
+  </workflow-item>
+  <workflow-item name="item5" out-name="item11" catch-name="item9" throw-bind-name="errorCode" type="link" linked-workflow-id="8b80e3f4-3716-4a02-addd-c4454c356a25">
+    <display-name><![CDATA[Add AD Group to Local Admins]]></display-name>
+    <in-binding>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vcVm">
+        <description><![CDATA[vCenter VM]]></description>
+      </bind>
+      <bind name="adGroup" type="string" export-name="adObjectName">
+        <description><![CDATA[Active Directory Group]]></description>
+      </bind>
+      <bind name="domain" type="string" export-name="domain">
+        <description><![CDATA[Domain]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Adds an AD group to the local administrators group on the server. Uses Powershell's "Add-LocalGroupMember" cmdlet.]]></description>
+    <position y="55.40909090909091" x="664.5"/>
+  </workflow-item>
+  <workflow-item name="item9" out-name="item10" type="custom-condition" alt-out-name="item4">
+    <display-name><![CDATA[Max Error Count Reached]]></display-name>
+    <script encoded="false"><![CDATA[return (errorCount < errorCountMax);]]></script>
+    <in-binding>
+      <bind name="errorCountMax" type="number" export-name="errorCountMax"/>
+      <bind name="errorCount" type="number" export-name="errorCount"/>
+    </in-binding>
+    <position y="99.95454545454544" x="664.5"/>
+  </workflow-item>
+  <workflow-item name="item10" out-name="item5" type="task">
+    <display-name><![CDATA[Try Again]]></display-name>
+    <script encoded="false"><![CDATA[// SLEEP!
+System.log("Sleeping 30 seconds to ensure error isn't because Windows is not allowing login at this time.");
+if ( errorSleepTime != null )  {
+	System.sleep(errorSleepTime*1000);
+}
+else  {
+	throw "'errorSleepTime' is NULL";
+}
+
+errorCount = errorCount+1;]]></script>
+    <in-binding>
+      <bind name="errorSleepTime" type="number" export-name="errorSleepTime"/>
+      <bind name="errorCount" type="number" export-name="errorCount"/>
+    </in-binding>
+    <out-binding>
+      <bind name="errorCount" type="number" export-name="errorCount"/>
+    </out-binding>
+    <position y="109.95454545454544" x="784.5"/>
+  </workflow-item>
+  <workflow-item name="item11" out-name="item12" type="custom-condition" alt-out-name="item8">
+    <display-name><![CDATA[Data Disks?]]></display-name>
+    <script encoded="false"><![CDATA[return(numDataDisks>0);]]></script>
+    <in-binding>
+      <bind name="numDataDisks" type="number" export-name="numDataDisks"/>
+    </in-binding>
+    <position y="45.40909090909091" x="844.5"/>
+  </workflow-item>
+  <workflow-item name="item12" out-name="item8" type="link" linked-workflow-id="e22e2bd8-0667-40b1-a08f-2915a1e6dc3a">
+    <display-name><![CDATA[Add Drives and Format Windows Volumes]]></display-name>
+    <in-binding>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vcVm">
+        <description><![CDATA[VM to extend or add storage to]]></description>
+      </bind>
+      <bind name="customProperties" type="Properties" export-name="customProperties"/>
+    </in-binding>
+    <out-binding/>
+    <position y="109.95454545454544" x="904.5"/>
+  </workflow-item>
+  <workflow-item name="item13" out-name="item2" type="link" linked-workflow-id="004643d4-0ef1-4fab-8c72-1a53f4a8c86a">
+    <display-name><![CDATA[Enable UAC]]></display-name>
+    <in-binding>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vcVm">
+        <description><![CDATA[VM to extend or add storage to]]></description>
+      </bind>
+      <bind name="diskLabel" type="string" explicitly-not-bound="true">
+        <description><![CDATA[Label of Volume]]></description>
+      </bind>
+      <bind name="diskLetter" type="string" explicitly-not-bound="true">
+        <description><![CDATA[Drive letter for formatted disk within Windows]]></description>
+      </bind>
+      <bind name="diskIndex" type="number" explicitly-not-bound="true">
+        <description><![CDATA[Disk number attached to server]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="scriptExitCodeOut" type="number" export-name="scriptExitCodeOut"/>
+      <bind name="scriptOutputTextOut" type="string" export-name="scriptOutputTextOut"/>
+    </out-binding>
+    <position y="55.40909090909091" x="1144.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="payload">
+      <desc><![CDATA[payload]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

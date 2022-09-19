@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="invokeCommand" result-type="PowerShell:PowerShellRemotePSObject" api-version="6.0.0" id="F58580808080808080808080808080800F8080800126658240472157fdafc0fce" version="3.0.0" allowed-operations="vfe" category-name="com.vmware.library.powershell">
+  <description><![CDATA[Synchronously runs the commands in the provided session.]]></description>
+  <param n="host" t="PowerShell:PowerShellHost"><![CDATA[]]></param>
+  <param n="sessionId" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[if(sessionId == null){
+	throw "PowerShellInvocationError: Invalid session."
+}
+
+var oSession = host.getSession(sessionId)
+if (oSession == null )
+{
+	throw "PowerShellInvocationError: Invalid session."
+}
+
+System.debug("Invoke command in session " + sessionId);
+var result  = oSession.invokePipeline();
+
+if (result.invocationState  == 'Failed'){
+	throw "PowerShellInvocationError: Errors found while executing script \n"  + result.getErrors();
+}
+
+System.log ( result.getHostOutput() );
+
+return result.getResults();
+]]></script>
+</dunes-script-module>

@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getAllTemplateConfigFile" result-type="Array/string" api-version="6.0.0" id="87e9d7ac-b3f3-45ac-a31d-4c134c21718d" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.datastore.files">
+  <param n="datastore" t="VC:Datastore"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var result = new Array();
+var fileQuery = new Array(new VcTemplateConfigFileQuery());
+var querySpec = new VcHostDatastoreBrowserSearchSpec();
+querySpec.query = fileQuery;
+
+var task = datastore.browser.searchDatastoreSubFolders_Task("[" + datastore.name + "]", querySpec);
+var searchResults = System.getModule("com.vmware.library.vc.basic").vim3WaitTaskEnd(task,false,5);
+
+var folderPath;
+for (var i in searchResults) {
+	for (var j in searchResults[i].file) {
+	    folderPath = searchResults[i].folderPath;
+	    folderPath = folderPath.charAt(folderPath.length - 1) === '/' ? folderPath : folderPath + '/';
+		result.push(folderPath + searchResults[i].file[j].path);
+	}
+}
+
+return result;]]></script>
+</dunes-script-module>

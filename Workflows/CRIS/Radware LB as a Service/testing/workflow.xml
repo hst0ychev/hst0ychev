@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="578b9074-9f3f-4b8f-aa00-d637dc474b54" version="0.0.1" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[testing]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <attrib name="vm" type="VC:VirtualMachine" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='pcpctchvcen01.cloud.cris.in%2Cid:vm-1179'&dunesName='VC:VirtualMachine']]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Scriptable task]]></display-name>
+    <script encoded="false"><![CDATA[var a = '{"logical_switch_id":"985d9b8a-3b2a-47cb-b918-3a449069fb9e","attachment":{"attachment_type":"VIF","id":"5eba2d61-9e79-4c9a-8568-8cdfc2ad50ad"},"admin_state":"UP","address_bindings":[],"switching_profile_ids":[{"key":"SwitchSecuritySwitchingProfile","value":"fbc4fb17-83d9-4b53-a286-ccdf04301888"},{"key":"SpoofGuardSwitchingProfile","value":"fad98876-d7ff-11e4-b9d6-1681e6b88ec1"},{"key":"IpDiscoverySwitchingProfile","value":"64814784-7896-3901-9741-badeff705639"},{"key":"MacManagementSwitchingProfile","value":"1e7101c8-cfef-415a-9c8c-ce3d8dd078fb"},{"key":"PortMirroringSwitchingProfile","value":"93b4b7e8-f116-415d-a50c-3364611b5d09"},{"key":"QosSwitchingProfile","value":"f313290b-eba8-4262-bd93-fab5026e9495"}],"ignore_address_bindings":[],"resource_type":"LogicalPort","id":"fcc9f69b-2844-4430-8ddc-b0eaef27ae45","display_name":"AppTestVM-Prod-01/AppTestVM-Prod-01.vmx@9fed8bb5-71c3-46cf-8b88-289517f476d0","_create_user":"system","_create_time":1568973925829,"_last_modified_user":"system","_last_modified_time":1568974112283,"_system_owned":false,"_protection":"NOT_PROTECTED","_revision":1}';
+a = JSON.parse(a);
+System.log(a.attachment.id);]]></script>
+    <in-binding>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vm"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation/>
+</workflow>

@@ -1,0 +1,421 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="Workflow:name=generic" id="BD80808080808080808080808080808080C280800122528313869552e41805bb1" version="1.1.2" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Clone, Windows Sysprep with single NIC and credential]]></display-name>
+  <description><![CDATA[Clones a Windows virtual machine performing the guest operating system customization. Configures one virtual network card and a local administrator user account.
+	
+Sysprep tools must be available on vCenter Server system.]]></description>
+  <position y="10.0" x="180.0"/>
+  <input>
+    <param name="folder" type="VC:VmFolder">
+      <description><![CDATA[Virtual machine folder]]></description>
+    </param>
+    <param name="name" type="string">
+      <description><![CDATA[New virtual machine name]]></description>
+    </param>
+    <param name="vm" type="VC:VirtualMachine">
+      <description><![CDATA[Virtual machine to clone]]></description>
+    </param>
+    <param name="powerOn" type="boolean">
+      <description><![CDATA[Specifies whether or not to power on the new virtual machine]]></description>
+    </param>
+    <param name="template" type="boolean">
+      <description><![CDATA[Specifies whether or not to mark the new virtual machine as a template]]></description>
+    </param>
+    <param name="datastore" type="VC:Datastore">
+      <description><![CDATA[Datastore in which to store the virtual machine. If not specified, the current datastore is used]]></description>
+    </param>
+    <param name="host" type="VC:HostSystem">
+      <description><![CDATA[(Optional) Host on which to create the virtual machine]]></description>
+    </param>
+    <param name="pool" type="VC:ResourcePool">
+      <description><![CDATA[(Optional) Resource pool in which to create the virtual machine]]></description>
+    </param>
+    <param name="doSysprep" type="boolean">
+      <description><![CDATA[Run the Sysprep operations and wait for the task to complete. Not used if the virtual machine is marked as template]]></description>
+    </param>
+    <param name="clientName" type="string">
+      <description><![CDATA[Name or prefix name of the Windows client]]></description>
+    </param>
+    <param name="productId" type="string">
+      <description><![CDATA[Microsoft Sysprep requires that a valid serial number be included in the answer file when mini-setup runs. This serial number is ignored if the original guest operating system was installed using a volume-licensed CD]]></description>
+    </param>
+    <param name="joinDomain" type="string">
+      <description><![CDATA[(Optional) The domain that the virtual machine should join. If this value is supplied, then domainAdmin and domainAdminPassword must also be supplied, and the workgroup name must be empty]]></description>
+    </param>
+    <param name="joinWorkgroup" type="string">
+      <description><![CDATA[(Optional) The workgroup that the virtual machine should join. If this value is supplied, then the domain name and authentication fields must be empty]]></description>
+    </param>
+    <param name="domainAdmin" type="Credential">
+      <description><![CDATA[(Optional) This is the domain user account used for authentication if the virtual machine is joining a domain. The user does not need to be a domain administrator, but the account must have the privileges required to add computers to the domain]]></description>
+    </param>
+    <param name="domainAdminUsername" type="string">
+      <description><![CDATA[(Optional) This is the domain user account used for authentication if the virtual machine is joining a domain. The user does not need to be a domain administrator, but the account must have the privileges required to add computers to the domain]]></description>
+    </param>
+    <param name="domainAdminPassword" type="SecureString">
+      <description><![CDATA[(Optional) This is the password for the domain user account used for authentication if the virtual machine is joining a domain. The user does not need to be a domain administrator, but the account must have the privileges required to add computers to the domain]]></description>
+    </param>
+    <param name="licenseMode" type="VC:CustomizationLicenseDataMode">
+      <description><![CDATA[Server licensing mode]]></description>
+    </param>
+    <param name="licenseUsers" type="number">
+      <description><![CDATA[This key is valid only if AutoMode = PerServer]]></description>
+    </param>
+    <param name="newAdminPassword" type="string">
+      <description><![CDATA[The password string. It is encrypted if the associated plainText flag is false]]></description>
+    </param>
+    <param name="inTimezone" type="Enums:MSTimeZone">
+      <description><![CDATA[Timezone for the newly created virtual machine]]></description>
+    </param>
+    <param name="network" type="VC:Network">
+      <description><![CDATA[Network on which to attach the virtual network interface]]></description>
+    </param>
+    <param name="dnsServerList" type="Array/string">
+      <description><![CDATA[(Optional) List of DNS servers for a virtual network adapter with a static IP address]]></description>
+    </param>
+    <param name="dnsDomain" type="string">
+      <description><![CDATA[(Optional) DNS domain suffix such as vmware.com]]></description>
+    </param>
+    <param name="dhcp" type="boolean">
+      <description><![CDATA[Use a DHCP server to configure the virtual network adapter]]></description>
+    </param>
+    <param name="gateway" type="Array/string">
+      <description><![CDATA[(Optional)List of gateways, in order of preference]]></description>
+    </param>
+    <param name="ipAddress" type="string">
+      <description><![CDATA[Fixed valid IP address]]></description>
+    </param>
+    <param name="macAddress" type="string">
+      <description><![CDATA[(Optional) The MAC address of a network adapter being customized. If it is not included, the customization process maps the settings from the virtual machine's network adapters, in PCI slot order]]></description>
+    </param>
+    <param name="netBIOS" type="VC:CustomizationNetBIOSMode">
+      <description><![CDATA[(Optional) NetBIOS setting for Windows]]></description>
+    </param>
+    <param name="primaryWINS" type="string">
+      <description><![CDATA[(Optional) The IP address of the primary WINS server. This property is ignored for Linux guest operating systems]]></description>
+    </param>
+    <param name="secondaryWINS" type="string">
+      <description><![CDATA[(Optional) The IP address of the secondary WINS server. This property is ignored for Linux guest operating systems]]></description>
+    </param>
+    <param name="subnetMask" type="string">
+      <description><![CDATA[(Optional) Subnet mask for this virtual network adapter]]></description>
+    </param>
+    <param name="fullName" type="string">
+      <description><![CDATA[User's full name]]></description>
+    </param>
+    <param name="orgName" type="string">
+      <description><![CDATA[Organization name]]></description>
+    </param>
+  </input>
+  <output>
+    <param name="newVM" type="VC:VirtualMachine">
+      <description><![CDATA[The newly created virtual machine]]></description>
+    </param>
+  </output>
+  <workflow-item name="item1" type="end" end-mode="0">
+    <position y="210.0" x="180.0"/>
+  </workflow-item>
+  <workflow-item name="item0" out-name="item1" type="link" linked-workflow-id="BD80808080808080808080808080808071C180800122528313869552e41805bb1">
+    <display-name><![CDATA[Clone, Windows with single NIC and credential]]></display-name>
+    <in-binding>
+      <bind name="folder" type="VC:VmFolder" export-name="folder">
+        <description><![CDATA[Virtual machine folder]]></description>
+      </bind>
+      <bind name="name" type="string" export-name="name">
+        <description><![CDATA[New virtual machine name]]></description>
+      </bind>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vm">
+        <description><![CDATA[Virtual machine to clone]]></description>
+      </bind>
+      <bind name="powerOn" type="boolean" export-name="powerOn">
+        <description><![CDATA[Specifies whether or not to power on the new virtual machine]]></description>
+      </bind>
+      <bind name="template" type="boolean" export-name="template">
+        <description><![CDATA[Specifies whether or not to mark the new virtual machine as a template]]></description>
+      </bind>
+      <bind name="datastore" type="VC:Datastore" export-name="datastore">
+        <description><![CDATA[Datastore in which to store the virtual machine. If not specified, the current datastore is used]]></description>
+      </bind>
+      <bind name="host" type="VC:HostSystem" export-name="host">
+        <description><![CDATA[(Optional) Host on which to create the virtual machine]]></description>
+      </bind>
+      <bind name="pool" type="VC:ResourcePool" export-name="pool">
+        <description><![CDATA[(Optional) Resource pool in which to create the virtual machine]]></description>
+      </bind>
+      <bind name="doSysprep" type="boolean" export-name="doSysprep">
+        <description><![CDATA[Run the Sysprep operations and wait for the task to complete. Not used if the virtual machine is marked as template]]></description>
+      </bind>
+      <bind name="clientName" type="string" export-name="clientName">
+        <description><![CDATA[Name or prefix name of the Windows client]]></description>
+      </bind>
+      <bind name="productId" type="string" export-name="productId">
+        <description><![CDATA[Microsoft Sysprep requires that a valid serial number be included in the answer file when mini-setup runs. This serial number is ignored if the original guest operating system was installed using a volume-licensed CD]]></description>
+      </bind>
+      <bind name="joinDomain" type="string" export-name="joinDomain">
+        <description><![CDATA[(Optional) The domain that the virtual machine should join. If this value is supplied, then domainAdmin and domainAdminPassword must also be supplied, and the workgroup name must be empty]]></description>
+      </bind>
+      <bind name="joinWorkgroup" type="string" export-name="joinWorkgroup">
+        <description><![CDATA[(Optional) The workgroup that the virtual machine should join. If this value is supplied, then the domain name and authentication fields must be empty]]></description>
+      </bind>
+      <bind name="domainAdmin" type="Credential" export-name="domainAdmin">
+        <description><![CDATA[(Optional) This is the domain user account used for authentication if the virtual machine is joining a domain. The user does not need to be a domain administrator, but the account must have the privileges required to add computers to the domain]]></description>
+      </bind>
+      <bind name="domainAdminUsername" type="string" export-name="domainAdmin">
+        <description><![CDATA[(Optional) This is the username for the domain user account used for authentication if the virtual machine is joining a domain. The user does not need to be a domain administrator, but the account must have the privileges required to add computers to the domain]]></description>
+      </bind>
+      <bind name="domainAdminPassword" type="SecureString" export-name="domainAdminPassword">
+        <description><![CDATA[(Optional) This is the password for the domain user account used for authentication if the virtual machine is joining a domain. The user does not need to be a domain administrator, but the account must have the privileges required to add computers to the domain]]></description>
+      </bind>
+      <bind name="licenseMode" type="VC:CustomizationLicenseDataMode" export-name="licenseMode">
+        <description><![CDATA[Server licensing mode]]></description>
+      </bind>
+      <bind name="licenseUsers" type="number" export-name="licenseUsers">
+        <description><![CDATA[This key is valid only if AutoMode = PerServer]]></description>
+      </bind>
+      <bind name="newAdminPassword" type="string" export-name="newAdminPassword">
+        <description><![CDATA[The password string. It is encrypted if the associated plainText flag is false]]></description>
+      </bind>
+      <bind name="inTimezone" type="Enums:MSTimeZone" export-name="inTimezone">
+        <description><![CDATA[Timezone for the newly created virtual machine]]></description>
+      </bind>
+      <bind name="network" type="VC:Network" export-name="network">
+        <description><![CDATA[Network on which to attach the virtual network interface]]></description>
+      </bind>
+      <bind name="dnsServerList" type="Array/string" export-name="dnsServerList">
+        <description><![CDATA[(Optional) List of DNS servers for a virtual network adapter with a static IP address]]></description>
+      </bind>
+      <bind name="dnsDomain" type="string" export-name="dnsDomain">
+        <description><![CDATA[(Optional) DNS domain suffix such as vmware.com]]></description>
+      </bind>
+      <bind name="dhcp" type="boolean" export-name="dhcp">
+        <description><![CDATA[Use a DHCP server to configure the virtual network adapter]]></description>
+      </bind>
+      <bind name="gateway" type="Array/string" export-name="gateway">
+        <description><![CDATA[(Optional) List of gateways, in order of preference]]></description>
+      </bind>
+      <bind name="ipAddress" type="string" export-name="ipAddress">
+        <description><![CDATA[Fixed valid IP address]]></description>
+      </bind>
+      <bind name="macAddress" type="string" export-name="macAddress">
+        <description><![CDATA[(Optional) The MAC address of a network adapter being customized. If it is not included, the customization process maps the settings from the virtual machine's network adapters, in PCI slot order]]></description>
+      </bind>
+      <bind name="netBIOS" type="VC:CustomizationNetBIOSMode" export-name="netBIOS">
+        <description><![CDATA[(Optional) NetBIOS setting for Windows]]></description>
+      </bind>
+      <bind name="primaryWINS" type="string" export-name="primaryWINS">
+        <description><![CDATA[(Optional) The IP address of the primary WINS server. This property is ignored for Linux guest operating systems]]></description>
+      </bind>
+      <bind name="secondaryWINS" type="string" export-name="secondaryWINS">
+        <description><![CDATA[(Optional) The IP address of the secondary WINS server. This property is ignored for Linux guest operating systems]]></description>
+      </bind>
+      <bind name="subnetMask" type="string" export-name="subnetMask">
+        <description><![CDATA[(Optional) Subnet mask for this virtual network adapter]]></description>
+      </bind>
+      <bind name="fullName" type="string" export-name="fullName">
+        <description><![CDATA[User's full name]]></description>
+      </bind>
+      <bind name="orgName" type="string" export-name="orgName">
+        <description><![CDATA[Organization name]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="newVM" type="VC:VirtualMachine" export-name="newVM">
+        <description><![CDATA[The newly created virtual machine]]></description>
+      </bind>
+    </out-binding>
+    <description><![CDATA[Clones a Windows virtual machine, performing guest OS customization. Configures one network card and a local administrator user account.
+	
+Sysprep tools must be available on vCenter server.]]></description>
+    <position y="120.0" x="140.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[VMware Information]]></title>
+      <p-group>
+        <title><![CDATA[Basic VM Information]]></title>
+        <p-param name="vm">
+          <desc><![CDATA[Virtual machine to clone]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual kind="static" name="show-select-as" type="string"><![CDATA[live-search]]></p-qual>
+        </p-param>
+        <p-param name="name">
+          <desc><![CDATA[Name of the new virtual machine]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+        <p-param name="template">
+          <desc><![CDATA[Mark the new virtual machine as a template]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Running informations]]></title>
+        <p-qual kind="ognl" name="notVisible" type="boolean"><![CDATA[#template]]></p-qual>
+        <p-param name="powerOn">
+          <desc><![CDATA[Power on the new virtual machine]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+        <p-param name="pool">
+          <desc><![CDATA[Resource pool]]></desc>
+          <p-qual kind="static" name="show-select-as" type="string"><![CDATA[tree]]></p-qual>
+          <p-qual kind="ognl" name="sdkRootObject" type="any"><![CDATA[GetAction("com.vmware.library.vc.basic","getVimHostForVimObject").call( #vm )]]></p-qual>
+        </p-param>
+        <p-param name="host">
+          <desc><![CDATA[Host]]></desc>
+          <p-qual kind="static" name="show-select-as" type="string"><![CDATA[live-search]]></p-qual>
+          <p-qual kind="ognl" name="linkedEnumeration" type="Array/VC:HostSystem"><![CDATA[GetAction("com.vmware.library.vc.datastore","getAllAvaiblableHostForVM").call( #vm )]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Location informations]]></title>
+        <p-param name="folder">
+          <desc><![CDATA[Virtual machine folder]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual kind="static" name="show-select-as" type="string"><![CDATA[tree]]></p-qual>
+          <p-qual kind="ognl" name="sdkRootObject" type="any"><![CDATA[GetAction("com.vmware.library.vc.basic","getVimHostForVimObject").call( #vm )]]></p-qual>
+        </p-param>
+        <p-param name="datastore">
+          <desc><![CDATA[Datastore in which to store the virtual machine. If not specified, the current datastore is used]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[false]]></p-qual>
+          <p-qual kind="static" name="show-select-as" type="string"><![CDATA[list]]></p-qual>
+          <p-qual kind="ognl" name="linkedEnumeration" type="Array/VC:Datastore"><![CDATA[GetAction("com.vmware.library.vc.datastore","getDatastoreForHostAndResourcePool").call( #host , #pool, #vm )]]></p-qual>
+        </p-param>
+      </p-group>
+    </p-step>
+    <p-step>
+      <title><![CDATA[Microsoft Customization Information]]></title>
+      <p-group>
+        <title><![CDATA[User information]]></title>
+        <p-param name="fullName">
+          <desc><![CDATA[User's full name]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+        <p-param name="orgName">
+          <desc><![CDATA[Organization name]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Basic information]]></title>
+        <desc><![CDATA[Sysprep information is put in the virtual hard disk, even if you choose to not execute sysprep operations. Activating this options will only change the this workflow is responsible of the sysprep operations.]]></desc>
+        <p-param name="doSysprep">
+          <desc><![CDATA[Run the Sysprep operations and wait for the task to complete. Not used if the virtual machine is marked as template]]></desc>
+          <p-qual kind="ognl" name="defaultValue" type="boolean"><![CDATA[!#template]]></p-qual>
+          <p-qual kind="ognl" name="notVisible" type="boolean"><![CDATA[#template]]></p-qual>
+        </p-param>
+        <p-param name="clientName">
+          <desc><![CDATA[Name or prefix name of the Windows client]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+        <p-param name="newAdminPassword">
+          <desc><![CDATA[New local administrator password]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+        <p-param name="inTimezone">
+          <desc><![CDATA[Timezone for the newly created virtual machine]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[License information]]></title>
+        <p-param name="productId">
+          <desc><![CDATA[Windows key (ignored if template key is VLK)]]></desc>
+        </p-param>
+        <p-param name="licenseMode">
+          <desc><![CDATA[Server licensing mode]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual kind="static" name="defaultValue" type="VC:CustomizationLicenseDataMode"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='perSeat'&dunesName='VC:CustomizationLicenseDataMode']]></p-qual>
+        </p-param>
+        <p-param name="licenseUsers">
+          <desc><![CDATA[Number of licenses (only if License mode = PerServer)]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual kind="static" name="minNumberValue" type="Number"><![CDATA[0.0]]></p-qual>
+          <p-qual kind="static" name="defaultValue" type="number"><![CDATA[5.0]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Domain or Workgroup]]></title>
+        <desc><![CDATA[Only Domain OR Workgroup name can be set at same time.]]></desc>
+        <p-param name="joinDomain">
+          <desc><![CDATA[Domain name to join]]></desc>
+        </p-param>
+        <p-param name="joinWorkgroup">
+          <desc><![CDATA[Workgroup name to join]]></desc>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Domain Login information]]></title>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#joinDomain != null]]></p-qual>
+        <p-param name="domainAdmin">
+          <desc><![CDATA[Domain user account used for authentication if the virtual machine is joining a domain]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[false]]></p-qual>
+        </p-param>
+        <p-param name="domainAdminUsername">
+          <desc><![CDATA[Username of the domain user account used for authentication if the virtual machine is joining a domain]]></desc>
+          <p-qual kind="ognl" name="mandatory" type="boolean"><![CDATA[((#joinDomain!="")&&(#joinDomain != null))]]></p-qual>
+        </p-param>
+        <p-param name="domainAdminPassword">
+          <desc><![CDATA[Password of the domain user account used for authentication if the virtual machine is joining a domain]]></desc>
+          <p-qual kind="ognl" name="mandatory" type="boolean"><![CDATA[((#joinDomain!="")&&(#joinDomain != null))]]></p-qual>
+        </p-param>
+      </p-group>
+    </p-step>
+    <p-step>
+      <title><![CDATA[Network information]]></title>
+      <p-group>
+        <title><![CDATA[Network interface]]></title>
+        <desc><![CDATA[If the mac address is not included, the customization process maps the settings from the virtual machine's network adapters, in PCI slot order.]]></desc>
+        <p-param name="macAddress">
+          <desc><![CDATA[The MAC address of a network adapter being customized]]></desc>
+          <p-qual kind="static" name="regexp" type="Regexp"><![CDATA[00:50:56:[0-3][0-9A-Fa-f](:[0-9A-Fa-f]{2}){2}]]></p-qual>
+        </p-param>
+        <p-param name="network">
+          <desc><![CDATA[Network on which to attach the virtual network interface]]></desc>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[GetAction("com.vmware.library.vc.vm.network","getNetworkForGivenNic").call(#vm, 1)]]></p-qual>
+          <p-qual kind="static" name="show-select-as" type="string"><![CDATA[list]]></p-qual>
+          <p-qual kind="ognl" name="linkedEnumeration" type="Array/VC:Network"><![CDATA[GetAction("com.vmware.library.vc.network","getNetworkForResourcePoolHostVm").call( #pool , #host , #vm )]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Use DHCP]]></title>
+        <p-param name="dhcp">
+          <desc><![CDATA[Use a DHCP server to configure the virtual network adapter]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Fixed IP]]></title>
+        <p-qual kind="ognl" name="notVisible" type="boolean"><![CDATA[#dhcp]]></p-qual>
+        <p-param name="ipAddress">
+          <desc><![CDATA[Fixed valid IP address]]></desc>
+          <p-qual kind="static" name="regexp" type="Regexp"><![CDATA[\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b]]></p-qual>
+        </p-param>
+        <p-param name="subnetMask">
+          <desc><![CDATA[Subnet mask for this virtual network adapter]]></desc>
+          <p-qual kind="static" name="regexp" type="Regexp"><![CDATA[\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b]]></p-qual>
+        </p-param>
+        <p-param name="gateway">
+          <desc><![CDATA[List of gateways, in order of preference]]></desc>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Information Settable with or without DHCP]]></title>
+        <p-param name="dnsDomain">
+          <desc><![CDATA[DNS domain suffix such as vmware.com]]></desc>
+        </p-param>
+        <p-param name="dnsServerList">
+          <desc><![CDATA[List of DNS servers for a virtual network adapter with a static IP address]]></desc>
+        </p-param>
+        <p-param name="netBIOS">
+          <desc><![CDATA[NetBIOS setting for Windows]]></desc>
+        </p-param>
+        <p-param name="primaryWINS">
+          <desc><![CDATA[The IP address of the primary WINS server]]></desc>
+          <p-qual kind="static" name="regexp" type="Regexp"><![CDATA[\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b]]></p-qual>
+        </p-param>
+        <p-param name="secondaryWINS">
+          <desc><![CDATA[The IP address of the secondary WINS server]]></desc>
+          <p-qual kind="static" name="regexp" type="Regexp"><![CDATA[\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b]]></p-qual>
+        </p-param>
+      </p-group>
+    </p-step>
+  </presentation>
+</workflow>

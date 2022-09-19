@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="customizeVM" result-type="VC:Task" api-version="6.0.0" id="e1ab941d-6fa2-4866-b440-f5e1119ac6ef" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.vm">
+  <param n="vm" t="VC:VirtualMachine"><![CDATA[VM to clone]]></param>
+  <param n="customizationSpec" t="Any"><![CDATA[VimCustomizationSpec: Specifies the ustomization for the virtual machine.]]></param>
+  <script encoded="false"><![CDATA[try {
+	checkParams();
+	return vm.customizeVM_Task(customizationSpec)
+}
+catch (ex) {
+	throw "Unable to start clone operation: " + ex;
+}
+
+function checkParams() {
+	if (vm == null) throw "vm cannot be null";
+	if (customizationSpec == null) throw "customizationSpec cannot be null";
+	if ((customizationSpec instanceof VcCustomizationSpec) == false) throw "customizationSpec must be of type VcCustomizationSpec";
+}]]></script>
+</dunes-script-module>

@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="exportAllAuthorizationElementsToCsv" result-type="void" api-version="6.0.0" id="8B808080808080808080808080808080CC80808001297259131125b940b51f82d" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.util">
+  <param n="csvPathAndName" t="Path"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var csvFile = new FileWriter(csvPathAndName) ;
+csvFile.open();
+csvFile.clean();
+
+csvFile.write(
+	"AuthorizationElement Name" 
+	+ "," + "AuthorizationElement LDAP Element DN"
+	+ "\n");	
+
+var authorizationElements = Server.findAllForType('AuthorizationElement');
+
+for (var i=0;i<authorizationElements.length;i++){
+	
+	csvFile.write(
+	"\"" + authorizationElements[i].name  + "\""
+	+ "," + "\"" + authorizationElements[i].ldapElementDn + "\""
+	+ "\n");	
+}
+
+csvFile.close();]]></script>
+</dunes-script-module>

@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getAllVolumes" result-type="Array/StoreServ:Volume" api-version="6.0.0" id="e4746503-4ed4-43eb-8272-3a85a3e9e1b0" version="1.0.0" allowed-operations="vf" category-name="com.hpe.storeserv.volume">
+  <description><![CDATA[Retrieves all Virtual Volumes form selected HPE 3PAR Storeserv array.]]></description>
+  <param n="connection" t="StoreServ:Connection"><![CDATA[StoreServ Connection]]></param>
+  <script encoded="false"><![CDATA[var out = connection.listAllVolumes();
+
+if(out !== null && out != undefined ){
+	System.log("Query all Volumes operation result: Success");
+}
+
+return out;
+]]></script>
+</dunes-script-module>

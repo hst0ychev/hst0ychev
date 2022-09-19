@@ -1,0 +1,65 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="4fb2d193-504c-4eff-bf13-524d22afd18b" version="1.0.2" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Get virtual machines by name with PC]]></display-name>
+  <description><![CDATA[Returns a list of virtual machines from all registered vCenter Server hosts that match the provided expression. The expression is any valid javascript regex.]]></description>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="vc" type="VC:SdkConnection"/>
+    <param name="filter" type="string"/>
+    <param name="rootVmFolder" type="VC:VmFolder"/>
+  </input>
+  <output>
+    <param name="vms" type="Array/VC:VirtualMachine"/>
+  </output>
+  <attrib name="targetTypes" type="Array/string" read-only="false">
+    <value encoded="n"><![CDATA[#{#string#VirtualMachine#}#]]></value>
+  </attrib>
+  <attrib name="properties" type="Array/string" read-only="false">
+    <value encoded="n"><![CDATA[#{#string#name#}#]]></value>
+  </attrib>
+  <attrib name="foundObjects" type="Array/string" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="524.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item2" type="link" linked-workflow-id="6af07a67-22f6-4b5f-8be9-22085510da98">
+    <display-name><![CDATA[Get vCenter entities by properties]]></display-name>
+    <in-binding>
+      <bind name="vc" type="VC:SdkConnection" export-name="vc"/>
+      <bind name="filter" type="string" export-name="filter"/>
+      <bind name="targetTypes" type="Array/string" export-name="targetTypes"/>
+      <bind name="properties" type="Array/string" export-name="properties"/>
+      <bind name="rootObject" type="VC:VmFolder" export-name="rootVmFolder"/>
+    </in-binding>
+    <out-binding>
+      <bind name="foundObjects" type="Array/string" export-name="foundObjects"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item0" type="task">
+    <display-name><![CDATA[Convert to objects]]></display-name>
+    <script encoded="false"><![CDATA[vms = new Array()
+for (var i in foundObjects) {
+    vms.push(Server.fromUri(foundObjects[i]))
+}]]></script>
+    <in-binding>
+      <bind name="foundObjects" type="Array/string" export-name="foundObjects"/>
+    </in-binding>
+    <out-binding>
+      <bind name="vms" type="Array/VC:VirtualMachine" export-name="vms"/>
+    </out-binding>
+    <position y="55.40909090909091" x="344.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="vc">
+      <desc><![CDATA[vCenter Server]]></desc>
+    </p-param>
+    <p-param name="filter">
+      <desc><![CDATA[Name (or part of it)]]></desc>
+    </p-param>
+    <p-param name="rootVmFolder">
+      <desc><![CDATA[Root VMFolder for the search]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

@@ -1,0 +1,77 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="Workflow:name=generic" id="8E81808080808080808080808080808085808080012995053491651398b094fa1" version="1.0.1" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Send a text message]]></display-name>
+  <description><![CDATA[Sends a text message using a specified broker.]]></description>
+  <ref-types><![CDATA[(AMQP:Broker)]]></ref-types>
+  <position y="20.0" x="160.0"/>
+  <input>
+    <param name="broker" type="AMQP:Broker">
+      <description><![CDATA[Broker to send a message from]]></description>
+    </param>
+    <param name="exchange" type="string">
+      <description><![CDATA[Exchange through which to send the message]]></description>
+    </param>
+    <param name="routingKey" type="string">
+      <description><![CDATA[Routing key for the message]]></description>
+    </param>
+    <param name="text" type="string">
+      <description><![CDATA[Text content of the message]]></description>
+    </param>
+  </input>
+  <attrib name="errorCode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="150.0" x="160.0"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" catch-name="item2" throw-bind-name="errorCode" type="task">
+    <display-name><![CDATA[Send a message]]></display-name>
+    <script encoded="false"><![CDATA[var msg = new AMQPMessage();
+msg.bodyAsText = text;
+broker.send(exchange, routingKey, msg);]]></script>
+    <in-binding>
+      <bind name="broker" type="AMQP:Broker" export-name="broker"/>
+      <bind name="routingKey" type="string" export-name="routingKey"/>
+      <bind name="exchange" type="string" export-name="exchange"/>
+      <bind name="text" type="string" export-name="text"/>
+    </in-binding>
+    <out-binding/>
+    <position y="100.0" x="120.0"/>
+  </workflow-item>
+  <workflow-item name="item2" throw-bind-name="errorCode" type="end" end-mode="1">
+    <position y="90.0" x="280.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Send a text message]]></title>
+      <p-group>
+        <title><![CDATA[AMQP Broker]]></title>
+        <desc><![CDATA[Select a broker to send message from.]]></desc>
+        <p-param name="broker">
+          <desc><![CDATA[Broker]]></desc>
+          <p-qual name="contextualParameter" type="void"><![CDATA[]]></p-qual>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Exchange]]></title>
+        <desc><![CDATA[Fill in the message destination properties.]]></desc>
+        <p-param name="exchange">
+          <desc><![CDATA[Exchange]]></desc>
+        </p-param>
+        <p-param name="routingKey">
+          <desc><![CDATA[Routing key]]></desc>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Message]]></title>
+        <desc><![CDATA[Fill in the message properties.]]></desc>
+        <p-param name="text">
+          <desc><![CDATA[Content]]></desc>
+          <p-qual name="textInput" type="void"><![CDATA[]]></p-qual>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+      </p-group>
+    </p-step>
+  </presentation>
+</workflow>

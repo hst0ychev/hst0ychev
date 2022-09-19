@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="GetCatalogResourceForIaasEntity" result-type="Any" api-version="6.0.0" id="dca12183-59eb-32a6-b5a7-a2e7285ed09d" version="1.0.0" allowed-operations="evf" category-name="com.vmware.indcoe.library.vrautil">
+  <param n="vcacCafeHost" t="vCACCAFE:VCACHost"><![CDATA[]]></param>
+  <param n="vcacIaasVmEntity" t="vCAC:Entity"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[return vCACCAFEEntitiesFinder.findCatalogResources(vcacCafeHost, vcacIaasVmEntity.getProperty("VirtualMachineName"))[0];
+]]></script>
+</dunes-script-module>

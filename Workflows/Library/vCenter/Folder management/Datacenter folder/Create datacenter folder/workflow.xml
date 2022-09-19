@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="Workflow:name=generic" id="8F808080808080808080808080808080588E80800120523434428525559a3425f" version="1.1.0" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Create datacenter folder]]></display-name>
+  <description><![CDATA[Creates a datacenter folder.]]></description>
+  <position y="20.0" x="180.0"/>
+  <input>
+    <param name="parentFolder" type="VC:DatacenterFolder">
+      <description><![CDATA[Parent datacenter folder]]></description>
+    </param>
+    <param name="name" type="string">
+      <description><![CDATA[Name of new datacenter folder]]></description>
+    </param>
+  </input>
+  <output>
+    <param name="newFolder" type="VC:DatacenterFolder">
+      <description><![CDATA[The newly created datacenter folder]]></description>
+    </param>
+  </output>
+  <workflow-item name="item0" out-name="item1" type="task">
+    <display-name><![CDATA[Create datacenter folder]]></display-name>
+    <script encoded="false"><![CDATA[newFolder = parentFolder.createFolder(name);]]></script>
+    <in-binding>
+      <bind name="parentFolder" type="VC:DatacenterFolder" export-name="parentFolder"/>
+      <bind name="name" type="string" export-name="name"/>
+    </in-binding>
+    <out-binding>
+      <bind name="newFolder" type="VC:DatacenterFolder" export-name="newFolder"/>
+    </out-binding>
+    <position y="100.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item1" type="end" end-mode="0">
+    <position y="170.0" x="180.0"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="parentFolder">
+      <desc><![CDATA[Parent folder]]></desc>
+      <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+    </p-param>
+    <p-param name="name">
+      <desc><![CDATA[Name of the new datacenter folder ]]></desc>
+      <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+    </p-param>
+  </presentation>
+</workflow>

@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="deleteCompositeBlueprint" result-type="void" api-version="6.0.0" id="0fed6960-ffec-4b35-b62b-80dc76a844ce" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.composition.blueprint">
+  <param n="blueprint" t="vCACCAFE:CompositeBlueprint"><![CDATA[Composite blueprint]]></param>
+  <script encoded="false"><![CDATA[System.getModule("com.vmware.library.vcaccafe.util").validateObject(blueprint, "Composite blueprint");
+var host = vCACCAFEEntitiesFinder.getHostForEntity(blueprint);
+var blueprintService = host.createCompositionClient().getCompositionCompositeBlueprintService();
+
+System.log("Deleting composite blueprint " + blueprint.getName() + "...");
+blueprintService.deleteBlueprint(blueprint.getId());
+System.log("Deleted composite blueprint " + blueprint.getName() + ".");]]></script>
+</dunes-script-module>

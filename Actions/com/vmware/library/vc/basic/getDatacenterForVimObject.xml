@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getDatacenterForVimObject" result-type="VC:Datacenter" api-version="6.0.0" id="fba17210-b428-4cd1-8447-b22db69ad50d" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.basic">
+  <param n="object" t="Any"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var parent = object;
+
+while (parent != null && ! (parent instanceof VcDatacenter)) {
+	parent = parent.parent;
+}
+return parent;]]></script>
+</dunes-script-module>

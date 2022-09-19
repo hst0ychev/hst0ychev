@@ -1,0 +1,474 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="class" result-type="void" api-version="6.0.0" id="566e7290-6377-42b7-8151-1bce3bd1295d" version="0.0.1" allowed-operations="vfe" category-name="com.vmware.indcoe.checkpoint">
+  <param n="username" t="string"><![CDATA[]]></param>
+  <param n="password" t="SecureString"><![CDATA[]]></param>
+  <param n="restHost" t="REST:RESTHost"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var checkpoint = {
+        username: username,
+        password: password,
+        restHost: restHost,
+        sessionId: null,
+        REST: function (requestMethod, requestURI, requestBody)
+        {
+            System.debug("Performing a REST operation: ");
+            System.debug("REST request ready to be executed: ");
+            System.debug(requestMethod + " " + this.restHost.url + requestURI);
+            System.debug("Request Body:");
+            System.debug(requestBody);
+            System.debug("---");
+
+            //Basic request method validation.
+            if (requestMethod !== "GET" && requestMethod !== "POST" && requestMethod !== "PUT")
+            {
+                System.debug("The REST METHOD specified: " + requestMethod + " is invalid. Failing ...");
+                throw "Invalid REST method specified";
+            }
+
+            //Basic request URI validation.
+            if (!requestURI)
+            {
+                System.debug("The REST URI specified: " + requestURI + " is invalid. Failing ...");
+                throw "Invalid REST URI Method specified";
+            }
+
+            //Create REST Request
+            var request = this.restHost.createRequest(requestMethod, requestURI, requestBody);
+
+            //Set the required params
+            request.setHeader("Accept", "application/json");
+            request.setHeader("Content-Type", "application/json");
+            
+            //Add Authoritization Header if trying to login.
+            if(requestURI === "/web_api/login" && requestMethod === "POST")
+            {
+                System.debug("Requesting Session ID");
+            }
+            else
+            {
+                //Since this is not a request to fetch authentication token, check if session id exists. If not, fetch session ID.
+                
+                if (!this.sessionId)
+                {
+                    this.sessionId = this.GetSessionId();
+                }
+
+                //Tried fetching the sesion ID, still could not fetch, so now throwing error.
+                if (!this.sessionId)
+                {
+                    throw "Some unexpected error occurred while fetching session ID from Checkpoint - Unable to fetch Session ID";
+                }
+
+                //Send Session ID if already set.
+                request.setHeader("X-chkp-sid", this.sessionId);
+            }
+
+            //Execute the REST Request.
+            this.response = request.execute();
+
+            //Extracting data to be logged in debugging.
+            System.debug("REST Operation Completed...");
+
+            //Log the Response Code.
+            System.log("Response code: " + this.response.statusCode);
+
+            //Log the Response output
+            System.debug("Response Body: ");
+            System.debug(this.response.contentAsString);
+            System.debug("---");
+
+            //Return the entire output.
+            return this.response;
+        },
+        ParseJSON: function (stringContent)
+        {
+            //Returns JSON format of the stringContent.
+            System.debug("Parsing JSON Content");
+            try
+            {
+                var jsonContent = JSON.parse(stringContent);
+                System.debug("JSON Content parsed.");
+                return jsonContent;
+            }
+            catch (error)
+            {
+                System.debug("JSON Parse failed");
+                throw "Invalid JSON Content was requested to be parsed.";
+                return false;
+            }
+        },
+        GetSessionId: function ()
+        {
+            //This method logs in to Check point and returns a Session unique identifier i.e. sid
+        
+            requestBody = "{\n";
+            requestBody += "    \"user\": \""+this.username+"\",\n";
+            requestBody += "    \"password\": \""+this.password+"\",\n";
+            requestBody += "    \"session-timeout\": 3600\n";
+            requestBody += "}";
+
+            var responseObj = this.REST("POST", "/web_api/login", requestBody);
+            if (responseObj.statusCode === 200)
+            {
+                var response = this.ParseJSON(responseObj.contentAsString);
+                if (response.sid)
+                {
+                    System.debug("Session ID Fetched");
+                    return response.sid;
+                }
+                else
+                {
+                    System.debug("Session ID not available in the returned response.");
+                    return false;
+                }
+            }
+            System.log("Response code: " + responseObj.statusCode);
+            System.log("Some problems logging in. Please check with admin team");
+            return false;
+        },
+        Publish: function(){
+            //Used to apply / install the changes.
+
+            var requestBody = "{}";
+
+            var responseObj = this.REST("POST", "/web_api/publish", requestBody);
+            if (responseObj.statusCode === 200)
+            {
+                System.debug("Changes Published.");
+                return true;
+            }
+            System.log("Response code:  "+responseObj.statusCode);
+            return false;
+        },
+		InstallPolicy: function(gateway){
+            //Used to apply / install the changes.
+
+             requestBody = "{\n";
+            requestBody += "\"policy-package\": \"standard\",\n";
+            requestBody += "\"access\": true,\n";
+            requestBody += "\"targets\":["+gateway+"]";
+            requestBody += "}";
+  			System.log("install-policy Request bm:  "+requestBody);
+            var responseObj = this.REST("POST", "/web_api/install-policy", requestBody);
+            if (responseObj.statusCode === 200)
+            {
+                System.debug("Changes install-policy.");
+                return true;
+            }
+            System.log("Response code:  "+responseObj.statusCode);
+            return false;
+        },
+        Discard: function(){
+            //Used to apply / install the changes.
+
+            var requestBody = "{}";
+
+            var responseObj = this.REST("POST", "/web_api/discard", requestBody);
+            if (responseObj.statusCode === 200)
+            {
+                System.debug("Changes Published.");
+                return true;
+            }
+            System.log("Response code:  "+responseObj.statusCode);
+            return false;
+        },
+        GetAllHosts: function()
+        {
+            
+            var requestBody = "{";
+            requestBody += "    \"limit\" : 500,\n";
+            requestBody += "    \"offset\" : 0\n";
+            requestBody += "}";
+
+            var responseObj = this.REST("POST", "/web_api/show-hosts?limit=500", requestBody);
+            if (responseObj.statusCode === 200)
+            {
+                var response = this.ParseJSON(responseObj.contentAsString);
+                if (response.objects)
+                {
+                    System.debug("All Hosts fetched");
+                    return response.objects;
+                }
+                else
+                {
+                    System.debug("No Hosts returned in the output returned.");
+                    return false;
+                }
+            }
+            System.log("Response code:  "+responseObj.statusCode);
+            return false;
+        },
+        AddHost: function(ipAddress)
+        {
+            // Addition of host is on the basis of IP. 
+            // Add IP and name will be "HOST_<IP>"
+
+            var requestBody = "{\n";
+            requestBody += "\"name\": \"HOST_"+ipAddress+"\",\n";
+            requestBody += "\"ip-address\": \""+ipAddress+"\"\n";
+            requestBody += "}";
+
+            var responseObj = this.REST("POST", "/web_api/add-host", requestBody);
+            if (responseObj.statusCode === 200)
+            {
+                var response = this.ParseJSON(responseObj.contentAsString);
+                if (response.uid)
+                {
+                    System.debug("New Host added, UID: "+response.uid);
+                    return response.uid;
+                }
+                else
+                {
+                    System.debug("Host seems to be added but no UID was available in the response.");
+                    return false;
+                }
+            }
+            else if (responseObj.statusCode === 400)
+            {
+                if(response.message)
+                {
+                    System.log("Error returned from server: "+response.message);
+                    return false;
+                }
+                var response = this.ParseJSON(responseObj.contentAsString);
+                if(response.warnings.message === ("Multiple objects have the same IP address "+ipAddress))
+                {
+                    System.debug("Host seems to be already existing.")
+                    return true;
+                }
+            }
+            System.log("Response code:  "+responseObj.statusCode);
+            return false;
+        },
+        CheckIfHostExists: function(ipAddress)
+        {
+            var allHosts = this.GetAllHosts();
+            if(!allHosts)
+            {
+                System.debug("Some issue occurred trying to fetch existing hosts");
+                return false;
+            }
+            for(var i in allHosts)
+            {
+                if(allHosts[i]['ipv4-address'] == ipAddress)
+                {
+                    return allHosts[i].uid;
+                }
+            }
+            //After iterating, no host with given IP Address found.
+            return false;
+        },
+        GetAllExistingRules: function(source, destination, action, service, requestNumber)
+        {
+            var requestBody = "{\n";
+            requestBody += "\"name\": \"Network\",\n";
+            requestBody += "\"limit\": 500\n";
+            requestBody += "}";
+
+            var responseObj = this.REST("POST", "/web_api/show-access-rulebase", requestBody);
+            if (responseObj.statusCode === 200)
+            {
+                var response = this.ParseJSON(responseObj.contentAsString);
+                if (response)
+                {
+                    System.debug("Rules fetched");
+                    return response;
+                }
+                else
+                {
+                    System.debug("No rules returned in the output returned.");
+                    return false;
+                }
+            }
+        },
+        CheckIfRuleExists: function (source, destination, action, service)
+        {
+            var rules = this.GetAllExistingRules();
+            if(!rules)
+            {
+                System.debug("Unable to check whether rule exists or NOT, Some issue occurred fetching current rules");
+                return false;
+            }
+            var objectsDictionary = rules.objects-dictionary;
+            var ruleBase = rules.rulebase;
+            for(var i in ruleBase)
+            {
+
+                return true;
+            }
+            return false;
+        },
+        GetAllTCPServices: function ()
+        {
+
+            var requestBody = "{";
+            requestBody += "    \"limit\" : 500,\n";
+            requestBody += "    \"offset\" : 0,\n";
+            requestBody += "    \"details-level\": \"standard\"\n";
+            requestBody += "}";
+
+            var responseObj = this.REST("POST", "/web_api/show-services-tcp", requestBody);
+            if (responseObj.statusCode === 200)
+            {
+                var response = this.ParseJSON(responseObj.contentAsString);
+                if (response.objects)
+                {
+                    System.debug("All current TCP Services fetched.");
+                    return response.objects;
+                }
+                else
+                {
+                    System.debug("No TCP services returned in the output.");
+                    return false;
+                }
+            }
+            System.log("Response code:  "+responseObj.statusCode);
+            return false;
+        },
+        GetAllUDPServices: function ()
+        {
+ 
+            var requestBody = "{";
+            requestBody += "    \"limit\" : 500,\n";
+            requestBody += "    \"offset\" : 0,\n";
+            requestBody += "    \"details-level\": \"standard\"\n";
+            requestBody += "}";
+
+            var responseObj = this.REST("POST", "/web_api/show-services-udp?limit=500", requestBody);
+            if (responseObj.statusCode === 200)
+            {
+                var response = this.ParseJSON(responseObj.contentAsString);
+                if (response.objects)
+                {
+                    System.debug("All current UDP Services fetched.");
+                    return response.objects;
+                }
+                else
+                {
+                    System.debug("No UDP services returned in the output.");
+                    return false;
+                }
+            }
+            System.log("Response code:  "+responseObj.statusCode);
+            return false;
+        },
+        CheckIfServiceExists: function(port,protocol)
+        {
+            if(protocol === "tcp")
+            {
+                var currentServices = this.GetAllTCPServices();
+            }
+            else if(protocol === "udp")
+            {
+                var currentServices = this.GetAllUDPServices();
+            }
+            else
+            {
+                throw "Invalid protocol specified."+protocol;
+            }
+
+            if(!currentServices)
+            {
+                System.debug("Some error occurred fetching current existing services from Checkpoint");
+                throw "Some error occurred fetching current existing services from Checkpoint";
+            }
+
+            for(var i in currentServices)
+            {
+                if(currentServices[i].port == port)
+                {
+                    return currentServices[i].uid;
+                }
+            }
+            //If this executes, that means the port was not found in any existing service.
+            return false;
+        },
+        CreateNewService: function (name, port, protocol)
+        {
+            if (protocol === "tcp")
+            {
+                var URI = "/web_api/add-service-tcp";
+            }
+            else if (protocol === "udp")
+            {
+                var URI = "/web_api/add-service-udp";
+            }
+            else
+            {
+                throw "Error creating new Service, invalid type specified: " + type;
+            }
+
+            var requestBody = "{\n";
+            requestBody += "\"name\": \"" + name + "\",\n";
+            requestBody += "\"port\": \"" + port + "\"\n";
+            requestBody += "}";
+
+            var responseObj = this.REST("POST", URI, requestBody);
+            if (responseObj.statusCode === 200)
+            {
+                var response = this.ParseJSON(responseObj.contentAsString);
+                if (response.uid)
+                {
+                    System.debug("New "+protocol+" service created, ID: "+response.uid);
+                    return response.uid;
+                }
+                else
+                {
+                    System.debug("The new service was created but NO ID was returned in the response");
+                    return false;
+                }
+            }
+            System.log("Response code:  "+responseObj.statusCode);
+            return false;
+        },
+        CreateAccessRule: function (ruleName, action, service, source, destination, logging, time)
+        {
+            
+            if(!logging)
+            {
+                logging = "none";
+            }
+                        
+            if(logging !== "none" && logging !== "log" && logging !== "extended log" && logging !== "detailed log")
+            {
+                throw "Invalid Logging type specified";
+            }
+
+            var requestBody = "{\n";
+            requestBody += "    \"layer\": \"Network\",\n";
+            requestBody += "    \"position\": {\n";
+            requestBody += "        \"above\": \"Cleanup rule\"\n";
+            requestBody += "    },\n";
+            requestBody += "    \"name\": \"" + ruleName + "\",\n";
+            requestBody += "    \"action\": \"" + action + "\",\n";
+            requestBody += "    \"service\": [\"" + service + "\" ],\n";
+            requestBody += "    \"destination\": [\"" + destination + "\"],\n";
+            requestBody += "    \"source\": [\"" + source + "\"],\n";
+            //requestBody += "    \"time\": \"" + time + "\",\n";
+			if(time == "Weekend" || time == "Every_Day" || time == "Off_Work"){
+				requestBody += "    \"time\": \"" + time + "\",\n";
+			}
+            requestBody += "    \"track\": {\n";
+            requestBody += "        \"accounting\": true,\n";
+            requestBody += "        \"per-connection\": true,\n";
+            requestBody += "        \"type\": \""+logging+"\"\n";
+            requestBody += "    }\n";
+            requestBody += "}";
+			
+
+            var responseObj = this.REST("POST", "/web_api/add-access-rule", requestBody);
+            if (responseObj.statusCode === 200)
+            {
+                var response = this.ParseJSON(responseObj.contentAsString);
+                if (response.uid)
+                {
+                    System.debug("Rule created: Rule ID: "+response.uid);
+                    return response.uid;
+                }
+            }
+            System.log("Response code:  "+responseObj.statusCode);
+            return false;
+        }
+    }
+    //This should always be the last line to return the object.
+    return checkpoint;]]></script>
+</dunes-script-module>

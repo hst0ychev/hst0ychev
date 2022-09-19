@@ -1,0 +1,89 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="connectVIServer" result-type="PowerShell:PowerShellRemotePSObject" api-version="6.0.0" id="698180808080808080808080808080808780808001270557368849c62c352aa82" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.powershell.generated">
+  <description><![CDATA[Auto generated.]]></description>
+  <param n="host" t="PowerShell:PowerShellHost"><![CDATA[]]></param>
+  <param n="sessionId" t="string"><![CDATA[]]></param>
+  <param n="psServer" t="Array/string"><![CDATA[]]></param>
+  <param n="psPort" t="number"><![CDATA[]]></param>
+  <param n="psProtocol" t="string"><![CDATA[]]></param>
+  <param n="psCredential" t="PowerShell:PowerShellRemotePSObject"><![CDATA[]]></param>
+  <param n="psUser" t="string"><![CDATA[]]></param>
+  <param n="psPassword" t="string"><![CDATA[]]></param>
+  <param n="psSession" t="string"><![CDATA[]]></param>
+  <param n="psNotDefault" t="boolean"><![CDATA[]]></param>
+  <param n="psSaveCredentials" t="boolean"><![CDATA[]]></param>
+  <param n="psVerbose" t="boolean"><![CDATA[]]></param>
+  <param n="psDebug" t="boolean"><![CDATA[]]></param>
+  <param n="psErrorAction" t="PowerShell:PowerShellRemotePSObject"><![CDATA[]]></param>
+  <param n="psWarningAction" t="PowerShell:PowerShellRemotePSObject"><![CDATA[]]></param>
+  <param n="psErrorVariable" t="string"><![CDATA[]]></param>
+  <param n="psWarningVariable" t="string"><![CDATA[]]></param>
+  <param n="psOutVariable" t="string"><![CDATA[]]></param>
+  <param n="psOutBuffer" t="number"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[ var oSession = host.getSession(sessionId);
+ var cmd = oSession.addCommandFromString('Connect-VIServer');
+ if (psServer)
+   cmd.addParameter('Server', psServer)
+ if (psPort)
+   cmd.addParameter('Port', psPort)
+ if (psProtocol)
+   cmd.addParameter('Protocol', "'" + psProtocol+ "'")
+ if (psCredential)
+   cmd.addParameter('Credential', psCredential)
+ if (psUser)
+   cmd.addParameter('User', "'" + psUser+ "'")
+ if (psPassword)
+   cmd.addParameter('Password', "'" + psPassword+ "'")
+ if (psSession)
+   cmd.addParameter('Session', "'" + psSession+ "'")
+ if (psNotDefault != null )
+ {
+    val = ':$false'
+    if (psNotDefault == true) {
+        val = ':$true'
+    }
+    cmd.addParameter('NotDefault'+val,'')
+ }
+ if (psSaveCredentials != null )
+ {
+    val = ':$false'
+    if (psSaveCredentials == true) {
+        val = ':$true'
+    }
+    cmd.addParameter('SaveCredentials'+val,'')
+ }
+ if (psVerbose != null )
+ {
+    val = ':$false'
+    if (psVerbose == true) {
+        val = ':$true'
+    }
+    cmd.addParameter('Verbose'+val,'')
+ }
+ if (psDebug != null )
+ {
+    val = ':$false'
+    if (psDebug == true) {
+        val = ':$true'
+    }
+    cmd.addParameter('Debug'+val,'')
+ }
+ if (psErrorAction)
+   cmd.addParameter('ErrorAction', psErrorAction)
+ if (psWarningAction)
+   cmd.addParameter('WarningAction', psWarningAction)
+ if (psErrorVariable)
+   cmd.addParameter('ErrorVariable', "'" + psErrorVariable+ "'")
+ if (psWarningVariable)
+   cmd.addParameter('WarningVariable', "'" + psWarningVariable+ "'")
+ if (psOutVariable)
+   cmd.addParameter('OutVariable', "'" + psOutVariable+ "'")
+ if (psOutBuffer)
+   cmd.addParameter('OutBuffer', psOutBuffer)
+var res; 
+if ( host.inPipeline(sessionId) == false ){ 
+  res = System.getModule("com.vmware.library.powershell").invokeCommand(host,sessionId) ;
+}
+return res;
+]]></script>
+</dunes-script-module>

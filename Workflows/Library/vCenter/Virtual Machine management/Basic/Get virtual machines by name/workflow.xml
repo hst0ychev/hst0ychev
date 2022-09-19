@@ -1,0 +1,72 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item2" object-name="workflow:name=generic" id="BB808080808080808080808080808080A180808001322751030482b80adf61e7c" version="1.0.2" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Get virtual machines by name]]></display-name>
+  <description><![CDATA[Returns a list of virtual machines from all registered vCenter Server hosts that match the provided expression.]]></description>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="criteria" type="string">
+      <description><![CDATA[Search criteria. Regular expressions supported.]]></description>
+    </param>
+  </input>
+  <output>
+    <param name="vms" type="Array/VC:VirtualMachine">
+      <description><![CDATA[Virtual machines found]]></description>
+    </param>
+  </output>
+  <attrib name="sdkConnections" type="Array/VC:SdkConnection" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="vmsByHost" type="Array/Array" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="664.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item3" type="foreach">
+    <display-name><![CDATA[Foreach (Get virtual machines by name with PC)]]></display-name>
+    <in-binding>
+      <bind name="vc" type="Array/VC:SdkConnection" export-name="*sdkConnections"/>
+      <bind name="filter" type="string" export-name="criteria"/>
+      <bind name="rootVmFolder" type="VC:VmFolder" explicitly-not-bound="true"/>
+    </in-binding>
+    <out-binding>
+      <bind name="vms" type="Array/Array" export-name="*vmsByHost"/>
+    </out-binding>
+    <reference type="Workflow" id="4fb2d193-504c-4eff-bf13-524d22afd18b"/>
+    <description><![CDATA[Returns a list of virtual machines from all registered vCenter Server hosts that match the provided expression. The expression is any valid javascript regex.]]></description>
+    <position y="55.40909090909091" x="344.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item1" type="task">
+    <display-name><![CDATA[set sdkConnections]]></display-name>
+    <script encoded="false"><![CDATA[sdkConnections = VcPlugin.allSdkConnections
+]]></script>
+    <in-binding/>
+    <out-binding>
+      <bind name="sdkConnections" type="Array/VC:SdkConnection" export-name="sdkConnections"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item0" type="task">
+    <display-name><![CDATA[unpack vm arrays]]></display-name>
+    <script encoded="false"><![CDATA[vms = new Array();
+
+for (host in vmsByHost) {
+    var a = vmsByHost[host];
+    for(vm in a) {
+        vms.push(a[vm]);
+    }
+}]]></script>
+    <in-binding>
+      <bind name="vmsByHost" type="Array/Array" export-name="vmsByHost"/>
+    </in-binding>
+    <out-binding>
+      <bind name="vms" type="Array/VC:VirtualMachine" export-name="vms"/>
+    </out-binding>
+    <position y="55.40909090909091" x="484.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="criteria">
+      <desc><![CDATA[Search criteria. Regular expressions supported.]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

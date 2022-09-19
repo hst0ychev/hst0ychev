@@ -1,0 +1,122 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="Workflow:name=generic" id="B88080808080808080808080808080803D80808001223281930284530e3e80cba" version="1.0.1" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Create recurrent task]]></display-name>
+  <description><![CDATA[Creates a recurrent task. Returns the newly created task.
+Possible recurrenceCycle attribute values:
+- one-time: Task runs once only.
+- every-minutes: Task runs every minute
+- every-hours: Task runs hourly
+- every-days: Task runs daily
+- every-weeks: Task runs weekly
+- every-months: Task runs monthly 
+
+Possible recurrencePattern attribute values depend on the recurrenceCycle attribute value:
+- one-time: Ignores the recurrencePattern attribute
+- every-minutes: Seconds into each minute at which the task starts, for example, "00" or "00, 30" 
+- every-hours: Minutes and seconds into each hour at which the task starts, for example, "00:00" or "00:00, 30:00"
+- every-days: Time at which the task starts each day, for example, "18:30:00" or "12:00:00, 19:30:00"
+- every-weeks: Day and time at which the task starts each week, for example, "Mon 00:00:00" or "Mon 00:00:00, Wed 18:00:00"
+- every-months: Date and time at which the task starts each month, for example, "14 00:00:00" or "14 00:00:00, 28 18:00:00"]]></description>
+  <position y="20.0" x="180.0"/>
+  <input>
+    <param name="workflowId" type="string">
+      <description><![CDATA[ID of the workflow to run]]></description>
+    </param>
+    <param name="startDate" type="Date">
+      <description><![CDATA[Date to start task]]></description>
+    </param>
+    <param name="endDate" type="Date">
+      <description><![CDATA[End date, if any]]></description>
+    </param>
+    <param name="recurrencePattern" type="string">
+      <description><![CDATA[The recurrence pattern, if any. See workflow description for possible values]]></description>
+    </param>
+    <param name="recurrenceCycle" type="string">
+      <description><![CDATA[The recurrence cycle mode, if any. See workflow description for possible values]]></description>
+    </param>
+    <param name="workflowArguments" type="Properties">
+      <description><![CDATA[[Mandatory] Properties the workflow requires to run]]></description>
+    </param>
+    <param name="username" type="string">
+      <description><![CDATA[Username of the user to run the workflow. If null or empty, uses the current user]]></description>
+    </param>
+    <param name="password" type="string">
+      <description><![CDATA[Password]]></description>
+    </param>
+  </input>
+  <output>
+    <param name="newTask" type="Task">
+      <description><![CDATA[The recurrent task that this workflow creates]]></description>
+    </param>
+  </output>
+  <attrib name="workflowToCall" type="Workflow" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[[Mandatory] The workflow to call when the task runs]]></description>
+  </attrib>
+  <workflow-item name="item0" out-name="item2" type="task" script-module="com.vmware.library.tasks/createRecurrentTask">
+    <display-name><![CDATA[createTask]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.tasks").createRecurrentTask(workflowToCall,startDate,endDate,recurrencePattern,recurrenceCycle,workflowArguments,username,password) ;]]></script>
+    <in-binding>
+      <bind name="workflowToCall" type="Workflow" export-name="workflowToCall"/>
+      <bind name="workflowArguments" type="Properties" export-name="workflowArguments"/>
+      <bind name="username" type="string" export-name="username"/>
+      <bind name="startDate" type="Date" export-name="startDate"/>
+      <bind name="recurrencePattern" type="string" export-name="recurrencePattern"/>
+      <bind name="recurrenceCycle" type="string" export-name="recurrenceCycle"/>
+      <bind name="password" type="string" export-name="password"/>
+      <bind name="endDate" type="Date" export-name="endDate"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Task" export-name="newTask"/>
+    </out-binding>
+    <description><![CDATA[Create a VS-O Task. Return the newly created task]]></description>
+    <position y="160.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task" script-module="com.vmware.library.workflow/getWorkflowById">
+    <display-name><![CDATA[getWorkflowById]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.workflow").getWorkflowById(workflowId) ;]]></script>
+    <in-binding>
+      <bind name="workflowId" type="string" export-name="workflowId">
+        <description><![CDATA[A valid workfow ID]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Workflow" export-name="workflowToCall"/>
+    </out-binding>
+    <description><![CDATA[Return the workflow for the given ID.
+
+Throw an exception if the workflow is not found]]></description>
+    <position y="100.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item2" type="end" end-mode="0">
+    <position y="210.0" x="180.0"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="workflowId">
+      <desc><![CDATA[ID of the workflow to run]]></desc>
+    </p-param>
+    <p-param name="workflowArguments">
+      <desc><![CDATA[[Mandatory] Properties the workflow requires to run]]></desc>
+    </p-param>
+    <p-param name="username">
+      <desc><![CDATA[Username of the user to run the workflow. If null or empty, uses the current user]]></desc>
+    </p-param>
+    <p-param name="startDate">
+      <desc><![CDATA[Date to start task]]></desc>
+    </p-param>
+    <p-param name="recurrencePattern">
+      <desc><![CDATA[The recurrence pattern, if any. See workflow description for possible values]]></desc>
+    </p-param>
+    <p-param name="recurrenceCycle">
+      <desc><![CDATA[The recurrence cycle mode, if any. See workflow description for possible values]]></desc>
+    </p-param>
+    <p-param name="password">
+      <desc><![CDATA[Password]]></desc>
+    </p-param>
+    <p-param name="endDate">
+      <desc><![CDATA[End date, if any]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

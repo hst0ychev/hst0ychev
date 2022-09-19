@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="validatePowerShellHost" result-type="PowerShell:PowerShellHost" api-version="6.0.0" id="81828080808080808080808080808080FF80808001270557368849c62c352aa82" version="3.0.0" allowed-operations="vfe" category-name="com.vmware.library.powershell.configuration">
+  <description><![CDATA[Validates Power Shell Host]]></description>
+  <param n="host" t="PowerShell:PowerShellHost"><![CDATA[The host to validate]]></param>
+  <script encoded="false"><![CDATA[try  {
+ 	PowerShellHostManager.validatePowerShellHost(host.getHostConfig());
+	System.log( "Connection to PowerShellHost successful" );
+	return host
+}
+catch( ex )  {
+	throw "Connection to PowerShellHost failed (Reason: " + ex + ")";
+}
+
+//this statement should be never reached
+return null;]]></script>
+</dunes-script-module>

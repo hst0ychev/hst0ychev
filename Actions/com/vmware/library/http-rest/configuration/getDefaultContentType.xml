@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getDefaultContentType" result-type="string" api-version="6.0.0" id="70b620ae-903f-4fd9-b06d-bd811670c25f" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.http-rest.configuration">
+  <param n="operation" t="REST:RESTOperation"><![CDATA[HTTP request header parameters count]]></param>
+  <script encoded="false"><![CDATA[if (operation) {
+    return operation.getDefaultContentType();
+}
+
+return [];]]></script>
+</dunes-script-module>

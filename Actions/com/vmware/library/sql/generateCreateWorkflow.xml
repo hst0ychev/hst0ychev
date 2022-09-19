@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="generateCreateWorkflow" result-type="Workflow" api-version="6.0.0" id="0ef76bd1-93d9-481f-8068-7a4b39927e79" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.sql">
+  <param n="table" t="SQL:Table"><![CDATA[A table object]]></param>
+  <param n="category" t="WorkflowCategory"><![CDATA[A workflow category]]></param>
+  <param n="overwriteWorkflow" t="boolean"><![CDATA[Pass true to overwrite existing CRUD workflows in the given workflow folder. Otherwise pass false.]]></param>
+  <param n="readOnlyColumns" t="Array/SQL:Column"><![CDATA[An array of columns that should not be included into the create workflow parameters]]></param>
+  <script encoded="false"><![CDATA[var resultWorkflow = SQLDatabaseManager.generateCreateWorkflow(table, category, overwriteWorkflow, readOnlyColumns);
+System.log("CreateRecord workflow for table '" + table.name + "' was created in " + category.path);
+return resultWorkflow;]]></script>
+</dunes-script-module>

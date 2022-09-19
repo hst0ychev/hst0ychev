@@ -1,0 +1,81 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getGroupsUserIsAMemberOf" result-type="Array/string" api-version="6.0.0" id="9ab9e834-ec60-4c76-aee5-4f04e86694fe" version="0.0.0" allowed-operations="vfe" category-name="com.vmware.indcoe.active_directory">
+  <param n="username" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[//This function will return the "value" of "key" from a "configuration element" which exists in "category_name"
+function getValueFromConfigurationElement(key, configuration_element, category_name) {
+
+	// Step 1: We fetch the "configuration element" in the "category_name" that means it calls getConfigurationElement function which returns a "configuration element" if it exists, else false.
+
+	var configuration_element_returned = getConfigurationElement(category_name, configuration_element);
+	if (configuration_element_returned) {
+		//Step 2: It means we have got the configuration element and it exists.
+		var configuration_element_attributes = configuration_element_returned.attributes;
+
+		// Step 3: We now iterate over each "key" in the configuration element returned.
+		for (var i in configuration_element_attributes) {
+			//Step 4: If the current key which is interated is the one it was asked for , we return the value.
+			if (configuration_element_attributes[i].name === key) {
+				return configuration_element_attributes[i].value;
+			}
+		}
+	}
+	//Step 5: Return false for all other scenarios, i.e. either the configuration element was not found OR the key was not found.
+	return false;
+}
+
+//This function will fetch the required configuration element from all the configuration elements in the "category_name"
+function getConfigurationElement(category_name, configuration_element) {
+	//We get all configuration elements in "Path" i.e. the folder name in "actions" tab.
+	var configElements = Server.getConfigurationElementCategoryWithPath(category_name).configurationElements;
+	for (var i in configElements) {
+
+		//If this (the one currently in iteration)'s name is same as the one we need, we return it.
+		if (configElements[i].name === configuration_element) {
+			return configElements[i];
+		}
+	}
+	//By default, we return false, implying either we did not encounter the required configuration Element in "category_name"
+	return false;
+}
+
+var listOfGroups = [];
+	
+if (!username) {
+	listOfGroups.push("Please select a user");
+	return listOfGroups;
+}
+
+var adUsername = getValueFromConfigurationElement("username", "LDAPaaS", "CRIS");
+var adPassword = getValueFromConfigurationElement("password", "LDAPaaS", "CRIS");
+var adServer = getValueFromConfigurationElement("adServer", "LDAPaaS", "CRIS");
+var psHost = getValueFromConfigurationElement("psHost", "LDAPaaS", "CRIS");
+
+if (!adUsername || !adPassword || !adServer || !psHost) {
+	listOfGroups.push("Error fetching user's group memberships");
+	return listOfGroups;
+}
+
+var adObject = System.getModule("com.vmware.indcoe.active_directory").class(adUsername, adPassword, adServer, psHost);
+if (!adObject) {
+	listOfGroups.push("Error fetching user's group memberships");
+	return listOfGroups;
+}
+else {
+	
+	var groups = adObject.GetGroupsUserIsAMemberOf(username);
+	if (!groups) {
+		listOfGroups.push("User not a member of any group.");
+		return listOfGroups;
+	}
+	if (groups.Name) {
+	    //returned only one user.
+		listOfGroups.push(groups.Name);
+		return listOfGroups;
+	}
+	for(var i in groups)
+	{
+		listOfGroups.push(groups[i].Name);
+	}
+	return listOfGroups;
+}]]></script>
+</dunes-script-module>

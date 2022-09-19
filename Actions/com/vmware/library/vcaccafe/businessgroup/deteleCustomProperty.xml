@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="deteleCustomProperty" result-type="vCACCAFE:BusinessGroup" api-version="6.0.0" id="b55a0758-ba07-4ee0-9199-61877f2f2723" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.businessgroup">
+  <param n="group" t="vCACCAFE:BusinessGroup"><![CDATA[Business group]]></param>
+  <param n="property" t="vCACCAFE:CustomProperty"><![CDATA[Custom property]]></param>
+  <script encoded="false"><![CDATA[System.getModule("com.vmware.library.vcaccafe.util").validateObject(group, "Business group");
+System.getModule("com.vmware.library.vcaccafe.util").validateObject(property, "Custom property");
+var found = false;
+
+var newProperties = new Array();
+
+var properties = group.getCustomProperties();
+for (var i = 0; i < properties.length; i++) {
+	if (properties[i].getId() != property.getId()) {
+		newProperties.push(properties[i]);
+	} else {
+		found = true;
+	}
+}
+
+if (found) {
+	group.setCustomProperties(newProperties);
+
+	System.log("Updating business group '" + group.getName() + "'...");
+	var host = vCACCAFEEntitiesFinder.getHostForEntity(group);
+	var service = host.createInfrastructureClient().getInfrastructureBusinessGroupsService();
+	service.update(group);
+	System.log("Business group updated: " + group.getId().toString());
+} else {
+	throw "No property found with id '" + property.getId() + "' in busines group '" + group.getName() + "'!";
+}
+
+return vCACCAFEEntitiesFinder.getBusinessGroup(host, group.getId().toString());]]></script>
+</dunes-script-module>

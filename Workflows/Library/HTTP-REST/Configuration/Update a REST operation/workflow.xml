@@ -1,0 +1,105 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="Workflow:name=generic" id="A7808080808080808080808080808080A280808001299080088268176866967b3" version="1.0.2" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Update a REST operation]]></display-name>
+  <description><![CDATA[Updates an operation on a REST host.]]></description>
+  <ref-types><![CDATA[>(REST:RESTOperation)]]></ref-types>
+  <position y="50.0" x="160.0"/>
+  <input>
+    <param name="operation" type="REST:RESTOperation">
+      <description><![CDATA[Operation to be updated]]></description>
+    </param>
+    <param name="name" type="string">
+      <description><![CDATA[New operation name]]></description>
+    </param>
+    <param name="urlTemplate" type="string">
+      <description><![CDATA[New operation template URL]]></description>
+    </param>
+    <param name="method" type="string">
+      <description><![CDATA[New operation HTTP method]]></description>
+    </param>
+    <param name="defaultContentType" type="string">
+      <description><![CDATA[New operation default content type]]></description>
+    </param>
+  </input>
+  <output>
+    <param name="updatedOperation" type="REST:RESTOperation">
+      <description><![CDATA[Updated operation]]></description>
+    </param>
+  </output>
+  <attrib name="errorCode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <workflow-item name="item0" out-name="item1" catch-name="item2" throw-bind-name="errorCode" type="task">
+    <display-name><![CDATA[Add operation]]></display-name>
+    <script encoded="false"><![CDATA[//clone the old operation
+var newOperation = operation.clone();
+newOperation.name = name;
+newOperation.method = method;
+newOperation.urlTemplate = urlTemplate;
+newOperation.defaultContentType = defaultContentType;
+//save the clone as an update of the original operation
+System.log("op: " + newOperation);
+System.log("host: " + operation.host);
+updatedOperation = operation.host.updateOperation(newOperation);
+System.log("new operation: " + updatedOperation);
+RESTHostManager.updateHost(operation.host);
+]]></script>
+    <in-binding>
+      <bind name="name" type="string" export-name="name"/>
+      <bind name="urlTemplate" type="string" export-name="urlTemplate"/>
+      <bind name="method" type="string" export-name="method"/>
+      <bind name="operation" type="REST:RESTOperation" export-name="operation"/>
+      <bind name="defaultContentType" type="string" export-name="defaultContentType"/>
+    </in-binding>
+    <out-binding>
+      <bind name="updatedOperation" type="REST:RESTOperation" export-name="updatedOperation"/>
+      <bind name="errorCode" type="string" export-name="errorCode"/>
+    </out-binding>
+    <position y="120.0" x="120.0"/>
+  </workflow-item>
+  <workflow-item name="item1" type="end" end-mode="0">
+    <position y="170.0" x="160.0"/>
+  </workflow-item>
+  <workflow-item name="item2" throw-bind-name="errorCode" type="end" end-mode="1">
+    <position y="110.0" x="280.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Update a REST operation]]></title>
+      <p-param name="operation">
+        <desc><![CDATA[Operation to update]]></desc>
+        <p-qual name="contextualParameter" type="void"><![CDATA[]]></p-qual>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      </p-param>
+      <p-group>
+        <title><![CDATA[Operation Properties]]></title>
+        <desc><![CDATA[Properties of the operation.
+
+The URL must include only the specific operation part (without the host's URL) and can contain placeholders for parameters that are provided at request run time. Examples:
+/customer/{id} ; /customer/{id}/orders?date={date} ; /customer?orderdBy={orderdBy}]]></desc>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#operation != null]]></p-qual>
+        <p-param name="name">
+          <desc><![CDATA[New name]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[#operation.name]]></p-qual>
+        </p-param>
+        <p-param name="urlTemplate">
+          <desc><![CDATA[New template URL]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[#operation.urlTemplate]]></p-qual>
+        </p-param>
+        <p-param name="method">
+          <desc><![CDATA[New HTTP method]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#GET#;#string#POST#;#string#PUT#;#string#DELETE#;#string#OPTIONS#;#string#HEAD#;#string#PATCH#;#string#TRACE#}#]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[#operation.method]]></p-qual>
+        </p-param>
+        <p-param name="defaultContentType">
+          <desc><![CDATA[New content type]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#method=="POST"||#method=="PUT"||#method=="PATCH"||#method=="DELETE"]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[#operation.defaultContentType]]></p-qual>
+        </p-param>
+      </p-group>
+    </p-step>
+  </presentation>
+</workflow>

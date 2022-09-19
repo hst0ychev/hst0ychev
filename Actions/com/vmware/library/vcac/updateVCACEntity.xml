@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="updateVCACEntity" result-type="vCAC:Entity" api-version="6.0.0" id="b95fbe88-e699-4b9f-9494-27f7c229d754" version="1.0.2" allowed-operations="vf" category-name="com.vmware.library.vcac">
+  <description><![CDATA[Updates a vCloud Automation Center model entity by its ID.]]></description>
+  <param n="hostId" t="string"><![CDATA[The host object's ID.]]></param>
+  <param n="modelName" t="string"><![CDATA[The vCloud Automation Center's model name of the vCloud Automation Center entity.]]></param>
+  <param n="entitySetName" t="string"><![CDATA[The entity set of the vCloud Automation Center entity.]]></param>
+  <param n="entityIdString" t="string"><![CDATA[A map of property name, value containing the ID of the vCloud Automation Center's entity.]]></param>
+  <param n="properties" t="Properties"><![CDATA[The properties for update.]]></param>
+  <param n="links" t="Properties"><![CDATA[The links for update.]]></param>
+  <param n="headers" t="Properties"><![CDATA[A map of the HTTP headers.]]></param>
+  <script encoded="false"><![CDATA[return vCACEntityManager.updateModelEntityBySerializedKey(hostId, modelName, entitySetName, entityIdString, properties, links, headers);]]></script>
+</dunes-script-module>

@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="createResourceActionFromWorkflow" result-type="vCACCAFE:ResourceAction" api-version="6.0.0" id="3995891d-e770-4034-b4a1-eec51d020791" version="1.0.1" allowed-operations="vf" category-name="com.vmware.library.vcaccafe.asd.resourceaction">
+  <description><![CDATA[Creates resource action with the default form based on the given workflow id.]]></description>
+  <param n="host" t="vCACCAFE:VCACHost"><![CDATA[vRA CAFE host]]></param>
+  <param n="name" t="string"><![CDATA[Resource action name]]></param>
+  <param n="description" t="string"><![CDATA[Resource action description]]></param>
+  <param n="workflowId" t="string"><![CDATA[Id of the workflow]]></param>
+  <param n="resourceType" t="vCACCAFE:CustomResource"><![CDATA[Resource type]]></param>
+  <param n="parameterName" t="string"><![CDATA[Name of the input parameter of the workflow]]></param>
+  <script encoded="false"><![CDATA[var client = host.createAdvancedDesignerClient().getAdvancedDesignerWorkflowService();
+var param = new vCACCAFECsParameter() ;
+param.setName(parameterName);
+param.setResourceType(resourceType);
+
+System.log("Generating resource operation " + name);
+var resourceOperation = client.generateResourceOperationByWorkflowIdAndInputParameter(workflowId, param);
+System.log("Generated resource operation " + name);
+resourceOperation.setTenant(host.tenant);
+resourceOperation.setName(name);
+resourceOperation.setDescription(description);
+
+var resourceOperationClient = host.createAdvancedDesignerClient().getAdvancedDesignerCsResourceOperationService();
+System.log("Creating resource action " + resourceOperation.getName() + "...");
+var uri = resourceOperationClient.createResourceOperation(resourceOperation);
+var uriString = uri.toString();
+System.log("Resource action created " + uriString);
+
+var uriParts = uriString.split("/");
+var resourceActionId = uriParts[uriParts.length - 1];
+return vCACCAFEEntitiesFinder.getResourceAction(host, resourceActionId);]]></script>
+</dunes-script-module>

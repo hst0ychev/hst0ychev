@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="22264574-7d03-46e4-bb79-3cf8abc4828a" version="0.0.1">
+  <display-name><![CDATA[scaleUpSymptom]]></display-name>
+  <atts>
+    <att name="cpuName" type="string" read-only="false">
+      <value encoded="n"><![CDATA[_VerticalUP_CPUSymptom]]></value>
+    </att>
+    <att name="memoryName" type="string" read-only="false">
+      <value encoded="n"><![CDATA[_VerticalUp_MemSymptom]]></value>
+    </att>
+    <att name="waitCycle" type="number" read-only="false">
+      <value encoded="n"><![CDATA[1.0]]></value>
+    </att>
+    <att name="cancelCycle" type="number" read-only="false">
+      <value encoded="n"><![CDATA[1.0]]></value>
+    </att>
+  </atts>
+</config-element>

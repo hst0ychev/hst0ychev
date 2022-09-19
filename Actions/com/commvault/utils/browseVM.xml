@@ -1,0 +1,69 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="browseVM" result-type="void" api-version="6.0.0" id="f35453ba-a665-4a20-8034-16a6430098bc" version="0.0.0" allowed-operations="evf" category-name="com.commvault.utils">
+  <description><![CDATA[Action to browse the VM and return subclient info]]></description>
+  <param n="token" t="string"><![CDATA[rest host auth token]]></param>
+  <script encoded="false"><![CDATA[/*
+	Inputs-
+	token - CV token for REST API
+	
+	API used-
+	VM?forUser=true&status=0
+
+	Output
+	return the subclient info
+*/
+
+
+System.log("Executing browseVM module to get subclient info from the VM");
+var vmBrowseUrl = "VM?forUser=true&status=0";
+var restHost = System.getModule("com.commvault.utils").getHost();
+
+if(restHost == null)
+{	
+	throw("Error: Coudln't find appropriate RESTHOST in VCO, cannot continue");
+	return -1;
+}	
+else{
+ 	var response = System.getModule("com.commvault.utils").processRESTRequest(vmBrowseUrl,"GET", null, token,null,null);
+	if(response.statusCode != 200)
+	{
+		throw("Error: Failed to execute REST request to get backupset id");
+	}
+	var document = XMLManager.fromString(response.contentAsString);
+	var list = document.getElementsByTagName("App_VMStatusInfoResp");
+	var subclientInfo = "";
+	for(var i = 0; i < list.length ; i++)
+	{
+		var vmStatusInfoList = list.item(i).getChildNodes();
+		
+		for(var j = 0 ; j < vmStatusInfoList.length; j++)
+		{
+			if(vmStatusInfoList.item(j).nodeName == "vmStatusInfoList")
+			{
+				if(vmStatusInfoList.item(j).getAttribute("name") == vmName)
+				{	var VMSubclientNode = false;
+					var childNodesofVMStatus = vmStatusInfoList.item(j).getChildNodes();
+					
+					for(var x=0; x<childNodesofVMStatus.length; x++){
+						
+						if(childNodesofVMStatus.item(x).nodeName === "vmSubClientEntity"){
+							VMSubclientNode = true;
+							subClientName = childNodesofVMStatus.item(x).getAttribute("subclientName");
+							subClientId = childNodesofVMStatus.item(x).getAttribute("subclientId");
+						}
+						
+					}
+					if(VMSubclientNode == false){
+						subClientName = vmStatusInfoList.item(j).getAttribute("subclientName");
+						subClientId = vmStatusInfoList.item(j).getAttribute("subclientId");
+					}
+					subclientInfo = subClientName + "," + subClientId;
+					break;
+				}
+				
+			}
+		}
+	}
+	return subclientInfo;
+}]]></script>
+</dunes-script-module>

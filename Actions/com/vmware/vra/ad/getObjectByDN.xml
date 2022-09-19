@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getObjectByDN" result-type="Any" api-version="6.0.0" id="05b31d73-f539-4e2b-9c7b-733fbab57e1d" version="0.0.2" allowed-operations="vf" category-name="com.vmware.vra.ad">
+  <description><![CDATA[Find an object in ADHost by type and DN.]]></description>
+  <param n="host" t="AD:AdHost"><![CDATA[The AD host to contact.]]></param>
+  <param n="objectDN" t="string"><![CDATA[DN of the object to look for.]]></param>
+  <script encoded="false"><![CDATA[return ActiveDirectory.searchForEntry(objectDN, LdapSearchScope.BASE, 10000, "objectClass=*", null, host);]]></script>
+</dunes-script-module>

@@ -1,0 +1,160 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="ConverterHelpers" result-type="Any" api-version="6.0.0" id="2670383b-93f5-3340-b458-4af69c312996" version="1.0.0" allowed-operations="evf" category-name="com.vmware.indcoe.library.vrautil">
+  <script encoded="false"><![CDATA[function getEntityRef(componentId, classId, id, label) {
+    return {
+        "facets": {
+            "fixedValue": {
+                "type": "constant",
+                "value": getEntityRefType(componentId, classId, id, label)
+            }
+        },
+        "permittedValues": null,
+        "data": {}
+    };
+}
+
+function getMultipleItems(array, elementType) {
+    return {
+        "facets": {
+            "defaultValue": {
+                "type": "constant",
+                "value": getMultipleItemsType(elementType, array)
+            }
+        },
+        "permittedValues": null,
+        "data": {}
+    };
+}
+
+function getTypeForValue(value) {
+    var objectType = System.getObjectType(value);
+
+    if (objectType === "number") {
+        return "integer";
+    } else {
+        return objectType;
+    }
+}
+
+function getMultipleItemsType(elementType, items) {
+    return {
+        "type": "multiple",
+        "elementTypeId": elementType,
+        "items": items
+    };
+}
+
+function getEntityRefType(componentId, classId, id, label) {
+    var json = {
+        "type": "entityRef",
+        "componentId": componentId,
+        "classId": classId,
+        "id": id
+    };
+
+    if (label) {
+        json.label = label;
+    }
+
+    return json;
+}
+
+function getComplexType(obj, componentTypeId, componentId, classId, typeFilter) {
+    var json = {
+        "type": "complex",
+        "componentTypeId": componentTypeId,
+        "componentId": componentId,
+        "classId": classId,
+        "typeFilter": typeFilter,
+        "values": {
+            "entries": []
+        }
+    };
+
+    for (var key in obj) {
+        var subJson = {
+            "key": key
+        };
+
+        if (obj[key] != null) {
+            subJson.value = {
+                "type": getTypeForValue(obj[key]),
+                "value": "" + obj[key]
+            };
+        }
+        json.values.entries.push(subJson);
+    }
+    return json;
+}
+
+function getSimpleComponentFieldValue(values) {
+    var fieldValue = {
+        "facets": {},
+        "permittedValues": null,
+        "data": {}
+    };
+    for (var key in values) {
+        fieldValue.facets[key] = {
+            type: "constant"
+        };
+
+        if (values[key] != null) {
+            fieldValue.facets[key].value = {
+                type: getTypeForValue(values[key]),
+                value: "" + values[key]
+            };
+        }
+    }
+    return fieldValue;
+}
+
+function fromMultipleTypeObj(multipleTypeObj) {
+    if (!multipleTypeObj.type || multipleTypeObj.type.toLowerCase() !== "multiple") {
+        throw "The provided object is not of type 'multiple'!";
+    }
+
+    if (multipleTypeObj.elementTypeId.toLowerCase() !== "complex") {
+        throw "Unsupported Multiple element type '" + multipleTypeObj.elementTypeId + "'";
+    }
+
+    var result = [];
+
+    for (var i = 0; i < multipleTypeObj.items.length; i++) {
+        var item = multipleTypeObj.items[i];
+        result.push(fromComplexTypeObj(item));
+    }
+
+    return result;
+}
+
+function fromComplexTypeObj(complexTypeObj) {
+    if (!complexTypeObj.type || complexTypeObj.type.toLowerCase() !== "complex") {
+        throw "The provided object is not of type 'complex'!";
+    }
+
+    var result = {};
+
+    var entries = complexTypeObj.values.entries;
+    for (var i = 0; i < entries.length; i++) {
+        var entry = entries[i];
+        if (entry.key && entry.key !== "") {
+            result[entry.key] = entry.value;
+        }
+    }
+
+    return result;
+}
+
+return {
+    getEntityRef: getEntityRef,
+    getTypeForValue: getTypeForValue,
+    getMultipleItems: getMultipleItems,
+    getMultipleItemsType: getMultipleItemsType,
+    getComplexType: getComplexType,
+    getEntityRefType: getEntityRefType,
+    getSimpleComponentFieldValue: getSimpleComponentFieldValue,
+    fromMultipleTypeObj: fromMultipleTypeObj,
+    fromComplexTypeObj: fromComplexTypeObj
+};
+]]></script>
+</dunes-script-module>

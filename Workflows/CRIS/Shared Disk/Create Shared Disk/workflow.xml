@@ -1,0 +1,70 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="ad02dc31-4359-34f8-806c-b6410f5c1920" version="1.0.3" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Create Shared Disk]]></display-name>
+  <position y="45.90909090909091" x="105.0"/>
+  <input>
+    <param name="environment" type="string">
+      <description><![CDATA[Please select the Environment]]></description>
+    </param>
+    <param name="OS" type="string">
+      <description><![CDATA[Please select the Operating System]]></description>
+    </param>
+    <param name="storageSize" type="number">
+      <description><![CDATA[Please provide the size of the shared disk. Max 500 GB]]></description>
+    </param>
+    <param name="vms" type="Array/string">
+      <description><![CDATA[Please select the VMs to use the Shared Disk]]></description>
+    </param>
+    <param name="diskType" type="string">
+      <description><![CDATA[Please select the type of disk to be created]]></description>
+    </param>
+  </input>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="425.0"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[execute]]></display-name>
+    <script encoded="false"><![CDATA[var __global = System.getContext() || (function () {
+    return this;
+}).call(null);
+var VROES = __global.__VROES || (__global.__VROES = System.getModule("com.vmware.pscoe.library.ecmascript").VROES());
+var CreateSharedVirtualVolume_1 = VROES.importLazy("com.vmware.pscoe.cris.vro.actions/disk/pipelines/CreateSharedVirtualVolume");
+var RDMVolumeService_1 = VROES.importLazy("com.vmware.pscoe.cris.vro.actions/disk/pipelines/RDMVolumeService");
+if (diskType.toUpperCase() == "VMDK") {
+	System.debug("VMDK")
+    var service = new CreateSharedVirtualVolume_1._.CreateSharedVirtualVolume();
+    service.execute();
+}
+else if (diskType.toUpperCase() == "RDM") {
+	System.debug("RDM")
+    var service = new RDMVolumeService_1._.RDMVolumeService();
+    service.execute();
+}
+else {
+    throw new Error("Please provide the Valid Disk type, VMDK/RDM");
+}
+]]></script>
+    <in-binding>
+      <bind name="diskType" type="string" export-name="diskType"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="225.0"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="environment">
+      <desc><![CDATA[Environment]]></desc>
+    </p-param>
+    <p-param name="OS">
+      <desc><![CDATA[Operating System]]></desc>
+    </p-param>
+    <p-param name="storageSize">
+      <desc><![CDATA[StorageSize in GB]]></desc>
+    </p-param>
+    <p-param name="vms">
+      <desc><![CDATA[vms]]></desc>
+    </p-param>
+    <p-param name="diskType">
+      <desc><![CDATA[Disk Type]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

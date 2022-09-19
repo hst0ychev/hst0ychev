@@ -1,0 +1,453 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item3" object-name="workflow:name=generic" id="14018467-7819-4cd2-85a1-d59ca1e39a5f" version="0.0.21" api-version="6.0.0" allowed-operations="vf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Configure Endpoint]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="endpointName" type="string">
+      <description><![CDATA[Endpoint shortname]]></description>
+    </param>
+    <param name="createMachineWF" type="Workflow">
+      <description><![CDATA[Create Machine workflow]]></description>
+    </param>
+    <param name="cloneMachineWF" type="Workflow">
+      <description><![CDATA[Clone Machine workflow]]></description>
+    </param>
+    <param name="customizeMachineWF" type="Workflow">
+      <description><![CDATA[Customize Machine workflow]]></description>
+    </param>
+    <param name="createMultiMachineWF" type="Workflow">
+      <description><![CDATA[Create Multi-Machine workflow]]></description>
+    </param>
+    <param name="disposeMachineWF" type="Workflow">
+      <description><![CDATA[Dispose Machine workflow]]></description>
+    </param>
+    <param name="disposeMultiMachineWF" type="Workflow">
+      <description><![CDATA[Dispose Multi-Machine workflow]]></description>
+    </param>
+    <param name="registerMachineWF" type="Workflow">
+      <description><![CDATA[Register Machine workflow]]></description>
+    </param>
+    <param name="getComputeResourcesWF" type="Workflow">
+      <description><![CDATA[Collect Compute Resources workflow]]></description>
+    </param>
+    <param name="getTemplatesWF" type="Workflow">
+      <description><![CDATA[Collect Templates workflow]]></description>
+    </param>
+    <param name="getComputeResourceInventoryWF" type="Workflow">
+      <description><![CDATA[Collect Compute Resources Inventory workflow]]></description>
+    </param>
+    <param name="getMachinesWF" type="Workflow">
+      <description><![CDATA[Collect Machines workflow]]></description>
+    </param>
+    <param name="getMachineStatesWF" type="Workflow">
+      <description><![CDATA[Collect Machine States workflow]]></description>
+    </param>
+    <param name="setPowerStateWF" type="Workflow">
+      <description><![CDATA[Set Power State workflow]]></description>
+    </param>
+    <param name="getPowerStateWF" type="Workflow">
+      <description><![CDATA[Get Power State workflow]]></description>
+    </param>
+    <param name="applySnapshotWF" type="Workflow">
+      <description><![CDATA[Apply Snapshot workflow]]></description>
+    </param>
+    <param name="createSnapshotWF" type="Workflow">
+      <description><![CDATA[Create Snapshot workflow]]></description>
+    </param>
+    <param name="deleteSnapshotWF" type="Workflow">
+      <description><![CDATA[Delete Snapshot workflow]]></description>
+    </param>
+    <param name="fileLevelCloneMachineWF" type="Workflow">
+      <description><![CDATA[File Level Clone Machine workflow]]></description>
+    </param>
+    <param name="finalizePhysicalProvisioningWF" type="Workflow">
+      <description><![CDATA[Finalize Physical Provisioning workflow]]></description>
+    </param>
+    <param name="getComputeResourcePerformanceWF" type="Workflow">
+      <description><![CDATA[Collect Machine Performance Data workflow]]></description>
+    </param>
+    <param name="getComputeResourceSnapshotInventoryWF" type="Workflow">
+      <description><![CDATA[Collect Machine Snpshots workflow]]></description>
+    </param>
+    <param name="initalizePhysicalProvisioningWF" type="Workflow">
+      <description><![CDATA[Initialize Physical Provisioning workflow]]></description>
+    </param>
+    <param name="installToolsWF" type="Workflow">
+      <description><![CDATA[Install Tools workflow]]></description>
+    </param>
+    <param name="linkCloneMachineWF" type="Workflow">
+      <description><![CDATA[Link CLone Machine workflow]]></description>
+    </param>
+    <param name="mountCDWF" type="Workflow">
+      <description><![CDATA[Mount CDROM workflow]]></description>
+    </param>
+    <param name="moveMachineWF" type="Workflow">
+      <description><![CDATA[Move Machine workflow]]></description>
+    </param>
+    <param name="renameMachineWF" type="Workflow">
+      <description><![CDATA[Rename Machine worklfow]]></description>
+    </param>
+    <param name="setCustomAttributesWF" type="Workflow">
+      <description><![CDATA[Set Custom Attributes workflow]]></description>
+    </param>
+    <param name="unmountCDWF" type="Workflow">
+      <description><![CDATA[Unmount CDROM workflow]]></description>
+    </param>
+    <param name="updateDescriptionWF" type="Workflow">
+      <description><![CDATA[Update Description workflow]]></description>
+    </param>
+    <param name="updateOwnerWF" type="Workflow">
+      <description><![CDATA[Update Owner workflow]]></description>
+    </param>
+    <param name="getComputeResourceTemplatesWF" type="Workflow">
+      <description><![CDATA[Collect Resource Templates]]></description>
+    </param>
+    <param name="getComputeResourceInstanceTypeInventoryWF" type="Workflow">
+      <description><![CDATA[Collect Instance Types]]></description>
+    </param>
+  </input>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="404.5"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item0" type="task">
+    <display-name><![CDATA[Create Workflow Mappings]]></display-name>
+    <script encoded="false"><![CDATA[var category = Server.getResourceElementCategoryWithPath("Library/GEF/Providers");
+
+
+var content = "";
+// Required bare minimum functions
+if(getComputeResourcesWF == null || getComputeResourceInventoryWF == null
+|| getMachinesWF == null || setPowerStateWF == null || getPowerStateWF == null
+|| registerMachineWF == null || disposeMachineWF == null
+|| (fileLevelCloneMachineWF == null && createMachineWF == null && cloneMachineWF == null && linkCloneMachineWF == null))
+{
+	throw( "The following workflows MUST be supported: getComputeResourcesWF, getComputeResourceInventoryWF, getMachinesWF, setPowerStateWF, getPowerStateWF, registerMachineWF, disposeMachineWF, and at least one of the following: cloneMachineWF, cloneMachineWF, linkCloneMachineWF or fileLevelCloneMachineWF");
+}
+
+content += "GetComputeResources:" + System.getModule("com.vmware.vra.gef").getWorkflowId(getComputeResourcesWF) + "\n";
+content += "GetComputeResourceInventory:" + System.getModule("com.vmware.vra.gef").getWorkflowId(getComputeResourceInventoryWF) + "\n";
+content += "GetMachines:" + System.getModule("com.vmware.vra.gef").getWorkflowId(getMachinesWF) + "\n";
+content += "SetPowerState:" + System.getModule("com.vmware.vra.gef").getWorkflowId(setPowerStateWF) + "\n";
+content += "GetPowerState:" + System.getModule("com.vmware.vra.gef").getWorkflowId(getPowerStateWF) + "\n";
+content += "RegisterMachine:" + System.getModule("com.vmware.vra.gef").getWorkflowId(registerMachineWF) + "\n";
+content += "DisposeMachine:" + System.getModule("com.vmware.vra.gef").getWorkflowId(disposeMachineWF) + "\n";
+
+// optional items
+
+if(getMachineStatesWF != null)
+{
+	content += "GetMachineStates:" + System.getModule("com.vmware.vra.gef").getWorkflowId(getMachineStatesWF) + "\n";
+}
+
+if(createMachineWF != null)
+{
+	content += "CreateMachine:" + System.getModule("com.vmware.vra.gef").getWorkflowId(createMachineWF) + "\n";
+}
+
+if(unmountCDWF != null)
+{
+	content += "EjectCD:" + System.getModule("com.vmware.vra.gef").getWorkflowId(unmountCDWF) + "\n";
+}
+
+if(getComputeResourceSnapshotInventoryWF != null)
+{
+	content += "CollectSnapshotInventory:" + System.getModule("com.vmware.vra.gef").getWorkflowId(getComputeResourceSnapshotInventoryWF) + "\n";
+}
+
+if(fileLevelCloneMachineWF != null)
+{
+	content += "FileLevelCloneMachine:" + System.getModule("com.vmware.vra.gef").getWorkflowId(fileLevelCloneMachineWF) + "\n";
+}
+
+if(updateDescriptionWF != null)
+{
+	content += "UpdateDescription:" + System.getModule("com.vmware.vra.gef").getWorkflowId(updateDescriptionWF) + "\n";
+}
+
+if(installToolsWF != null)
+{
+	content += "InstallTools:" + System.getModule("com.vmware.vra.gef").getWorkflowId(installToolsWF) + "\n";
+}
+
+if(initalizePhysicalProvisioningWF != null)
+{
+	content += "InitializePhysicalProvisioning:" + System.getModule("com.vmware.vra.gef").getWorkflowId(initalizePhysicalProvisioningWF) + "\n";
+}
+
+if(linkCloneMachineWF != null)
+{
+	content += "LinkCloneMachine:" + System.getModule("com.vmware.vra.gef").getWorkflowId(linkCloneMachineWF) + "\n";
+}
+
+if(getComputeResourcePerformanceWF != null)
+{
+	content += "CollectPerformance:" + System.getModule("com.vmware.vra.gef").getWorkflowId(getComputeResourcePerformanceWF) + "\n";
+}
+
+if(finalizePhysicalProvisioningWF != null)
+{
+	content += "FinalizePhysicalProvisioning:" + System.getModule("com.vmware.vra.gef").getWorkflowId(finalizePhysicalProvisioningWF) + "\n";
+}
+
+if(moveMachineWF != null)
+{
+	content += "MoveMachine:" + System.getModule("com.vmware.vra.gef").getWorkflowId(moveMachineWF) + "\n";
+}
+
+if(cloneMachineWF != null)
+{
+	content += "CloneMachine:" + System.getModule("com.vmware.vra.gef").getWorkflowId(cloneMachineWF) + "\n";
+}
+
+if(updateOwnerWF != null)
+{
+	content += "UpdateOwner:" + System.getModule("com.vmware.vra.gef").getWorkflowId(updateOwnerWF) + "\n";
+}
+
+if(disposeMultiMachineWF != null)
+{
+	content += "DisposeMultiMachine:" + System.getModule("com.vmware.vra.gef").getWorkflowId(disposeMultiMachineWF) + "\n";
+}
+
+if(getTemplatesWF != null)
+{
+	content += "GetTemplates:" + System.getModule("com.vmware.vra.gef").getWorkflowId(getTemplatesWF) + "\n";
+}
+
+if(createSnapshotWF != null)
+{
+	content += "CreateSnapshot:" + System.getModule("com.vmware.vra.gef").getWorkflowId(createSnapshotWF) + "\n";
+}
+
+if(mountCDWF != null)
+{
+	content += "MountCD:" + System.getModule("com.vmware.vra.gef").getWorkflowId(mountCDWF) + "\n";
+}
+
+if(customizeMachineWF != null)
+{
+	content += "CustomizeMachine:" + System.getModule("com.vmware.vra.gef").getWorkflowId(customizeMachineWF) + "\n";
+}
+
+if(createMultiMachineWF != null)
+{
+	content += "CreateMultiMachine:" + System.getModule("com.vmware.vra.gef").getWorkflowId(createMultiMachineWF) + "\n";
+}
+
+if(applySnapshotWF != null)
+{
+	content += "ApplySnapshot:" + System.getModule("com.vmware.vra.gef").getWorkflowId(applySnapshotWF) + "\n";
+}
+
+if(deleteSnapshotWF != null)
+{
+	content += "DeleteSnapshot:" + System.getModule("com.vmware.vra.gef").getWorkflowId(deleteSnapshotWF) + "\n";
+}
+
+if(renameMachineWF != null)
+{
+	content += "RenameMachine:" + System.getModule("com.vmware.vra.gef").getWorkflowId(renameMachineWF) + "\n";
+}
+
+if(setCustomAttributesWF != null)
+{
+	content += "SetCustomAttributes:" + System.getModule("com.vmware.vra.gef").getWorkflowId(setCustomAttributesWF) + "\n";
+}
+
+if(getComputeResourceTemplatesWF != null)
+{
+	content += "GetComputeResourceTemplates:" + System.getModule("com.vmware.vra.gef").getWorkflowId(getComputeResourceTemplatesWF) + "\n";
+}
+
+if(getComputeResourceInstanceTypeInventoryWF != null)
+{
+	content += "GetComputeResourceInstanceTypes:" + System.getModule("com.vmware.vra.gef").getWorkflowId(getComputeResourceInstanceTypeInventoryWF) + "\n";
+}
+
+var mimeAttachment = new MimeAttachment();
+mimeAttachment.content = content;
+mimeAttachment.mimeType = "application/octet-stream";
+mimeAttachment.name = endpointName;
+
+// Check for an existing entry
+var found = false;
+
+if(category.resourceElements != null)
+{
+  for(var i = 0; i < category.resourceElements.length; i++)
+  {
+	if(category.resourceElements[i].name == endpointName)
+	{
+		category.resourceElements[i].setContentFromMimeAttachment(mimeAttachment);
+		found = true;
+		break;
+	}
+  }
+}
+
+// If no existing entry make a new one
+if(!found)
+{
+	var elem = Server.createResourceElement(category, endpointName, mimeAttachment);
+}]]></script>
+    <in-binding>
+      <bind name="endpointName" type="string" export-name="endpointName"/>
+      <bind name="createMachineWF" type="Workflow" export-name="createMachineWF"/>
+      <bind name="cloneMachineWF" type="Workflow" export-name="cloneMachineWF"/>
+      <bind name="customizeMachineWF" type="Workflow" export-name="customizeMachineWF"/>
+      <bind name="createMultiMachineWF" type="Workflow" export-name="createMultiMachineWF"/>
+      <bind name="disposeMachineWF" type="Workflow" export-name="disposeMachineWF"/>
+      <bind name="disposeMultiMachineWF" type="Workflow" export-name="disposeMultiMachineWF"/>
+      <bind name="registerMachineWF" type="Workflow" export-name="registerMachineWF"/>
+      <bind name="getComputeResourcesWF" type="Workflow" export-name="getComputeResourcesWF"/>
+      <bind name="getTemplatesWF" type="Workflow" export-name="getTemplatesWF"/>
+      <bind name="getComputeResourceInventoryWF" type="Workflow" export-name="getComputeResourceInventoryWF"/>
+      <bind name="getMachinesWF" type="Workflow" export-name="getMachinesWF"/>
+      <bind name="getMachineStatesWF" type="Workflow" export-name="getMachineStatesWF"/>
+      <bind name="setPowerStateWF" type="Workflow" export-name="setPowerStateWF"/>
+      <bind name="getPowerStateWF" type="Workflow" export-name="getPowerStateWF"/>
+      <bind name="applySnapshotWF" type="Workflow" export-name="applySnapshotWF"/>
+      <bind name="createSnapshotWF" type="Workflow" export-name="createSnapshotWF"/>
+      <bind name="deleteSnapshotWF" type="Workflow" export-name="deleteSnapshotWF"/>
+      <bind name="fileLevelCloneMachineWF" type="Workflow" export-name="fileLevelCloneMachineWF"/>
+      <bind name="finalizePhysicalProvisioningWF" type="Workflow" export-name="finalizePhysicalProvisioningWF"/>
+      <bind name="getComputeResourcePerformanceWF" type="Workflow" export-name="getComputeResourcePerformanceWF"/>
+      <bind name="getComputeResourceSnapshotInventoryWF" type="Workflow" export-name="getComputeResourceSnapshotInventoryWF"/>
+      <bind name="initalizePhysicalProvisioningWF" type="Workflow" export-name="initalizePhysicalProvisioningWF"/>
+      <bind name="installToolsWF" type="Workflow" export-name="installToolsWF"/>
+      <bind name="linkCloneMachineWF" type="Workflow" export-name="linkCloneMachineWF"/>
+      <bind name="mountCDWF" type="Workflow" export-name="mountCDWF"/>
+      <bind name="moveMachineWF" type="Workflow" export-name="moveMachineWF"/>
+      <bind name="renameMachineWF" type="Workflow" export-name="renameMachineWF"/>
+      <bind name="setCustomAttributesWF" type="Workflow" export-name="setCustomAttributesWF"/>
+      <bind name="unmountCDWF" type="Workflow" export-name="unmountCDWF"/>
+      <bind name="updateDescriptionWF" type="Workflow" export-name="updateDescriptionWF"/>
+      <bind name="updateOwnerWF" type="Workflow" export-name="updateOwnerWF"/>
+      <bind name="getComputeResourceTemplatesWF" type="Workflow" export-name="getComputeResourceTemplatesWF"/>
+      <bind name="getComputeResourceInstanceTypeInventoryWF" type="Workflow" export-name="getComputeResourceInstanceTypeInventoryWF">
+        <description><![CDATA[Collect Instance Types]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="224.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="endpointName">
+      <desc><![CDATA[Endpoint Name]]></desc>
+    </p-param>
+    <p-step>
+      <title><![CDATA[Workflow Mappings]]></title>
+      <p-group>
+        <title><![CDATA[Creation / Disposal]]></title>
+        <p-param name="createMachineWF">
+          <desc><![CDATA[Create Machine workflow]]></desc>
+        </p-param>
+        <p-param name="cloneMachineWF">
+          <desc><![CDATA[CloneMachine workflow]]></desc>
+        </p-param>
+        <p-param name="customizeMachineWF">
+          <desc><![CDATA[Customize Machine workflow]]></desc>
+        </p-param>
+        <p-param name="disposeMachineWF">
+          <desc><![CDATA[DisposeMachine workflow]]></desc>
+        </p-param>
+        <p-param name="registerMachineWF">
+          <desc><![CDATA[Register Machine workflow]]></desc>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Multi-Machine]]></title>
+        <p-param name="createMultiMachineWF">
+          <desc><![CDATA[Create Multi-Machine workflow]]></desc>
+        </p-param>
+        <p-param name="disposeMultiMachineWF">
+          <desc><![CDATA[Dispose Multi-Machine workflow]]></desc>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Data Collection]]></title>
+        <p-param name="getTemplatesWF">
+          <desc><![CDATA[Collect Templates workflow]]></desc>
+        </p-param>
+        <p-param name="getComputeResourcesWF">
+          <desc><![CDATA[Collect Compute Resources workflow]]></desc>
+        </p-param>
+        <p-param name="getComputeResourceInventoryWF">
+          <desc><![CDATA[Collect Compute Resources Inventory workflow]]></desc>
+        </p-param>
+        <p-param name="getMachinesWF">
+          <desc><![CDATA[Collect Machines workflow]]></desc>
+        </p-param>
+        <p-param name="getMachineStatesWF">
+          <desc><![CDATA[Collect Machine States workflow]]></desc>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Power States]]></title>
+        <p-param name="setPowerStateWF">
+          <desc><![CDATA[Set Power State workflow]]></desc>
+        </p-param>
+        <p-param name="getPowerStateWF">
+          <desc><![CDATA[Get Power State workflow]]></desc>
+        </p-param>
+      </p-group>
+    </p-step>
+    <p-param name="applySnapshotWF">
+      <desc><![CDATA[Apply Snapshot workflow]]></desc>
+    </p-param>
+    <p-param name="createSnapshotWF">
+      <desc><![CDATA[Create Snapshot workflow]]></desc>
+    </p-param>
+    <p-param name="deleteSnapshotWF">
+      <desc><![CDATA[Delete Snapshot workflow]]></desc>
+    </p-param>
+    <p-param name="fileLevelCloneMachineWF">
+      <desc><![CDATA[File Level Clone Machine workflow]]></desc>
+    </p-param>
+    <p-param name="finalizePhysicalProvisioningWF">
+      <desc><![CDATA[Finalize Physical Provisioning workflow]]></desc>
+    </p-param>
+    <p-param name="getComputeResourcePerformanceWF">
+      <desc><![CDATA[Collect Machine Performance Data workflow]]></desc>
+    </p-param>
+    <p-param name="getComputeResourceSnapshotInventoryWF">
+      <desc><![CDATA[Collect Machine Snpshots workflow]]></desc>
+    </p-param>
+    <p-param name="initalizePhysicalProvisioningWF">
+      <desc><![CDATA[Initialize Physical Provisioning workflow]]></desc>
+    </p-param>
+    <p-param name="installToolsWF">
+      <desc><![CDATA[Install Tools workflow]]></desc>
+    </p-param>
+    <p-param name="linkCloneMachineWF">
+      <desc><![CDATA[Link CLone Machine workflow]]></desc>
+    </p-param>
+    <p-param name="mountCDWF">
+      <desc><![CDATA[Mount CDROM workflow]]></desc>
+    </p-param>
+    <p-param name="moveMachineWF">
+      <desc><![CDATA[Move Machine workflow]]></desc>
+    </p-param>
+    <p-param name="renameMachineWF">
+      <desc><![CDATA[Rename Machine worklfow]]></desc>
+    </p-param>
+    <p-param name="setCustomAttributesWF">
+      <desc><![CDATA[Set Custom Attributes workflow]]></desc>
+    </p-param>
+    <p-param name="unmountCDWF">
+      <desc><![CDATA[Unmount CDROM workflow]]></desc>
+    </p-param>
+    <p-param name="updateDescriptionWF">
+      <desc><![CDATA[Update Description workflow]]></desc>
+    </p-param>
+    <p-param name="updateOwnerWF">
+      <desc><![CDATA[Update Owner workflow]]></desc>
+    </p-param>
+    <p-param name="getComputeResourceTemplatesWF">
+      <desc><![CDATA[Collect Resource Templates]]></desc>
+    </p-param>
+    <p-param name="getComputeResourceInstanceTypeInventoryWF">
+      <desc><![CDATA[Collect Instance Types]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

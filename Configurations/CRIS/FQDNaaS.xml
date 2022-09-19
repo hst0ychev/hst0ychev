@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="09971c22-08eb-4bc5-bb09-d72f7678a8ed" version="0.0.0">
+  <display-name><![CDATA[FQDNaaS]]></display-name>
+  <atts>
+    <att name="DNSServerVM" type="VC:VirtualMachine" read-only="false">
+      <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='pcpctchvcen01.cloud.cris.in%2Cid:vm-153'&dunesName='VC:VirtualMachine']]></value>
+      <description><![CDATA[TheDNS Server (Primary)]]></description>
+    </att>
+    <att name="vmUsername" type="string" read-only="false">
+      <value encoded="n"><![CDATA[root]]></value>
+      <description><![CDATA[Username to login to guest]]></description>
+    </att>
+    <att name="vmPassword" type="SecureString" read-only="false">
+      <value encoded="n"><![CDATA[__NULL__]]></value>
+      <description><![CDATA[Password of above user]]></description>
+    </att>
+  </atts>
+</config-element>

@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="createSubclient" result-type="void" api-version="6.0.0" id="d2421f18-6719-45c5-8074-1b7cf6a8a5c6" version="0.0.0" allowed-operations="evf" category-name="com.commvault.utils">
+  <param n="token" t="string"><![CDATA[]]></param>
+  <param n="clientName" t="string"><![CDATA[]]></param>
+  <param n="backupSetName" t="string"><![CDATA[]]></param>
+  <param n="subClientName" t="string"><![CDATA[]]></param>
+  <param n="planId" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[	System.log("Executing createSubclient module to create subclient : " +  subClientName + " under backupset " + backupSetName );
+	var subId = "-1";
+	var createsubXML = "<App_CreateSubClientRequest><subClientProperties><subClientEntity><appName>Virtual Server</appName><backupsetName>"+backupSetName+ "</backupsetName><clientName>"+clientName+"</clientName><instanceName>VMware</instanceName><subclientName>"+subClientName+"</subclientName></subClientEntity><vmContentOperationType>ADD</vmContentOperationType><vmContent/><planEntity planId=\"" + planId + "\"/></subClientProperties></App_CreateSubClientRequest>"
+	//System.log("subclient request XML: "+createsubXML);
+	requestType = "POST";
+	var createSubUrl = "Subclient";
+
+	var response = System.getModule("com.commvault.utils").processRESTRequest(createSubUrl,requestType, createsubXML, token, null, null);
+	if(response.statusCode != 200)
+	{
+		throw("Error: Failed to execute REST request to create subclient");
+	}
+	//System.log("create subClient response: " + response.contentAsString);
+	
+	var status = System.getModule("com.commvault.utils").processResponse(response.contentAsString);
+	if(status != 0)
+	{
+		System.log( "Failed to create subclient");
+	}
+	//Get subclient ID from response
+	var document = XMLManager.fromString(response.contentAsString);
+	var list = document.getElementsByTagName("App_CreateSubClientResponse");
+	for(var i = 0; i < list.length ; i++)
+	{
+		var subClientEntity = list.item(i).getChildNodes();
+		for(var j = 0 ; j < subClientEntity.length; j++)
+		{
+			if(subClientEntity.item(j).nodeName == "response")
+			{
+				var respNode = subClientEntity.item(j).getChildNodes();
+				for(var k = 0; k < respNode.length; k++)
+				{
+					if(respNode.item(k).nodeName == "entity")
+					{
+						subId = respNode.item(k).getAttribute("subclientId");
+						System.log("Created new subclient with Subclient Id: "+ subId);
+					}
+				}
+			}
+		}
+	}
+	return subId;]]></script>
+</dunes-script-module>

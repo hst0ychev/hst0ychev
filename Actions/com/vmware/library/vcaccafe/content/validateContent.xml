@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="validateContent" result-type="string" api-version="6.0.0" id="1e44fc77-3734-4e36-81ec-8bc3583f8689" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.content">
+  <param n="content" t="MimeAttachment"><![CDATA[Content to validate]]></param>
+  <param n="host" t="vCACCAFE:VCACHost"><![CDATA[vRA host]]></param>
+  <script encoded="false"><![CDATA[System.log("Target host: " + host.url);
+System.log("Target tenant: " + host.tenant);
+System.log("Content file: " + content.name);
+
+var contentClientImport = host.createContentManagementClient();
+System.log("Validating...");
+var result = contentClientImport.postFile("content/validation/bundles", content);
+var status = result.getProperty("status");
+System.log("Validation Result: " + status);
+return status;]]></script>
+</dunes-script-module>

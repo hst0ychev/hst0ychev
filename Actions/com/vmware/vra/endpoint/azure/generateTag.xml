@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="generateTag" result-type="string" api-version="6.0.0" id="5759f7e0-f4d5-425b-b638-00df3eb10e55" version="7.6.0" allowed-operations="vf" category-name="com.vmware.vra.endpoint.azure">
+  <param n="allocationData" t="Properties"><![CDATA[]]></param>
+  <param n="vmName" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var ALLOCATION_DATA_ID_KEY = "xaas.allocationResult";
+var TAG_PREFIX = "xaas.allocation.";
+
+var allocationId = allocationData.get(ALLOCATION_DATA_ID_KEY);
+	
+return TAG_PREFIX + allocationId + "." + vmName;]]></script>
+</dunes-script-module>

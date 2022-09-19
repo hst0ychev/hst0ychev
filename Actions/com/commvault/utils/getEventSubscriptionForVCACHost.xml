@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getEventSubscriptionForVCACHost" result-type="Array/vCACCAFE:WorkflowSubscription" api-version="6.0.0" id="3c09a5f5-d31c-4f3e-8013-705a0041b71f" version="0.0.0" allowed-operations="evf" category-name="com.commvault.utils">
+  <param n="VRAHost" t="vCACCAFE:VCACHost"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var workflowSubscription = vCACCAFEEntitiesFinder.getTenantWorkflowSubscriptions(VRAHost);
+var workflowSubs = [];
+for each(var ws in workflowSubscription)
+{   
+    var tenantId = String(ws.vcoId).split("/")[0];
+	if((ws.name) == "CommvaultDataProtectionEventSubscription")
+	{
+		workflowSubs.push(ws);
+	}
+}
+
+return workflowSubs;]]></script>
+</dunes-script-module>

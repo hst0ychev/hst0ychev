@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getObjectFromConfigurationElementWithKey" result-type="Any" api-version="6.0.0" id="536a037e-b6b6-401e-9187-af8003b17cbe" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.configurations">
+  <param n="key" t="string"><![CDATA[]]></param>
+  <param n="configEl" t="ConfigurationElement"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[return configEl.getAttributeWithKey(key).value;]]></script>
+</dunes-script-module>

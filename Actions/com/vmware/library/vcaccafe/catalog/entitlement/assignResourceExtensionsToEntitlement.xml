@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="assignResourceExtensionsToEntitlement" result-type="void" api-version="6.0.0" id="5541d354-7cce-48f6-b5d7-5beb3c6028c8" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.catalog.entitlement">
+  <param n="entitlement" t="vCACCAFE:Entitlement"><![CDATA[Entitlement to assign resource extensions to]]></param>
+  <param n="extensions" t="Array/vCACCAFE:CatalogResourceExtension"><![CDATA[Extensions to assign to the entitlement]]></param>
+  <param n="approvalPolicy" t="vCACCAFE:ApprovalPolicy"><![CDATA[Approval policy to apply to the resource extensions]]></param>
+  <script encoded="false"><![CDATA[if(approvalPolicy != null) {
+	System.getModule("com.vmware.library.vcaccafe.util").checkHosts(entitlement, approvalPolicy, "entitlement", "approval policy");
+}
+var host = vCACCAFEEntitiesFinder.getHostForEntity(entitlement);
+var client = host.createCatalogClient().getCatalogEntitlementService();
+
+entitledResourceOperations = entitlement.getEntitledResourceOperations();
+var entitledExtension;
+for(var i = 0 ; i < extensions.length ; i++ ) {
+	System.getModule("com.vmware.library.vcaccafe.util").checkHosts(entitlement, extensions[i], "entitlement", "resource extension");
+	//Check if the resource extensions already exists in the entitlement
+	var alreadyExists = false;
+	for(var j = 0 ; j < entitledResourceOperations.length ; j++ ) {
+		if(entitledResourceOperations[j].getResourceOperationRef().getId() == extensions[i].getId()) {
+			System.warn("Resource extension " + extensions[i].getName() + " is already entitled. The extension will be skipped.");
+			alreadyExists = true;
+		}
+	}
+	if(!alreadyExists) {
+		entitledExtension = new vCACCAFEEntitledResourceOperation();
+		var resourceOperationReference = new vCACCAFELabelledReference();
+		resourceOperationReference.setId(extensions[i].getId());
+		resourceOperationReference.setLabel(extensions[i].getName());
+		entitledExtension.setResourceOperationRef(resourceOperationReference);
+		if(approvalPolicy != null) {
+			entitledExtension.setApprovalPolicyId(approvalPolicy.getId());
+		}
+		System.getModule("com.vmware.library.vcaccafe.util").addElementToList(entitlement, "getEntitledResourceOperations", entitledExtension);
+	}
+}
+
+System.log("Assigning resource extensions to entitlement " + entitlement.getName() + "...");
+client.update(entitlement);
+System.log("Resource extensions assigned to entitlement " + entitlement.getName());]]></script>
+</dunes-script-module>

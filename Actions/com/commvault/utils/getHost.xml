@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getHost" result-type="void" api-version="6.0.0" id="4f845eda-05be-4a7d-9e80-72d8dd4e5791" version="0.0.0" allowed-operations="evf" category-name="com.commvault.utils">
+  <script encoded="false"><![CDATA[//Get REST host URL and credentials
+/*
+	Inputs:
+	None
+	
+	API used:
+	None
+	
+	Output:
+	Returns the first host from the list of hosts added
+
+*/
+
+var hosts = RESTHostManager.getHosts();
+
+if (hosts.length > 0)
+{
+	for(var i =0;  i < hosts.length; i++ )
+	{
+		var host = (RESTHostManager.getHost(hosts[i]));
+		
+		if (((host.url).search("CVWebService.svc")) != -1)
+		{	
+			return host;
+		}
+	}
+}
+else
+{
+	throw ("Error: couldn't find the REST host, please add REST host on vRO with Commvault webservice URL. example: http://server1.company.com:81/SearchSvc/CVWebService.svc/");
+	return null;	
+}
+
+]]></script>
+</dunes-script-module>

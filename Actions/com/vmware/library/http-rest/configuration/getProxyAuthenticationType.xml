@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getProxyAuthenticationType" result-type="string" api-version="6.0.0" id="0abb5eb6-4fcc-4f21-8e30-fd9cb89129eb" version="1.0.0" allowed-operations="vf" category-name="com.vmware.library.http-rest.configuration">
+  <description><![CDATA[Retrieves the Proxy's authentication type for a specified REST Host.
+Used in REST plug-in workflow presentations.]]></description>
+  <param n="restHost" t="REST:RESTHost"><![CDATA[REST host which authentication type should return]]></param>
+  <script encoded="false"><![CDATA[return restHost == null ? "NONE" : restHost.proxyAuthentication.type;]]></script>
+</dunes-script-module>

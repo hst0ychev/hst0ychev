@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getAvailableInventoryTypes" result-type="Array/Any" api-version="6.0.0" id="7b9d52c2-889e-4e27-a613-45928a4c7a65" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.asd.customresources">
+  <param n="host" t="vCACCAFE:VCACHost"><![CDATA[vRA CAFE host]]></param>
+  <script encoded="false"><![CDATA[var client = host.createAdvancedDesignerClient().getAdvancedDesignerInventoryTypeService();
+
+System.log("Getting inventory types...");
+var inventoryTypes = client.getInventoryTypes().getContent();
+System.log("Getting inventory types finished successfully");
+
+return inventoryTypes;]]></script>
+</dunes-script-module>

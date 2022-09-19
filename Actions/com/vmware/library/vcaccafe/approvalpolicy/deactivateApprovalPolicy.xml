@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="deactivateApprovalPolicy" result-type="void" api-version="6.0.0" id="30ef4db7-f951-4686-8e48-d69f73ef39b4" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.approvalpolicy">
+  <param n="approvalPolicy" t="vCACCAFE:ApprovalPolicy"><![CDATA[The approval policy to be activated]]></param>
+  <param n="deleteAssignments" t="boolean"><![CDATA[Whether to automatically delete existing entitlement assignments for that approval policy or not.]]></param>
+  <script encoded="false"><![CDATA[System.getModule("com.vmware.library.vcaccafe.util").validateObject(approvalPolicy, "Approval policy");
+var host = vCACCAFEEntitiesFinder.getHostForEntity(approvalPolicy);
+var approvalClient = host.createApprovalClient().getApprovalApprovalPolicyService();
+var catalogClient = host.createCatalogClient().getCatalogApprovalRequestCallbackService();
+
+var usages = catalogClient.getApprovalPolicyUsage(null, approvalPolicy.getId());
+if (usages.length > 0) {
+	if (deleteAssignments) {
+		System.getModule("com.vmware.library.vcaccafe.approvalpolicy").replaceApprovalPolicy(approvalPolicy, null);
+	} else {
+		throw "Approval policy '" + approvalPolicy.getName() + "' is in use!";
+	}
+}
+
+approvalPolicy.setState(vCACCAFEApprovalPolicyState.RETIRED);
+
+System.log("Deactivating approval policy '" + approvalPolicy.getName() + "'...");
+approvalClient.update(approvalPolicy);
+System.log("Approval policy '" + approvalPolicy.getName() + "' deactivated.");]]></script>
+</dunes-script-module>

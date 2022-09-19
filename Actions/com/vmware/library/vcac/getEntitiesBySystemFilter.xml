@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getEntitiesBySystemFilter" result-type="Array/vCAC:Entity" api-version="6.0.0" id="eb918fdb-62f1-4bc3-aef6-80bb35ff0929" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcac">
+  <param n="host" t="vCAC:VCACHost"><![CDATA[vCAC host]]></param>
+  <param n="modelName" t="string"><![CDATA[Model name]]></param>
+  <param n="entitySetName" t="string"><![CDATA[Entity set name]]></param>
+  <param n="filter" t="string"><![CDATA[Filter string as defined by the OData URI convention]]></param>
+  <param n="orderBy" t="string"><![CDATA[Order by query as defined by the OData URI convention]]></param>
+  <param n="select" t="string"><![CDATA[Select  query as defined by the OData URI convention]]></param>
+  <param n="top" t="number"><![CDATA[Top query for getting a subset of results as defined by the OData URI convention]]></param>
+  <param n="skip" t="number"><![CDATA[Skip query for getting a subset of results as defined by the OData URI convention]]></param>
+  <param n="headers" t="Properties"><![CDATA[Request headers]]></param>
+  <script encoded="false"><![CDATA[return vCACEntityManager.readModelEntitiesBySystemQuery(host.id, modelName, entitySetName, filter, orderBy, select, top, skip, headers);]]></script>
+</dunes-script-module>

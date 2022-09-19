@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="createApprovalPolicy" result-type="vCACCAFE:ApprovalPolicy" api-version="6.0.0" id="10e42af3-7af8-4427-801b-3aaaf2c8ee52" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.approvalpolicy">
+  <param n="host" t="vCACCAFE:VCACHost"><![CDATA[vRA host]]></param>
+  <param n="name" t="string"><![CDATA[Approval policy name]]></param>
+  <param n="description" t="string"><![CDATA[Approval policy description]]></param>
+  <param n="type" t="string"><![CDATA[Approval policy type]]></param>
+  <script encoded="false"><![CDATA[var approvalClient = host.createApprovalClient();
+var typeService = approvalClient.getApprovalApprovalPolicyTypeService();
+
+var types = System.getModule("com.vmware.library.vcaccafe.approvalpolicy").getAvailableApprovalPolicyTypes(host)
+var policyType;
+for(var i = 0 ; i < types.length ; i++ ) {
+	if(types[i].getName() == type) {
+		policyType = types[i];
+		break;
+	}
+}
+
+var approvalPolicy = new vCACCAFEApprovalPolicy();
+approvalPolicy.setName(name);
+approvalPolicy.setDescription(description);
+approvalPolicy.setPolicyType(policyType);
+approvalPolicy.setState(vCACCAFEApprovalPolicyState.DRAFT);
+
+var phases = new Array();
+for(var i = 0 ; i < policyType.getPhaseTypes().length ; i++ ) {
+	var phaseType = policyType.getPhaseTypes()[i];
+	var phase = new vCACCAFEPhase();
+	phase.setDescription(phaseType.getDescription());
+	phase.setName(phaseType.getName());
+	phase.setPhasetype(phaseType);
+	
+	System.getModule("com.vmware.library.vcaccafe.util").addElementToList(approvalPolicy, "getPhases", phase);
+}
+
+var approvalPolicyService = approvalClient.getApprovalApprovalPolicyService();
+System.log("Creating an approval policy...");
+newPolicy = approvalPolicyService.createPolicy(approvalPolicy);
+System.log("Approval policy " + newPolicy.getName() + " created.");
+return vCACCAFEEntitiesFinder.getApprovalPolicy(host, newPolicy.getId());]]></script>
+</dunes-script-module>

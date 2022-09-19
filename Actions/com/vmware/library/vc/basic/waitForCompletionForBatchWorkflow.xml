@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="waitForCompletionForBatchWorkflow" result-type="Array/WorkflowToken" api-version="6.0.0" id="772ebefd-db35-4851-912e-dc73d7be266d" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.basic">
+  <param n="wfTokens" t="Array/WorkflowToken"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[for(var i=0; i<wfTokens.length; i++){
+	var allComplete = false;
+	while(! allComplete){
+		System.sleep(2000); // Wait 2 seconds
+		allComplete = true;
+		if(!(wfTokens[i].state != "running" && wfTokens[i].state != "waiting")) {
+			// Look if it's running or waiting
+			allComplete = false;
+		}
+	}
+	// Now the state is completed, failed or canceled
+	var parameters = wfTokens[i].rootWorkflow.inParameters;
+	var name = parameters[0].name;
+	var object = wfTokens[i].getInputParameters().get(name);
+	var logMessage = "The workflow terminated with status '"+wfTokens[i].state+"' on the object '" + object.name + "'.";
+	if(wfTokens[i].state=="failed"){
+		System.warn(logMessage); 
+		System.error(wfTokens[i].exception);
+	}else{
+		System.log(logMessage); 
+	}
+}
+
+var tokens = new Array();
+for (var i in wfTokens) {
+	tokens.push(wfTokens[i]);
+}
+if(wfTokens.length>0){
+	System.log("***All workflows completed***");
+}]]></script>
+</dunes-script-module>

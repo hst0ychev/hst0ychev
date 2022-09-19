@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getUserFromContainer" result-type="AD:User" api-version="6.0.0" id="36818080808080808080808080808080BC80808001270557368849c62c352aa82" version="1.1.0" allowed-operations="vfe" category-name="com.vmware.library.microsoft.activeDirectory">
+  <description><![CDATA[Get a user by his name in the given OU or Group (container)]]></description>
+  <param n="container" t="Any"><![CDATA[Container (Group) or OU in which get the user]]></param>
+  <param n="accountName" t="string"><![CDATA[Account name to look for]]></param>
+  <script encoded="false"><![CDATA[var users = container.users;
+for (var i in users) {
+	if(users[i].accountName == accountName) {
+		return users[i];
+	}
+}
+return null;]]></script>
+</dunes-script-module>

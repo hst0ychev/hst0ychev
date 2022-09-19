@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getCloneSpec" result-type="Any" api-version="6.0.0" id="9b1c674a-0376-4dee-8621-4bda7b732bc0" version="0.2.0" allowed-operations="vf" category-name="com.vmware.library.vc.vm.spec">
+  <description><![CDATA[Specification for a virtual machine cloning operation. ]]></description>
+  <param n="config" t="Any"><![CDATA[[optional] VirtualMachineConfigSpec: An optional specification of changes to the virtual hardware.]]></param>
+  <param n="customization" t="Any"><![CDATA[[optional] CustomizationSpec: An optional guest operating system customization specification.]]></param>
+  <param n="location" t="Any"><![CDATA[VirtualMachineRelocateSpec: A type of RelocateSpec that specifies the location of resources the newly cloned virtual machine will use]]></param>
+  <param n="powerOn" t="boolean"><![CDATA[Specifies whether or not the new VirtualMachine should be powered on after creation]]></param>
+  <param n="template" t="boolean"><![CDATA[Specifies whether or not the new virtual machine should be marked as a template. ]]></param>
+  <script encoded="false"><![CDATA[try {
+	checkParam();
+	var cloneSpec = new VcVirtualMachineCloneSpec();
+	affectParam();
+	return cloneSpec;
+}
+catch (ex) {
+	throw "Unable to create CloneSpec: " + ex;
+}
+
+function affectParam() {
+	cloneSpec.config = config;
+	cloneSpec.customization = customization;
+	cloneSpec.location = location;
+	cloneSpec.powerOn = powerOn;
+	cloneSpec.template = template;
+}
+
+function checkParam() {
+	if (config != null && (config instanceof VcVirtualMachineConfigSpec) == false) throw "config must be of type 'VcVirtualMachineConfigSpec'";
+	if (customization != null && (customization instanceof VcCustomizationSpec) == false)	throw "customization must be of type 'VcCustomizationSpec'";
+	if (location == null) throw "location must be defined (type: VcVirtualMachineRelocateSpec)";
+	if ((location instanceof VcVirtualMachineRelocateSpec) == false) throw "location must be of type 'VcVirtualMachineRelocateSpec'";
+	if (powerOn == null) throw "powerOn must be defined (type: boolean)";
+	if (template == null) throw "template must be defined (type: boolean)";
+}]]></script>
+</dunes-script-module>

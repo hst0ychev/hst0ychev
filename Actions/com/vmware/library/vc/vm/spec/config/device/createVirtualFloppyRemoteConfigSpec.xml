@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="createVirtualFloppyRemoteConfigSpec" result-type="Any" api-version="6.0.0" id="60edece1-3d05-420b-8157-04dbb5bc8917" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.vm.spec.config.device">
+  <script encoded="false"><![CDATA[// Connectable info for floppy
+var connectInfo = new VcVirtualDeviceConnectInfo();
+connectInfo.allowGuestControl = true;
+connectInfo.connected = false;
+connectInfo.startConnected = false;
+// Create floppy BackingInfo
+var backingInfo = new VcVirtualFloppyRemoteDeviceBackingInfo();
+backingInfo.deviceName = "/dev/fd0";
+var floppy = new VcVirtualFloppy();
+floppy.backing = backingInfo;
+floppy.unitNumber = 0;
+floppy.connectable = connectInfo;
+// Create floppy ConfigSpec
+var deviceConfigSpec = new VcVirtualDeviceConfigSpec();
+deviceConfigSpec.device = floppy;
+deviceConfigSpec.operation = VcVirtualDeviceConfigSpecOperation.add;
+
+return deviceConfigSpec;]]></script>
+</dunes-script-module>

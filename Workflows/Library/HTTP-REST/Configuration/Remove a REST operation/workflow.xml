@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="Workflow:name=generic" id="C380808080808080808080808080808080808080012995053491651398b094fa1" version="1.0.1" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Remove a REST operation]]></display-name>
+  <description><![CDATA[Removes an operation from a REST host.]]></description>
+  <ref-types><![CDATA[>(REST:RESTOperation)]]></ref-types>
+  <position y="10.0" x="160.0"/>
+  <input>
+    <param name="operation" type="REST:RESTOperation">
+      <description><![CDATA[REST host operation to be removed]]></description>
+    </param>
+  </input>
+  <output>
+    <param name="removedOperation" type="string">
+      <description><![CDATA[The removed operation]]></description>
+    </param>
+  </output>
+  <workflow-item name="item0" out-name="item1" type="task">
+    <display-name><![CDATA[Remove operation]]></display-name>
+    <script encoded="false"><![CDATA[var host = operation.host;
+
+host.removeOperation(operation.id);
+
+RESTHostManager.updateHost(host);
+
+removedOperation = operation;]]></script>
+    <in-binding>
+      <bind name="operation" type="REST:RESTOperation" export-name="operation"/>
+    </in-binding>
+    <out-binding>
+      <bind name="removedOperation" type="string" export-name="removedOperation"/>
+    </out-binding>
+    <position y="80.0" x="120.0"/>
+  </workflow-item>
+  <workflow-item name="item1" type="end" end-mode="0">
+    <position y="130.0" x="160.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Remove a REST operation]]></title>
+      <p-group>
+        <title><![CDATA[Operation]]></title>
+        <desc><![CDATA[Specify the REST host operation to be removed.]]></desc>
+        <p-param name="operation">
+          <desc><![CDATA[Operation to remove]]></desc>
+          <p-qual name="contextualParameter" type="void"><![CDATA[]]></p-qual>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+      </p-group>
+    </p-step>
+  </presentation>
+</workflow>

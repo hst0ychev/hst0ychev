@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getVirtualMachinePropertiesByPropertyNameMatchingRegExp" result-type="Array/vCAC:Entity" api-version="6.0.0" id="d28b63fc-c7ea-44a1-bcb3-ad8df8984955" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcac">
+  <param n="host" t="vCAC:VCACHost"><![CDATA[vCloud Automation Center host]]></param>
+  <param n="propertyNameRegexp" t="Regexp"><![CDATA[Property name regular expression]]></param>
+  <script encoded="false"><![CDATA[var modelName = "ManagementModelEntities.svc";
+var entitySetName = "VirtualMachineProperties";
+
+var properties = new Properties();
+
+
+var entities = vCACEntityManager.readModelEntitiesByCustomFilter(host.id, modelName, entitySetName, properties, null);
+
+var matchingEntities = new Array();
+
+for each (var entity in entities) {
+	if (entity.getProperty("PropertyName").match(propertyNameRegexp)) { 
+		matchingEntities.push(entity);
+		System.log("getVirtualMachinePropertiesByPropertyNameMatchingRegExp : " + propertyNameRegexp + " matched " + entity.getProperty("PropertyName"));
+	}
+}
+
+return matchingEntities;]]></script>
+</dunes-script-module>

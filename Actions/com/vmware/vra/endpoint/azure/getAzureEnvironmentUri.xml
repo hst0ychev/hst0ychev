@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getAzureEnvironmentUri" result-type="string" api-version="6.0.0" id="3ac54fd1-d989-4416-9b2a-92e0d6b156ef" version="7.6.0" allowed-operations="vf" category-name="com.vmware.vra.endpoint.azure">
+  <param n="environment" t="string"><![CDATA[]]></param>
+  <param n="fieldName" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[// Reading from Configuraiton Element
+var attributeResults = System.getModule("com.vmware.vra.endpoint.azure.configuration").getAzureConfigurations({'EnvironmentUri': [environment + "_" + fieldName]});
+
+return attributeResults['EnvironmentUri'][environment+"_"+fieldName];]]></script>
+</dunes-script-module>

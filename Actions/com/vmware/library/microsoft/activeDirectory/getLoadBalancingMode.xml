@@ -1,0 +1,5 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getLoadBalancingMode" result-type="string" api-version="6.0.0" id="305f994a-2e55-4166-98ea-5318356d7700" version="0.0.0" allowed-operations="vf" category-name="com.vmware.library.microsoft.activeDirectory">
+  <param n="adServer" t="AD:AdHost"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[return adServer.hostConfiguration.loadBalancingMode.mode]]></script>
+</dunes-script-module>

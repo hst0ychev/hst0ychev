@@ -1,0 +1,148 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="b79e543f-a70c-4bce-838b-4c4236156fcb" version="0.0.11" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Delete RDMForm Page]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="diskType" type="string">
+      <description><![CDATA[Select Disk Type]]></description>
+    </param>
+    <param name="environment" type="string">
+      <description><![CDATA[Select Environment]]></description>
+    </param>
+    <param name="os" type="string">
+      <description><![CDATA[Select OS]]></description>
+    </param>
+    <param name="sourceVM" type="string">
+      <description><![CDATA[Select Source VM]]></description>
+    </param>
+    <param name="vmdkPath" type="string">
+      <description><![CDATA[Select VMDK Path]]></description>
+    </param>
+    <param name="vms" type="Array/string">
+      <description><![CDATA[Destination VMs]]></description>
+    </param>
+    <param name="bindOption" type="string">
+      <description><![CDATA[Select Option]]></description>
+    </param>
+    <param name="rdmPath" type="string"/>
+    <param name="rdmAttachVM" type="string">
+      <description><![CDATA[RDM VM]]></description>
+    </param>
+  </input>
+  <attrib name="isSuccess" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+    <description><![CDATA[Status of the delete Virtual Volume operation]]></description>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="804.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item3" type="task">
+    <display-name><![CDATA[Attach/Detach VMDK RDM]]></display-name>
+    <script encoded="false"><![CDATA[if(diskType == "vmdk"){
+	if(bindOption == "attach"){
+		System.debug("Destination VMs.. "+vms)
+		System.debug("VMDK file path to be attached ....."+vmdkPath)
+		//Create object
+		var scsiConObj = System.getModule("com.vmware.indcoe.vcenter").createNewScsiController()
+		var scObj = System.getModule("com.vmware.indcoe.vcenter").attachvmdk()
+		for(var vmName in vms){
+			//Create SCSI Controller
+			scsiConObj.createscsiController(vms[vmName])
+			//Attach selected vmdk on the destination vm
+			scObj.attachVMDK(vms[vmName],vmdkPath)
+		}
+	}else if(bindOption == "detach"){
+		//Detach vmdk
+		var scObj = System.getModule("com.vmware.indcoe.vcenter").detachvmdk()
+		scObj.detachVMDK(sourceVM,vmdkPath)
+	}
+}else if(diskType == "rdm"){
+	if(bindOption == "attach"){
+		System.debug("Destination VMs.. "+vms)
+		System.debug("RDM file path to be attached ....."+rdmPath)
+		//Create object
+		var scsiConObj = System.getModule("com.vmware.indcoe.vcenter").createNewScsiControllerVirtual()
+		var scObj = System.getModule("com.vmware.indcoe.vcenter").attachRDM()
+		for(var vmName in vms){
+			//Create SCSI Controller
+			scsiConObj.createscsiController(vms[vmName])
+			//Attach selected vmdk on the destination vm
+			scObj.attachRDM(vms[vmName],rdmPath)
+		}
+	}
+	else if(bindOption == "detach"){
+		//Detach vmdk
+		var scObj = System.getModule("com.vmware.indcoe.vcenter").detachvmdk()
+		scObj.detachVMDK(sourceVM,rdmPath)
+	}
+
+}]]></script>
+    <in-binding>
+      <bind name="vmdkPath" type="string" export-name="vmdkPath"/>
+      <bind name="vms" type="Array/string" export-name="vms"/>
+      <bind name="sourceVM" type="string" export-name="sourceVM"/>
+      <bind name="bindOption" type="string" export-name="bindOption"/>
+      <bind name="diskType" type="string" export-name="diskType"/>
+      <bind name="rdmPath" type="string" export-name="rdmPath"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item0" type="link" linked-workflow-id="f228aab5-14ca-4612-baf7-1396862af945">
+    <display-name><![CDATA[Delete RDM]]></display-name>
+    <in-binding>
+      <bind name="vmName" type="string" export-name="rdmAttachVM"/>
+    </in-binding>
+    <out-binding>
+      <bind name="isSuccess" type="boolean" export-name="isSuccess">
+        <description><![CDATA[Status of the delete Virtual Volume operation]]></description>
+      </bind>
+    </out-binding>
+    <description><![CDATA[Deletes specified Virtual Volume from the selected HPE 3PAR StoreServ array.]]></description>
+    <position y="55.40909090909091" x="524.5"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item2" type="custom-condition" alt-out-name="item4">
+    <display-name><![CDATA[Custom decision]]></display-name>
+    <script encoded="false"><![CDATA[if(bindOption == "Delete"){
+return true}
+else {
+return false
+}]]></script>
+    <in-binding>
+      <bind name="bindOption" type="string" export-name="bindOption"/>
+    </in-binding>
+    <position y="45.90909090909091" x="365.0"/>
+  </workflow-item>
+  <workflow-item name="item4" type="end" end-mode="0">
+    <position y="109.04545454545453" x="405.0"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="vmdkPath">
+      <desc><![CDATA[Select VMDK Path]]></desc>
+    </p-param>
+    <p-param name="vms">
+      <desc><![CDATA[Destination VMs]]></desc>
+    </p-param>
+    <p-param name="environment">
+      <desc><![CDATA[Select Environment]]></desc>
+    </p-param>
+    <p-param name="os">
+      <desc><![CDATA[Select OS]]></desc>
+    </p-param>
+    <p-param name="sourceVM">
+      <desc><![CDATA[Select Source VM]]></desc>
+    </p-param>
+    <p-param name="bindOption">
+      <desc><![CDATA[bindOption]]></desc>
+    </p-param>
+    <p-param name="rdmPath">
+      <desc><![CDATA[rdmPath]]></desc>
+    </p-param>
+    <p-param name="rdmAttachVM">
+      <desc><![CDATA[RDM VM]]></desc>
+    </p-param>
+    <p-param name="diskType">
+      <desc><![CDATA[Select Disk Type]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

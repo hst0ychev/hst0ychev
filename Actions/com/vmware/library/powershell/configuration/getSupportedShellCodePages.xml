@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getSupportedShellCodePages" result-type="Array/string" api-version="6.0.0" id="7b8297ef-2af4-4fb9-b44b-2fd7bf646c85" version="0.0.0" allowed-operations="vf" category-name="com.vmware.library.powershell.configuration">
+  <script encoded="false"><![CDATA[var result =  [];
+var codePages = PowerShellShellCodePage.values();
+
+for (var k in codePages) {
+   result.push(codePages[k].name);
+}
+
+return result;]]></script>
+</dunes-script-module>

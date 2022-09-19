@@ -1,0 +1,196 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="Workflow:name=generic" id="90808080808080808080808080808080E38080800122278482540602b798bd57c" version="1.1.0" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Create snapshots of all virtual machines in a resource pool]]></display-name>
+  <description><![CDATA[Creates a snapshot of each virtual machine in a resource pool.]]></description>
+  <position y="30.0" x="80.0"/>
+  <input>
+    <param name="resourcePool" type="VC:ResourcePool">
+      <description><![CDATA[Resource pool]]></description>
+    </param>
+    <param name="childResourcePool" type="boolean">
+      <description><![CDATA[Take snapshots of virtual machines in child resource pools?]]></description>
+    </param>
+  </input>
+  <attrib name="allVMs" type="Array/VC:VirtualMachine" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Array of virtual machines ]]></description>
+  </attrib>
+  <attrib name="vmCount" type="number" read-only="false">
+    <value encoded="n"><![CDATA[0]]></value>
+    <description><![CDATA[Number of virtual machines in the resource pool]]></description>
+  </attrib>
+  <attrib name="currentVM" type="number" read-only="false">
+    <value encoded="n"><![CDATA[0]]></value>
+    <description><![CDATA[Index of the virtual machine in the array of virtual machines]]></description>
+  </attrib>
+  <attrib name="activeVM" type="VC:VirtualMachine" read-only="false">
+    <description><![CDATA[Virtual machine currently being processed]]></description>
+  </attrib>
+  <attrib name="snapName" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Snapshot name. The name need not be unique for this virtual machine. Takes the snapNamePrefix with the date.]]></description>
+  </attrib>
+  <attrib name="memory" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+    <description><![CDATA[If TRUE, the snapshot includes a dump of the internal state of the virtual machine (a memory dump).]]></description>
+  </attrib>
+  <attrib name="quiesce" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[true]]></value>
+    <description><![CDATA[If TRUE and the virtual machine is powered on when the snapshot is taken, VMware Tools are used to quiesce the file system in the virtual machine.]]></description>
+  </attrib>
+  <attrib name="errorCode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Error code]]></description>
+  </attrib>
+  <attrib name="snapNamePrefix" type="string" read-only="false">
+    <value encoded="n"><![CDATA[autoSnapped]]></value>
+    <description><![CDATA[Prefix for the snapshot name]]></description>
+  </attrib>
+  <workflow-item name="item0" out-name="item1" type="task">
+    <display-name><![CDATA[Initialize]]></display-name>
+    <script encoded="false"><![CDATA[// Retrieve an array of vms contained in the specified Resource Pool
+if(childResourcePool){
+	allVMs = System.getModule("com.vmware.library.vc.resourcePool").getAllVMsOfResourcePool(resourcePool) ;
+}else{
+	allVMs = resourcePool.vm;
+}
+vmCount = allVMs.length;
+currentVM = 0;]]></script>
+    <in-binding>
+      <bind name="resourcePool" type="VC:ResourcePool" export-name="resourcePool"/>
+      <bind name="childResourcePool" type="boolean" export-name="childResourcePool"/>
+    </in-binding>
+    <out-binding>
+      <bind name="allVMs" type="Array/VC:VirtualMachine" export-name="allVMs"/>
+      <bind name="vmCount" type="number" export-name="vmCount"/>
+      <bind name="currentVM" type="number" export-name="currentVM"/>
+    </out-binding>
+    <position y="100.0" x="40.0"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item4" type="custom-condition" alt-out-name="item2">
+    <display-name><![CDATA[VMs to Process?]]></display-name>
+    <script encoded="false"><![CDATA[if(allVMs.length > 0){
+	return true;
+}else{
+	return false;
+}]]></script>
+    <in-binding>
+      <bind name="allVMs" type="Array/VC:VirtualMachine" export-name="allVMs"/>
+    </in-binding>
+    <position y="150.0" x="40.0"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item3" type="task">
+    <display-name><![CDATA[Scriptable task]]></display-name>
+    <script encoded="false"><![CDATA[System.log("The specified Resource Pool ("+resourcePool.name+") does not appear to have any VMs to process.");]]></script>
+    <in-binding>
+      <bind name="resourcePool" type="VC:ResourcePool" export-name="resourcePool"/>
+    </in-binding>
+    <out-binding/>
+    <position y="220.0" x="40.0"/>
+  </workflow-item>
+  <workflow-item name="item3" type="end" end-mode="0">
+    <position y="270.0" x="80.0"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item6" type="custom-condition" alt-out-name="item5">
+    <display-name><![CDATA[VMs remaining?]]></display-name>
+    <script encoded="false"><![CDATA[System.sleep(2000);
+if (currentVM < vmCount){
+	return true;
+}else{
+	return false;
+}]]></script>
+    <in-binding>
+      <bind name="currentVM" type="number" export-name="currentVM"/>
+      <bind name="vmCount" type="number" export-name="vmCount"/>
+    </in-binding>
+    <position y="150.0" x="200.0"/>
+  </workflow-item>
+  <workflow-item name="item5" type="end" end-mode="0">
+    <position y="270.0" x="240.0"/>
+  </workflow-item>
+  <workflow-item name="item6" out-name="item8" type="task">
+    <display-name><![CDATA[Set VM]]></display-name>
+    <script encoded="false"><![CDATA[// Set our activeVM object:
+var activeVM = allVMs[currentVM];
+
+var date = new Date();
+
+snapName = snapNamePrefix + " " + date.toGMTString();]]></script>
+    <in-binding>
+      <bind name="allVMs" type="Array/VC:VirtualMachine" export-name="allVMs"/>
+      <bind name="currentVM" type="number" export-name="currentVM"/>
+      <bind name="snapNamePrefix" type="string" export-name="snapNamePrefix"/>
+    </in-binding>
+    <out-binding>
+      <bind name="activeVM" type="VC:VirtualMachine" export-name="activeVM"/>
+      <bind name="snapName" type="string" export-name="snapName"/>
+    </out-binding>
+    <position y="160.0" x="360.0"/>
+  </workflow-item>
+  <workflow-item name="item8" out-name="item9" catch-name="item10" throw-bind-name="errorCode" type="link" linked-workflow-id="BD80808080808080808080808080808053C180800122528313869552e41805bb1">
+    <display-name><![CDATA[Create a Snapshot]]></display-name>
+    <in-binding>
+      <bind name="vm" type="VC:VirtualMachine" export-name="activeVM">
+        <description><![CDATA[The VM on which to create a snapshot]]></description>
+      </bind>
+      <bind name="name" type="string" export-name="snapName">
+        <description><![CDATA[The name for this snapshot. The name need not be unique for this virtual machine. ]]></description>
+      </bind>
+      <bind name="description" type="string" explicitly-not-bound="true">
+        <description><![CDATA[A description for this snapshot. If omitted, a default description may be provided. ]]></description>
+      </bind>
+      <bind name="memory" type="boolean" export-name="memory">
+        <description><![CDATA[If TRUE, a dump of the internal state of the virtual machine (basically a memory dump) is included in the snapshot. ]]></description>
+      </bind>
+      <bind name="quiesce" type="boolean" export-name="quiesce">
+        <description><![CDATA[If TRUE and the virtual machine is powered on when the snapshot is taken, VMware Tools is used to quiesce the file system in the virtual machine.]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="snapshot" type="VC:VirtualMachineSnapshot" explicitly-not-bound="true">
+        <description><![CDATA[The created snapshot]]></description>
+      </bind>
+    </out-binding>
+    <description><![CDATA[Create a snapshot and return it.]]></description>
+    <position y="100.0" x="360.0"/>
+  </workflow-item>
+  <workflow-item name="item9" out-name="item4" type="task">
+    <display-name><![CDATA[Increment Counter]]></display-name>
+    <script encoded="false"><![CDATA[currentVM++;
+activeVM = allVMs[currentVM];
+System.sleep(2000);]]></script>
+    <in-binding>
+      <bind name="allVMs" type="Array/VC:VirtualMachine" export-name="allVMs"/>
+      <bind name="currentVM" type="number" export-name="currentVM"/>
+    </in-binding>
+    <out-binding>
+      <bind name="currentVM" type="number" export-name="currentVM"/>
+      <bind name="activeVM" type="VC:VirtualMachine" export-name="activeVM"/>
+    </out-binding>
+    <position y="100.0" x="200.0"/>
+  </workflow-item>
+  <workflow-item name="item10" out-name="item9" catch-name="" type="task">
+    <display-name><![CDATA[Ignore error if no change before last snapshot]]></display-name>
+    <script encoded="false"><![CDATA[// Ignore error if no change before last snapshot
+if (errorCode == "Task 'CreateSnapshot_Task' error: Snapshot not taken since the state of the virtual machine has not changed since the last snapshot operation. (Dynamic Script Module name : vim3WaitTaskEnd#20)") {
+	System.warn("Virtual machine '" + activeVM.name + "': Snapshot not taken since the state of the virtual machine has not changed since the last snapshot operation.");
+} else {
+	throw errorCode;
+}]]></script>
+    <in-binding>
+      <bind name="activeVM" type="VC:VirtualMachine" export-name="activeVM"/>
+      <bind name="errorCode" type="string" export-name="errorCode"/>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Ignore error if no change before last snapshot]]></description>
+    <position y="40.0" x="360.0"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="resourcePool">
+      <desc><![CDATA[Resource pool]]></desc>
+    </p-param>
+    <p-param name="childResourcePool">
+      <desc><![CDATA[Take snapshots of virtual machines in child resource pools?]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

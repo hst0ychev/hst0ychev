@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="addAdministrators" result-type="void" api-version="6.0.0" id="4a27be68-0919-490f-8577-c613be2cf97a" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.tenant">
+  <param n="tenant" t="vCACCAFE:Tenant"><![CDATA[Tenant]]></param>
+  <param n="tenantAdministrators" t="Array/string"><![CDATA[Tenant administrators]]></param>
+  <param n="infrastructureAdministrators" t="Array/string"><![CDATA[Infrastructure administrators]]></param>
+  <script encoded="false"><![CDATA[System.getModule("com.vmware.library.vcaccafe.util").validateObject(tenant, "Tenant");
+var host = vCACCAFEEntitiesFinder.getHostForEntity(tenant);
+var service = host.createAuthorizationClient().getAuthorizationPrincipalService();
+
+tenantAdministrators = System.getModule("com.vmware.library.vcaccafe.tenant").validatePrincipals(host, tenant.getUrlName(), tenantAdministrators);
+for (var i = 0; i < tenantAdministrators.length; i++) {
+	System.log("Adding tenant administrator '" + tenantAdministrators[i] + "'...");
+	service.addRole(tenant.getId(), tenantAdministrators[i], "CSP_TENANT_ADMIN");
+}
+
+infrastructureAdministrators = System.getModule("com.vmware.library.vcaccafe.tenant").validatePrincipals(host, tenant.getUrlName(), infrastructureAdministrators);
+for (var i = 0; i < infrastructureAdministrators.length; i++) {
+	System.log("Adding infrastructure administrator '" + infrastructureAdministrators[i] + "'...");
+	service.addRole(tenant.getId(), infrastructureAdministrators[i], "COM_VMWARE_IAAS_IAAS_ADMINISTRATOR");
+}]]></script>
+</dunes-script-module>

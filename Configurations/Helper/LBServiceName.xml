@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="1a49808d-69ad-4e30-9446-d891e94a7c57" version="0.0.0">
+  <display-name><![CDATA[LBServiceName]]></display-name>
+  <atts>
+    <att name="tndServiceName" type="string" read-only="false">
+      <value encoded="n"><![CDATA[LBaaS_TnD]]></value>
+    </att>
+    <att name="prodServiceName" type="string" read-only="false">
+      <value encoded="n"><![CDATA[LBaaS_Prod]]></value>
+    </att>
+  </atts>
+</config-element>

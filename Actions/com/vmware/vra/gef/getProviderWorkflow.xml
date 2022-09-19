@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getProviderWorkflow" result-type="Workflow" api-version="6.0.0" id="8e33b6b1-5854-4311-8055-5f1263cd38a5" version="0.0.0" allowed-operations="vf" category-name="com.vmware.vra.gef">
+  <description><![CDATA[Returns provider workflow with a given workflow name. Returns null, if that workflow is not supported by the provider.]]></description>
+  <param n="workflowMapping" t="string"><![CDATA[Provider's workflow mapping information]]></param>
+  <param n="workflowType" t="string"><![CDATA[Type of the workflow to get the id for]]></param>
+  <script encoded="false"><![CDATA[// Trim spaces and replace carriage returns and line feeds with just carriage returns.
+var providerMappingContentWithoutCarriageReturn  = workflowMapping.replace(/\s*?[\r\n]\s*/g, "\n");
+
+var workflowMappingContent = providerMappingContentWithoutCarriageReturn.split("\n");
+for each(var mappingString in workflowMappingContent)
+{
+    // Provider resource mappings will be specified in the frmat WorkflowType:WorkflowID
+    var mapping = mappingString.split(":");
+    if (workflowType == mapping[0])
+    {
+        return Server.getWorkflowWithId(mapping[1]);
+    }
+}
+
+return null;]]></script>
+</dunes-script-module>

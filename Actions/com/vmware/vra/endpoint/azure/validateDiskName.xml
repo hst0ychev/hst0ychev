@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="validateDiskName" result-type="string" api-version="6.0.0" id="e798cfe7-4bb5-4a7c-8b0e-1c5240149e6e" version="7.6.0" allowed-operations="vf" category-name="com.vmware.vra.endpoint.azure">
+  <param n="diskName" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[if (diskName == null || diskName == "") {
+    return "";
+}
+
+// The original Regex that Azure uses is ^[^_\W][\w-._]{0,79}(?<![-.])$ but since we can't use Negative Lookbehind in JavaScript, add additional check for . and -
+
+var diskNameRegexp = /^[^_\W][\w-._]{0,79}$/;
+if (!diskName.match(diskNameRegexp)) {
+	return "The disk name should be between up to 80 characters in length, containing no special characters and cannot end with hyphen or full stop.";
+} else {
+    var lastChar = diskName.charAt(diskName.length - 1);
+    if (lastChar == "." || lastChar == "-") {
+        return "The disk name should be between up to 80 characters in length, containing no special characters and cannot end with hyphen or full stop.";
+    }
+}
+
+return "";]]></script>
+</dunes-script-module>

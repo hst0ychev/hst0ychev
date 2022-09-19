@@ -1,0 +1,234 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="6a8bcf34-f7e9-4f59-a16f-ef36e8850616" version="0.0.28" api-version="6.0.0" allowed-operations="vf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Generic Endpoint Framework Proxy]]></display-name>
+  <position y="18.136363636363633" x="45.0"/>
+  <input>
+    <param name="endpointString" type="string">
+      <description><![CDATA[Endpoint Info]]></description>
+    </param>
+    <param name="operationRequestString" type="string">
+      <description><![CDATA[Operation Request]]></description>
+    </param>
+    <param name="operationDataString" type="string"/>
+    <param name="versionString" type="string">
+      <description><![CDATA[Version info]]></description>
+    </param>
+    <param name="operationContextString" type="string">
+      <description><![CDATA[vRA-specific state information]]></description>
+    </param>
+  </input>
+  <attrib name="callbackOperationName" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="executionStatus" type="Any" read-only="false">
+    <value encoded="n"><![CDATA[Any#__NULL__]]></value>
+    <description><![CDATA[GEFExecutionStatus scriptable object]]></description>
+  </attrib>
+  <attrib name="operationRequest" type="Any" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="endpoint" type="Any" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="operationType" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="endpointName" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="executedWorkflowsOutParameters" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="repositoryEndpoint" type="Any" read-only="false">
+    <value encoded="n"><![CDATA[Any#__NULL__]]></value>
+  </attrib>
+  <attrib name="module" type="Module" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/Module?id='ff8080814879df1c014879dfa91b000d'&dunesName='Module'&name='com.vmware.vra.gef']]></value>
+    <description><![CDATA[Module which contains actions to run]]></description>
+  </attrib>
+  <attrib name="errorCode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Placeholder for errors]]></description>
+  </attrib>
+  <attrib name="errorMessage" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Final error message (if it exists)]]></description>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="18.136363636363633" x="1164.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item2" type="task">
+    <display-name><![CDATA[Display Inputs]]></display-name>
+    <script encoded="false"><![CDATA[System.debug("displaying inputs...");
+output("Endpoint", endpointString);
+output("Operation Request", operationRequestString);
+output("Operation Data", operationDataString);
+output("Version", versionString);
+output("Operation Context", operationContextString);
+System.debug("finished logging inputs");
+
+function output(friendlyName, obj) {
+	System.debug(friendlyName + ":");
+	System.debug(obj);
+}]]></script>
+    <in-binding>
+      <bind name="endpointString" type="string" export-name="endpointString">
+        <description><![CDATA[Endpoint Info]]></description>
+      </bind>
+      <bind name="operationRequestString" type="string" export-name="operationRequestString">
+        <description><![CDATA[Operation Request]]></description>
+      </bind>
+      <bind name="operationDataString" type="string" export-name="operationDataString"/>
+      <bind name="versionString" type="string" export-name="versionString">
+        <description><![CDATA[Version info]]></description>
+      </bind>
+      <bind name="operationContextString" type="string" export-name="operationContextString">
+        <description><![CDATA[vRA-specific state information]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <position y="28.136363636363633" x="144.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item5" type="task">
+    <display-name><![CDATA[parse Inputs]]></display-name>
+    <script encoded="false"><![CDATA[operationRequest = GEFJsonHelper.parseOperationRequest(operationRequestString);
+operationType = operationRequest.operationType;
+repositoryEndpoint = operationRequest.callbackEndpoint;
+callbackOperationName = operationRequest.callbackOperationName;
+
+endpoint = GEFJsonHelper.parseEndpoint(endpointString);
+endpointName = endpoint.name;]]></script>
+    <in-binding>
+      <bind name="endpointString" type="string" export-name="endpointString">
+        <description><![CDATA[Endpoint Info]]></description>
+      </bind>
+      <bind name="operationRequestString" type="string" export-name="operationRequestString">
+        <description><![CDATA[Operation Request]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="operationRequest" type="Any" export-name="operationRequest"/>
+      <bind name="endpoint" type="Any" export-name="endpoint"/>
+      <bind name="operationType" type="string" export-name="operationType"/>
+      <bind name="endpointName" type="string" export-name="endpointName"/>
+      <bind name="repositoryEndpoint" type="Any" export-name="repositoryEndpoint"/>
+      <bind name="callbackOperationName" type="string" export-name="callbackOperationName"/>
+    </out-binding>
+    <position y="28.136363636363633" x="284.5"/>
+  </workflow-item>
+  <workflow-item name="item6" out-name="item4" type="link" linked-workflow-id="9ab18602-0389-430e-a78b-2bd9a24c4593">
+    <display-name><![CDATA[Commit Results]]></display-name>
+    <in-binding>
+      <bind name="callbackOperationName" type="string" export-name="callbackOperationName">
+        <description><![CDATA[Workflow callback name]]></description>
+      </bind>
+      <bind name="repositoryDetails" type="Any" export-name="repositoryEndpoint"/>
+      <bind name="endpointName" type="string" export-name="endpointName"/>
+      <bind name="module" type="Module" export-name="module"/>
+      <bind name="additionalArguments" type="Properties" export-name="executedWorkflowsOutParameters"/>
+      <bind name="executionStatusArgument" type="Any" export-name="executionStatus"/>
+      <bind name="operationContextArgument" type="string" export-name="operationContextString"/>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[To WorkflowOperations table.]]></description>
+    <position y="28.136363636363633" x="844.5"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item6" catch-name="item7" throw-bind-name="errorCode" type="link" linked-workflow-id="0463bf31-52a7-4221-a0bc-68ceb4912cbc">
+    <display-name><![CDATA[Execute Workflows]]></display-name>
+    <in-binding>
+      <bind name="operationType" type="string" export-name="operationType"/>
+      <bind name="endpoint" type="Any" export-name="endpoint"/>
+      <bind name="operationDataString" type="string" export-name="operationDataString"/>
+    </in-binding>
+    <out-binding>
+      <bind name="executionStatus" type="Any" export-name="executionStatus"/>
+      <bind name="executedWorkflowsOutParameters" type="Properties" export-name="executedWorkflowsOutParameters"/>
+    </out-binding>
+    <position y="28.136363636363633" x="644.5"/>
+  </workflow-item>
+  <workflow-item name="item5" out-name="item3" catch-name="item7" throw-bind-name="errorCode" type="task">
+    <display-name><![CDATA[check version]]></display-name>
+    <script encoded="false"><![CDATA[var version = GEFJsonHelper.parseVersion(versionString);
+if (version.api != "1.0") {
+	throw "Version mismatch between the vRA GEF and the vRO GEF plugin. Expected a vRA GEF api version of 1.0,"
+			 + " but instead it is api version " + version.api + " with a build number of " + version.build;
+}]]></script>
+    <in-binding>
+      <bind name="versionString" type="string" export-name="versionString">
+        <description><![CDATA[Version info]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <position y="28.136363636363633" x="424.5"/>
+  </workflow-item>
+  <workflow-item name="item7" out-name="item6" type="task">
+    <display-name><![CDATA[error message]]></display-name>
+    <script encoded="false"><![CDATA[var errorMessage = "GEF proxy failed when trying to perform the operation '" + operationType + "' for the endpoint named '" + endpoint.name + "' (of type '" + endpoint.vendor + "'). Exception: " + errorCode;
+System.error(errorMessage);
+
+executionStatus = new GEFExecutionStatus();
+executionStatus.addErrorMessage(errorMessage);]]></script>
+    <in-binding>
+      <bind name="errorCode" type="string" export-name="errorCode"/>
+      <bind name="operationType" type="string" export-name="operationType"/>
+      <bind name="endpoint" type="Any" export-name="endpoint"/>
+    </in-binding>
+    <out-binding>
+      <bind name="executionStatus" type="Any" export-name="executionStatus">
+        <description><![CDATA[GEFExecutionStatus scriptable object]]></description>
+      </bind>
+    </out-binding>
+    <position y="91.77272727272727" x="704.5"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item0" type="custom-condition" alt-out-name="item9">
+    <display-name><![CDATA[Errors occurred?]]></display-name>
+    <script encoded="false"><![CDATA[var errorMessages = executionStatus.getErrorMessages();
+return errorMessages == null || errorMessages.length == 0;]]></script>
+    <in-binding>
+      <bind name="executionStatus" type="Any" export-name="executionStatus"/>
+    </in-binding>
+    <position y="18.136363636363633" x="984.5"/>
+  </workflow-item>
+  <workflow-item name="item8" throw-bind-name="errorMessage" type="end" end-mode="1">
+    <position y="81.77272727272727" x="1164.5"/>
+  </workflow-item>
+  <workflow-item name="item9" out-name="item8" type="task">
+    <display-name><![CDATA[log error messages]]></display-name>
+    <script encoded="false"><![CDATA[var errorMessages = executionStatus.getErrorMessages();
+
+errorMessage = "Errors occurred: ";
+for each (var message in errorMessages) {
+	errorMessage += message + "\n";
+}
+
+System.error(errorMessage);]]></script>
+    <in-binding>
+      <bind name="executionStatus" type="Any" export-name="executionStatus">
+        <description><![CDATA[GEFExecutionStatus scriptable object]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="errorMessage" type="string" export-name="errorMessage">
+        <description><![CDATA[Final error message (if it exists)]]></description>
+      </bind>
+    </out-binding>
+    <position y="91.77272727272727" x="984.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="operationRequestString">
+      <desc><![CDATA[Operation Request]]></desc>
+    </p-param>
+    <p-param name="versionString">
+      <desc><![CDATA[Version info]]></desc>
+    </p-param>
+    <p-param name="endpointString">
+      <desc><![CDATA[Endpoint Info]]></desc>
+    </p-param>
+    <p-param name="operationDataString">
+      <desc><![CDATA[operationData]]></desc>
+    </p-param>
+    <p-param name="operationContextString">
+      <desc><![CDATA[vRA-specific state information]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

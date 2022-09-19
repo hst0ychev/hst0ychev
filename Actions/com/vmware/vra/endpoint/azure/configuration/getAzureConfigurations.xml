@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getAzureConfigurations" result-type="Any" api-version="6.0.0" id="664660eb-1303-4338-89c8-7df08f978b48" version="7.6.0" allowed-operations="vf" category-name="com.vmware.vra.endpoint.azure.configuration">
+  <param n="attributesMap" t="Any"><![CDATA[A map Object that represents a key (configuration name) and value (attribute name)]]></param>
+  <script encoded="false"><![CDATA[var attributesValuesMapResult = {};
+
+// create (if needed) and retrieve all existing configurations
+var azureConfigurations =
+    System.getModule("com.vmware.vra.endpoint.azure.configuration").createAzureConfigurations();
+
+for (var i = 0; i < azureConfigurations.length; i++) {
+    var configurationName = azureConfigurations[i].name;
+    // if the current configuration is specified check its attributes for potential matches
+    if (attributesMap.hasOwnProperty(configurationName)) {
+        var configurationAttributes = {};
+
+        for (var j = 0; j < attributesMap[configurationName].length; j++) {
+            var attributeName = attributesMap[configurationName][j];
+
+            if (attributeName == "_self") {
+                // append the configuration itself
+                configurationAttributes["_self"] = azureConfigurations[i];
+                continue;
+            }
+
+            var attribute = azureConfigurations[i].getAttributeWithKey(attributeName);
+            if (attribute != null) {
+                configurationAttributes[attributeName] = attribute.value;
+            }
+        }
+
+        attributesValuesMapResult[configurationName] = configurationAttributes;
+    }
+}
+
+return attributesValuesMapResult;]]></script>
+</dunes-script-module>

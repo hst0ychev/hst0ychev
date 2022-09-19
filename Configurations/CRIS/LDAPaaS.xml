@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="66a86a5d-df46-4200-9c90-046802868f44" version="0.0.0">
+  <display-name><![CDATA[LDAPaaS]]></display-name>
+  <atts>
+    <att name="username" type="string" read-only="false">
+      <value encoded="n"><![CDATA[admin1]]></value>
+      <description><![CDATA[The user to be used for authenticating with AD.]]></description>
+    </att>
+    <att name="password" type="SecureString" read-only="false">
+      <value encoded="n"><![CDATA[__NULL__]]></value>
+      <description><![CDATA[The password of above user to authenticate with AD.]]></description>
+    </att>
+    <att name="adServer" type="string" read-only="false">
+      <value encoded="n"><![CDATA[10.77.16.64]]></value>
+      <description><![CDATA[The IP / FQDN of AD Server on which operations will be done]]></description>
+    </att>
+    <att name="psHost" type="PowerShell:PowerShellHost" read-only="false">
+      <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='64372951-8bfb-457b-9e47-0733bdb340fc'&dunesName='PowerShell:PowerShellHost']]></value>
+      <description><![CDATA[The PowerShellHost via which we will communicate to AD.]]></description>
+    </att>
+    <att name="basePath_for_New_OU" type="string" read-only="false">
+      <value encoded="n"><![CDATA[OU=PROJECT_GROUP,OU=CRIS,DC=cloud,DC=cris,DC=in]]></value>
+      <description><![CDATA[Base path for creating OUs]]></description>
+    </att>
+    <att name="basePath_for_New_Groups" type="string" read-only="false">
+      <value encoded="n"><![CDATA[OU=PROJECT_GROUP,OU=CRIS,DC=cloud,DC=cris,DC=in]]></value>
+      <description><![CDATA[Base path for creating Groups]]></description>
+    </att>
+    <att name="basePath_for_New_Users" type="string" read-only="false">
+      <value encoded="n"><![CDATA[OU=PROJECT_GROUP,OU=CRIS,DC=cloud,DC=cris,DC=in]]></value>
+      <description><![CDATA[Base path for creating users]]></description>
+    </att>
+    <att name="vcacCafeHost" type="vCACCAFE:VCACHost" read-only="false">
+      <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='e8dc59dd-9ae4-44aa-86ad-50240e6c34d3'&dunesName='vCACCAFE:VCACHost']]></value>
+      <description><![CDATA[Host for getting request number]]></description>
+    </att>
+    <att name="basePath_for_Computers" type="string" read-only="false">
+      <value encoded="n"><![CDATA[OU=RESOURCE,OU=CRIS,DC=cloud,DC=cris,DC=in]]></value>
+      <description><![CDATA[Base path of existing Computers]]></description>
+    </att>
+    <att name="cris_domain_name" type="string" read-only="false">
+      <value encoded="n"><![CDATA[cloud.cris.in]]></value>
+      <description><![CDATA[The domain name to use for new accounts]]></description>
+    </att>
+  </atts>
+</config-element>

@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getAllSnapshotResultInDatastoreBrowser" result-type="Array/Any" api-version="6.0.0" id="b56ea0c1-55c0-44e1-97e9-91a0aa46b028" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.vm.snapshot">
+  <param n="owner" t="boolean"><![CDATA[]]></param>
+  <param n="size" t="boolean"><![CDATA[]]></param>
+  <param n="type" t="boolean"><![CDATA[]]></param>
+  <param n="modif" t="boolean"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var results = new Array();
+
+var fileQuery = new Array(new VcVmSnapshotFileQuery());
+
+var flags = new VcFileQueryFlags();
+flags.fileOwner=owner;
+flags.fileSize=size;
+flags.fileType=type;
+flags.modification=modif;
+
+var querySpec = new VcHostDatastoreBrowserSearchSpec();
+querySpec.details=flags;
+querySpec.query = fileQuery;
+
+var datastoreProp = new Properties() ;
+
+
+var datastores = VcPlugin.getAllDatastores();
+for each (var datastore in datastores){
+	try{
+		if(!datastoreProp.get(datastore.summary.url)){
+			//System.log("---------------Datastore Name : " + datastore.name + " - VC Name : " + datastore.sdkConnection.id + " ---------------");
+			var task = datastore.browser.searchDatastoreSubFolders_Task("[" + datastore.name + "]", querySpec);
+			//var task = datastore.browser.searchDatastore_Task("[" + datastore.name + "]", querySpec);
+			searchResults = System.getModule("com.vmware.library.vc.basic").vim3WaitTaskEnd(task,false,5);
+			for (var i in searchResults) {
+				results.push(searchResults[i]);
+				//System.log(searchResults[i].folderPath);
+			}
+			datastoreProp.put(datastore.summary.url,datastore);
+		}
+	}catch(e){
+		//System.warn(e);
+	}
+}
+return results;]]></script>
+</dunes-script-module>

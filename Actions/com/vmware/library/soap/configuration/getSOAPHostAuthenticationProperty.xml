@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getSOAPHostAuthenticationProperty" result-type="string" api-version="6.0.0" id="9180808080808080808080808080808083808080013220404425363c0250095dc" version="1.0.0" allowed-operations="vf" category-name="com.vmware.library.soap.configuration">
+  <description><![CDATA[Gets the specified authentication property for a SOAP host.]]></description>
+  <param n="host" t="SOAP:Host"><![CDATA[SOAP host which authentication property to return]]></param>
+  <param n="index" t="number"><![CDATA[Index of the property within raw authentication properties array]]></param>
+  <script encoded="false"><![CDATA[return (host == null) ? "" : host.authentication.getRawAuthProperty(index);
+]]></script>
+</dunes-script-module>

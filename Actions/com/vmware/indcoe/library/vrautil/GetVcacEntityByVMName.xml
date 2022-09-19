@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="GetVcacEntityByVMName" result-type="Any" api-version="6.0.0" id="6fc2c781-d881-3368-a2c6-12f4797aed01" version="1.0.0" allowed-operations="evf" category-name="com.vmware.indcoe.library.vrautil">
+  <param n="vCACCAFEHost" t="Any"><![CDATA[]]></param>
+  <param n="vCACHost" t="Any"><![CDATA[]]></param>
+  <param n="virtualMachineName" t="string"><![CDATA[Virtual Machine Name]]></param>
+  <script encoded="false"><![CDATA[//Get an array of catalog resources
+var catalogResourceArray = [];
+catalogResourceArray = vCACCAFEEntitiesFinder.findCatalogResources(vCACCAFEHost, virtualMachineName);
+//Check the results
+if (catalogResourceArray.length == 0) {
+    throw "Could not find vCACVM with name: " + virtualMachineName;
+}
+if (catalogResourceArray.length > 1) {
+    throw "More than one result returned";
+}
+//Get the virtual machine id
+var virtualMachineId = catalogResourceArray[0].getProviderBinding().getBindingId()
+//Get vCACVM Entity
+return System.getModule("com.vmware.library.vcac").getVirtualMachineEntityFromId(vCACHost,virtualMachineId)
+]]></script>
+</dunes-script-module>

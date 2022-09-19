@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getDvSwitchSecondaryPvlanIdsForPrimaryId" result-type="Array/number" api-version="6.0.0" id="ebe9e526-d71e-4cad-8271-94f27e1e8328" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.networking">
+  <param n="dvSwitch" t="VC:VmwareDistributedVirtualSwitch"><![CDATA[]]></param>
+  <param n="primaryVlanId" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var pvlanInfos = new Array();
+if (dvSwitch != null) {
+	var pvlanConfigs = dvSwitch.config.pvlanConfig;
+	// Create array of strings to return for use in workflow presentation:
+	if(pvlanConfigs != null){
+		//System.log("Checking pVLAN Configs: "+pvlanConfigs.length);
+		for each (pvlanConfig in pvlanConfigs){
+			//System.log("pvlanType: "+pvlanConfig.pvlanType);
+			//System.log("primaryVlanId: "+pvlanConfig.primaryVlanId);
+			//System.log("secondaryVlanId: "+pvlanConfig.secondaryVlanId);
+			if ( pvlanConfig.primaryVlanId == primaryVlanId ) {
+				pvlanInfos.push(pvlanConfig.secondaryVlanId);
+			}
+		}
+	}else{
+		System.log("pVLAN Config is null");
+	}
+}
+return pvlanInfos;]]></script>
+</dunes-script-module>

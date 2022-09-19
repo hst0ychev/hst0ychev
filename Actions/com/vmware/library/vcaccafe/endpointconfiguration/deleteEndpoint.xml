@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="deleteEndpoint" result-type="void" api-version="6.0.0" id="a17e17b1-0576-47d0-97db-ff53b1d19de9" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.endpointconfiguration">
+  <param n="endpoint" t="vCACCAFE:Endpoint"><![CDATA[Endpoint object.]]></param>
+  <param n="host" t="vCACCAFE:VCACHost"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var endpointService = host.createEndpointConfigurationClient().getEndpointConfigurationEndpointService();
+
+System.getModule("com.vmware.library.vcaccafe.util").validateObject(endpoint, "Endpoint")
+
+var endpointId = endpoint.getId();
+
+// secure fields are returned empty by default
+System.log("Retrieving endpoint object with id [" + endpointId + "]...");
+var existingEndpoint = endpointService.getEndpoint(endpointId, false);
+
+if(existingEndpoint == null)
+{
+	System.log("Endpoint with id [" + endpointId + "] is not found");
+	return;
+}
+
+System.log("Deleting endpoint with id [" + endpointId + "]...");
+endpointService.deleteEndpoint(endpointId);
+System.log("Endpoint with id [" + endpointId + "] deleted.");]]></script>
+</dunes-script-module>

@@ -1,0 +1,69 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item2" object-name="workflow:name=generic" id="387e838a-e18e-4420-aaad-55a54016c080" version="0.0.0" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Power Off VMs]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="vm" type="VC:VirtualMachine"/>
+  </input>
+  <attrib name="powerFlag" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+  </attrib>
+  <attrib name="timeout" type="number" read-only="false">
+    <value encoded="n"><![CDATA[30.0]]></value>
+    <description><![CDATA[Timeout in minutes [min]]]></description>
+  </attrib>
+  <attrib name="polling" type="number" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Polling rate in seconds [s]]]></description>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="664.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task" script-module="com.vmware.library.vc.vm.power/shutdownVM">
+    <display-name><![CDATA[shutdownVM]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+System.getModule("com.vmware.library.vc.vm.power").shutdownVM(vm,timeout,polling) ;]]></script>
+    <in-binding>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vm"/>
+      <bind name="timeout" type="number" export-name="timeout">
+        <description><![CDATA[Timeout in minutes [min]]]></description>
+      </bind>
+      <bind name="polling" type="number" export-name="polling">
+        <description><![CDATA[Polling rate in seconds [s]]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Shuts down the virtual machine's guest OS and waits for a specified period of time before throwing an error if the virtual machine is still not powered off. If the timeout is set to 0, the action does not wait.]]></description>
+    <position y="55.40909090909091" x="484.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item3" type="task">
+    <display-name><![CDATA[Verify]]></display-name>
+    <script encoded="false"><![CDATA[var status = vm.runtime.powerState.value;
+if(status == "poweredOn") powerFlag = true			
+else powerFlag = false]]></script>
+    <in-binding>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vm"/>
+    </in-binding>
+    <out-binding>
+      <bind name="powerFlag" type="boolean" export-name="powerFlag"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item1" type="custom-condition" alt-out-name="item4">
+    <display-name><![CDATA[Custom decision]]></display-name>
+    <script encoded="false"><![CDATA[if(powerFlag)return true
+else return false]]></script>
+    <in-binding>
+      <bind name="powerFlag" type="boolean" export-name="powerFlag"/>
+    </in-binding>
+    <position y="45.40909090909091" x="344.5"/>
+  </workflow-item>
+  <workflow-item name="item4" type="end" end-mode="0">
+    <position y="109.04545454545453" x="384.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="vm">
+      <desc><![CDATA[vm]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="fc8714e7-f1e6-47cc-950a-b6b42c65e03e" version="1.0.0">
+  <display-name><![CDATA[SnapShotNamePatterns]]></display-name>
+  <atts>
+    <att name="VolumeName_And_Time_Stamp" type="string" read-only="false">
+      <value encoded="n"><![CDATA[@vvname@.@y@@m@@d@@H@@M@@S@]]></value>
+    </att>
+    <att name="VolumeName_And_Count" type="string" read-only="false">
+      <value encoded="n"><![CDATA[@vvname@.@count@]]></value>
+    </att>
+    <att name="VolumeName_And_Time_in_Seconds_Since_Epoch" type="string" read-only="false">
+      <value encoded="n"><![CDATA[@vvname@.@s@]]></value>
+    </att>
+    <att name="Custom" type="string" read-only="false">
+      <value encoded="n"><![CDATA[Custom]]></value>
+    </att>
+  </atts>
+</config-element>

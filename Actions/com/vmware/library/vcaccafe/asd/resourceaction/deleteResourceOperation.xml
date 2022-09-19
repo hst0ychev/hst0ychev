@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="deleteResourceOperation" result-type="void" api-version="6.0.0" id="fa70dd5d-fb05-45d2-aa4b-be5643ff957c" version="1.0.1" allowed-operations="vf" category-name="com.vmware.library.vcaccafe.asd.resourceaction">
+  <description><![CDATA[Deletes a resource action.]]></description>
+  <param n="resourceAction" t="vCACCAFE:ResourceAction"><![CDATA[Resource action to be deleted]]></param>
+  <script encoded="false"><![CDATA[System.getModule("com.vmware.library.vcaccafe.util").validateObject(resourceAction, "Resource action");
+var host = vCACCAFEEntitiesFinder.getHostForEntity(resourceAction);
+var client = host.createAdvancedDesignerClient().getAdvancedDesignerCsResourceOperationService();
+
+System.log("Deleteing resource action " + resourceAction.getName() + "...");
+client.deleteResourceOperation(resourceAction.getId());
+System.log("Resource action deleted.");]]></script>
+</dunes-script-module>

@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getCustomizationSpec" result-type="Any" api-version="6.0.0" id="55260819-15e8-4475-8018-ee4fbc8b36e7" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.vm.spec">
+  <param n="globalIPSettings" t="Any"><![CDATA[VimCustomizationGlobalIPSettings: Global IP settings constitute the IP settings that are not specific to a particular virtual network adapter.]]></param>
+  <param n="identity" t="Any"><![CDATA[VimCustomizationIdentitySettings: Network identity and settings, similar to Microsoft's Sysprep tool. This is a Sysprep, LinuxPrep, or SysprepText object.]]></param>
+  <param n="nicSettingMap" t="Array/Any"><![CDATA[[Optional] Array of VimCustomizationAdapterMapping: IP settings that are specific to a particular virtual network adapter.]]></param>
+  <param n="options" t="Any"><![CDATA[[Optional] VimCustomizationOptions: Optional operations (either LinuxOptions or WinOptions).]]></param>
+  <script encoded="false"><![CDATA[var customSpec
+try {
+	checkParams();
+	customSpec = new VcCustomizationSpec();
+	affectParams();
+	return customSpec;
+}
+catch (ex) {
+	throw "Unable to create VcCustomizationSpec: " + ex;
+}
+
+function affectParams() {
+	customSpec.globalIPSettings = globalIPSettings;
+	customSpec.identity = identity;
+	customSpec.nicSettingMap = nicSettingMap;
+	customSpec.options = options;
+}
+
+function checkParams() {
+	if (globalIPSettings == null) throw "globalIPSettings cannot be null";
+	if ((globalIPSettings instanceof VcCustomizationGlobalIPSettings) == false) throw "globalIPSettings must be of type VcCustomizationGlobalIPSettings";
+	if (identity == null) throw "identity cannot be null";
+	if (((identity instanceof VcCustomizationLinuxPrep) || (identity instanceof VcCustomizationSysprep) || (identity instanceof VcCustomizationSysprepText)) == false )
+		throw "identity must be of type VcCustomizationLinuxPrep, VcCustomizationSysprep or VcCustomizationSysprepText";
+	if (nicSettingMap != null) {
+		for (var i in nicSettingMap) {
+			if ((nicSettingMap[i] instanceof VcCustomizationAdapterMapping) == false) {
+				throw "nicSettingMap must be of type VcCustomizationAdapterMapping";
+			}
+		}
+	}
+	if (options != null && ((options instanceof VcCustomizationLinuxOptions) || (options instanceof VcCustomizationWinOptions)) == false) throw "options must be of type VcCustomizationOptions";
+}]]></script>
+</dunes-script-module>

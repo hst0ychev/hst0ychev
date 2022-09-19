@@ -1,0 +1,91 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getSubclient" result-type="void" api-version="6.0.0" id="a913ff86-6a7d-489c-a264-fb9cb497bb7f" version="0.0.0" allowed-operations="evf" category-name="com.commvault.utils">
+  <description><![CDATA[subclientId for the provided subclient name, backupset and virtualization client]]></description>
+  <param n="token" t="string"><![CDATA[CV token for REST API]]></param>
+  <param n="clientId" t="string"><![CDATA[Virtualization client Id]]></param>
+  <param n="backupSetName" t="string"><![CDATA[Backupset Name]]></param>
+  <param n="subclientName" t="string"><![CDATA[Subclient Name]]></param>
+  <script encoded="false"><![CDATA[	/*
+	
+	Inputs:
+	token         - CV token for REST API
+	clientId      - Virualization client id
+	backupSetName - name of backupset
+	subclientName - name of subclient
+	
+	API used:
+	Subclient?clientId={clientId}
+	
+	Output:
+	string - subclientId if found matching subclient name in the backupset of the virtualization client
+			 if not found returns -1
+	*/
+
+	
+	
+	System.log("executing getSubclient module");
+	var getSubClientIdUrl = "Subclient?clientId=";
+	var bFound = false;
+	var restHost = System.getModule("com.commvault.utils").getHost();
+	var subClientId = "-1";
+	if(restHost == null)
+	{	
+		throw("Error: Coudln't find appropriate RESTHOST in VCO, cannot continue");
+		return -1;
+	}
+	else{
+		subclientUrl = getSubClientIdUrl + clientId ;
+		//System.log("Executing get SubclientId URL "+ subclientUrl);
+		var response = System.getModule("com.commvault.utils").processRESTRequest(subclientUrl,"GET", null, token, null ,null);
+		//System.log("response string in subclient module: " + response.contentAsString);
+		
+		if(response.statusCode != 200)
+		{
+			throw("Error: Failed to execute REST request to get subclient id");
+		}
+		//Process XML to retrieve subclient Id
+		var document = XMLManager.fromString(response.contentAsString);
+		
+		var list = document.getElementsByTagName("subClientProperties");
+		
+		var total = list.length;
+		if (total == 0) {
+        	throw "Error: Cannot find subclientProperties in the response ";
+    	}
+		for(var i = 0; i < total ; i++)
+		{
+			var subClientEntity = list.item(i).getChildNodes();
+			for(var j = 0 ; j < subClientEntity.length; j++)
+			{	
+				if(subClientEntity.item(j).nodeName == "subClientEntity")
+				{	
+					//System.log("Searching for backupset " +  backupSetName);
+					//System.log("Found backupset name from response as:  " +  subClientEntity.item(j).getAttribute("backupsetName"));
+					if(subClientEntity.item(j).getAttribute("backupsetName") == backupSetName)
+					{
+						subClientName = subClientEntity.item(j).getAttribute("subclientName");
+						if(subClientName == subclientName){
+							
+							subClientId = subClientEntity.item(j).getAttribute("subclientId");
+							//System.log("Found matching subclient Name and subclient id is : "+ subClientId);
+							bFound = true;
+							break;
+						}
+						
+						
+					}
+				}
+			}
+		}
+		
+		if (bFound == true)
+		{
+			return subClientId;
+		}
+		else
+		{
+			System.log("Subclient not found, returning -1");
+			return -1;
+		}
+	}]]></script>
+</dunes-script-module>

@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="validateOrchestratorServerConfiguration" result-type="boolean" api-version="6.0.0" id="330fc4a5-2537-4caa-9af3-d681e95bf96f" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.asd.configuration">
+  <param n="host" t="vCACCAFE:VCACHost"><![CDATA[vRA CAFE host]]></param>
+  <param n="useDefault" t="boolean"><![CDATA[Use the default orchestrator server]]></param>
+  <param n="name" t="string"><![CDATA[Orchestrator server name]]></param>
+  <param n="description" t="string"><![CDATA[Orchestrator server description]]></param>
+  <param n="orchestratorHost" t="string"><![CDATA[Orchestrator host]]></param>
+  <param n="port" t="string"><![CDATA[Orchestrator port]]></param>
+  <param n="useSSO" t="boolean"><![CDATA[Single Sign-On authentication]]></param>
+  <param n="username" t="string"><![CDATA[User name]]></param>
+  <param n="password" t="SecureString"><![CDATA[Password]]></param>
+  <script encoded="false"><![CDATA[var configurationService = host.createAdvancedDesignerClient().getAdvancedDesignerConfigurationService();
+var status;
+
+if(useDefault == true) {
+	System.log("Validating XaaS server configuration...");
+	status = configurationService.testDefaultConfiguration(host.tenant);
+	System.log("XaaS server configuration status: " + status.value());
+} else {
+	var configuration = new vCACCAFEConfiguration();
+	configuration.setTenantId(host.tenant);
+	configuration.setSystemDefault(false);
+	configuration.setName(name);
+	configuration.setDescription(description);
+	configuration.setHost(orchestratorHost);
+	configuration.setPort(port);
+
+	if(useSSO == false) {
+		configuration.setSsoMode(false);
+		configuration.setUsername(username);
+		configuration.setPassword(password);
+	} else {
+		configuration.setSsoMode(true);
+	}
+	System.log("Validating XaaS server configuration...");
+	status = configurationService.testConfiguration(host.tenant, configuration);
+	System.log("XaaS server configuration status: " + status.value());
+}
+return (status == vCACCAFEConfigurationStatus.SUCCESS)]]></script>
+</dunes-script-module>

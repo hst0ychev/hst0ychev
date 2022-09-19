@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="generateWorkflowFromSOAPOperation" result-type="Workflow" api-version="6.0.0" id="c4cbb146-e9f7-4ed8-874b-0e7a5e06eb0d" version="1.0.2" allowed-operations="vfe" category-name="com.vmware.library.soap">
+  <description><![CDATA[Generates a workflow from a SOAP operation.]]></description>
+  <param n="host" t="SOAP:Host"><![CDATA[SOAP host]]></param>
+  <param n="operationName" t="string"><![CDATA[Name of the operation]]></param>
+  <param n="workflowName" t="string"><![CDATA[Name of the workflow]]></param>
+  <param n="category" t="WorkflowCategory"><![CDATA[Workflow category]]></param>
+  <param n="options" t="Properties"><![CDATA[Advanced generation options.]]></param>
+  <script encoded="false"><![CDATA[System.log("generating workflow...");
+var w = host.createWorkflow(operationName, workflowName, category, options);
+System.log("workflow successfully generated for host '" + host.name + "' (" + host.id + ") and operation '" + operationName + "'.");
+return w;]]></script>
+</dunes-script-module>

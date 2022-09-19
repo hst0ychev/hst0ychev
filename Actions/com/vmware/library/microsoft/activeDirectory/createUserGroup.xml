@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="createUserGroup" result-type="void" api-version="6.0.0" id="36818080808080808080808080808080B080808001270557368849c62c352aa82" version="1.1.1" allowed-operations="vfe" category-name="com.vmware.library.microsoft.activeDirectory">
+  <description><![CDATA[Create a new Usergroup in the given container (OU or Group)]]></description>
+  <param n="groupName" t="string"><![CDATA[The name for the user group]]></param>
+  <param n="container" t="Any"><![CDATA[Container for the new user group (either a Organizational Unit or a Group)]]></param>
+  <script encoded="false"><![CDATA[container.createUserGroup(groupName);]]></script>
+</dunes-script-module>

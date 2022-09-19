@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="assignUsersAndGroupsToEntitlement" result-type="void" api-version="6.0.0" id="2d5cb824-f76d-4b56-984d-e2ae3aafbfb2" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.catalog.entitlement">
+  <param n="entitlement" t="vCACCAFE:Entitlement"><![CDATA[Entitlement that the users and groups will be assigned to]]></param>
+  <param n="users" t="Array/string"><![CDATA[Users to be assigned to the entitlement]]></param>
+  <param n="groups" t="Array/string"><![CDATA[Groups to be assigned to the entitlement]]></param>
+  <script encoded="false"><![CDATA[System.getModule("com.vmware.library.vcaccafe.util").validateObject(entitlement, "Entitlement");
+var host = vCACCAFEEntitiesFinder.getHostForEntity(entitlement);
+var client = host.createCatalogClient().getCatalogEntitlementService();
+
+var alreadyExists;
+for (var i = 0 ; users != null && i < users.length ; i++ ) {
+	alreadyExists = false;
+	for (var j = 0 ; j < entitlement.getPrincipals().length ; j++ ) {
+		if (users[i] == entitlement.getPrincipals()[j].getRef()) {
+			System.warn("User " + users[i] + " is already assigned to the entitlement. The user will be skipped.");
+			alreadyExists = true;
+			break;
+		}
+	}
+	if (!alreadyExists) {
+		var principal = new vCACCAFECatalogPrincipal();
+		principal.setType(vCACCAFEPrincipalType.USER);
+		principal.setRef(users[i]);
+		principal.setTenantName(host.tenant);
+		System.getModule("com.vmware.library.vcaccafe.util").addElementToList(entitlement, "getPrincipals", principal);
+	}
+}
+
+for (var i = 0 ; groups != null && i < groups.length ; i++ ) {
+	alreadyExists = false;
+	for (var j = 0 ; j < entitlement.getPrincipals().length ; j++ ) {
+		if (groups[i] == entitlement.getPrincipals()[j].getRef()) {
+			System.warn("Group " + groups[i] + " is already assigned to the entitlement. The group will be skipped.");
+			alreadyExists = true;
+			break;
+		}
+	}
+	if (!alreadyExists) {
+		var principal = new vCACCAFECatalogPrincipal();
+		principal.setType(vCACCAFEPrincipalType.GROUP);
+		principal.setRef(groups[i]);
+		principal.setTenantName(host.tenant);
+		System.getModule("com.vmware.library.vcaccafe.util").addElementToList(entitlement, "getPrincipals", principal);
+	}
+}
+
+System.log("Assigning groups and users to entitlement " + entitlement.getName() + "...");
+client.update(entitlement);
+System.log("Groups and users assigned to entitlement " + entitlement.getName());]]></script>
+</dunes-script-module>

@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="c969fd41-2f5d-4b52-b431-e95b20dc2549">
+  <display-name><![CDATA[Context]]></display-name>
+  <atts>
+    <att name="DEFAULT_MODULES" type="Array" read-only="false">
+      <value encoded="n"><![CDATA[[48:string#com.vmware.pscoe.library.context.workflow]]]></value>
+    </att>
+  </atts>
+</config-element>

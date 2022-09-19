@@ -1,0 +1,87 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="Workflow:name=generic" id="81808080808080808080808080808080F48680800117924212373419438ed48b5" version="3.1.4" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[JDBC select from table example]]></display-name>
+  <description><![CDATA[Test JDBC table select rows]]></description>
+  <position y="10.0" x="120.0"/>
+  <input>
+    <param name="url" type="string">
+      <description><![CDATA[Database URL, in the form jdbc:subprotocol:subname]]></description>
+    </param>
+    <param name="user" type="string">
+      <description><![CDATA[Database user]]></description>
+    </param>
+    <param name="password" type="SecureString">
+      <description><![CDATA[Password]]></description>
+    </param>
+    <param name="sqlStatement" type="string">
+      <description><![CDATA[SQL statement]]></description>
+    </param>
+  </input>
+  <workflow-item name="item0" out-name="item1" type="task">
+    <display-name><![CDATA[Select from table]]></display-name>
+    <script encoded="false"><![CDATA[var main = new JDBCConnection();
+var con;
+try  {
+	con = main.getConnection( url, user, password );
+	System.log( "Connection to database successful" );
+	var stat = con.createStatement();
+	var rs = stat.executeQuery( sqlStatement );
+	var i = 0;
+	var firstNameColName = "firstName";
+	var lastNameColName = "lastName";
+	while ( rs.next() )  {
+		System.log( "Row[" + i + "] : " + firstNameColName + "='" + rs.getString(firstNameColName)
+		  + "', " + lastNameColName + "='" + rs.getString(lastNameColName) + "'" );
+		i++;
+	}
+	if ( i == 0 )  {
+		System.log( "No rows" );
+	}
+	rs.close();
+	stat.close();
+} catch( ex )  {
+	throw "Connection to database failed (Reason: " + ex + ")";
+} finally {
+	if (con) {
+		con.close();
+	}
+}]]></script>
+    <in-binding>
+      <bind name="url" type="string" export-name="url"/>
+      <bind name="user" type="string" export-name="user"/>
+      <bind name="password" type="SecureString" export-name="password"/>
+      <bind name="sqlStatement" type="string" export-name="sqlStatement"/>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Create a table]]></description>
+    <position y="80.0" x="80.0"/>
+  </workflow-item>
+  <workflow-item name="item1" type="end" end-mode="0">
+    <position y="110.0" x="120.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Parameters]]></title>
+      <p-group>
+        <title><![CDATA[Database connection]]></title>
+        <desc><![CDATA[Database connection parameters]]></desc>
+        <p-param name="url">
+          <desc><![CDATA[Database URL]]></desc>
+        </p-param>
+        <p-param name="user">
+          <desc><![CDATA[Database user]]></desc>
+        </p-param>
+        <p-param name="password">
+          <desc><![CDATA[Password]]></desc>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[SQL statement]]></title>
+        <desc><![CDATA[SQL statement to select from table]]></desc>
+        <p-param name="sqlStatement">
+          <desc><![CDATA[SQL statement]]></desc>
+        </p-param>
+      </p-group>
+    </p-step>
+  </presentation>
+</workflow>

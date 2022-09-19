@@ -1,0 +1,77 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="CatalogItem" result-type="Any" api-version="6.0.0" id="318ebc41-d611-351e-801a-f039d323274f" version="1.0.0" allowed-operations="evf" category-name="com.vmware.indcoe.library.vrautil">
+  <param n="host" t="vCACCAFE:VCACHost"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var Blueprint = System.getModule("com.vmware.indcoe.library.vrautil").Blueprint(host);
+var CafeRestClient = System.getModule("com.vmware.indcoe.library.vrautil").CafeRestClient(host,
+    vCACCAFEServicesEnum.CATALOG_SERVICE);
+var URL = System.getModule("com.vmware.indcoe.library.vrautil").URL();
+var consumerRestClient = new CafeRestClient("consumer/catalogItems");
+
+var CatalogItem = function (cr) {
+    for (var key in cr) {
+        this[key] = cr[key];
+    }
+
+    this.getBlueprint = function () {
+        if (this.providerBinding && this.providerBinding.providerRef.label == "Blueprint Service") {
+            var id = this.providerBinding.bindingId;
+            if (id.indexOf("!::!") > -1) {
+                id = id.split("!::!")[1];
+            }
+            return Blueprint.get(id);
+        }
+        return null;
+    };
+
+    this.save = function () {
+        var id = consumerRestClient.createOrUpdate(this);
+        this.id = id;
+    };
+
+    this.update = function (json) {
+        var restClient = new CafeRestClient("catalogItems/");
+        restClient.update(json);
+    };
+
+};
+
+CatalogItem.get = function (id) {
+    var cr = consumerRestClient.get(id);
+    return new CatalogItem(cr);
+};
+
+CatalogItem.getByName = function (name) {
+    var cr = consumerRestClient.getByName(name);
+    if (cr) {
+        return new CatalogItem(cr);
+    }
+    return null;
+};
+
+CatalogItem.getAll = function () {
+    var crs = consumerRestClient.getAll().content;
+    var result = [];
+    for (var i in crs) {
+        result.push(new CatalogItem(crs[i]));
+    }
+    return result;
+};
+
+CatalogItem.getEntitledOnBehalfOf = function (params) {
+    var url = new URL("consumer/entitledCatalogItems");
+    Object.keys(params).forEach(function (key) {
+        url.addQueryParam(key + "=" + params[key]);
+    })
+    var urlAsString = url.getUrl();
+
+    var crs = new CafeRestClient(urlAsString).getAll().content;
+    var result = [];
+    for (var i in crs) {
+        result.push(new CatalogItem(crs[i].catalogItem));
+    }
+    return result;
+};
+
+return CatalogItem;
+]]></script>
+</dunes-script-module>

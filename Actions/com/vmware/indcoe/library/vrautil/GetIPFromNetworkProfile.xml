@@ -1,0 +1,179 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="GetIPFromNetworkProfile" result-type="Any" api-version="6.0.0" id="0cf16046-0086-369a-83ec-fab94d74eb2e" version="1.0.0" allowed-operations="evf" category-name="com.vmware.indcoe.library.vrautil">
+  <description><![CDATA[Write a brief description of the purpose of the action.]]></description>
+  <param n="networkProfName" t="string"><![CDATA[Network Profile name from where IP has to retrieved.]]></param>
+  <script encoded="false"><![CDATA[var GetIP ={
+         networkProfName:networkProfName,
+         getIpAndUpdate : function(){
+             //Declaring common parameters
+             var restHost
+             var username
+             var password
+             var tenant
+             var typeContent = "json"
+
+             //get category
+             var category = Server.getConfigurationElementCategoryWithPath("Helper");
+
+             //die in a fire if non-existent
+             if (category == null) {
+                 throw "Configuration element category '" + categoryPath + "' not found or empty!";
+             }
+             //get _all_ the elements
+             var elements = category.configurationElements;
+             var elementName = "vRAHost";
+             var attributeName = "vraHost"
+             var attributeName1 = "username";
+             var attributeName2 = "password";
+             var attributeName3 = "tenant";
+             //retrieve names
+             for (i = 0; i < elements.length; i++) {
+                 if (elements[i].name == elementName) {
+                     //found required element
+                     restHost = elements[i].getAttributeWithKey(attributeName).value;
+                     username =  elements[i].getAttributeWithKey(attributeName1).value;
+                     password =  elements[i].getAttributeWithKey(attributeName2).value;
+                     tenant =  elements[i].getAttributeWithKey(attributeName3).value;
+                     if (restHost != null) {
+                         System.debug("Found attribute '" + attributeName + "' in '" + elementName + "' with value '" +restHost + "'");
+                 
+                     }
+                 }
+             }
+             //Get Authentication token
+             var tokenURL = "/identity/api/tokens";
+             var tokenRequestMethod = "POST"
+             var tokenContent ='{"username":"'+username+'","password":"'+password+'","tenant":"'+tenant+'"}'
+             System.debug("token content "+tokenContent);
+             //Execute REST API to get the session token
+             var tokenResult = System.getModule("com.vmware.indcoe.library.nsxlbgeneric").ExecuteRest(restHost,tokenURL,tokenRequestMethod,tokenContent,typeContent,null)
+
+             if(tokenResult["statusCode"] == 200 || tokenResult["statusCode"] ==201 ||  tokenResult["statusCode"] ==204)
+                 System.debug("Token API Result :"+tokenResult["contentAsString"])
+             else 
+                 throw "Rest Operation in complete "+tokenResult["contentAsString"]
+
+             var token = tokenResult["contentAsObject"].id
+             //Get All Network Profiles from vRA
+             var nwProfileURL = "/iaas-proxy-provider/api/network/profiles"
+             var nwProfileReqMethod = "GET"
+             //Set Headers
+             var nwProfHeader = new Properties()
+             nwProfHeader.put("Authorization", "Bearer " + token);
+             //Execute REST API to get all the network profiles
+             var nwProfileResult = System.getModule("com.vmware.indcoe.library.nsxlbgeneric").ExecuteRest(restHost,nwProfileURL,nwProfileReqMethod,null,typeContent,nwProfHeader)
+
+             if(nwProfileResult["statusCode"] == 200 || nwProfileResult["statusCode"] ==201 ||  nwProfileResult["statusCode"] ==204)
+                 System.debug("Network Profile Result :"+nwProfileResult["contentAsString"])
+             else 
+                 throw "Rest Operation in complete "+nwProfileResult["contentAsString"]
+             //Get the Specific network profile Id based on input
+             nwProfiles = nwProfileResult["contentAsObject"].content
+             var nwProfileID
+             for(var np in nwProfileResult["contentAsObject"].content){
+                 if(nwProfileResult["contentAsObject"].content[np].name ==networkProfName)
+                     nwProfileID = nwProfileResult["contentAsObject"].content[np].id 
+             }
+             System.debug("nwProfileID :"+nwProfileID);
+             //Get Specific Network Profile content based on ID
+             var sNwProfURL = "/iaas-proxy-provider/api/network/profiles/"+nwProfileID;
+             var sNwProfReqMeth = "GET";
+             //Set Headers
+             var sNwProfHeader = new Properties()
+             sNwProfHeader.put("Authorization", "Bearer " + token);
+             var sNwProfResult = System.getModule("com.vmware.indcoe.library.nsxlbgeneric").ExecuteRest(restHost,sNwProfURL,sNwProfReqMeth,null,typeContent,sNwProfHeader)
+
+             /**Rest Operation status */
+             if(sNwProfResult["statusCode"] == 200 || sNwProfResult["statusCode"] ==201 ||  sNwProfResult["statusCode"] ==204)
+                 System.debug("Network Profile Result :"+sNwProfResult["contentAsString"])
+             else 
+                 throw "Rest Operation in complete "+sNwProfResult["contentAsString"]
+
+             //Get IP From the Network Profile
+             var defRanges = sNwProfResult["contentAsObject"].definedRanges;
+             System.log("defRanges: "+defRanges)
+             var availableRangeNum = ""
+             var ipAvailable = false;
+             var usedIp = false;
+             var defIps = new Array()
+             var newIpAddress;
+             var boolUsedIp = true;
+             var newIp;
+             //Loop to find the IP range state if unallocated assign the range
+             for (var d in defRanges){
+                 System.log("defRanges[d].state: "+defRanges[d].state)
+                 if(defRanges[d].state == "UNALLOCATED"){
+                     availableRangeNum = d;
+                     System.log("ips are available in this range: "+defRanges[d].name)
+                     ipAvailable = true
+                     ipRangeId = defRanges[d].id
+                     break
+                 }
+             }
+             //IP Range is available find out next available ip else select first range
+             if(ipAvailable == true){                    
+                 var defAddr = sNwProfResult["contentAsObject"].definedRanges[availableRangeNum].definedAddresses
+                 System.log("defAddr: "+defAddr.length)                    
+                 if(defAddr.length > 0){
+                     for (a in defAddr){		
+                         //System.log(a.IPv4Address + " - state: "+a.state)
+                         defIps.push(defAddr[a].IPv4Address)
+                         if(defAddr[a].state == "UNALLOCATED" || defAddr[a].state == "DESTROYED"){
+                             newIp = defAddr[a].IPv4Address;
+                             System.log("ip available in defined addresses i: "+newIp)
+                             usedIp = true;
+                             break;
+                         }	
+                     }
+                 }
+                 else {
+                     System.log("The range is unused. Selecting the first IP.....")
+                     newIp = sNwProfResult["contentAsObject"].definedRanges[availableRangeNum].beginIPv4Address
+                     newIpAddress = newIp;
+                 }
+                 // not found in defined addresses                
+                 if(newIp == "" || newIp == null){
+                     System.log("all defined ips are allocated.... getting next ip from the range...")		
+                     //var lastDefinedIp = defAddr[defAddr.length-1].IPv4Address
+                     var lastDefinedIp = returnLastDefIp(defIps)
+                     System.log("lastDefinedIp: "+lastDefinedIp)
+                     lastDefinedIp = lastDefinedIp.split(".")
+                     var lastOctet = lastDefinedIp[3]
+                     var newIp = lastDefinedIp[0] + "." + lastDefinedIp[1] + "." + lastDefinedIp[2] + "." + (Number(lastOctet)+1)
+                     System.log("Newly Formed IP :"+newIp)
+                     		
+                 }
+                 
+                 System.log("Next new IP: "+newIp);
+                 newIpAddress = newIp;
+                 boolUsedIp = usedIp;
+                 
+             }
+             else throw ("No IPs available in the network profile")
+             function returnLastDefIp(defIps){
+                 var firstOctates = defIps[0].substring(0,defIps[0].lastIndexOf("."))
+                 System.log("firstOctates: "+firstOctates)
+                 var lastOctate = ""
+                 var arr = new Array()
+                 for (ip in defIps){		
+                     arr.push(Number(defIps[ip].split(".")[3]))		
+                 }
+                 arr = arr.sort(sortFun)
+                 System.log("sorted arrat: "+arr)
+                 lastOctate = arr[arr.length-1]
+                 return firstOctates + "." + lastOctate
+             }
+
+             function sortFun(a, b) {
+                 return a > b ? 1 : b > a ? -1 : 0;
+             }
+             var returnProp = new Properties();
+             returnProp.put("usedIP",boolUsedIp)
+             returnProp.put("ipAddress",newIpAddress)
+             return returnProp
+         }
+         
+     }
+     return GetIP
+]]></script>
+</dunes-script-module>

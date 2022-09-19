@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="updateDatabase" result-type="SQL:Database" api-version="6.0.0" id="09999f64-e959-4c3b-b107-930b5aae16e3" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.sql.configuration">
+  <param n="database" t="SQL:Database"><![CDATA[A database instance to updated]]></param>
+  <param n="name" t="string"><![CDATA[Database name]]></param>
+  <param n="type" t="string"><![CDATA[Database type]]></param>
+  <param n="connectionURL" t="string"><![CDATA[Connection URL]]></param>
+  <param n="username" t="string"><![CDATA[Username to do the database authentication]]></param>
+  <param n="password" t="SecureString"><![CDATA[User password]]></param>
+  <param n="sessionMode" t="string"><![CDATA[Connection session mode]]></param>
+  <script encoded="false"><![CDATA[if( database == null ) {
+	throw "Database object is required!";
+}
+
+var item = SQLDatabaseManager.getDatabaseById(database.id);
+
+if( item == null ) {
+	throw "Database object is is not found in inventory!";
+}
+
+item.name = name;
+item.type = type;
+item.connectionURL = connectionURL;
+item.username = username;
+item.password = password;
+item.sessionMode = sessionMode;
+
+item = SQLDatabaseManager.updateDatabase(item);
+
+System.log("Database object updated: " + item);
+
+return item;]]></script>
+</dunes-script-module>

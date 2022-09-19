@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getEnabledHosts" result-type="Array/vCloud:Host" api-version="6.0.0" id="749c9a78-5b49-4fe3-a544-b43381cb46e6" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcac">
+  <script encoded="false"><![CDATA[var allHosts = VclHostManager.getHostList();
+
+var enabledHosts = new Array();
+
+for each (var host in allHosts) {
+	if 	(host.enabled == true) {
+		enabledHosts.push(host);
+		host.login();
+	}
+}
+
+return enabledHosts;]]></script>
+</dunes-script-module>

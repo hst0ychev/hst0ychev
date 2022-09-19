@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getSOAPAuthentication" result-type="Any" api-version="6.0.0" id="565417d6-e697-409b-a1ba-baa045125671" version="1.0.2" allowed-operations="vf" category-name="com.vmware.library.soap.configuration">
+  <description><![CDATA[Gets a SOAP authentication object.]]></description>
+  <param n="authenticationType" t="string"><![CDATA[Authentication type]]></param>
+  <param n="sessionMode" t="string"><![CDATA[Session mode]]></param>
+  <param n="username" t="string"><![CDATA[User name]]></param>
+  <param n="password" t="SecureString"><![CDATA[Password]]></param>
+  <param n="domain" t="string"><![CDATA[NTLM domain]]></param>
+  <param n="workstation" t="string"><![CDATA[NTLM workstation]]></param>
+  <param n="spn" t="string"><![CDATA[Kerberos service SPN]]></param>
+  <script encoded="false"><![CDATA[var authParams = [];
+if (authenticationType != "None") {
+	authParams = [sessionMode, username, password, domain, workstation, spn];
+}
+return SOAPAuthenticationManager.createAuthentication(authenticationType, authParams);]]></script>
+</dunes-script-module>

@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getNetworksForVimHost" result-type="Array/VC:Network" api-version="6.0.0" id="fc5adbd7-9207-4ad7-866e-56d4a125b659" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.network">
+  <param n="vimHost" t="VC:SdkConnection"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var result = new Properties();
+var hosts = vimHost.getAllHostSystems();
+for (var i in hosts) {
+	var networks = hosts[i].network;
+	for (var j in networks) {
+		result.put(networks[j].sdkId , networks[j]);
+	}
+}
+var arr = new Array();
+var keys = result.keys;
+for (var i in keys) {
+	arr.push(result.get(keys[i]));
+}
+return arr;]]></script>
+</dunes-script-module>

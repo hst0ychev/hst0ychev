@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="assignCatalogItemToService" result-type="void" api-version="6.0.0" id="bddba651-dd75-4c8c-bc72-dd63c599e752" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.catalog.catalogitem">
+  <param n="catalogItem" t="vCACCAFE:AdminCatalogItem"><![CDATA[Catalog item to be assigned]]></param>
+  <param n="service" t="vCACCAFE:Service"><![CDATA[Service that the catalog item will be assigned to]]></param>
+  <script encoded="false"><![CDATA[var catalogItemHost = vCACCAFEEntitiesFinder.getHostForEntity(catalogItem);
+var serviceHost = vCACCAFEEntitiesFinder.getHostForEntity(service);
+
+if(catalogItemHost != serviceHost) {
+	throw "Invalid assignment: selected catalog item and service belong to different hosts";
+}
+
+var client = catalogItemHost.createCatalogClient().getCatalogAdminCatalogItemService();
+serviceRef = new vCACCAFELabelledReference(service.getId());
+catalogItem.setServiceRef(serviceRef);
+
+System.log("Assigning catalog item "+ catalogItem.getName() + " to service " + service.getName() + "...");
+client.updateCatalogItem(catalogItem);
+System.log("Catalog item: " + catalogItem.getName() + " assigned to service" + service.getName() + ".");]]></script>
+</dunes-script-module>

@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="activateApprovalPolicy" result-type="void" api-version="6.0.0" id="c7dd503b-db70-456d-93e6-437d32e39dca" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.approvalpolicy">
+  <param n="approvalPolicy" t="vCACCAFE:ApprovalPolicy"><![CDATA[The approval policy to be activated]]></param>
+  <script encoded="false"><![CDATA[System.getModule("com.vmware.library.vcaccafe.util").validateObject(approvalPolicy, "Approval policy");
+var host = vCACCAFEEntitiesFinder.getHostForEntity(approvalPolicy);
+var client = host.createApprovalClient().getApprovalApprovalPolicyService();
+
+approvalPolicy.setState(vCACCAFEApprovalPolicyState.PUBLISHED);
+
+System.log("Activating approval policy '" + approvalPolicy.getName() + "'...");
+client.update(approvalPolicy);
+System.log("Approval policy '" + approvalPolicy.getName() + "' activated.");]]></script>
+</dunes-script-module>

@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="b9ef3006-65e8-4940-b14b-1025a9182386" version="1.0.0">
+  <display-name><![CDATA[HAType]]></display-name>
+  <atts>
+    <att name="None" type="string" read-only="false">
+      <value encoded="n"><![CDATA[NONE]]></value>
+    </att>
+    <att name="Port" type="string" read-only="false">
+      <value encoded="n"><![CDATA[PORT]]></value>
+    </att>
+    <att name="Cage" type="string" read-only="false">
+      <value encoded="n"><![CDATA[CAGE]]></value>
+    </att>
+    <att name="Mag" type="string" read-only="false">
+      <value encoded="n"><![CDATA[MAG]]></value>
+    </att>
+  </atts>
+</config-element>

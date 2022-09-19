@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="invokeMethod" result-type="Any" api-version="6.0.0" id="173ce555-9e25-483f-a886-906b89a141b5" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.util">
+  <param n="object" t="Any"><![CDATA[Object]]></param>
+  <param n="method" t="string"><![CDATA[Method]]></param>
+  <script encoded="false"><![CDATA[if (object == null) {
+	return null;
+}
+return eval("object." + method + "()");]]></script>
+</dunes-script-module>

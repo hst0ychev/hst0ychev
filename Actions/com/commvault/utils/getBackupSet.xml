@@ -1,0 +1,62 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getBackupSet" result-type="void" api-version="6.0.0" id="104ffaa1-e184-4656-adc8-4ce577fee553" version="0.0.0" allowed-operations="evf" category-name="com.commvault.utils">
+  <description><![CDATA[Action to get backupset Id for the given backupset name under the given client id]]></description>
+  <param n="token" t="string"><![CDATA[CV token for REST API]]></param>
+  <param n="clientId" t="string"><![CDATA[virtualization client id]]></param>
+  <param n="backupSetName" t="string"><![CDATA[backupset name]]></param>
+  <script encoded="false"><![CDATA[/*
+	Inputs-
+	token - CV token for REST API
+	clientId - Virtualization client id
+	backupSetName - name of backupset
+	
+	API used-
+	Backupset?clientId={clientId}
+	
+	Output-
+	backupsetid for the given backupset name under the given client id
+
+
+*/
+
+
+var id = -1;
+var  getbackupSetIdUrl = "Backupset?clientId=";
+var restHost = System.getModule("com.commvault.utils").getHost();
+
+if(restHost == null)
+{	
+	throw("Error: Coudln't find appropriate RESTHOST in VCO, cannot continue");
+	return -1;
+}	
+else{
+	backupSetUrl = getbackupSetIdUrl + vcClientID ;
+	System.log("Executing get BackupSet Id URL "+ backupSetUrl);
+	var response = System.getModule("com.commvault.utils").processRESTRequest(backupSetUrl,"GET", null, token, null, null);
+	if(response.statusCode != 200)
+	{
+		throw("Error: Failed to execute REST request to get backupset id");
+	}
+	var document = XMLManager.fromString(response.contentAsString);
+	var list = document.getElementsByTagName("backupsetProperties");
+	var total = list.length;
+	for(var i = 0; i < total ; i++)
+	{
+		var backupSetEntity = list.item(i).getChildNodes();
+		for(var j = 0 ; j < backupSetEntity.length; j++)
+		{
+			if(backupSetEntity.item(j).nodeName == "backupSetEntity")
+			{
+				if(backupSetEntity.item(j).getAttribute("backupsetName") == backupSetName)
+				{
+					backupSetId = backupSetEntity.item(j).getAttribute("backupsetId");
+					instanceID = backupSetEntity.item(j).getAttribute("instanceId");
+					id = backupSetId+","+instanceID;
+					break;
+				}
+			}
+		}
+	}
+	return id;
+}]]></script>
+</dunes-script-module>

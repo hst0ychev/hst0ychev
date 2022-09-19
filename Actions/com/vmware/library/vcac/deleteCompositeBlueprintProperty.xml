@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="deleteCompositeBlueprintProperty" result-type="void" api-version="6.0.0" id="5fbb9a08-8ce8-4175-a2db-e4be3e77bdb7" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcac">
+  <param n="cbp" t="vCACCAFE:CompositeBlueprint"><![CDATA[Composite blueprint]]></param>
+  <param n="propertyKey" t="string"><![CDATA[Property to delete]]></param>
+  <script encoded="false"><![CDATA[var cafeHost = vCACCAFEEntitiesFinder.getHostForEntity(cbp);
+var compositeBlueprintService = cafeHost.createCompositionClient().getCompositionCompositeBlueprintService();
+var propertyLiteralValue = new vCACCAFEComponentFieldValue(null);
+var map = new Object();
+map[propertyKey] = null;
+compositeBlueprintService.updateBlueprintProperties(cbp.id, map);]]></script>
+</dunes-script-module>

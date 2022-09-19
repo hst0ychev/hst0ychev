@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getCustomizationIdentification" result-type="Any" api-version="6.0.0" id="b2c7d67a-f009-4f55-bb1d-20af612b4d05" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.vm.spec.identity">
+  <param n="domainAdmin" t="string"><![CDATA[[Optional] This is the domain user account used for authentication if the virtual machine is joining a domain. The user does not need to be a domain administrator, but the account must have the privileges required to add computers to the domain.]]></param>
+  <param n="domainAdminPassword" t="Any"><![CDATA[[Optional] VimCustomizationPassword: This is the password for the domain user account used for authentication if the virtual machine is joining a domain.]]></param>
+  <param n="joinDomain" t="string"><![CDATA[[Optional] The domain that the virtual machine should join. If this value is supplied, then domainAdmin and domainAdminPassword must also be supplied, and the workgroup name must be empty.]]></param>
+  <param n="joinWorkgroup" t="string"><![CDATA[[Optional] The workgroup that the virtual machine should join. If this value is supplied, then the domain name and authentication fields must be empty.]]></param>
+  <script encoded="false"><![CDATA[var identification;
+try {
+	checkParam();
+	if(joinDomain==null && joinWorkgroup==null){
+		joinWorkgroup="WORKGROUP";
+	}
+	identification = new VcCustomizationIdentification();
+	affectParam();
+	return identification;
+}
+catch (ex) {
+	throw "Unable to create VcCustomizationIdentification: " + ex;
+}
+
+function affectParam() {
+	identification.domainAdmin = domainAdmin;
+	identification.domainAdminPassword = domainAdminPassword;
+	identification.joinDomain = joinDomain;
+	identification.joinWorkgroup = joinWorkgroup;
+}
+
+function checkParam() {
+	if (joinDomain != null && joinDomain == "") joinDomain = null;
+	if (joinWorkgroup != null && joinWorkgroup == "") joinWorkgroup = null;
+	
+	if (joinDomain != null && joinWorkgroup != null) throw "joinDomain and joinWorkgroup cannot be set together";
+	if (joinDomain != null && (domainAdmin == null || domainAdminPassword == null)) throw "joinDomain is set, but domainAdmin or domainAdminPassword is not set";
+}]]></script>
+</dunes-script-module>

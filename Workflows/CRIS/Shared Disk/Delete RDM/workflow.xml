@@ -1,0 +1,167 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item4" object-name="workflow:name=generic" id="f228aab5-14ca-4612-baf7-1396862af945" version="0.0.1" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Delete RDM]]></display-name>
+  <description><![CDATA[Deletes specified Virtual Volume from the selected HPE 3PAR StoreServ array.]]></description>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="vmName" type="VC:VirtualMachine"/>
+    <param name="ListofRDM" type="string"/>
+    <param name="filePathofRDM" type="string"/>
+  </input>
+  <output>
+    <param name="isSuccess" type="boolean">
+      <description><![CDATA[Status of the delete Virtual Volume operation]]></description>
+    </param>
+  </output>
+  <attrib name="connection" type="StoreServ:Connection" read-only="false" conf-id="4ae4d725-dede-3118-81af-4ce500cd4309" conf-key="connection">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='eGLsQPZsQnCQ7aaxuvAgHg'&dunesName='StoreServ:Connection']]></value>
+    <description><![CDATA[StoreServ Connection]]></description>
+  </attrib>
+  <attrib name="virtualVolume" type="StoreServ:Volume" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Virtual Volume to be deleted]]></description>
+  </attrib>
+  <attrib name="result" type="Array/string" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="virtualVolumeName" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Virtual Volume name]]></description>
+  </attrib>
+  <attrib name="filePath" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="lun" type="number" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[LUN ID.]]></description>
+  </attrib>
+  <attrib name="hostSet" type="StoreServ:HostSet" read-only="false" conf-id="4ae4d725-dede-3118-81af-4ce500cd4309" conf-key="hostSet">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='7XVfIcpEQ0esucf7gABF1g%2Chostsetid:HCPCTCHSRVR'&dunesName='StoreServ:HostSet']]></value>
+    <description><![CDATA[Host Set from which the Virtual Volume is to be unexported.]]></description>
+  </attrib>
+  <attrib name="unexportResult" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+    <description><![CDATA[Status of the unexport Virtual Volume operation.]]></description>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="1244.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task" script-module="com.hpe.storeserv.volume/deleteVolume">
+    <display-name><![CDATA[deleteVolume]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.hpe.storeserv.volume").deleteVolume(connection,volume) ;]]></script>
+    <in-binding>
+      <bind name="connection" type="StoreServ:Connection" export-name="connection"/>
+      <bind name="volume" type="StoreServ:Volume" export-name="virtualVolume"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="boolean" export-name="isSuccess"/>
+    </out-binding>
+    <position y="55.40909090909091" x="904.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item5" type="task" script-module="com.hpe.storeserv.volume/getVolumeByName">
+    <display-name><![CDATA[getVolumeByName]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.hpe.storeserv.volume").getVolumeByName(connection,virtualVolumeName) ;]]></script>
+    <in-binding>
+      <bind name="connection" type="StoreServ:Connection" export-name="connection">
+        <description><![CDATA[StoreServ Connection]]></description>
+      </bind>
+      <bind name="virtualVolumeName" type="string" export-name="virtualVolumeName">
+        <description><![CDATA[Virtual Volume name]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="StoreServ:Volume" export-name="virtualVolume"/>
+    </out-binding>
+    <description><![CDATA[Queries specefic Virtual Volume form seleted HPE 3PAR StoreServ array.]]></description>
+    <position y="55.40909090909091" x="524.5"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item2" type="task">
+    <display-name><![CDATA[VM binded with RDM]]></display-name>
+    <script encoded="false"><![CDATA[//var vmvalue = VcPlugin.getAllVirtualMachines(null, "xpath:name[matches(.,'"+vmName+"')]")
+var vm = vm
+var vmName = vm.name;
+//LUN AND SCSI NUMBER
+try {
+	var scObj = System.getModule("com.vmware.indcoe.vcenter").getlunNumberandSCSCI()
+	var result  = scObj.getLun(vmName)
+	lun = result[0]
+	filePath = result[1]
+	
+}
+catch(e){ 
+ 	System.log("result empty" +result.length)
+}
+//RDM ATTACHED TO SCSCI 
+
+	var scObj = System.getModule("com.vmware.indcoe.vcenter").findVMAttachtoRDM()
+	var result  = scObj.findRDM(vmName, filePath)
+	System.log("result :"+result)
+	virtualVolumeName = "RDM_"+vmName
+
+ //	System.log("result empty" +result.length)
+//DETACH RDM
+if(result.length > 0){
+	//Detach vmdk
+	for(var i in result){
+	var sourceVM = result[i];
+	var scObj = System.getModule("com.vmware.indcoe.vcenter").detachvmdk()
+	scObj.detachVMDK(sourceVM,filePathofRDM)
+	}
+}
+]]></script>
+    <in-binding>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vmName"/>
+      <bind name="filePathofRDM" type="string" export-name="filePathofRDM"/>
+    </in-binding>
+    <out-binding>
+      <bind name="result" type="Array/string" export-name="result"/>
+      <bind name="virtualVolumeName" type="string" export-name="virtualVolumeName"/>
+      <bind name="filePath" type="string" export-name="filePath"/>
+      <bind name="lun" type="number" export-name="lun"/>
+    </out-binding>
+    <position y="55.40909090909091" x="344.5"/>
+  </workflow-item>
+  <workflow-item name="item5" out-name="item1" type="link" linked-workflow-id="819ef500-f4b2-458d-b110-5bd3aadfec51">
+    <display-name><![CDATA[Unexport Virtual Volume from host set]]></display-name>
+    <in-binding>
+      <bind name="connection" type="StoreServ:Connection" export-name="connection">
+        <description><![CDATA[StoreServ Connection.]]></description>
+      </bind>
+      <bind name="virtualVolume" type="StoreServ:Volume" export-name="virtualVolume">
+        <description><![CDATA[Virtual Volume to be unexported.]]></description>
+      </bind>
+      <bind name="lun" type="number" export-name="lun">
+        <description><![CDATA[LUN ID.]]></description>
+      </bind>
+      <bind name="hostSet" type="StoreServ:HostSet" export-name="hostSet">
+        <description><![CDATA[Host Set from which the Virtual Volume is to be unexported.]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="unexportResult" type="boolean" export-name="unexportResult">
+        <description><![CDATA[Status of the unexport Virtual Volume operation.]]></description>
+      </bind>
+    </out-binding>
+    <description><![CDATA[Unexports Virtual Volume from Host Set in the selected HPE 3PAR StoreServ array.]]></description>
+    <position y="55.40909090909091" x="725.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Connection]]></title>
+    </p-step>
+    <p-step>
+      <title><![CDATA[Virtual Volume Parameters]]></title>
+    </p-step>
+    <p-param name="vmName">
+      <desc><![CDATA[vmName]]></desc>
+    </p-param>
+    <p-param name="ListofRDM">
+      <desc><![CDATA[ListofRDM]]></desc>
+    </p-param>
+    <p-param name="filePathofRDM">
+      <desc><![CDATA[filePathofRDM]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

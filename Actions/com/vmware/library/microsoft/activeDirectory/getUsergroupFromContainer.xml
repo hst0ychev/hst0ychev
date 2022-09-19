@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getUsergroupFromContainer" result-type="AD:UserGroup" api-version="6.0.0" id="368180808080808080808080808080809E80808001270557368849c62c352aa82" version="1.1.0" allowed-operations="vfe" category-name="com.vmware.library.microsoft.activeDirectory">
+  <description><![CDATA[Get a usergroup by his name in the given OU or Group (container)]]></description>
+  <param n="container" t="Any"><![CDATA[Organizationl Unit / Group]]></param>
+  <param n="usergroupName" t="string"><![CDATA[Name of the usergroup]]></param>
+  <script encoded="false"><![CDATA[usergroups = container.userGroups;
+for (var index in usergroups) {
+	if (usergroups[index].name.toLowerCase() == usergroupName.toLowerCase()) {
+		return usergroups[index];
+	}
+}
+return null;]]></script>
+</dunes-script-module>

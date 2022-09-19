@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="createWorkflowDefinition" result-type="vCAC:Entity" api-version="6.0.0" id="9921587c-66f5-4876-a6e5-bf7dd2005097" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcac">
+  <param n="host" t="vCAC:VCACHost"><![CDATA[vCloud Automation Center host]]></param>
+  <param n="name" t="string"><![CDATA[Workflow definition name]]></param>
+  <param n="description" t="string"><![CDATA[Workflow definition description]]></param>
+  <param n="xamlDefinition" t="string"><![CDATA[Workflow XAML definition]]></param>
+  <param n="isRunOneOnly" t="boolean"><![CDATA[Run one only flag]]></param>
+  <param n="isProtected" t="boolean"><![CDATA[Protected flag]]></param>
+  <param n="links" t="Properties"><![CDATA[Entity links]]></param>
+  <script encoded="false"><![CDATA[var entitySetName = "WorkflowDefinitions";
+var modelName = "Metamodel.svc";
+
+//Get all workflow definitions
+var properties = new Properties();
+var entities = vCACEntityManager.readModelEntitiesByCustomFilter(host.id, modelName, entitySetName, properties, null);
+
+//Get the last id
+var lastId = 0;
+for each (var entity in entities){
+	var id = parseInt(entity.getProperty("Id"));
+	if (id >= lastId) {
+		lastId = id;
+	}									
+}	
+
+var properties = entity.getProperties();													
+id++;
+System.log(id);
+
+properties.put("Id", String(id));
+properties.put("Name", name);
+properties.put("Revision", 0);
+properties.put("Description", description);
+properties.put("XamlDefinition", xamlDefinition);  
+properties.put("IsRunOneOnly", isRunOneOnly);
+properties.put("isProtected", isProtected); 
+
+return vCACEntityManager.createModelEntity(host.id , modelName , entitySetName , properties , links , null);]]></script>
+</dunes-script-module>

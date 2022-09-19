@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getDrsVmGroup" result-type="Any" api-version="6.0.0" id="dab9cd0e-164c-4408-82c3-791bec414ead" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.cluster">
+  <param n="cluster" t="VC:ClusterComputeResource"><![CDATA[Cluster compute resource]]></param>
+  <param n="group_name" t="string"><![CDATA[DRS Virutal machine group name]]></param>
+  <script encoded="false"><![CDATA[// Searching for a Cluster VM group by name 
+System.log("Searching for a Cluster VM group by name ");
+for (i in cluster.configurationEx.group) {
+	if (cluster.configurationEx.group[i].name == group_name) {
+	if (cluster.configurationEx.group[i] instanceof VcClusterVmGroup){
+	System.log ("A group with the same name " + group_name +  " found: " +  cluster.configurationEx.group[i]);
+	return cluster.configurationEx.group[i];
+	}	
+	}
+}
+System.log ("There is no group with such a name");
+return null;]]></script>
+</dunes-script-module>

@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="exportContent" result-type="MimeAttachment" api-version="6.0.0" id="9759f00b-4721-4d8f-8f3d-dc135e43551f" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.content">
+  <param n="sourceHost" t="vCACCAFE:VCACHost"><![CDATA[vRA host]]></param>
+  <param n="resourceElementCategory" t="ResourceElementCategory"><![CDATA[Resource category]]></param>
+  <param n="name" t="string"><![CDATA[Resource name]]></param>
+  <script encoded="false"><![CDATA[var filter =  {
+    "tenantId": sourceHost.tenant,
+    "jsonAccepted": false
+};
+System.log("Source host: " + sourceHost.url);
+System.log("Source tenant: " + sourceHost.tenant);
+
+var contentClientExport = sourceHost.createContentManagementClient();
+
+System.log("Exporting...");
+var content = contentClientExport.getFile("content/bundles/filters", filter);
+content.name = name;
+if(resourceElementCategory != null) {
+	Server.createResourceElement(resourceElementCategory , name , content, "application/zip");
+}
+System.log("Export successful");
+return content;]]></script>
+</dunes-script-module>

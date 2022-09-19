@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="createEndpoint" result-type="vCACCAFE:Endpoint" api-version="6.0.0" id="678d00cc-81c9-4929-ac03-8e66f9543df2" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.endpointconfiguration">
+  <param n="endpointObject" t="vCACCAFE:Endpoint"><![CDATA[The endpoint object to be created.]]></param>
+  <param n="host" t="vCACCAFE:VCACHost"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[System.getModule("com.vmware.library.vcaccafe.util").validateObject(endpointObject, "Endpoint Object");
+
+var endpointService = host.createEndpointConfigurationClient().getEndpointConfigurationEndpointService();
+
+System.log("Creating endpoint [" + endpointObject.getName() + "] for type [" + endpointObject.getTypeId() + "] ...");
+var endpointId = endpointService.createEndpoint(endpointObject);
+System.log("Endpoint [" + endpointObject.getName() + "] for type [" + endpointObject.getTypeId() + "] is created with id [" + endpointId + "]");
+
+System.log("Retrieving endpoint object with id [" + endpointId + "]...");
+endpoint = endpointService.getEndpoint(endpointId, false);
+
+if(endpoint == null)
+{
+	throw "The endpoint object is not found for id [" + endpointId + "]";
+}
+
+return endpoint;]]></script>
+</dunes-script-module>

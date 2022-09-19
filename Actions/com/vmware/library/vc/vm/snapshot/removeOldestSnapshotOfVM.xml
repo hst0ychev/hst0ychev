@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="removeOldestSnapshotOfVM" result-type="void" api-version="6.0.0" id="36223a92-a352-43c9-bd7e-ce8667872710" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.vm.snapshot">
+  <param n="vm" t="VC:VirtualMachine"><![CDATA[]]></param>
+  <param n="numberOfSnapshotToDelete" t="number"><![CDATA[Number of snapshot to remove]]></param>
+  <script encoded="false"><![CDATA[var snapshotProperties = System.getModule("com.vmware.library.vc.vm.snapshot").getPropertiesForSnapshotTask(vm) ;
+var searchResults = System.getModule("com.vmware.library.vc.vm.snapshot").getAllSnapshotResultInDatastoreBrowser(false,false,false,true) ;
+		
+
+
+//var instance = new VcManagedObjectReference();
+//instance.type = "ServiceInstance";
+//instance.value = "ServiceInstance";
+//var instanceObject = VcPlugin.convertToVimManagedObject(vm , instance);
+
+var time = 0;
+
+var snapshotNameToRemove;
+var snapshotToRemove;
+var index=0;
+var indexToRemove;
+var files;
+var folderPath;
+for (var i in searchResults) {
+	files = searchResults[i].file;
+	while(index<numberOfSnapshotToDelete){
+		for (var j in files) {
+			if(files[j]!=null){
+			    folderPath = searchResults[i].folderPath;
+			    folderPath = folderPath.charAt(folderPath.length - 1) === '/' ? folderPath : folderPath + '/';
+				if(snapshotProperties.get(folderPath+files[j].path)){
+					if(time==0 || files[j].modification.getTime()<time){
+						time = files[j].modification.getTime();
+						snapshotNameToRemove = folderPath + files[j].path;
+						indexToRemove = j;
+					}
+							
+				}	
+			}
+		}
+		if(snapshotNameToRemove){
+			files[indexToRemove]=null;
+			snapshotToRemove = snapshotProperties.get(snapshotNameToRemove);
+			var task = snapshotToRemove.removeSnapshot_Task(false);
+			var actionResult = System.getModule("com.vmware.library.vc.basic").vim3WaitTaskEnd(task) ;
+			snapshotProperties.remove(snapshotNameToRemove);
+		}
+		index++;
+		time = 0;
+		snapshotNameToRemove=null;
+		indexToRemove=null;
+	}
+	index=0;
+}]]></script>
+</dunes-script-module>

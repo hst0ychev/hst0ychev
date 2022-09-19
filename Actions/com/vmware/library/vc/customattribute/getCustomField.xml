@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getCustomField" result-type="string" api-version="6.0.0" id="161f0f3b-a005-4146-a18e-40c68006204a" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.customattribute">
+  <param n="managedEntity" t="Any"><![CDATA[]]></param>
+  <param n="customFieldName" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var vimHost;
+try {
+	vimHost = managedEntity.vimHost;
+}
+catch (exeption) {
+	throw "You can get/set custom attribute only on VC ManagedEntities";
+}
+
+var customFieldDefs = vimHost.customFieldsManager.field;
+
+var key = null;
+for (var i = 0; i < customFieldDefs.length; i++) {
+	if (customFieldDefs[i].name == customFieldName) {
+		key = customFieldDefs[i].key;
+		break;
+	}
+}
+
+if (key == null) {
+	return null;
+}
+
+var customFieldValues = managedEntity.customValue;
+for (var i = 0; i < customFieldValues.length; i++) {
+	if (customFieldValues[i].key == key) {
+		return customFieldValues[i].value;
+	}
+}
+
+return "";]]></script>
+</dunes-script-module>

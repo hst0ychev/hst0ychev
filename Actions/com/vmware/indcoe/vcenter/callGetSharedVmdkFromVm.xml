@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="callGetSharedVmdkFromVm" result-type="Array/Any" api-version="6.0.0" id="45491cba-167c-4c7c-9eb8-af6c932f3f05" version="0.0.1" allowed-operations="vfe" category-name="com.vmware.indcoe.vcenter">
+  <param n="vmName" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[if(vmName == undefined || vmName == null || vmName == ""){ return []}
+else{
+	var scObj = System.getModule("com.vmware.indcoe.vcenter").getSharedVmdkFromVM()
+	return scObj.getSharedVmdk(vmName)
+}]]></script>
+</dunes-script-module>

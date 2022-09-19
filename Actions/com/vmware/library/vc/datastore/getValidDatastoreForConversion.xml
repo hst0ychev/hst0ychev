@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getValidDatastoreForConversion" result-type="Array/VC:Datastore" api-version="6.0.0" id="95664433-78d5-4242-91b9-d57a6b2d8d09" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.datastore">
+  <param n="datastore" t="VC:Datastore"><![CDATA[]]></param>
+  <param n="vms" t="Array/VC:VirtualMachine"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var datastores = new Array();
+var newDatastores = datastore.sdkConnection.getAllDatastores();
+
+for each(var d in newDatastores){
+	if(d!=datastore && datastore.summary.accessible){
+		datastores.push(d);
+	}
+}
+var prop = new Properties();
+for each(var vm in vms){
+	var host = VcPlugin.convertToVimManagedObject(vm , vm.runtime.host);
+	var datastoresOfVM = host.datastore;
+	for each(var datastoreOfVM in datastoresOfVM){
+		var ds = VcPlugin.convertToVimManagedObject(vm , datastoreOfVM);
+		prop.put(ds.id,ds);
+	}
+}
+ var finalDatastores = new Array();
+for each(var dd in datastores){
+	if(prop.get(dd.id)){
+		finalDatastores.push(dd);
+	}
+}
+
+return finalDatastores;]]></script>
+</dunes-script-module>

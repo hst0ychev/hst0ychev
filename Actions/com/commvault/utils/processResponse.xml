@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="processResponse" result-type="void" api-version="6.0.0" id="013ea416-8b3b-41b9-b483-fb6dc0154839" version="0.0.0" allowed-operations="evf" category-name="com.commvault.utils">
+  <description><![CDATA[Action to process the response to find the error and response and retuns the status.]]></description>
+  <param n="response" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[/*
+	
+	Action to process the response to find the error and response and returns the status.
+	
+	Input-
+	response - REST API response XML
+*/
+if(response != null)
+{
+	var status = 0;
+	var document = XMLManager.fromString(response);
+	var list = document.getElementsByTagName("App_GenericResponse");
+	if(list.length > 0)
+	{
+		for(var i = 0; i < list.length; i++)
+		{	
+			var res = list.item(i).getChildNodes();
+			for(var j = 0; j < res.length; j++)
+			{
+				if (res.item(j).nodeName == "response")
+				{
+					status = res.item(j).getAttribute("errorCode");
+				}
+			}
+		}
+	}
+	else
+	{
+		var list = document.getElementsByTagName("CVGui_GenericResp");
+		for(var i = 0; i < list.length ; i++)
+		{
+			status = list.item(i).getAttribute("errorCode");
+			break;
+		}
+	}
+	
+	return status;
+}
+else
+{
+	return null;
+}]]></script>
+</dunes-script-module>

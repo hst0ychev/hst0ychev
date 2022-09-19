@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="45401bd0-dc83-467d-97ff-2be81ec2d147">
+  <display-name><![CDATA[ReservationMappingConfigurationElement]]></display-name>
+  <atts>
+    <att name="ComponentTypeToReservationTypeMapper" type="Properties" read-only="false">
+      <value encoded="n"><![CDATA[{11:22:CatalogItem=string#ReservationType
+50:49:Infrastructure.CatalogItem.Machine.Cloud.vCloudAir=string#Infrastructure.Reservation.Cloud.vCloudAir
+59:42:Infrastructure.CatalogItem.Machine.Physical.GenericEndpoint=string#Infrastructure.Reservation.Physical
+48:47:Infrastructure.CatalogItem.Machine.Virtual.SCVMM=string#Infrastructure.Reservation.Virtual.SCVMM
+50:46:Infrastructure.CatalogItem.Machine.Cloud.AmazonEC2=string#Infrastructure.Reservation.Cloud.Amazon
+50:49:Infrastructure.CatalogItem.Machine.Virtual.vSphere=string#Infrastructure.Reservation.Virtual.vSphere
+55:46:Infrastructure.CatalogItem.Machine.Cloud.vCloudDirector=string#Infrastructure.Reservation.Cloud.vCloud
+52:51:Infrastructure.CatalogItem.Machine.Virtual.CitrixXen=string#Infrastructure.Reservation.Virtual.XenServer
+46:45:Infrastructure.CatalogItem.Machine.Virtual.KVM=string#Infrastructure.Reservation.Virtual.KVM
+49:48:Infrastructure.CatalogItem.Machine.Virtual.HyperV=string#Infrastructure.Reservation.Virtual.HyperV
+50:49:Infrastructure.CatalogItem.Machine.Cloud.OpenStack=string#Infrastructure.Reservation.Cloud.OpenStack
+}]]></value>
+    </att>
+  </atts>
+</config-element>

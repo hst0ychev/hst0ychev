@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getDvPortgroupConfigProperty" result-type="Any" api-version="6.0.0" id="e7415475-86c6-453c-82a5-5a006322b348" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.networking">
+  <param n="dvPortGroup" t="VC:DistributedVirtualPortgroup"><![CDATA[]]></param>
+  <param n="property" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[if ( dvPortGroup != null ) {
+	try {
+		return eval("dvPortGroup.config." + property);
+	} catch (e) {
+		return "";
+	}
+} else {
+	return "";
+}]]></script>
+</dunes-script-module>

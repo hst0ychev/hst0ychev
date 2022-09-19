@@ -1,0 +1,307 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item3" object-name="workflow:name=generic" id="ca555b29-359c-4fc7-987d-43d6fce720a9" version="0.0.6" api-version="6.0.0" allowed-operations="vf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Add machine to active directory (Event Broker)]]></display-name>
+  <description><![CDATA[Takes vRA Event Broker inputs, adds vm record in active directory.]]></description>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="inputs" type="Properties"/>
+  </input>
+  <output>
+    <param name="virtualMachineAddOrUpdateProperties" type="Properties"/>
+    <param name="customProperties" type="Properties"/>
+  </output>
+  <attrib name="ouDN" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="machineName" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="domainName" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="adHostId" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="customWorkflow" type="Workflow" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="customWorkflowTokens" type="Array/WorkflowToken" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="customWorkflowResult" type="Array/Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="host" type="AD:AdHost" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="customizationTag" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="computerDN" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="customAttributes" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="vcacHost" type="vCACCAFE:VCACHost" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="computerGuid" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="0.0" x="1104.5"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item5" type="task">
+    <display-name><![CDATA[Get Policy Data]]></display-name>
+    <script encoded="false"><![CDATA[var props = inputs.customProperties || inputs.machine.properties || new Properties();
+if(inputs.resourceNames) {
+	var oldName = inputs.resourceNames[0];
+} else {
+	var oldName = inputs.machine.name;	
+}
+
+var tenant = System.getContext().getParameter("__asd_tenantRef");
+vcacHost = vCACCAFEHostManager.getDefaultHostForTenant(tenant , true);
+
+var policyId = props.get("ext.policy.activedirectory.id") || props.get("ext.policy.activedirectory.system.id");
+var policyConfig = System.getModule("com.vmware.vra.ad").getPolicyConfig(vcacHost, policyId);
+
+adHostId = props.get("ext.policy.activedirectory.endpoint.id") || props.get("ext.policy.activedirectory.system.endpoint.id") || policyConfig.adHostId;
+ouDN = props.get("ext.policy.activedirectory.orgunit") || props.get("ext.policy.activedirectory.system.orgunit") || policyConfig.ouDN;
+machineName = props.get("ext.policy.activedirectory.machineName") || props.get("ext.policy.activedirectory.system.machineName") || oldName;
+domainName = props.get("ext.policy.activedirectory.domain") || props.get("ext.policy.activedirectory.system.domain") || policyConfig.domainName;
+
+try {
+	host = Server.findForType("AD:AdHost", adHostId);
+} catch(error) {
+	System.log(error);
+	host = AD_HostManager.findHost(adHostId);
+}
+
+customAttributes = new Properties();
+
+customizationTag = props.get("ext.policy.activedirectory.customizationWorkflowTag") || "AD.CreateComputer";
+
+computerDN = "CN=" + machineName + "," + ouDN;
+
+System.log("AD host with ID = " + adHostId);
+System.log("Host = " + host);
+System.log("OU DN = " + ouDN);
+System.log("Machine Name = " + machineName);
+System.log("Domain Name = " + domainName);
+System.log("Computer DN = " + computerDN);
+System.log("Customization tag = " + customizationTag);]]></script>
+    <in-binding>
+      <bind name="inputs" type="Properties" export-name="inputs"/>
+    </in-binding>
+    <out-binding>
+      <bind name="ouDN" type="string" export-name="ouDN"/>
+      <bind name="machineName" type="string" export-name="machineName"/>
+      <bind name="domainName" type="string" export-name="domainName"/>
+      <bind name="adHostId" type="string" export-name="adHostId"/>
+      <bind name="customizationTag" type="string" export-name="customizationTag"/>
+      <bind name="customAttributes" type="Properties" export-name="customAttributes"/>
+      <bind name="host" type="AD:AdHost" export-name="host"/>
+      <bind name="computerDN" type="string" export-name="computerDN"/>
+      <bind name="vcacHost" type="vCACCAFE:VCACHost" export-name="vcacHost"/>
+    </out-binding>
+    <position y="55.40909090909091" x="224.5"/>
+  </workflow-item>
+  <workflow-item name="item5" out-name="item4" type="task">
+    <display-name><![CDATA[Get Customization WF]]></display-name>
+    <script encoded="false"><![CDATA[var tagQuery = new TagQuery();
+tagQuery.hasGlobalTag(customizationTag, "");
+var workflows = Server.queryByTags(tagQuery, "Workflow");
+
+System.log("Found " + workflows.length + " customization workflows.");
+
+if(workflows.length == 1) {
+		customWorkflow = workflows[0];
+		System.log("Will use customization workflow " + customWorkflow.name + (customWorkflow.description ? "(" + customWorkflow.description + ")" : ""));
+	} else if(workflows.length > 1){
+		System.log("Found multiple customization workflows:");
+		for(wf in workflows) {
+			System.log(workflows[wf].name);
+		}
+	}]]></script>
+    <in-binding>
+      <bind name="customizationTag" type="string" export-name="customizationTag"/>
+    </in-binding>
+    <out-binding>
+      <bind name="customWorkflow" type="Workflow" export-name="customWorkflow"/>
+    </out-binding>
+    <position y="55.40909090909091" x="364.5"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item7" type="custom-condition" alt-out-name="item10">
+    <display-name><![CDATA[Custom WF]]></display-name>
+    <script encoded="false"><![CDATA[if(customWorkflow) {
+	return true;
+} else {
+	return false;
+}]]></script>
+    <in-binding>
+      <bind name="customWorkflow" type="Workflow" export-name="customWorkflow"/>
+    </in-binding>
+    <position y="45.40909090909091" x="524.5"/>
+  </workflow-item>
+  <workflow-item name="item6" out-name="item8" type="task" script-module="com.vmware.library.workflow/waitAllWorkflowComplete">
+    <display-name><![CDATA[waitAllWorkflowComplete]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.workflow").waitAllWorkflowComplete(tokens) ;]]></script>
+    <in-binding>
+      <bind name="tokens" type="Array/WorkflowToken" export-name="customWorkflowTokens"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Array/Properties" export-name="customWorkflowResult"/>
+    </out-binding>
+    <position y="91.77272727272727" x="784.5"/>
+  </workflow-item>
+  <workflow-item name="item7" out-name="item6" type="task">
+    <display-name><![CDATA[Start Custom WF]]></display-name>
+    <script encoded="false"><![CDATA[var inParams = new Properties();
+inParams.put("inputs", inputs);
+inParams.put("ouDN", ouDN);
+inParams.put("machineName", machineName);
+inParams.put("domainName", domainName);
+inParams.put("host", host);
+
+customWorkflowTokens = [customWorkflow.execute(inParams)];]]></script>
+    <in-binding>
+      <bind name="customWorkflow" type="Workflow" export-name="customWorkflow"/>
+      <bind name="inputs" type="Properties" export-name="inputs"/>
+      <bind name="ouDN" type="string" export-name="ouDN"/>
+      <bind name="machineName" type="string" export-name="machineName"/>
+      <bind name="domainName" type="string" export-name="domainName"/>
+      <bind name="host" type="AD:AdHost" export-name="host"/>
+    </in-binding>
+    <out-binding>
+      <bind name="customWorkflowTokens" type="Array/WorkflowToken" export-name="customWorkflowTokens"/>
+    </out-binding>
+    <position y="91.77272727272727" x="644.5"/>
+  </workflow-item>
+  <workflow-item name="item8" out-name="item9" type="task">
+    <display-name><![CDATA[Set Outputs]]></display-name>
+    <script encoded="false"><![CDATA[if(customWorkflowTokens[0].state !== "completed") {
+	throw "Custom WF failed: " + customWorkflowTokens[0].exception;
+}
+
+var result = customWorkflowResult[0];
+var outputProperties = result.get("customProperties") || new Properties();
+virtualMachineAddOrUpdateProperties = inputs.virtualMachineAddOrUpdateProperties || new Properties();
+
+for(prop in outputProperties) {
+	virtualMachineAddOrUpdateProperties.put(prop, outputProperties[prop]);
+}]]></script>
+    <in-binding>
+      <bind name="customWorkflowResult" type="Array/Properties" export-name="customWorkflowResult"/>
+      <bind name="inputs" type="Properties" export-name="inputs"/>
+      <bind name="customWorkflowTokens" type="Array/WorkflowToken" export-name="customWorkflowTokens"/>
+    </in-binding>
+    <out-binding>
+      <bind name="virtualMachineAddOrUpdateProperties" type="Properties" export-name="virtualMachineAddOrUpdateProperties"/>
+    </out-binding>
+    <position y="91.77272727272727" x="924.5"/>
+  </workflow-item>
+  <workflow-item name="item10" out-name="item13" type="task">
+    <display-name><![CDATA[Get Request Reason]]></display-name>
+    <script encoded="false"><![CDATA[try {
+	var catalogService = vcacHost.createCatalogClient().getCatalogConsumerRequestService();
+	var request = catalogService.getRequest(System.getContext().getParameter("__asd_correlationId"));
+	var description = request.getReasons();
+	if(description) {
+		customAttributes.put("description", description);
+	}
+} catch(error) {
+	System.log("Error while retrieving description: " + error);
+}]]></script>
+    <in-binding>
+      <bind name="customAttributes" type="Properties" export-name="customAttributes"/>
+      <bind name="vcacHost" type="vCACCAFE:VCACHost" export-name="vcacHost"/>
+    </in-binding>
+    <out-binding>
+      <bind name="customAttributes" type="Properties" export-name="customAttributes"/>
+    </out-binding>
+    <position y="9.954545454545453" x="644.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Set Outputs]]></display-name>
+    <script encoded="false"><![CDATA[if(inputs.customProperties) { //Prelude
+	customProperties = inputs.customProperties;
+	customProperties.put("ext.policy.activedirectory.computerGuid", computerGuid);
+	customProperties.put("ext.policy.activedirectory.endpoint.id", adHostId);
+} else { //IaaS
+	virtualMachineAddOrUpdateProperties = inputs.virtualMachineAddOrUpdateProperties || new Properties();
+	
+	virtualMachineAddOrUpdateProperties.put("ext.policy.activedirectory.computerGuid", computerGuid);
+	virtualMachineAddOrUpdateProperties.put("ext.policy.activedirectory.endpoint.id", adHostId);
+}]]></script>
+    <in-binding>
+      <bind name="adHostId" type="string" export-name="adHostId"/>
+      <bind name="inputs" type="Properties" export-name="inputs"/>
+      <bind name="computerGuid" type="string" export-name="computerGuid"/>
+    </in-binding>
+    <out-binding>
+      <bind name="virtualMachineAddOrUpdateProperties" type="Properties" export-name="virtualMachineAddOrUpdateProperties"/>
+      <bind name="customProperties" type="Properties" export-name="customProperties"/>
+    </out-binding>
+    <position y="9.954545454545453" x="924.5"/>
+  </workflow-item>
+  <workflow-item name="item9" type="end" end-mode="0">
+    <position y="81.77272727272727" x="1105.0"/>
+  </workflow-item>
+  <workflow-item name="item13" out-name="item1" type="task">
+    <display-name><![CDATA[Create Computer]]></display-name>
+    <script encoded="false"><![CDATA[var ldapClient = host.getLdapClient();
+try {
+  if(machineName.length > 15) {
+    throw "Machine name longer than 15 characters: " + machineName;
+  }
+	var ldapAttribs = [
+		new LdapAttribute("cn", [machineName]),
+		new LdapAttribute("dNSHostName", [(machineName + "." + domainName).toString()]),
+		new LdapAttribute("sAMAccountName", [(machineName.toUpperCase() + "$").toString()]),
+		new LdapAttribute("userAccountControl", ["4128"]),
+		new LdapAttribute("objectClass", ["computer"])
+	];
+	
+	System.log("Setting custom attributes...");
+	for (var prop in customAttributes) {
+		var val = customAttributes.get(prop);
+		System.log(prop + " = " + val);
+		try {
+			ldapAttribs.push(new LdapAttribute(prop, [val.toString()]));
+		} catch(error) {
+			System.log("Error setting custom attribute property: " + error);
+		}
+	}
+	
+	ldapClient.addEntry(new LdapEntry(computerDN, ldapAttribs));
+	
+	var computer = ldapClient.getEntry(computerDN);
+	
+	computerGuid = LdapFilter.encodeValueBytes(computer.getAttributeValueAsBytes("objectGUID"));
+
+} finally {
+	if(ldapClient != null) {
+		ldapClient.close();
+	}
+}]]></script>
+    <in-binding>
+      <bind name="host" type="AD:AdHost" export-name="host"/>
+      <bind name="computerDN" type="string" export-name="computerDN"/>
+      <bind name="machineName" type="string" export-name="machineName"/>
+      <bind name="domainName" type="string" export-name="domainName"/>
+      <bind name="customAttributes" type="Properties" export-name="customAttributes"/>
+    </in-binding>
+    <out-binding>
+      <bind name="computerGuid" type="string" export-name="computerGuid"/>
+    </out-binding>
+    <position y="9.954545454545453" x="784.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="inputs">
+      <desc><![CDATA[inputs]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

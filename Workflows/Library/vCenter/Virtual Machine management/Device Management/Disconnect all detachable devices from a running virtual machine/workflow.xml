@@ -1,0 +1,132 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="Workflow:name=generic" id="3E8180808080808080808080808080809280808001220976564066218f32d8ddf" version="1.1.0" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Disconnect all detachable devices from a running virtual machine]]></display-name>
+  <description><![CDATA[Disconnects floppy disks, CD-ROM drives, parallel ports, and serial ports from a running virtual machine.]]></description>
+  <position y="20.0" x="180.0"/>
+  <input>
+    <param name="vm" type="VC:VirtualMachine">
+      <description><![CDATA[Virtual machine from which to disconnect all floppy disk and CD-ROM drives]]></description>
+    </param>
+  </input>
+  <attrib name="task" type="VC:Task" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Task to await]]></description>
+  </attrib>
+  <attrib name="progress" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+    <description><![CDATA[Log progress while waiting for the task to complete]]></description>
+  </attrib>
+  <attrib name="pollRate" type="number" read-only="false">
+    <value encoded="n"><![CDATA[1.0]]></value>
+    <description><![CDATA[Polling rate for the task state, in seconds]]></description>
+  </attrib>
+  <workflow-item name="item0" out-name="item3" type="task">
+    <display-name><![CDATA[Disconnect detachable media]]></display-name>
+    <script encoded="false"><![CDATA[task = null;
+
+// Only disconnect devices on a running VM
+if ( vm.runtime.powerState == VcVirtualMachinePowerState.poweredOn )  {
+	var devices = vm.config.hardware.device;
+	if ( devices != null )  {
+
+		var mustReconfig = false;
+		var configSpec = new VcVirtualMachineConfigSpec();
+		var deviceConfigSpecs = new Array();
+		var deviceConfigSpec;
+
+		for ( var ii in devices )  {
+			var device = devices[ii];
+			if ( device.connectable != null )  {
+				// Only disconnect floppy, cdrom, parallel port and serial port
+				if ( device instanceof VcVirtualFloppy
+				  || device instanceof VcVirtualCdrom
+				  || device instanceof VcVirtualParallelPort
+				  || device instanceof VcVirtualSerialPort )  {
+					var connectable = device.connectable;
+					// Create a reconfig device spec if the device is connected
+					if ( connectable.connected == true )  {
+						device.connectable.connected = false;
+						var deviceConfigSpec = new VcVirtualDeviceConfigSpec();
+						deviceConfigSpec.device = device;
+						deviceConfigSpec.operation = VcVirtualDeviceConfigSpecOperation.edit;
+						deviceConfigSpecs.push( deviceConfigSpec );
+						mustReconfig = true;
+						System.log( "Device '" + System.getObjectClassName(device) + "' will be detached." );
+					}
+				}
+			}
+		}
+		// If a "detachable" connected device was found, create a reconfigVM task
+		if ( mustReconfig == true )  {
+			configSpec.deviceChange = deviceConfigSpecs;
+			// Launch the reconfigVM task
+			task = vm.reconfigVM_Task( configSpec );
+		}
+		else  {
+			System.log( "No detachable device is connected for VM '" + vm.name + "'" );
+		}
+	}
+	else  {
+		System.log( "No device found for VM '" + vm.name + "'" );
+	}
+}
+else  {
+	System.log( "VM '" + vm.name + "' is not poweredOn, no need to disconnect devices." );
+}
+]]></script>
+    <in-binding>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vm"/>
+    </in-binding>
+    <out-binding>
+      <bind name="task" type="VC:Task" export-name="task"/>
+    </out-binding>
+    <position y="80.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item1" type="end" end-mode="0">
+    <position y="150.0" x="340.0"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item1" type="task" script-module="com.vmware.library.vc.basic/vim3WaitTaskEnd">
+    <display-name><![CDATA[vim3WaitTaskEnd]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.vc.basic").vim3WaitTaskEnd(task,progress,pollRate) ;]]></script>
+    <in-binding>
+      <bind name="task" type="VC:Task" export-name="task">
+        <description><![CDATA[Task to Wait for]]></description>
+      </bind>
+      <bind name="progress" type="boolean" export-name="progress">
+        <description><![CDATA[Log progess while waiting for the task]]></description>
+      </bind>
+      <bind name="pollRate" type="number" export-name="pollRate">
+        <description><![CDATA[Polling rate for the task state [seconds]]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Any" explicitly-not-bound="true" export-name="NULL"/>
+    </out-binding>
+    <description><![CDATA[Wait a VIM 3 Task to end.
+When task ended, return the ]]></description>
+    <position y="200.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item2" type="condition" alt-out-name="item1" comparator="0">
+    <display-name><![CDATA[Decision]]></display-name>
+    <script encoded="false"><![CDATA[//Generated by the system, cannot be edited
+return (task  != null ) ;]]></script>
+    <in-binding>
+      <bind name="task" type="VC:Task" export-name="task"/>
+    </in-binding>
+    <condition name="task" type="VC:Task" comparator="0" label="null"/>
+    <position y="130.0" x="140.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[VM]]></title>
+      <p-group>
+        <title><![CDATA[Choose a VM]]></title>
+        <p-param name="vm">
+          <desc><![CDATA[Virtual machine from which to disconnect all floppy disk and CD-ROM drives]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+      </p-group>
+    </p-step>
+  </presentation>
+</workflow>

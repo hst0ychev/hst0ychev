@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getRegisteredInstanceProperties" result-type="Properties" api-version="6.0.0" id="c75a532e-c5b4-4238-82c8-d365075d144e" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.configuration">
+  <description><![CDATA[Returns properties of a registered vCenter Server instance.]]></description>
+  <param n="hostUrl" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[return VcPlugin.getRegisteredInstanceProperties(hostUrl);]]></script>
+</dunes-script-module>

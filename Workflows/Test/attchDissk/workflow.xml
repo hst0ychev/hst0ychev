@@ -1,0 +1,279 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item6" object-name="workflow:name=generic" id="466eb2f0-7e7d-44d2-9a06-f4967622df8d" version="0.0.0" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[attchDissk]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="virtualVolumeName" type="string">
+      <description><![CDATA[Virtual Volume name]]></description>
+    </param>
+    <param name="vms" type="Array/string">
+      <description><![CDATA[Please select the VMs to use the Shared Disk]]></description>
+    </param>
+    <param name="createdName" type="string"/>
+  </input>
+  <attrib name="connection" type="StoreServ:Connection" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='7XVfIcpEQ0esucf7gABF1g'&dunesName='StoreServ:Connection']]></value>
+    <description><![CDATA[StoreServ Connection]]></description>
+  </attrib>
+  <attrib name="disk" type="StoreServ:Volume" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="actionResult" type="Array/StoreServ:Volume" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="vmxDatastore" type="VC:Datastore" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="54.5" x="1184.5"/>
+  </workflow-item>
+  <workflow-item name="item3" type="task">
+    <display-name><![CDATA[Attach_disk]]></display-name>
+    <script encoded="false"><![CDATA[var __global = System.getContext() || (function () {
+    return this;
+}).call(null);
+var VROES = __global.__VROES || (__global.__VROES = System.getModule("com.vmware.pscoe.library.ecmascript").VROES()), exports = {};
+var __extends = VROES.tslib.__extends;
+var Logger_1 = VROES.importLazy("com.vmware.pscoe.library.ts.logging/Logger");
+//var DiskService_1 = VROES.importLazy("com.vmware.test/DiskService_attach");
+var DiskService_1 = VROES.importLazy("com.vmware.pscoe.cris.vro.actions/disk/services/DiskService");
+var VcenterService_1 = VROES.importLazy("com.vmware.pscoe.cris.vro.actions/disk/services/VcenterService");
+var DiskStoreService_1 = VROES.importLazy("com.vmware.pscoe.cris.vro.actions/disk/services/DiskStoreService");
+var Constants_1 = VROES.importLazy("com.vmware.pscoe.cris.vro.actions/util/Constants");
+var Sync_1 = VROES.importLazy("com.vmware.pscoe.cris.vro.actions/util/Sync");
+var Task = VROES.import("default").from("com.vmware.pscoe.library.pipeline.Task");
+
+
+//        .vmsNames = this.context.vms;
+		System.log(vms)
+        var vCenterService = new VcenterService_1._.VcenterService();
+        vcVMs = vCenterService.getVMsByVmNames(vms);
+        //this.firstVm = this.vcVMs[0];
+        //this.vcVMs.shift(); //remove the first element
+		System.log("vcVMs len :"+vcVMs.length)
+		System.log("vcVMs :"+vcVMs[0].name)
+     	diskAttachableVms = vcVMs;
+        diskService = new DiskService_1._.DiskService();
+
+
+
+        if (vcVMs.length > 0) {
+			System.log(vcVMs)
+            //var size_1 = .storageSize;
+            for ( var i in vcVMs){
+            System.log("Attaching Disk to VM: " + vcVMs[i].name);
+            diskService.attachDisk(vcVMs[i], disk);
+}                }
+
+
+//for(var i in actionResult){
+//System.log(actionResult[i].name)
+//}]]></script>
+    <in-binding>
+      <bind name="disk" type="StoreServ:Volume" export-name="disk"/>
+      <bind name="vms" type="Array/string" export-name="vms"/>
+      <bind name="actionResult" type="Array/StoreServ:Volume" export-name="actionResult"/>
+    </in-binding>
+    <out-binding/>
+    <position y="0.8636363636363633" x="364.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item0" type="task">
+    <display-name><![CDATA[Detach_disk]]></display-name>
+    <script encoded="false"><![CDATA[var __global = System.getContext() || (function () {
+    return this;
+}).call(null);
+var VROES = __global.__VROES || (__global.__VROES = System.getModule("com.vmware.pscoe.library.ecmascript").VROES()), exports = {};
+var __extends = VROES.tslib.__extends;
+var Logger_1 = VROES.importLazy("com.vmware.pscoe.library.ts.logging/Logger");
+var DiskService_1 = VROES.importLazy("com.vmware.pscoe.cris.vro.actions/disk/services/DiskService");
+var VcenterService_1 = VROES.importLazy("com.vmware.pscoe.cris.vro.actions/disk/services/VcenterService");
+var DiskStoreService_1 = VROES.importLazy("com.vmware.pscoe.cris.vro.actions/disk/services/DiskStoreService");
+var Constants_1 = VROES.importLazy("com.vmware.pscoe.cris.vro.actions/util/Constants");
+var Sync_1 = VROES.importLazy("com.vmware.pscoe.cris.vro.actions/util/Sync");
+var Task = VROES.import("default").from("com.vmware.pscoe.library.pipeline.Task");
+
+
+//        .vmsNames = this.context.vms;
+		System.log(vms)
+        var vCenterService = new VcenterService_1._.VcenterService();
+        vcVMs = vCenterService.getVMsByVmNames(vms);
+        //this.firstVm = this.vcVMs[0];
+        //this.vcVMs.shift(); //remove the first element
+System.log("vcVMs len :"+vcVMs.length)
+System.log("vcVMs :"+vcVMs[0].name)
+     	diskAttachableVms = vcVMs;
+        diskService = new DiskService_1._.DiskService();
+
+
+
+        if (vcVMs.length > 0) {
+			System.log(vcVMs)
+            //var size_1 = .storageSize;
+            for ( var i in vcVMs){
+            System.log("Attaching Disk to VM: " + vcVMs[i].name);
+            diskService.detachDisk(vcVMs[i], disk);
+}                }
+
+
+//for(var i in actionResult){
+//System.log(actionResult[i].name)
+//}]]></script>
+    <in-binding>
+      <bind name="disk" type="StoreServ:Volume" export-name="disk"/>
+    </in-binding>
+    <out-binding/>
+    <position y="64.5" x="804.5"/>
+  </workflow-item>
+  <workflow-item name="item4" type="task" script-module="com.hpe.storeserv.volume/getAllVolumes">
+    <display-name><![CDATA[getAllVolumes]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.hpe.storeserv.volume").getAllVolumes(connection) ;]]></script>
+    <in-binding>
+      <bind name="connection" type="StoreServ:Connection" export-name="connection">
+        <description><![CDATA[StoreServ Connection]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Array/StoreServ:Volume" export-name="actionResult"/>
+    </out-binding>
+    <description><![CDATA[Retrieves all Virtual Volumes form selected HPE 3PAR Storeserv array.]]></description>
+    <position y="19.045454545454543" x="104.5"/>
+  </workflow-item>
+  <workflow-item name="item5" out-name="item0" type="task">
+    <display-name><![CDATA[Scriptable task]]></display-name>
+    <script encoded="false"><![CDATA[var __global = System.getContext() || (function () {
+    return this;
+}).call(null);
+var VROES = __global.__VROES || (__global.__VROES = System.getModule("com.vmware.pscoe.library.ecmascript").VROES()), exports = {};
+var __extends = VROES.tslib.__extends;
+var Logger_1 = VROES.importLazy("com.vmware.pscoe.library.ts.logging/Logger");
+var DiskService_1 = VROES.importLazy("com.vmware.pscoe.cris.vro.actions/disk/services/DiskService");
+var VroWorkflowService_1 = VROES.importLazy("com.vmware.pscoe.cris.vro.actions/util/VroWorkflowService");
+var Constants_1 = VROES.importLazy("com.vmware.pscoe.cris.vro.actions/util/Constants");
+var VcenterService_1 = VROES.importLazy("com.vmware.pscoe.cris.vro.actions/disk/services/VcenterService");
+var DiskStoreService_1 = VROES.importLazy("com.vmware.pscoe.cris.vro.actions/disk/services/DiskStoreService");
+var Constants_2 = VROES.importLazy("com.vmware.pscoe.cris.vro.actions/util/Constants");
+var Sync_1 = VROES.importLazy("com.vmware.pscoe.cris.vro.actions/util/Sync");
+var Task = VROES.import("default").from("com.vmware.pscoe.library.pipeline.Task");
+var ContextFactory = VROES.import("default").from("com.vmware.pscoe.library.context.ContextFactory");
+var context = ContextFactory.createLazy([
+    "com.vmware.pscoe.library.context.workflow",
+    "com.vmware.pscoe.cris.vro.actions.context.hpe"
+]);
+var createdvm = VcPlugin.getAllVirtualMachines(null, "xpath:name[matches(.,'"+createdName+"')]")
+var vCenterService = new VcenterService_1._.VcenterService();
+var diskService = new DiskService_1._.DiskService();
+
+var vcVMs = vCenterService.getVMsByVmNames(vms);
+if (vcVMs.length > 0) {
+  System.log("vc vm :"+vcVMs)
+   for ( var i in vcVMs){
+
+        var lunNumber = "8";
+ //fetch the Lun number from the result
+        System.log("RDM Volume exported to ESX Cluster " + disk.name + ", with LUN Number: " + lunNumber);
+            //Create disk on VM1
+            System.log("Creating RDM disk on VM: " + createdvm[0].name);
+            var createdDisk = diskService.createRDMDisk(createdvm[0], lunNumber);
+		
+            System.log("Attaching RDM disk on VM: " + vcVMs[i].name);
+            diskService.attachDisk(vcVMs[i], createdDisk);
+			System.log("Attached Disk volume");
+			}
+			}]]></script>
+    <in-binding>
+      <bind name="disk" type="StoreServ:Volume" export-name="disk"/>
+      <bind name="vms" type="Array/string" export-name="vms"/>
+      <bind name="connection" type="StoreServ:Connection" export-name="connection"/>
+      <bind name="virtualVolumeName" type="string" export-name="virtualVolumeName"/>
+      <bind name="createdName" type="string" export-name="createdName"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="584.5"/>
+  </workflow-item>
+  <workflow-item name="item6" out-name="item7" type="task">
+    <display-name><![CDATA[Scriptable task]]></display-name>
+    <script encoded="false"><![CDATA[for( var i in vms){
+	System.log("vol :"+virtualVolumeName);
+	var vmvalue = VcPlugin.getAllVirtualMachines(null, "xpath:name[matches(.,'"+createdName+"')]")
+//	
+if(vmvalue.length == 1) {
+		vm  = vmvalue[0];
+		System.log("vm name :"+vm.name)
+		var devices = vm.config.hardware.device;
+		if ( devices != null )  {
+  		for ( device in devices )  {
+			var rawDisk = devices[device].backing
+			var raw = [];
+			raw.push(
+			System.log( "Device name:" + rawDisk);
+			}
+			}
+			
+
+////				 if ( devices[device] instanceof VcVirtualBusLogicController || devices[device] instanceof VcVirtualLsiLogicController
+////        || devices[device] instanceof VcParaVirtualSCSIController || devices[device] instanceof VcVirtualLsiLogicSASController )  {
+//				scsiControllerKey = devices[device].key;
+//				bus = devices[device].unitNumber;
+//				busNumber = devices[device].busNumber;
+//         		System.log( "SCSI controller found. (Key: " + scsiControllerKey + ")" );
+// 				System.log(" Bus Number: "+busNumber);	
+//                System.log(" Bus : "+bus);	
+//			//break;
+//				//}
+//			}
+//		}
+//		var Hostname = vm.runtime.host.name;
+//		var vchostvalue = VcPlugin.getAllHostSystems(null, "xpath:name[matches(.,'"+Hostname+"')]")
+//		
+////		System.log("Hostname :"+vchostvalue[0].config.storageDevice)
+////		var vsstorage = vchostvalue[0].config.storageDevice
+////		for (var i in vsstorage){
+////System.log(vsstorage[i].scsiLun)
+////System.log("-----------------")
+////System.log(vsstorage[i].multipathInfo)
+////	}
+
+System.log("vm :"+vm.config)
+var vmxPath = vm.config.files.vmPathName
+System.log("----- VMPATH "+vmxPath);
+//var startOfDatastoreName = vmxPath.indexOf('[')+1;
+//var endOfDatastoreName = vmxPath.indexOf(']');
+//var vmxDatastore = vmxPath.substring(startOfDatastoreName,endOfDatastoreName);
+//var xpath = "xpath:name='" + vmxDatastore + "'";
+//var datastores = VcPlugin.getAllDatastores(null, xpath);
+//System.log("datastores :"+datastores[0])
+//vmxDatastore = datastores[0];
+//break;
+	}
+//	else{
+//		System.log("vm not found")
+//	}
+}
+ //var diskPath = System.getModule("com.vmware.library.vc.datastore.files").getAllVmdkFile(vmxDatastore)
+//System.log(diskPath)]]></script>
+    <in-binding>
+      <bind name="vms" type="Array/string" export-name="vms"/>
+      <bind name="virtualVolumeName" type="string" export-name="virtualVolumeName"/>
+      <bind name="createdName" type="string" export-name="createdName"/>
+    </in-binding>
+    <out-binding>
+      <bind name="vmxDatastore" type="VC:Datastore" export-name="vmxDatastore"/>
+    </out-binding>
+    <position y="55.40909090909091" x="404.5"/>
+  </workflow-item>
+  <workflow-item name="item7" type="end" end-mode="0">
+    <position y="109.04545454545453" x="445.0"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="virtualVolumeName">
+      <desc><![CDATA[Virtual Volume name]]></desc>
+    </p-param>
+    <p-param name="vms">
+      <desc><![CDATA[Please select the VMs to use the Shared Disk]]></desc>
+    </p-param>
+    <p-param name="createdName">
+      <desc><![CDATA[createdName]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

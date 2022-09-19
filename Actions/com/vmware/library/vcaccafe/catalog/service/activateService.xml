@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="activateService" result-type="void" api-version="6.0.0" id="c97e8c85-f1fb-4bb4-a05c-b894e17676e4" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.catalog.service">
+  <param n="service" t="vCACCAFE:Service"><![CDATA[The service to be activated]]></param>
+  <script encoded="false"><![CDATA[var host = vCACCAFEEntitiesFinder.getHostForEntity(service);
+var client = host.createCatalogClient().getCatalogServiceAdminService();
+
+service.setStatus(vCACCAFEStatus.ACTIVE);
+
+System.log("Activating service...");
+client.updateService(service);
+System.log("Service: " + service.getName() + " activated.");]]></script>
+</dunes-script-module>

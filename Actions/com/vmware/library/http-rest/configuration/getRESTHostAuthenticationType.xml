@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getRESTHostAuthenticationType" result-type="string" api-version="6.0.0" id="f151d444-1e3f-44d3-8163-db6d29d26339" version="1.0.0" allowed-operations="vf" category-name="com.vmware.library.http-rest.configuration">
+  <description><![CDATA[Retrieves authentication type for specified REST host. 
+Used in REST plug-in workflow presentations.]]></description>
+  <param n="restHost" t="REST:RESTHost"><![CDATA[REST host which authentication type should return]]></param>
+  <script encoded="false"><![CDATA[return restHost == null ? "NONE" : restHost.authentication.type;]]></script>
+</dunes-script-module>

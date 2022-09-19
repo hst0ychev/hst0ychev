@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="workflow:name=generic" id="FD808080808080808080808080808080A6808080013220404425363c0250095dc" version="1.0.0" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Update a SOAP host with an endpoint URL]]></display-name>
+  <description><![CDATA[Updates a SOAP host with a preferred endpoint address. The new endpoint address will be used when sending and receiving SOAP messages instead of the endpoint addresses defined within the WSDL.]]></description>
+  <ref-types><![CDATA[(SOAP:Host)]]></ref-types>
+  <position y="20.0" x="180.0"/>
+  <input>
+    <param name="host" type="SOAP:Host">
+      <description><![CDATA[SOAP host to update with a preferred endpoint address]]></description>
+    </param>
+    <param name="endpointURL" type="string">
+      <description><![CDATA[Preferred endpoint address to use when sending and receiving SOAP messages]]></description>
+    </param>
+  </input>
+  <output>
+    <param name="soapHost" type="SOAP:Host">
+      <description><![CDATA[The updated SOAP host]]></description>
+    </param>
+  </output>
+  <workflow-item name="item1" type="end" end-mode="0">
+    <position y="150.0" x="180.0"/>
+  </workflow-item>
+  <workflow-item name="item0" out-name="item1" type="task" script-module="com.vmware.library.soap.configuration/updateSOAPHostWithEndpointURL">
+    <display-name><![CDATA[updateSOAPHostWithEndpointURL]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.soap.configuration").updateSOAPHostWithEndpointURL(soapHost,endpointURL) ;]]></script>
+    <in-binding>
+      <bind name="soapHost" type="SOAP:Host" export-name="host"/>
+      <bind name="endpointURL" type="string" export-name="endpointURL"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="SOAP:Host" export-name="soapHost"/>
+    </out-binding>
+    <position y="100.0" x="140.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Update a SOAP host with an endpoint URL]]></title>
+      <p-group>
+        <title><![CDATA[SOAP host]]></title>
+        <desc><![CDATA[Specify the host to update and the preferred endpoint address to use for sending and receiving SOAP messages.]]></desc>
+        <p-param name="host">
+          <desc><![CDATA[Host]]></desc>
+          <p-qual name="contextualParameter" type="void"><![CDATA[]]></p-qual>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+        <p-param name="endpointURL">
+          <desc><![CDATA[Endpoint address]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual kind="ognl" name="defaultValue" type="string"><![CDATA[GetAction("com.vmware.library.soap","getPreferredEndpointURL").call( #host )]]></p-qual>
+        </p-param>
+      </p-group>
+    </p-step>
+  </presentation>
+</workflow>

@@ -1,0 +1,2236 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item26" object-name="workflow:name=generic" id="f9e48b61-e9b3-4f70-afff-86c03812d728" version="7.5.0" api-version="6.0.0" allowed-operations="vf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Create Azure Virtual Machine]]></display-name>
+  <error-handler name="item24" throw-bind-name="errorCode">
+    <position y="209.04545454545453" x="25.0"/>
+  </error-handler>
+  <position y="54.5" x="45.0"/>
+  <input>
+    <param name="subscriptionId" type="string">
+      <description><![CDATA[Subscription Id]]></description>
+    </param>
+    <param name="locationId" type="string">
+      <description><![CDATA[Location]]></description>
+    </param>
+    <param name="resourceGroupName" type="string">
+      <description><![CDATA[Resource group name]]></description>
+    </param>
+    <param name="storageAccountName" type="string">
+      <description><![CDATA[Storage account name]]></description>
+    </param>
+    <param name="diagnosticsStorageAccountName" type="string">
+      <description><![CDATA[Diagnostics storage account name]]></description>
+    </param>
+    <param name="diagnosticsStorageAccountEnabled" type="boolean">
+      <description><![CDATA[Enable diagnostics storage account]]></description>
+    </param>
+    <param name="availabilitySetName" type="string">
+      <description><![CDATA[Availability set name]]></description>
+    </param>
+    <param name="vmName" type="string">
+      <description><![CDATA[Virtual machine name]]></description>
+    </param>
+    <param name="passwordAuthenticationType" type="string">
+      <description><![CDATA[Use password authentication]]></description>
+    </param>
+    <param name="adminUsername" type="string">
+      <description><![CDATA[Admin username]]></description>
+    </param>
+    <param name="adminPassword" type="SecureString">
+      <description><![CDATA[Admin password]]></description>
+    </param>
+    <param name="adminSshPublicKey" type="string">
+      <description><![CDATA[Admin SSH public key]]></description>
+    </param>
+    <param name="instanceSize" type="string">
+      <description><![CDATA[Virtual machine size]]></description>
+    </param>
+    <param name="instanceSizeSeries" type="string">
+      <description><![CDATA[Virtual machine size series]]></description>
+    </param>
+    <param name="loadBalancerName" type="string">
+      <description><![CDATA[Name of existing Load Balancer]]></description>
+    </param>
+    <param name="loadBalancerRGName" type="string">
+      <description><![CDATA[The name of the Resource Group where the selected Load Balancer resides]]></description>
+    </param>
+    <param name="backendAddressPoolName" type="string">
+      <description><![CDATA[Name of existing Backend Address Pool]]></description>
+    </param>
+    <param name="imageType" type="string">
+      <description><![CDATA[Virtual machine image type]]></description>
+    </param>
+    <param name="imageURN" type="string">
+      <description><![CDATA[Virtual machine image URN]]></description>
+    </param>
+    <param name="imageOSType" type="string">
+      <description><![CDATA[Virtual machine image OS type]]></description>
+    </param>
+    <param name="machinePrefixType" type="string">
+      <description><![CDATA[Type of selected machine prefix]]></description>
+    </param>
+    <param name="resourceGroupCreationType" type="string">
+      <description><![CDATA[Create or reuse Resource group]]></description>
+    </param>
+    <param name="availabilitySetCreationType" type="string">
+      <description><![CDATA[Create or reuse Availability set]]></description>
+    </param>
+    <param name="numberOfNics" type="number">
+      <description><![CDATA[Number of NICs]]></description>
+    </param>
+    <param name="nic2Name" type="string">
+      <description><![CDATA[NIC2 name]]></description>
+    </param>
+    <param name="nic2IpAddressType" type="string">
+      <description><![CDATA[NIC2 IP address type]]></description>
+    </param>
+    <param name="nic2NetworkConfigurationType" type="string"/>
+    <param name="nic2vNetName" type="string">
+      <description><![CDATA[NIC2 vNet name]]></description>
+    </param>
+    <param name="nic2SubnetName" type="string">
+      <description><![CDATA[NIC2 subnet name]]></description>
+    </param>
+    <param name="nic2NetworkProfileName" type="string"/>
+    <param name="nic2SecurityGroupName" type="string">
+      <description><![CDATA[NIC2 security group name]]></description>
+    </param>
+    <param name="nic2SecurityGroupEnabled" type="boolean">
+      <description><![CDATA[NIC2 is security group enabled]]></description>
+    </param>
+    <param name="nic3Name" type="string">
+      <description><![CDATA[NIC3 name]]></description>
+    </param>
+    <param name="nic3IpAddressType" type="string">
+      <description><![CDATA[NIC3 IP address type]]></description>
+    </param>
+    <param name="nic3NetworkConfigurationType" type="string"/>
+    <param name="nic3vNetName" type="string">
+      <description><![CDATA[NIC3 vNet name]]></description>
+    </param>
+    <param name="nic3SubnetName" type="string">
+      <description><![CDATA[NIC3 subnet name]]></description>
+    </param>
+    <param name="nic3NetworkProfileName" type="string"/>
+    <param name="nic3SecurityGroupName" type="string">
+      <description><![CDATA[NIC3 security group name]]></description>
+    </param>
+    <param name="nic3SecurityGroupEnabled" type="boolean">
+      <description><![CDATA[NIC3 is security group enabled]]></description>
+    </param>
+    <param name="nic4Name" type="string">
+      <description><![CDATA[NIC4 name]]></description>
+    </param>
+    <param name="nic4IpAddressType" type="string">
+      <description><![CDATA[NIC4 IP address type]]></description>
+    </param>
+    <param name="nic4NetworkConfigurationType" type="string"/>
+    <param name="nic4vNetName" type="string">
+      <description><![CDATA[NIC4 vNet name]]></description>
+    </param>
+    <param name="nic4SubnetName" type="string">
+      <description><![CDATA[NIC4 subnet name]]></description>
+    </param>
+    <param name="nic4NetworkProfileName" type="string"/>
+    <param name="nic4SecurityGroupName" type="string">
+      <description><![CDATA[NIC4 security group name]]></description>
+    </param>
+    <param name="nic4SecurityGroupEnabled" type="boolean">
+      <description><![CDATA[NIC4 is security group enabled]]></description>
+    </param>
+    <param name="nic1Name" type="string">
+      <description><![CDATA[NIC1 name]]></description>
+    </param>
+    <param name="nic1IpAddressType" type="string">
+      <description><![CDATA[NIC1 IP address type]]></description>
+    </param>
+    <param name="nic1NetworkConfigurationType" type="string">
+      <description><![CDATA[NIC1 network configuration type]]></description>
+    </param>
+    <param name="nic1vNetName" type="string">
+      <description><![CDATA[NIC1 vNet name]]></description>
+    </param>
+    <param name="nic1SubnetName" type="string">
+      <description><![CDATA[NIC1 subnet name]]></description>
+    </param>
+    <param name="nic1NetworkProfileName" type="string"/>
+    <param name="nic1SecurityGroupName" type="string">
+      <description><![CDATA[NIC1 security group name]]></description>
+    </param>
+    <param name="nic1SecurityGroupEnabled" type="boolean">
+      <description><![CDATA[NIC1 is security group enabled]]></description>
+    </param>
+    <param name="numberOfStorages" type="number">
+      <description><![CDATA[Number of Storages]]></description>
+    </param>
+    <param name="storage1DiskName" type="string">
+      <description><![CDATA[Storage1 disk name]]></description>
+    </param>
+    <param name="storage1DiskConfigurationType" type="string">
+      <description><![CDATA[Storage1 disk configuration type]]></description>
+    </param>
+    <param name="storage1DiskType" type="string">
+      <description><![CDATA[Storage1 disk type]]></description>
+    </param>
+    <param name="storage1DiskSize" type="number">
+      <description><![CDATA[Storage1 disk size]]></description>
+    </param>
+    <param name="storage1Replication" type="string">
+      <description><![CDATA[Storage1 replication options when DiskType is HDD]]></description>
+    </param>
+    <param name="storage1ReplicationSSD" type="string">
+      <description><![CDATA[Storage1 replication options when DiskType is SSD]]></description>
+    </param>
+    <param name="storage1HostCaching" type="string">
+      <description><![CDATA[Storage1 host caching]]></description>
+    </param>
+    <param name="storage2DiskName" type="string">
+      <description><![CDATA[Storage2 disk name]]></description>
+    </param>
+    <param name="storage2DiskConfigurationType" type="string">
+      <description><![CDATA[Storage2 disc configuration type]]></description>
+    </param>
+    <param name="storage2DiskType" type="string">
+      <description><![CDATA[Storage2 disk type]]></description>
+    </param>
+    <param name="storage2DiskSize" type="number">
+      <description><![CDATA[Storage2 disk size]]></description>
+    </param>
+    <param name="storage2Replication" type="string">
+      <description><![CDATA[Storage2 replication options when DiskType is HDD]]></description>
+    </param>
+    <param name="storage2ReplicationSSD" type="string">
+      <description><![CDATA[Storage2 replication options when DiskType is SSD]]></description>
+    </param>
+    <param name="storage2HostCaching" type="string">
+      <description><![CDATA[Storage2 host caching]]></description>
+    </param>
+    <param name="storage3DiskName" type="string">
+      <description><![CDATA[Storage3 disk name]]></description>
+    </param>
+    <param name="storage3DiskConfigurationType" type="string">
+      <description><![CDATA[Storage3 disc configuration type]]></description>
+    </param>
+    <param name="storage3DiskType" type="string">
+      <description><![CDATA[Storage3 disk type]]></description>
+    </param>
+    <param name="storage3DiskSize" type="number">
+      <description><![CDATA[Storage3 disk size]]></description>
+    </param>
+    <param name="storage3Replication" type="string">
+      <description><![CDATA[Storage3 replication options when DiskType is HDD]]></description>
+    </param>
+    <param name="storage3ReplicationSSD" type="string">
+      <description><![CDATA[Storage3 replication options when DiskType is SSD]]></description>
+    </param>
+    <param name="storage3HostCaching" type="string">
+      <description><![CDATA[Storage3 host caching]]></description>
+    </param>
+    <param name="storage4DiskName" type="string">
+      <description><![CDATA[Storage4 disk name]]></description>
+    </param>
+    <param name="storage4DiskConfigurationType" type="string">
+      <description><![CDATA[Storage4 disk configuration type]]></description>
+    </param>
+    <param name="storage4DiskType" type="string">
+      <description><![CDATA[Storage4 disk type]]></description>
+    </param>
+    <param name="storage4DiskSize" type="number">
+      <description><![CDATA[Storage4 disk size]]></description>
+    </param>
+    <param name="storage4Replication" type="string">
+      <description><![CDATA[Storage4 replication options when DiskType is HDD]]></description>
+    </param>
+    <param name="storage4ReplicationSSD" type="string">
+      <description><![CDATA[Storage4 replication options when DiskType is SSD]]></description>
+    </param>
+    <param name="storage4HostCaching" type="string">
+      <description><![CDATA[Storage4 host caching]]></description>
+    </param>
+    <param name="storage1StorageAccount" type="string">
+      <description><![CDATA[Storage1 storage account]]></description>
+    </param>
+    <param name="storage2StorageAccount" type="string">
+      <description><![CDATA[Storage2 storage account]]></description>
+    </param>
+    <param name="storage3StorageAccount" type="string">
+      <description><![CDATA[Storage3 storage account]]></description>
+    </param>
+    <param name="storage4StorageAccount" type="string">
+      <description><![CDATA[Storage4 storage account]]></description>
+    </param>
+    <param name="storage1Header" type="string">
+      <description><![CDATA[Placeholder for storage 1 header visualization]]></description>
+    </param>
+    <param name="storage2Header" type="string">
+      <description><![CDATA[Placeholder for storage 2 header visualization]]></description>
+    </param>
+    <param name="storage3Header" type="string">
+      <description><![CDATA[Placeholder for storage 3 header visualization]]></description>
+    </param>
+    <param name="storage4Header" type="string">
+      <description><![CDATA[Placeholder for storage 4 header visualization]]></description>
+    </param>
+    <param name="network1Header" type="string">
+      <description><![CDATA[Placeholder for network 1 header visualization]]></description>
+    </param>
+    <param name="network2Header" type="string">
+      <description><![CDATA[Placeholder for network 2 header visualization]]></description>
+    </param>
+    <param name="network3Header" type="string">
+      <description><![CDATA[Placeholder for network 3 header visualization]]></description>
+    </param>
+    <param name="network4Header" type="string">
+      <description><![CDATA[Placeholder for network 4 header visualization]]></description>
+    </param>
+    <param name="nic1vNetSubnetRGName" type="string"/>
+    <param name="nic2vNetSubnetRGName" type="string"/>
+    <param name="nic3vNetSubnetRGName" type="string"/>
+    <param name="nic4vNetSubnetRGName" type="string"/>
+    <param name="nic1SecurityGroupRGName" type="string"/>
+    <param name="nic2SecurityGroupRGName" type="string"/>
+    <param name="nic3SecurityGroupRGName" type="string"/>
+    <param name="nic4SecurityGroupRGName" type="string"/>
+    <param name="adminPasswordConfirm" type="SecureString">
+      <description><![CDATA[Confirm admin password]]></description>
+    </param>
+    <param name="aggregatedAllocationData" type="Properties"/>
+    <param name="machinePrefix" type="string"/>
+    <param name="softwareComponentProperties" type="Properties">
+      <description><![CDATA[Software component properties]]></description>
+    </param>
+    <param name="instanceDetails" type="string">
+      <description><![CDATA[Virtual Machine Instance Details]]></description>
+    </param>
+    <param name="connection" type="Array/Azure:Connection"/>
+    <param name="destinationRG" type="Array/Azure:ResourceGroup">
+      <description><![CDATA[The destination RG where to create the NIC]]></description>
+    </param>
+    <param name="assignableTags1" type="Array/Properties"/>
+    <param name="region" type="Array/Azure:Region"/>
+    <param name="storageType" type="string">
+      <description><![CDATA[Storage Type]]></description>
+    </param>
+    <param name="managedDiskType" type="string">
+      <description><![CDATA[VM Disk Type]]></description>
+    </param>
+  </input>
+  <output>
+    <param name="virtualMachine" type="Azure:VirtualMachine">
+      <description><![CDATA[Virtual machine]]></description>
+    </param>
+  </output>
+  <attrib name="resourceGroupAttr" type="Azure:ResourceGroup" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="storageAccountAttr" type="Azure:StorageAccount" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="networkInterfacesAttr" type="Array/Azure:NetworkInterface" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="availabilitySetAttr" type="Azure:AvailabilitySet" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="connectionAttr" type="Azure:Connection" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Azure connection]]></description>
+  </attrib>
+  <attrib name="locationAttr" type="Azure:Region" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="vmSizeAttr" type="Azure:VirtualMachineSize" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Virtual machine size]]></description>
+  </attrib>
+  <attrib name="allocationData" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Id comming from the allocation step]]></description>
+  </attrib>
+  <attrib name="assignableTags" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Tags to assign resources created by the workflow]]></description>
+  </attrib>
+  <attrib name="diagnosticsStorageAccountAttr" type="Azure:StorageAccount" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="nicPropertiesAttr" type="Array/CompositeType(nicName:string,networkConfigurationType:string,vNetName:string,subnetName:string,vNetSubnetRGName:string,networkProfileName:string,ipAddressType:string,publicIpAddressName:string,publicIpAddressRGName:string,securityGroupName:string,securityGroupRGName:string,securityGroupEnabled:boolean,isPrimary:boolean):AzureVmNic" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="storageDiskPropertiesAttr" type="Array/CompositeType(storageDiskName:string,storageDiskType:string,storageDiskSize:number,storageReplication:string,storageHostCaching:string,storageStorageAccount:string,lun:number):AzureStorageDisk" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="allocationLockId" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="allocationConfiguration" type="ConfigurationElement" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="apiVersion" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="errorCode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="cleanupResourceGroupName" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="cleanupAvailabilitySetName" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="cleanupNicNames" type="Array/string" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="cleanupVmName" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="isManaged" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+  </attrib>
+  <workflow-note x="758.0" y="16.181818181818187" w="268.0" h="266.0" color="ffbfffff">
+    <description><![CDATA[Resource group step]]></description>
+  </workflow-note>
+  <workflow-note x="1060.0" y="9.090909090909093" w="280.0" h="354.0" color="bfdfffff">
+    <description><![CDATA[Storage step]]></description>
+  </workflow-note>
+  <workflow-note x="1358.0" y="7.0909090909090935" w="268.0" h="216.0" color="ceebb0ff">
+    <description><![CDATA[Network step]]></description>
+  </workflow-note>
+  <workflow-note x="1618.0" y="7.0909090909090935" w="216.0" h="375.0" color="ffbfbfff">
+    <description><![CDATA[Availability set step]]></description>
+  </workflow-note>
+  <workflow-note x="2158.0" y="34.363636363636346" w="224.0" h="249.0" color="ebebebff">
+    <description><![CDATA[Assing Load Balancer]]></description>
+  </workflow-note>
+  <workflow-note x="1838.0" y="34.363636363636374" w="204.0" h="251.0">
+    <description><![CDATA[Provisioning step]]></description>
+  </workflow-note>
+  <workflow-note x="560.0" y="18.18181818181818" w="160.0" h="118.18181818181817">
+    <description><![CDATA[Extract objects]]></description>
+  </workflow-note>
+  <workflow-note x="278.0" y="16.181818181818173" w="144.0" h="158.0">
+    <description><![CDATA[ScaleOut support]]></description>
+  </workflow-note>
+  <workflow-item name="item1" type="end" end-mode="0">
+    <position y="127.22727272727272" x="2404.5"/>
+  </workflow-item>
+  <workflow-item name="item14" out-name="item7" type="task">
+    <display-name><![CDATA[Extract objects]]></display-name>
+    <script encoded="false"><![CDATA[connection = System.getModule("com.vmware.vra.endpoint.azure").getConnectionBySubscriptionId(subscriptionId);
+
+if (connection == null) {
+    System.error("No connection found with the corresponding subscription id: " + subscriptionId);
+    throw "No connection found with the corresponding subscription id: " + subscriptionId;
+} else {
+    System.log("Connection found with the corresponding subscription id: " + subscriptionId);
+}
+
+locationAttr = AzureRegionManager.getRegionByConnectionAndName(connection, locationId);
+if (locationAttr == null) {
+    System.error("No location found with the corresponding location id: " + locationId + " in connection: " + connection.displayName);
+    throw "No location found with the corresponding location id: " + locationId + " in connection: " + connection.displayName;
+} else {
+    System.log("location found with the corresponding location id: " + locationId + " in connection: " + connection.displayName);
+}
+
+
+vmSizeAttr = AzureVirtualMachineManager.getAzureVMSizeByRegionAndSizeName(locationAttr.name, instanceSize, connection);
+if (vmSizeAttr == null) {
+    System.error("No vmSize found with the corresponding vmSize id: " + instanceSize + " in location: " + locationAttr.displayName);
+    throw "No vmSize found with the corresponding vmSize id: " + instanceSize + " in location: " + locationAttr.displayName;
+} else {
+    System.log("vmSize found with the corresponding vmSize id: " + instanceSize + " in location: " + locationAttr.displayName);
+}
+
+var allocationContextString = System.getContext().getParameter("_allocation");
+if (allocationContextString == null) {
+    System.error("No allocation data found in context");
+} else {
+    System.log("allocation data found : " + allocationContextString);
+}
+// first to object then to Properties
+var allocationContext = eval("(" + allocationContextString + ")");
+var allocationData = new Properties(allocationContext);
+
+// Extract the tags
+var tag = System.getModule("com.vmware.vra.endpoint.azure").generateTag(allocationData, vmName);
+
+var tags = new Properties();
+tags.put(tag, tag);
+assignableTags = tags;]]></script>
+    <in-binding>
+      <bind name="subscriptionId" type="string" export-name="subscriptionId"/>
+      <bind name="locationId" type="string" export-name="locationId">
+        <description><![CDATA[Location]]></description>
+      </bind>
+      <bind name="instanceSize" type="string" export-name="instanceSize"/>
+      <bind name="vmName" type="string" export-name="vmName">
+        <description><![CDATA[Virtual machine name]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="connection" type="Azure:Connection" export-name="connectionAttr">
+        <description><![CDATA[Azure connection]]></description>
+      </bind>
+      <bind name="locationAttr" type="Azure:Region" export-name="locationAttr"/>
+      <bind name="vmSizeAttr" type="Azure:VirtualMachineSize" export-name="vmSizeAttr">
+        <description><![CDATA[Virtual machine size]]></description>
+      </bind>
+      <bind name="assignableTags" type="Properties" export-name="assignableTags"/>
+    </out-binding>
+    <position y="64.5" x="584.5"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item27" type="task">
+    <display-name><![CDATA[Create VM]]></display-name>
+    <script encoded="false"><![CDATA[
+// Decide the storage blob suffix depending on the location
+var storageBlobSuffix = ""
+
+if (location.name == "chinaeast" || location.name == "chinanorth") {
+   storageBlobSuffix = ".blob.core.chinacloudapi.cn";
+} else if (location.name == "germanycentral" || location.name == "germanynortheast") {
+   storageBlobSuffix = ".blob.core.cloudapi.de";
+} else {
+   storageBlobSuffix = ".blob.core.windows.net";
+}
+
+var IMAGE_TYPE_STOCK = "Stock";
+var IMAGE_TYPE_CUSTOM = "Custom";
+
+System.log("Creating Azure VM object:");
+var vmImage = null;
+
+var isManagedDisk = false;
+if (storageType == 'Managed Disk') {
+   isManagedDisk = true;
+}
+
+if (passwordAuthenticationType == "ssh") {
+   adminPassword = adminSshPublicKey;
+}
+
+if (imageType == IMAGE_TYPE_STOCK) {
+    System.log("Stock Image URN: " + imageURN);
+
+    // Create ref to Stock VM image. Passed image URN should be: publisher:offer:sku:version
+    var imagePOSV = imageURN.split(":");
+    if (imagePOSV.length != 4) {
+      throw "Stock VM image URN should comply to 'publisher:offer:sku:version' format. Passed value is: " + imageURN;
+    }
+
+    vmImage = AzureVirtualMachineManager.getAzureVirtualMachineImage(location, imagePOSV[0].trim(), imagePOSV[1].trim(), imagePOSV[2].trim(), imagePOSV[3].trim());
+
+     virtualMachine = AzureVirtualMachineManager.create(resourceGroupAttr, location, vmName, storageAccountAttr, networkInterfacesAttr[0], isManagedDisk, adminUsername,
+          adminPassword, vmSize, vmImage, availabilitySetAttr, managedDiskType);
+
+} else if (imageType == IMAGE_TYPE_CUSTOM) {
+
+   if(isManagedDisk) {
+      var imagePOSV = imageURN.split(":");
+      if (imagePOSV.length != 2) {
+          throw "Custom VM image URN should comply to 'resourceGroupName:customImageName' format. Passed value is: " + imageURN;
+      }
+      var imageRg = AzureResourceGroupManager.getResourceGroupByConnectionAndName(connection, imagePOSV[0].trim());
+      vmImage = AzureVirtualMachineManager.getCustomImageByName(imageRg, imagePOSV[1].trim());
+
+      virtualMachine = AzureVirtualMachineManager.deployFromImage(resourceGroupAttr, location, vmName, adminUsername,
+          adminPassword, networkInterfacesAttr[0], availabilitySetAttr , vmImage, vmSize);
+   } else {
+      virtualMachine = AzureVirtualMachineManager.cloneFromUnmanagedDisk(resourceGroupAttr, location, vmName, vmSize, networkInterfacesAttr[0],
+           availabilitySetAttr, imageOSType.toUpperCase() , imageURN, adminUsername, adminPassword);
+   }
+
+}
+
+System.log("VM Created Succesfully....");
+cleanupVmName = vmName;
+
+var vm = AzureVirtualMachineManager.getVirtualMachineByResourceGroupAndVmName(resourceGroupAttr, vmName);
+
+System.log("Setting VM tags...");
+for each (var key in assignableTags.keys) {
+   AzureVirtualMachineManager.addTag(vm,key,assignableTags.get(key));
+}
+
+// Attach secondary Nics to the Created VM.
+if (networkInterfacesAttr.length > 1) {
+   System.log("Attaching the secondary interfaces to the VM.");
+   var index = 1;
+   AzureVirtualMachineManager.deallocate(vm);
+   for (; index < networkInterfacesAttr.length; index++) {
+      System.log("Attaching network Interfaces with name " + networkInterfacesAttr[index].name);
+      vm = AzureVirtualMachineManager.attachExistingSecondaryNetworkInterface(vm, networkInterfacesAttr[index]);
+   }
+   AzureVirtualMachineManager.start(vm);
+}
+
+//Attach Data Disks to the Created VM.
+if (storageDiskPropertiesAttr  == null || storageDiskPropertiesAttr.length == 0) {
+   System.log("No data disks requested.");
+} else {
+   System.log("Attaching Data disks to the VM.");
+   var storageDisks = [];
+   for (i = 0; i < storageDiskPropertiesAttr.length; i++) {
+      var storageDiskProperties = storageDiskPropertiesAttr[i];
+      System.log("Creating and Attaching data disk with name '" + storageDiskProperties.storageDiskName + "'.");
+
+      if (isManagedDisk) {
+         var diskSku = "STANDARD_LRS";
+         if (storageDiskProperties.storageDiskType != null && storageDiskProperties.storageDiskType.equals("SSD")) {
+            diskSku = "PREMIUM_LRS"
+         }
+         AzureVirtualMachineManager.attachNewManagedDisk(vm, storageDiskProperties.storageDiskName, storageDiskProperties.storageDiskSize, storageDiskProperties.lun, storageDiskProperties.storageHostCaching, diskSku );
+      } else {
+         var vhdName = vm.name+ "-dataDisk-" + storageDiskProperties.storageDiskName + "-" + new Date().getTime() + ".vhd";
+         AzureVirtualMachineManager.attachUnmanagedDiskWithNewVhd(vm, storageDiskProperties.storageDiskName, storageDiskProperties.storageDiskSize, storageDiskProperties.lun, storageDiskProperties.storageHostCaching, storageAccountAttr.name, resourceGroupAttr.name.toLowerCase(), vhdName);
+      }
+   }
+}
+
+// Enable Boot Diagnostics to VM.
+if (diagnosticsStorageAttr != null) {
+   System.log("Attaching BootDiagnosticStorage Account to the VM.");
+   AzureVirtualMachineManager.attachBootDiagnosticStorage(vm,diagnosticsStorageAttr);
+}
+
+]]></script>
+    <in-binding>
+      <bind name="storageAccountAttr" type="Azure:StorageAccount" export-name="storageAccountAttr"/>
+      <bind name="resourceGroupAttr" type="Azure:ResourceGroup" export-name="resourceGroupAttr"/>
+      <bind name="location" type="Azure:Region" export-name="locationAttr">
+        <description><![CDATA[Location]]></description>
+      </bind>
+      <bind name="vmName" type="string" export-name="vmName">
+        <description><![CDATA[Virtual machine name]]></description>
+      </bind>
+      <bind name="availabilitySetAttr" type="Azure:AvailabilitySet" export-name="availabilitySetAttr"/>
+      <bind name="connection" type="Azure:Connection" export-name="connectionAttr">
+        <description><![CDATA[Azure connection]]></description>
+      </bind>
+      <bind name="vmSize" type="Azure:VirtualMachineSize" export-name="vmSizeAttr">
+        <description><![CDATA[Virtual machine size]]></description>
+      </bind>
+      <bind name="networkInterfacesAttr" type="Array/Azure:NetworkInterface" export-name="networkInterfacesAttr"/>
+      <bind name="adminUsername" type="string" export-name="adminUsername">
+        <description><![CDATA[Admin username]]></description>
+      </bind>
+      <bind name="adminPassword" type="SecureString" export-name="adminPassword">
+        <description><![CDATA[Admin password]]></description>
+      </bind>
+      <bind name="passwordAuthenticationType" type="string" export-name="passwordAuthenticationType">
+        <description><![CDATA[Use password authentication]]></description>
+      </bind>
+      <bind name="adminSshPublicKey" type="string" export-name="adminSshPublicKey">
+        <description><![CDATA[Admin SSH public key]]></description>
+      </bind>
+      <bind name="allocationData" type="Properties" export-name="allocationData"/>
+      <bind name="assignableTags" type="Properties" export-name="assignableTags"/>
+      <bind name="diagnosticsStorageAttr" type="Azure:StorageAccount" export-name="diagnosticsStorageAccountAttr"/>
+      <bind name="imageType" type="string" export-name="imageType">
+        <description><![CDATA[Virtual machine image type]]></description>
+      </bind>
+      <bind name="imageURN" type="string" export-name="imageURN">
+        <description><![CDATA[VIrtual machine image URN]]></description>
+      </bind>
+      <bind name="imageOSType" type="string" export-name="imageOSType">
+        <description><![CDATA[Virtual machine image OS type]]></description>
+      </bind>
+      <bind name="storageDiskPropertiesAttr" type="Array/CompositeType(storageDiskName:string,storageDiskType:string,storageDiskSize:number,storageReplication:string,storageHostCaching:string,storageStorageAccount:string,lun:number):AzureStorageDisk" export-name="storageDiskPropertiesAttr"/>
+      <bind name="apiVersion" type="string" export-name="apiVersion"/>
+      <bind name="storageType" type="string" export-name="storageType"/>
+      <bind name="managedDiskType" type="string" export-name="managedDiskType"/>
+    </in-binding>
+    <out-binding>
+      <bind name="virtualMachine" type="Azure:VirtualMachine" export-name="virtualMachine"/>
+      <bind name="cleanupVmName" type="string" export-name="cleanupVmName"/>
+    </out-binding>
+    <position y="82.68181818181817" x="1884.5"/>
+  </workflow-item>
+  <workflow-item name="item11" out-name="item1" type="custom-condition" alt-out-name="item16">
+    <display-name><![CDATA[Custom decision]]></display-name>
+    <script encoded="false"><![CDATA[return loadBalancerName == null || loadBalancerName == "";]]></script>
+    <in-binding>
+      <bind name="loadBalancerName" type="string" export-name="loadBalancerName"/>
+    </in-binding>
+    <position y="81.77272727272727" x="2164.5"/>
+  </workflow-item>
+  <workflow-item name="item16" out-name="item1" type="task">
+    <display-name><![CDATA[Assign BackendPool to Primary NIC]]></display-name>
+    <script encoded="false"><![CDATA[// Get the Load Balancer by name
+
+if (loadBalancerRGName == null || loadBalancerRGName == "") {
+    throw "RG name of LoadBalancer should not be empty.";
+}
+
+var loadBalancerRG = AzureResourceGroupManager.getResourceGroupByConnectionAndName(connectionAttr, loadBalancerRGName);
+
+if (loadBalancerRG == null) {
+    throw "RG with name '" + loadBalancerRGName + "' does not exist.";
+}
+
+var loadBalancer = AzureLoadBalancerManager.getLoadBalancerByResourceGroupAndName(loadBalancerRG, loadBalancerName);
+
+if (loadBalancer == null) {
+    throw "LoadBalancer with name '" + loadBalancerName + "' does not exist.";
+}
+
+if (backendAddressPoolName == null || backendAddressPoolName == "") {
+    throw "Backend Address Pool Name should not be empty.";
+}
+
+// Get the BAP by name
+var backendAddressPool = null;
+var backendAddressPools = AzureLoadBalancerManager.getLoadBalancerBackendPool(loadBalancer);
+for each (var bap in backendAddressPools) {
+    if (bap.toLowerCase() == backendAddressPoolName.toLowerCase()) {
+        System.log("Backend Address Pool with name '" + backendAddressPoolName + "' found.");
+        backendAddressPool = bap;
+        break;
+    }
+}
+
+if (backendAddressPool == null) {
+    throw "No Backend Address Pool with name '" + backendAddressPoolName + "' found.";
+}
+
+// Extract the primary NIC
+
+var nicName = nicPropertiesAttr[0].nicName;
+System.log("Loading primary NIC with name '" + nicName + "' that resides in ResourceGroup with name '" + resourceGroup.name + "'.");
+var primaryNic = AzureNetworkInterfaceManager.getNetworkInterfaceByResourceGroupAndName(resourceGroup, nicName);
+
+if (primaryNic == null) {
+    throw "No Primary NIC with name '" + nicName + "' found.";
+}
+
+// Assert that this is the primary NIC
+if (!primaryNic.isPrimary) {
+    throw "Mismatch of the primary NICs!!!";
+}
+
+// Update the VM NIC
+System.log("Updating NIC");
+AzureLoadBalancerManager.attachNicToLoadBalancerBackendPool(loadBalancer, backendAddressPool, primaryNic);
+]]></script>
+    <in-binding>
+      <bind name="resourceGroup" type="Azure:ResourceGroup" export-name="resourceGroupAttr"/>
+      <bind name="loadBalancerRGName" type="string" export-name="loadBalancerRGName">
+        <description><![CDATA[The name of the Resource Group where the selected Load Balancer resides]]></description>
+      </bind>
+      <bind name="connectionAttr" type="Azure:Connection" export-name="connectionAttr">
+        <description><![CDATA[Azure connection]]></description>
+      </bind>
+      <bind name="nicPropertiesAttr" type="Array/CompositeType(nicName:string,networkConfigurationType:string,vNetName:string,subnetName:string,vNetSubnetRGName:string,networkProfileName:string,ipAddressType:string,publicIpAddressName:string,publicIpAddressRGName:string,securityGroupName:string,securityGroupRGName:string,securityGroupEnabled:boolean,isPrimary:boolean):AzureVmNic" export-name="nicPropertiesAttr"/>
+      <bind name="loadBalancerName" type="string" export-name="loadBalancerName">
+        <description><![CDATA[Name of existing Load Balancer]]></description>
+      </bind>
+      <bind name="backendAddressPoolName" type="string" export-name="backendAddressPoolName">
+        <description><![CDATA[Name of existing Backend Address Pool]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <position y="173.59090909090907" x="2164.5"/>
+  </workflow-item>
+  <workflow-item name="item17" out-name="item2" type="custom-condition" alt-out-name="item19">
+    <display-name><![CDATA[Add diagnostics storage]]></display-name>
+    <script encoded="false"><![CDATA[return addDiagnosticsStorage;]]></script>
+    <in-binding>
+      <bind name="addDiagnosticsStorage" type="boolean" export-name="diagnosticsStorageAccountEnabled"/>
+    </in-binding>
+    <position y="227.22727272727272" x="1144.5"/>
+  </workflow-item>
+  <workflow-item name="item15" out-name="item21" type="task" script-module="com.vmware.vra.endpoint.azure/findStorageAccount">
+    <display-name><![CDATA[findStorageAccount]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.vra.endpoint.azure").findStorageAccount(connection,storageAccountName) ;]]></script>
+    <in-binding>
+      <bind name="connection" type="Azure:Connection" export-name="connectionAttr"/>
+      <bind name="storageAccountName" type="string" export-name="storageAccountName"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Azure:StorageAccount" export-name="storageAccountAttr"/>
+    </out-binding>
+    <position y="55.40909090909091" x="1144.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item19" type="task" script-module="com.vmware.vra.endpoint.azure/findStorageAccount">
+    <display-name><![CDATA[findStorageAccount]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.vra.endpoint.azure").findStorageAccount(connection,storageAccountName) ;]]></script>
+    <in-binding>
+      <bind name="connection" type="Azure:Connection" export-name="connectionAttr"/>
+      <bind name="storageAccountName" type="string" export-name="diagnosticsStorageAccountName"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Azure:StorageAccount" export-name="diagnosticsStorageAccountAttr"/>
+    </out-binding>
+    <position y="300.8636363636363" x="1144.5"/>
+  </workflow-item>
+  <workflow-item name="item19" out-name="item20" type="task">
+    <display-name><![CDATA[To NIC props]]></display-name>
+    <script encoded="false"><![CDATA[nicPropertiesAttr = [];
+if (numberOfNics >= 1) {
+    var nic = new Properties();
+    nic.isPrimary = true;
+    nic.nicName = nic1Name;
+
+    nic.networkConfigurationType = nic1NetworkConfigurationType;
+    nic.vNetName = nic1vNetName;
+    nic.subnetName = nic1SubnetName;
+    nic.vNetSubnetRGName = nic1vNetSubnetRGName;
+    nic.networkProfileName = nic1NetworkProfileName;
+
+    nic.ipAddressType = nic1IpAddressType;
+
+    nic.securityGroupName = nic1SecurityGroupName;
+    nic.securityGroupRGName = nic1SecurityGroupRGName;
+    nic.securityGroupEnabled = nic1SecurityGroupEnabled;
+
+    nicPropertiesAttr.push(nic);
+    cleanupNicNames = new Array();
+    cleanupNicNames.push(nic1Name);
+}
+if (numberOfNics >= 2) {
+    var nic = new Properties();
+    nic.isPrimary = false;
+    nic.nicName = nic2Name;
+
+    nic.networkConfigurationType = nic2NetworkConfigurationType;
+    nic.vNetName = nic2vNetName;
+    nic.subnetName = nic2SubnetName;
+    nic.vNetSubnetRGName = nic2vNetSubnetRGName;
+    nic.networkProfileName = nic2NetworkProfileName;
+
+    nic.ipAddressType = nic2IpAddressType;
+
+    nic.securityGroupName = nic2SecurityGroupName;
+    nic.securityGroupRGName = nic2SecurityGroupRGName;
+    nic.securityGroupEnabled = nic2SecurityGroupEnabled;
+
+    nicPropertiesAttr.push(nic);
+    cleanupNicNames.push(nic2Name);
+}
+if (numberOfNics >= 3) {
+    var nic = new Properties();
+    nic.isPrimary = false;
+    nic.nicName = nic3Name;
+
+    nic.networkConfigurationType = nic3NetworkConfigurationType;
+    nic.vNetName = nic3vNetName;
+    nic.subnetName = nic3SubnetName;
+    nic.vNetSubnetRGName = nic3vNetSubnetRGName;
+    nic.networkProfileName = nic3NetworkProfileName;
+
+    nic.ipAddressType = nic3IpAddressType;
+
+    nic.securityGroupName = nic3SecurityGroupName;
+    nic.securityGroupRGName = nic3SecurityGroupRGName;
+    nic.securityGroupEnabled = nic3SecurityGroupEnabled;
+
+    nicPropertiesAttr.push(nic);
+    cleanupNicNames.push(nic3Name);
+}
+if (numberOfNics >= 4) {
+    var nic = new Properties();
+    nic.isPrimary = false;
+    nic.nicName = nic4Name;
+
+    nic.networkConfigurationType = nic4NetworkConfigurationType;
+    nic.vNetName = nic4vNetName;
+    nic.subnetName = nic4SubnetName;
+    nic.vNetSubnetRGName = nic4vNetSubnetRGName;
+    nic.networkProfileName = nic4NetworkProfileName;
+
+    nic.ipAddressType = nic4IpAddressType;
+
+    nic.securityGroupName = nic4SecurityGroupName;
+    nic.securityGroupRGName = nic4SecurityGroupRGName;
+    nic.securityGroupEnabled = nic4SecurityGroupEnabled;
+
+    nicPropertiesAttr.push(nic);
+    cleanupNicNames.push(nic4Name);
+}]]></script>
+    <in-binding>
+      <bind name="numberOfNics" type="number" export-name="numberOfNics">
+        <description><![CDATA[Number of NICs]]></description>
+      </bind>
+      <bind name="nic2Name" type="string" export-name="nic2Name">
+        <description><![CDATA[NIC2 name]]></description>
+      </bind>
+      <bind name="nic2IpAddressType" type="string" export-name="nic2IpAddressType">
+        <description><![CDATA[NIC2 IP address type]]></description>
+      </bind>
+      <bind name="nic2vNetName" type="string" export-name="nic2vNetName">
+        <description><![CDATA[NIC2 vNet name]]></description>
+      </bind>
+      <bind name="nic2SubnetName" type="string" export-name="nic2SubnetName">
+        <description><![CDATA[NIC2 subnet name]]></description>
+      </bind>
+      <bind name="nic2SecurityGroupName" type="string" export-name="nic2SecurityGroupName">
+        <description><![CDATA[NIC2 security group name]]></description>
+      </bind>
+      <bind name="nic3Name" type="string" export-name="nic3Name">
+        <description><![CDATA[NIC3 name]]></description>
+      </bind>
+      <bind name="nic3IpAddressType" type="string" export-name="nic3IpAddressType">
+        <description><![CDATA[NIC3 IP address type]]></description>
+      </bind>
+      <bind name="nic3vNetName" type="string" export-name="nic3vNetName">
+        <description><![CDATA[NIC3 vNet name]]></description>
+      </bind>
+      <bind name="nic3SubnetName" type="string" export-name="nic3SubnetName">
+        <description><![CDATA[NIC3 subnet name]]></description>
+      </bind>
+      <bind name="nic3SecurityGroupName" type="string" export-name="nic3SecurityGroupName">
+        <description><![CDATA[NIC3 security group name]]></description>
+      </bind>
+      <bind name="nic4Name" type="string" export-name="nic4Name">
+        <description><![CDATA[NIC4 name]]></description>
+      </bind>
+      <bind name="nic4IpAddressType" type="string" export-name="nic4IpAddressType">
+        <description><![CDATA[NIC4 IP address type]]></description>
+      </bind>
+      <bind name="nic4vNetName" type="string" export-name="nic4vNetName">
+        <description><![CDATA[NIC4 vNet name]]></description>
+      </bind>
+      <bind name="nic4SubnetName" type="string" export-name="nic4SubnetName">
+        <description><![CDATA[NIC4 subnet name]]></description>
+      </bind>
+      <bind name="nic4SecurityGroupName" type="string" export-name="nic4SecurityGroupName">
+        <description><![CDATA[NIC4 security group name]]></description>
+      </bind>
+      <bind name="nic1Name" type="string" export-name="nic1Name">
+        <description><![CDATA[NIC1 name]]></description>
+      </bind>
+      <bind name="nic1IpAddressType" type="string" export-name="nic1IpAddressType">
+        <description><![CDATA[NIC1 IP address type]]></description>
+      </bind>
+      <bind name="nic1vNetName" type="string" export-name="nic1vNetName">
+        <description><![CDATA[NIC1 vNet name]]></description>
+      </bind>
+      <bind name="nic1SubnetName" type="string" export-name="nic1SubnetName">
+        <description><![CDATA[NIC1 subnet name]]></description>
+      </bind>
+      <bind name="nic1SecurityGroupName" type="string" export-name="nic1SecurityGroupName">
+        <description><![CDATA[NIC1 security group name]]></description>
+      </bind>
+      <bind name="nic2SecurityGroupEnabled" type="boolean" export-name="nic2SecurityGroupEnabled">
+        <description><![CDATA[NIC2 is security group enabled]]></description>
+      </bind>
+      <bind name="nic3SecurityGroupEnabled" type="boolean" export-name="nic3SecurityGroupEnabled">
+        <description><![CDATA[NIC3 is security group enabled]]></description>
+      </bind>
+      <bind name="nic4SecurityGroupEnabled" type="boolean" export-name="nic4SecurityGroupEnabled">
+        <description><![CDATA[NIC4 is security group enabled]]></description>
+      </bind>
+      <bind name="nic1SecurityGroupEnabled" type="boolean" export-name="nic1SecurityGroupEnabled">
+        <description><![CDATA[NIC1 is security group enabled]]></description>
+      </bind>
+      <bind name="nic2NetworkConfigurationType" type="string" export-name="nic2NetworkConfigurationType"/>
+      <bind name="nic2NetworkProfileName" type="string" export-name="nic2NetworkProfileName"/>
+      <bind name="nic3NetworkConfigurationType" type="string" export-name="nic3NetworkConfigurationType"/>
+      <bind name="nic3NetworkProfileName" type="string" export-name="nic3NetworkProfileName"/>
+      <bind name="nic4NetworkConfigurationType" type="string" export-name="nic4NetworkConfigurationType"/>
+      <bind name="nic4NetworkProfileName" type="string" export-name="nic4NetworkProfileName"/>
+      <bind name="nic1NetworkConfigurationType" type="string" export-name="nic1NetworkConfigurationType">
+        <description><![CDATA[NIC1 network configuration type]]></description>
+      </bind>
+      <bind name="nic1NetworkProfileName" type="string" export-name="nic1NetworkProfileName"/>
+      <bind name="nic1vNetSubnetRGName" type="string" export-name="nic1vNetSubnetRGName"/>
+      <bind name="nic2vNetSubnetRGName" type="string" export-name="nic2vNetSubnetRGName"/>
+      <bind name="nic3vNetSubnetRGName" type="string" export-name="nic3vNetSubnetRGName"/>
+      <bind name="nic4vNetSubnetRGName" type="string" export-name="nic4vNetSubnetRGName"/>
+      <bind name="nic1SecurityGroupRGName" type="string" export-name="nic1SecurityGroupRGName"/>
+      <bind name="nic2SecurityGroupRGName" type="string" export-name="nic2SecurityGroupRGName"/>
+      <bind name="nic3SecurityGroupRGName" type="string" export-name="nic3SecurityGroupRGName"/>
+      <bind name="nic4SecurityGroupRGName" type="string" export-name="nic4SecurityGroupRGName"/>
+    </in-binding>
+    <out-binding>
+      <bind name="nicPropertiesAttr" type="Array/CompositeType(nicName:string,networkConfigurationType:string,vNetName:string,subnetName:string,vNetSubnetRGName:string,networkProfileName:string,ipAddressType:string,publicIpAddressName:string,publicIpAddressRGName:string,securityGroupName:string,securityGroupRGName:string,securityGroupEnabled:boolean,isPrimary:boolean):AzureVmNic" export-name="nicPropertiesAttr"/>
+      <bind name="cleanupNicNames" type="Array/string" export-name="cleanupNicNames"/>
+    </out-binding>
+    <description><![CDATA[Convert NIC_i related props to array of AzureVmNIC objects]]></description>
+    <position y="55.40909090909091" x="1404.5"/>
+  </workflow-item>
+  <workflow-item name="item20" out-name="item9" type="foreach">
+    <display-name><![CDATA[Foreach (Create Vm Nic)]]></display-name>
+    <in-binding>
+      <bind name="connection" type="Azure:Connection" export-name="connectionAttr"/>
+      <bind name="destinationRG" type="Azure:ResourceGroup" export-name="resourceGroupAttr">
+        <description><![CDATA[The destination RG where to create the NIC]]></description>
+      </bind>
+      <bind name="nicProperties" type="Array/CompositeType(nicName:string,networkConfigurationType:string,vNetName:string,subnetName:string,vNetSubnetRGName:string,networkProfileName:string,ipAddressType:string,publicIpAddressName:string,publicIpAddressRGName:string,securityGroupName:string,securityGroupRGName:string,securityGroupEnabled:boolean,isPrimary:boolean):AzureVmNic" export-name="*nicPropertiesAttr">
+        <description><![CDATA[NIC properties as passed by the UI used to create Azure:NetworkInterface]]></description>
+      </bind>
+      <bind name="assignableTags" type="Properties" export-name="assignableTags"/>
+      <bind name="region" type="Azure:Region" export-name="locationAttr"/>
+    </in-binding>
+    <out-binding>
+      <bind name="networkInterface" type="Array/Azure:NetworkInterface" export-name="*networkInterfacesAttr"/>
+    </out-binding>
+    <reference type="Workflow" id="4e483a42-d5a7-47dd-a3c8-14712dc02609"/>
+    <position y="119.04545454545453" x="1404.5"/>
+  </workflow-item>
+  <workflow-item name="item21" out-name="item17" type="task">
+    <display-name><![CDATA[To StorageDisk properties]]></display-name>
+    <script encoded="false"><![CDATA[storageDiskPropertiesAttr = [];
+if (numberOfStorages >= 1) {
+    var storageDisk = new Properties();
+    storageDisk.storageDiskName = storage1DiskName;
+    storageDisk.storageDiskSize = storage1DiskSize;
+    storageDisk.storageHostCaching = storage1HostCaching;
+    storageDisk.storageDiskConfigurationType = storage1DiskConfigurationType;
+    storageDisk.storageDiskType = storage1DiskType;
+    if (storage1DiskType == "HDD") {
+        storageDisk.storageReplication = storage1Replication;
+    } else {
+        storageDisk.storageReplication = storage1ReplicationSSD;
+    }
+    storageDisk.storageStorageAccount = storage1StorageAccount;
+    storageDisk.lun = 0;
+
+    storageDiskPropertiesAttr.push(storageDisk);
+}
+if (numberOfStorages >= 2) {
+    var storageDisk = new Properties();
+    storageDisk.storageDiskName = storage2DiskName;
+    storageDisk.storageDiskSize = storage2DiskSize;
+    storageDisk.storageHostCaching = storage2HostCaching;
+    storageDisk.storageDiskType = storage2DiskType;
+    if (storage2DiskType == "HDD") {
+        storageDisk.storageReplication = storage2Replication;
+    } else {
+        storageDisk.storageReplication = storage2ReplicationSSD;
+    }
+    storageDisk.storageStorageAccount = storage2StorageAccount;
+    storageDisk.lun = 1;
+
+    storageDiskPropertiesAttr.push(storageDisk);
+}
+if (numberOfStorages >= 3) {
+    var storageDisk = new Properties();
+    storageDisk.storageDiskName = storage3DiskName;
+    storageDisk.storageDiskSize = storage3DiskSize;
+    storageDisk.storageHostCaching = storage3HostCaching;
+    storageDisk.storageDiskType = storage3DiskType;
+    if (storage3DiskType == "HDD") {
+        storageDisk.storageReplication = storage3Replication;
+    } else {
+        storageDisk.storageReplication = storage3ReplicationSSD;
+    }
+    storageDisk.storageStorageAccount = storage3StorageAccount;
+    storageDisk.lun = 2;
+
+    storageDiskPropertiesAttr.push(storageDisk);
+}
+if (numberOfStorages >= 4) {
+    var storageDisk = new Properties();
+    storageDisk.storageDiskName = storage4DiskName;
+    storageDisk.storageDiskSize = storage4DiskSize;
+    storageDisk.storageHostCaching = storage4HostCaching;
+    storageDisk.storageDiskType = storage4DiskType;
+    if (storage1DiskType == "HDD") {
+        storageDisk.storageReplication = storage4Replication;
+    } else {
+        storageDisk.storageReplication = storage4ReplicationSSD;
+    }
+    storageDisk.storageStorageAccount = storage4StorageAccount;
+    storageDisk.lun = 3;
+
+    storageDiskPropertiesAttr.push(storageDisk);
+}]]></script>
+    <in-binding>
+      <bind name="numberOfStorages" type="number" export-name="numberOfStorages">
+        <description><![CDATA[Number of Storages]]></description>
+      </bind>
+      <bind name="storage1DiskName" type="string" export-name="storage1DiskName">
+        <description><![CDATA[Storage1 disk name]]></description>
+      </bind>
+      <bind name="storage1DiskType" type="string" export-name="storage1DiskType">
+        <description><![CDATA[Storage1 disk type]]></description>
+      </bind>
+      <bind name="storage1DiskSize" type="number" export-name="storage1DiskSize">
+        <description><![CDATA[Storage1 disk size]]></description>
+      </bind>
+      <bind name="storage1Replication" type="string" export-name="storage1Replication">
+        <description><![CDATA[Storage1 replication]]></description>
+      </bind>
+      <bind name="storage1HostCaching" type="string" export-name="storage1HostCaching">
+        <description><![CDATA[Storage1 host caching]]></description>
+      </bind>
+      <bind name="storage2DiskName" type="string" export-name="storage2DiskName">
+        <description><![CDATA[Storage2 disk name]]></description>
+      </bind>
+      <bind name="storage2DiskType" type="string" export-name="storage2DiskType">
+        <description><![CDATA[Storage2 disk type]]></description>
+      </bind>
+      <bind name="storage2DiskSize" type="number" export-name="storage2DiskSize">
+        <description><![CDATA[Storage2 disk size]]></description>
+      </bind>
+      <bind name="storage2Replication" type="string" export-name="storage2Replication">
+        <description><![CDATA[Storage2 replication]]></description>
+      </bind>
+      <bind name="storage2HostCaching" type="string" export-name="storage2HostCaching">
+        <description><![CDATA[Storage2 host caching]]></description>
+      </bind>
+      <bind name="storage3DiskName" type="string" export-name="storage3DiskName">
+        <description><![CDATA[Storage3 disk name]]></description>
+      </bind>
+      <bind name="storage3DiskType" type="string" export-name="storage3DiskType">
+        <description><![CDATA[Storage3 disk type]]></description>
+      </bind>
+      <bind name="storage3DiskSize" type="number" export-name="storage3DiskSize">
+        <description><![CDATA[Storage3 disk size]]></description>
+      </bind>
+      <bind name="storage3Replication" type="string" export-name="storage3Replication">
+        <description><![CDATA[Storage3 replication]]></description>
+      </bind>
+      <bind name="storage3HostCaching" type="string" export-name="storage3HostCaching">
+        <description><![CDATA[Storage3 host caching]]></description>
+      </bind>
+      <bind name="storage4DiskName" type="string" export-name="storage4DiskName">
+        <description><![CDATA[Storage4 disk name]]></description>
+      </bind>
+      <bind name="storage4DiskType" type="string" export-name="storage4DiskType">
+        <description><![CDATA[Storage4 disk type]]></description>
+      </bind>
+      <bind name="storage4DiskSize" type="number" export-name="storage4DiskSize">
+        <description><![CDATA[Storage4 disk size]]></description>
+      </bind>
+      <bind name="storage4Replication" type="string" export-name="storage4Replication">
+        <description><![CDATA[Storage4 replication]]></description>
+      </bind>
+      <bind name="storage4HostCaching" type="string" export-name="storage4HostCaching">
+        <description><![CDATA[Storage4 host caching]]></description>
+      </bind>
+      <bind name="storage1StorageAccount" type="string" export-name="storage1StorageAccount">
+        <description><![CDATA[Storage1 storage account]]></description>
+      </bind>
+      <bind name="storage2StorageAccount" type="string" export-name="storage2StorageAccount">
+        <description><![CDATA[Storage2 storage account]]></description>
+      </bind>
+      <bind name="storage3StorageAccount" type="string" export-name="storage3StorageAccount">
+        <description><![CDATA[Storage3 storage account]]></description>
+      </bind>
+      <bind name="storage4StorageAccount" type="string" export-name="storage4StorageAccount">
+        <description><![CDATA[Storage4 storage account]]></description>
+      </bind>
+      <bind name="storage1DiskConfigurationType" type="string" export-name="storage1DiskConfigurationType"/>
+      <bind name="storage1ReplicationSSD" type="string" export-name="storage1ReplicationSSD"/>
+      <bind name="storage2DiskConfigurationType" type="string" export-name="storage2DiskConfigurationType"/>
+      <bind name="storage2ReplicationSSD" type="string" export-name="storage2ReplicationSSD"/>
+      <bind name="storage3DiskConfigurationType" type="string" export-name="storage3DiskConfigurationType"/>
+      <bind name="storage3ReplicationSSD" type="string" export-name="storage3ReplicationSSD"/>
+      <bind name="storage4DiskConfigurationType" type="string" export-name="storage4DiskConfigurationType"/>
+      <bind name="storage4ReplicationSSD" type="string" export-name="storage4ReplicationSSD"/>
+    </in-binding>
+    <out-binding>
+      <bind name="storageDiskPropertiesAttr" type="Array/CompositeType(storageDiskName:string,storageDiskType:string,storageDiskSize:number,storageReplication:string,storageHostCaching:string,storageStorageAccount:string,lun:number):AzureStorageDisk" export-name="storageDiskPropertiesAttr"/>
+    </out-binding>
+    <position y="119.04545454545453" x="1144.5"/>
+  </workflow-item>
+  <workflow-item name="item5" out-name="item1" type="task">
+    <display-name><![CDATA[Extract instance allocation data and call this recursively]]></display-name>
+    <script encoded="false"><![CDATA[var instanceAllocationData = getInstanceAllocationData();
+callCreateAzureVM(instanceAllocationData);
+
+function getInstanceAllocationData() {
+    var isLocked = LockingSystem.lock(lockId, workflow.id);
+    var noOfRetries = 30;
+
+    while (!isLocked && noOfRetries > 0) {
+       System.log("Sleeping 5 secs before trying for lock.");
+       System.sleep(5000);
+       noOfRetries--;
+       isLocked = LockingSystem.lock(lockId, workflow.id);
+    }
+
+    if(!isLocked) {
+       throw "Not able to acquire lock after max retries. So failing the create VM wf. Try again.";
+    }
+    System.debug("Acquired lock with id: '" + lockId + "'.");
+
+    try {
+        var allocation = System.getContext().getParameter("_allocation");
+
+        if (allocation == null) {
+            throw "No _allocation parameter found. Aborting.";
+        }
+
+        var xaasAllocationId = JSON.parse(allocation)["xaas.allocationResult"];
+
+        if (xaasAllocationId == null) {
+            throw "No 'xaas.allocationResource' property found. Aborting.";
+        }
+
+        System.log("XaaS allocation id: '" + xaasAllocationId + "'.");
+
+        System.log("Get the allocations counters data.");
+        allocationConfiguration.reload();
+        var allocationCounters = allocationConfiguration.getAttributeWithKey("allocationCounters").value;
+        if (allocationCounters == null) {
+            System.log("No allocations counters data found. Creating a new one.");
+            allocationCounters = new Properties();
+        }
+
+        var counter = allocationCounters.get(xaasAllocationId);
+
+        if (counter == null) {
+            counter = 0;
+        }
+
+        var instanceAllocationData = aggregatedAllocationData.get(counter.toString());
+
+        System.log("Load allocation data for '" + counter + "' instance.");
+
+        // Increase the counter before storing it.
+        counter++;
+
+        if (counter == aggregatedAllocationData.keys.length && counter != 1) {
+            System.log("Delete the allocation id: '" + xaasAllocationId + "' counter since we are about to provision the last resource from the allocation.");
+            allocationCounters.remove(xaasAllocationId);
+        } else {
+            System.log("Increase the counter of the allocation id: '" + xaasAllocationId + "' to '" + counter + "'.");
+            allocationCounters.put(xaasAllocationId, counter);
+        }
+
+        allocationConfiguration.setAttributeWithKey("allocationCounters", allocationCounters);
+        allocationConfiguration.reload();
+
+        return instanceAllocationData;
+    } finally {
+        LockingSystem.unlock(lockId, workflow.id);
+        System.debug("Released lock with id: '" + lockId + "'.");
+    }
+
+}
+
+function callCreateAzureVM(instanceAllocationData) {
+    var createAzureVirtualMachineWorkflow = Server.findForType("Workflow", "f9e48b61-e9b3-4f70-afff-86c03812d728");
+
+    var inputParameters = new Properties();
+
+    // Add parameters from context.
+    var currentInParams = workflow.getInputParameters();
+    for each(var key in currentInParams.keys) {
+        System.log("Adding in parameter to input properties. Key: '" + key + "', value: '" + currentInParams.get(key) + "'.");
+        inputParameters.put(key, currentInParams.get(key));
+    }
+
+    for each (var key in System.getContext().parameterNames()) {
+        var value = System.getContext().getParameter(key)
+        System.log("Adding context parameter to input properties. Key: '" + key + "', value: '" + value + "'.");
+        inputParameters.put(key, value);
+    }
+
+    // Add parameters from allocation data.
+    for each (var key in instanceAllocationData.keys) {
+        var value = instanceAllocationData.get(key);
+        System.log("Adding allocation parameter to input properties. Key: '" + key + "', value: '" + value + "'.");
+        inputParameters.put(key, value);
+    }
+
+    // Important: Remove the aggregatedAllocationData parameter to stop the recursion.
+    inputParameters.remove("aggregatedAllocationData");
+
+    var workflowToken = createAzureVirtualMachineWorkflow.execute(inputParameters);
+
+    do {
+        System.log("Sleeping 5 secs while '" + createAzureVirtualMachineWorkflow.name + "' workflow is executing. Workflow state: " + workflowToken.state);
+        System.sleep(5000);
+    } while (workflowToken.state == "running")
+
+    if (workflowToken.state != "completed") {
+        throw "'" + createAzureVirtualMachineWorkflow.name + "' workflow state: '" + workflowToken.state + "' and exception: '" + workflowToken.exception + "'.";
+    }
+
+    System.log("'" + createAzureVirtualMachineWorkflow.name + "' Workflow completed with state: " + workflowToken.state);
+
+    if (workflowToken.getOutputParameters() == null && workflowToken.getOutputParameters().length != 1) {
+        throw "Unexpected number of output parameters from '" + createAzureVirtualMachineWorkflow.name + "' workflow.";
+    }
+
+    virtualMachine = workflowToken.getOutputParameters().get("virtualMachine");
+
+    if (virtualMachine == null) {
+        throw "Unable to find output parameter with name 'virtualMachine'.";
+    }
+
+}]]></script>
+    <in-binding>
+      <bind name="lockId" type="string" export-name="allocationLockId"/>
+      <bind name="allocationConfiguration" type="ConfigurationElement" export-name="allocationConfiguration"/>
+      <bind name="aggregatedAllocationData" type="Properties" export-name="aggregatedAllocationData"/>
+    </in-binding>
+    <out-binding>
+      <bind name="virtualMachine" type="Azure:VirtualMachine" export-name="virtualMachine"/>
+    </out-binding>
+    <position y="109.95454545454544" x="284.5"/>
+  </workflow-item>
+  <workflow-item name="item22" out-name="item5" type="condition" alt-out-name="item14" comparator="0">
+    <display-name><![CDATA[Decision]]></display-name>
+    <script encoded="false"><![CDATA[//Generated by the system, cannot be edited
+return (aggregatedAllocationData  != null ) ;]]></script>
+    <in-binding>
+      <bind name="aggregatedAllocationData" type="Properties" export-name="aggregatedAllocationData"/>
+    </in-binding>
+    <condition name="aggregatedAllocationData" type="Properties" comparator="0" label="null">__NULL__</condition>
+    <position y="54.5" x="284.5"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item6" type="task">
+    <display-name><![CDATA[Log cleanup start]]></display-name>
+    <script encoded="false"><![CDATA[System.log("Cleaning up all resources that have been created as part of the current request before the failure...");]]></script>
+    <in-binding/>
+    <out-binding/>
+    <position y="291.77272727272725" x="184.5"/>
+  </workflow-item>
+  <workflow-item name="item18" out-name="item23" type="task">
+    <display-name><![CDATA[Log cleanup done]]></display-name>
+    <script encoded="false"><![CDATA[System.log("Cleanup done!");]]></script>
+    <in-binding/>
+    <out-binding/>
+    <position y="291.77272727272725" x="464.5"/>
+  </workflow-item>
+  <workflow-item name="item23" throw-bind-name="errorCode" type="end" end-mode="1">
+    <position y="281.77272727272725" x="644.5"/>
+  </workflow-item>
+  <workflow-item name="item24" out-name="item23" type="condition" alt-out-name="item3" comparator="0">
+    <display-name><![CDATA[Needs cleanup]]></display-name>
+    <script encoded="false"><![CDATA[//Generated by the system, cannot be edited
+return (aggregatedAllocationData  != null ) ;]]></script>
+    <in-binding>
+      <bind name="aggregatedAllocationData" type="Properties" export-name="aggregatedAllocationData"/>
+    </in-binding>
+    <condition name="aggregatedAllocationData" type="Properties" comparator="0" label="null">__NULL__</condition>
+    <description><![CDATA[In case of error, if the Create Azure Virtual Machine workflow has been invoked for the aggregated allocation data (i.e. the one that holds information for all VM instances that need to be created), then just propagate the error to the caller.
+Else it means that the workflow was running for a specific allocation data (i.e. specific VM), which requires a cleanup process.]]></description>
+    <position y="209.04545454545453" x="184.5"/>
+  </workflow-item>
+  <workflow-item name="item9" out-name="item29" type="custom-condition" alt-out-name="item4">
+    <display-name><![CDATA[Use AvailabilitySet?]]></display-name>
+    <script encoded="false"><![CDATA[return (availabilitySetName && availabilitySetName != "");
+]]></script>
+    <in-binding>
+      <bind name="availabilitySetName" type="string" export-name="availabilitySetName"/>
+    </in-binding>
+    <position y="9.045454545454543" x="1664.5"/>
+  </workflow-item>
+  <workflow-item name="item7" out-name="item12" type="task" script-module="com.vmware.vra.endpoint.azure/createResourceGroup">
+    <display-name><![CDATA[Create ResourceGroup if needed]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.vra.endpoint.azure").createResourceGroup(connection,location,groupName,apiVersion) ;]]></script>
+    <in-binding>
+      <bind name="connection" type="Azure:Connection" export-name="connectionAttr">
+        <description><![CDATA[Azure connection]]></description>
+      </bind>
+      <bind name="location" type="Azure:Region" export-name="locationAttr">
+        <description><![CDATA[Resource group location]]></description>
+      </bind>
+      <bind name="groupName" type="string" export-name="resourceGroupName">
+        <description><![CDATA[Resource group name]]></description>
+      </bind>
+      <bind name="apiVersion" type="string" export-name="apiVersion">
+        <description><![CDATA[Azure API version to use]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Azure:ResourceGroup" export-name="resourceGroupAttr"/>
+    </out-binding>
+    <position y="64.5" x="824.5"/>
+  </workflow-item>
+  <workflow-item name="item0" out-name="item13" type="task" script-module="com.vmware.vra.endpoint.azure/createAvailabilitySet">
+    <display-name><![CDATA[Create AvailabilitySet if needed]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.vra.endpoint.azure").createAvailabilitySet(connection,location,resourceGroup,asName,isManaged) ;]]></script>
+    <in-binding>
+      <bind name="connection" type="Azure:Connection" export-name="connectionAttr">
+        <description><![CDATA[Azure connection]]></description>
+      </bind>
+      <bind name="location" type="Azure:Region" export-name="locationAttr">
+        <description><![CDATA[Azure location]]></description>
+      </bind>
+      <bind name="resourceGroup" type="Azure:ResourceGroup" export-name="resourceGroupAttr">
+        <description><![CDATA[Resource group]]></description>
+      </bind>
+      <bind name="asName" type="string" export-name="availabilitySetName">
+        <description><![CDATA[Availability set name]]></description>
+      </bind>
+      <bind name="isManaged" type="boolean" export-name="isManaged"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Azure:AvailabilitySet" export-name="availabilitySetAttr"/>
+    </out-binding>
+    <position y="146.3181818181818" x="1664.5"/>
+  </workflow-item>
+  <workflow-item name="item8" out-name="item28" type="task">
+    <display-name><![CDATA[Update ReferenceCount]]></display-name>
+    <script encoded="false"><![CDATA[var existingTags = new Properties();
+
+if (resourceGroupAttr) {
+   var tags = AzureResourceGroupManager.listTags(resourceGroupAttr);
+   for each(var item in tags) {
+   var field = item.split(':');
+      existingTags.put(field[0], field[1]);
+   }
+
+   if (existingTags.get("xaas.allocation.reference.count")) {
+      System.getModule("com.vmware.vra.endpoint.azure").updateResourceGroupReferenceCountTag(connection, resourceGroupAttr.name, 1, apiVersion);
+   }
+
+}]]></script>
+    <in-binding>
+      <bind name="connection" type="Azure:Connection" export-name="connectionAttr">
+        <description><![CDATA[Azure connection]]></description>
+      </bind>
+      <bind name="apiVersion" type="string" export-name="apiVersion"/>
+      <bind name="resourceGroupAttr" type="Azure:ResourceGroup" export-name="resourceGroupAttr"/>
+    </in-binding>
+    <out-binding/>
+    <position y="191.77272727272725" x="824.5"/>
+  </workflow-item>
+  <workflow-item name="item10" out-name="item4" type="task">
+    <display-name><![CDATA[Update ReferenceCount]]></display-name>
+    <script encoded="false"><![CDATA[if (availabilitySetAttr) {
+   var existingtags = new Properties();
+
+   var tags = AzureAvailabilitySetManager.listTags(availabilitySetAttr);
+
+   for each(var item in tags) {
+      var field = item.split(':');
+      existingtags.put(field[0], field[1]);
+   }
+
+   if (tags.length > 0 && existingtags.get("xaas.allocation.reference.count")) {
+      System.getModule("com.vmware.vra.endpoint.azure").updateAvailabilitySetReferenceCountTag(connection, resourceGroupAttr.name,
+        availabilitySetAttr.name, 1);
+   }
+   cleanupAvailabilitySetName = availabilitySetAttr.name;
+
+}]]></script>
+    <in-binding>
+      <bind name="resourceGroupAttr" type="Azure:ResourceGroup" export-name="resourceGroupAttr"/>
+      <bind name="availabilitySetAttr" type="Azure:AvailabilitySet" export-name="availabilitySetAttr"/>
+      <bind name="connection" type="Azure:Connection" export-name="connectionAttr">
+        <description><![CDATA[Azure connection]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="cleanupAvailabilitySetName" type="string" export-name="cleanupAvailabilitySetName"/>
+    </out-binding>
+    <position y="300.8636363636363" x="1664.5"/>
+  </workflow-item>
+  <workflow-item name="item12" out-name="item8" type="task">
+    <display-name><![CDATA[Add RG for cleanup in case of provisioning failure]]></display-name>
+    <script encoded="false"><![CDATA[// IMPORTANT: This assignment should be in a separate element, because if the update of reference count fails (the next script element)
+//            the cleanupResourceGroupName will not be set.
+cleanupResourceGroupName = resourceGroupAttr.name;]]></script>
+    <in-binding>
+      <bind name="resourceGroupAttr" type="Azure:ResourceGroup" export-name="resourceGroupAttr"/>
+    </in-binding>
+    <out-binding>
+      <bind name="cleanupResourceGroupName" type="string" export-name="cleanupResourceGroupName"/>
+    </out-binding>
+    <position y="128.13636363636363" x="824.5"/>
+  </workflow-item>
+  <workflow-item name="item13" out-name="item10" type="task">
+    <display-name><![CDATA[Add newly created AvSet for cleanup]]></display-name>
+    <script encoded="false"><![CDATA[
+if (availabilitySetAttr) {
+   var tags = AzureAvailabilitySetManager.listTags(availabilitySetAttr);
+   var existingtags = new Properties();
+
+   for each(var item in tags) {
+      var field = item.split(':');
+      existingtags.put(field[0], field[1]);
+   }
+
+   if (existingtags.get("xaas.allocation.reference.count") == 0) {
+      cleanupAvailabilitySetName = availabilitySetAttr.name;
+   }
+}]]></script>
+    <in-binding>
+      <bind name="availabilitySetAttr" type="Azure:AvailabilitySet" export-name="availabilitySetAttr"/>
+    </in-binding>
+    <out-binding>
+      <bind name="cleanupAvailabilitySetName" type="string" export-name="cleanupAvailabilitySetName"/>
+    </out-binding>
+    <position y="237.22727272727272" x="1664.5"/>
+  </workflow-item>
+  <workflow-item name="item26" out-name="item22" type="task">
+    <display-name><![CDATA[Init Configuration]]></display-name>
+    <script encoded="false"><![CDATA[var attributeResults = System.getModule("com.vmware.vra.endpoint.azure.configuration").getAzureConfigurations({
+    'General': ["apiVersion"],
+    'Allocation': ["lockId", "_self"]
+});
+
+apiVersion = attributeResults['General']['apiVersion'];
+allocationConfiguration = attributeResults['Allocation']["_self"];
+allocationLockId = attributeResults['Allocation']['allocationLockId'];]]></script>
+    <in-binding/>
+    <out-binding>
+      <bind name="allocationLockId" type="string" export-name="allocationLockId"/>
+      <bind name="allocationConfiguration" type="ConfigurationElement" export-name="allocationConfiguration"/>
+      <bind name="apiVersion" type="string" export-name="apiVersion"/>
+    </out-binding>
+    <position y="64.5" x="144.5"/>
+  </workflow-item>
+  <workflow-item name="item25" out-name="item11" type="task">
+    <display-name><![CDATA[Install Extension]]></display-name>
+    <script encoded="false"><![CDATA[
+// Install Custom Script Extensions
+System.log("Software Component is Present, so install the Custom Script Extension.");
+
+var windowsScriptPath = "";
+var linuxScriptPath = "";
+
+var reservationCustomProperties = System.getContext().getParameter("reservationCustomProperties");
+
+var customProperties = [];
+
+if (reservationCustomProperties == null) {
+  System.log("No Reservation Properties present.");
+} else {
+  var propertieslist = JSON.parse(reservationCustomProperties);
+  for (var prop in propertieslist) {
+    System.log("Reservation Property present - Name: " +prop + " its Value: " + propertieslist[prop]);
+    // These are the only properties needed incase of VPN tunneling.
+    if (prop == "software.ebs.url" || prop == "software.agent.service.url" || prop == "agent.download.url"){
+      softwareComponentProperties.put(prop,propertieslist[prop]);
+    } else if (prop == "Azure.Windows.ScriptPath") {
+      windowsScriptPath = propertieslist[prop];
+    } else if (prop == "Azure.Linux.ScriptPath") {
+      linuxScriptPath = propertieslist[prop];
+    } else {
+      customProperties.push(prop + '=' + propertieslist[prop]);;
+    }
+    // TODO: Move these ScriptPath properties to Azure endpoint configuration page if possible.
+  }
+}
+
+
+var appdProperties = [];
+for each (var key in softwareComponentProperties.keys) {
+  var value = softwareComponentProperties.get(key);
+  if (key == "Vcac.Software.Node.Id") {
+    var virtualMachine = AzureVirtualMachineManager.getVirtualMachineByResourceGroupAndVmName(resourceGroupAttr, vmName);
+    Server.tagGlobally(virtualMachine , "VRMSwAgent" , value);
+  } else if (key == "VirtualMachine.Software1000000.ScriptPath" || key == "VirtualMachine.Software1000010.ScriptPath" || key == "VirtualMachine.Software1000020.ScriptPath" ||
+             key == "VirtualMachine.Software1000000.Name" || key == "VirtualMachine.Software1000010.Name" || key == "VirtualMachine.Software1000020.Name" ||
+             key == "VirtualMachine.Software.Delay") {
+    System.log("skipping Gugent Related Properties.- "+key);
+    continue;
+  }
+
+  appdProperties.push(key + '=' + value);
+}
+
+var joinedAppdProperties = appdProperties.join();
+var joinedCustomProperties = customProperties.join();
+
+// need to convert ':' since the value passed to extension is a Json string. Having ':' will mess up the values
+// and result in error. This will be replaced back in the execution script.
+var escapedAppdProperties = joinedAppdProperties.replace(/:/g,"%");
+var escapedCustomProperties = joinedCustomProperties.replace(/:/g,"%");
+
+if (!escapedCustomProperties) {
+   escapedCustomProperties = "$null";
+}
+
+var virtualMachine = AzureVirtualMachineManager.getVirtualMachineByResourceGroupAndVmName(resourceGroupAttr, vmName);
+
+var scriptPaths = [];
+var commandToExecute = null;
+var extName = null;
+
+if (imageOSType == "Linux") {
+  scriptPaths.push(linuxScriptPath);
+  commandToExecute = "sh script.sh -f /opt/vmware-appdirector/agent -p '"+ appdProperties +"' -c '"+ escapedCustomProperties +"'";
+  extName = "LinuxCustomScriptExtension";
+          
+} else {
+  scriptPaths.push(windowsScriptPath);
+  commandToExecute = "powershell.exe -ExecutionPolicy Unrestricted -File script.ps1 -filepath C:\\opt\\vmware-appdirector\\agent -properties "+ appdProperties + " -customproperties " + escapedCustomProperties;
+  extName = "WindowsCustomScriptExtension";
+}
+
+try {
+   AzureExtensionManager.runCustomScriptExtPublicConfig(virtualMachine, extName, scriptPaths, commandToExecute, false);
+} catch (error) {
+   System.log ("Installation of Extension failed with error - " + error);
+   throw error;
+}
+
+System.log("Azure Custom Script Extension Installed succesfully");]]></script>
+    <in-binding>
+      <bind name="resourceGroupAttr" type="Azure:ResourceGroup" export-name="resourceGroupAttr"/>
+      <bind name="vmName" type="string" export-name="vmName"/>
+      <bind name="connection" type="Azure:Connection" export-name="connectionAttr"/>
+      <bind name="softwareComponentProperties" type="Properties" export-name="softwareComponentProperties"/>
+      <bind name="location" type="Azure:Region" export-name="locationAttr"/>
+      <bind name="imageOSType" type="string" export-name="imageOSType"/>
+    </in-binding>
+    <out-binding/>
+    <position y="237.22727272727272" x="1884.5"/>
+  </workflow-item>
+  <workflow-item name="item27" out-name="item25" type="custom-condition" alt-out-name="item11">
+    <display-name><![CDATA[UseSoftwareComponent]]></display-name>
+    <script encoded="false"><![CDATA[return softwareComponentProperties != null]]></script>
+    <in-binding>
+      <bind name="softwareComponentProperties" type="Properties" export-name="softwareComponentProperties"/>
+    </in-binding>
+    <position y="163.59090909090907" x="1884.5"/>
+  </workflow-item>
+  <workflow-item name="item6" out-name="item18" type="task" script-module="com.vmware.vra.endpoint.azure/cleanUpAzureResources">
+    <display-name><![CDATA[cleanUpAzureResources]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+System.getModule("com.vmware.vra.endpoint.azure").cleanUpAzureResources(connection,apiVersion,resourceGroupName,availabilitySetName,vmName,nicNames,location) ;]]></script>
+    <in-binding>
+      <bind name="connection" type="Azure:Connection" export-name="connectionAttr"/>
+      <bind name="apiVersion" type="string" export-name="apiVersion"/>
+      <bind name="resourceGroupName" type="string" export-name="resourceGroupName"/>
+      <bind name="availabilitySetName" type="string" export-name="availabilitySetName"/>
+      <bind name="vmName" type="string" export-name="vmName"/>
+      <bind name="nicNames" type="Array/string" export-name="cleanupNicNames"/>
+      <bind name="location" type="string" export-name="locationId"/>
+    </in-binding>
+    <out-binding/>
+    <position y="292.27272727272725" x="325.0"/>
+  </workflow-item>
+  <workflow-item name="item29" out-name="item0" type="task">
+    <display-name><![CDATA[Prepare Availability Set for Creation]]></display-name>
+    <script encoded="false"><![CDATA[if (storageType == "Managed Disk") {
+   isManaged = true;
+} else {
+   isManaged = false;
+}
+]]></script>
+    <in-binding>
+      <bind name="storageType" type="string" export-name="storageType">
+        <description><![CDATA[Storage Type]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="isManaged" type="boolean" export-name="isManaged"/>
+    </out-binding>
+    <position y="82.68181818181817" x="1664.5"/>
+  </workflow-item>
+  <workflow-item name="item28" out-name="item21" type="custom-condition" alt-out-name="item15">
+    <display-name><![CDATA[isManagedDisk]]></display-name>
+    <script encoded="false"><![CDATA[if (storageType == "Managed Disk") {
+   isManaged = true;
+} else {
+   isManaged = false;
+}
+
+return isManaged;]]></script>
+    <in-binding>
+      <bind name="storageType" type="string" export-name="storageType"/>
+    </in-binding>
+    <position y="172.68181818181816" x="1045.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Common parameters]]></title>
+      <p-param name="subscriptionId">
+        <desc><![CDATA[subscriptionId]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      </p-param>
+      <p-param name="locationId">
+        <desc><![CDATA[Location]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string##;#string#australiaeast#;#string#australiasoutheast#;#string#brazilsouth#;#string#centralindia#;#string#centralus#;#string#eastasia#;#string#eastus#;#string#eastus2#;#string#japaneast#;#string#japanwest#;#string#northcentralus#;#string#northeurope#;#string#southcentralus#;#string#southeastasia#;#string#southindia#;#string#westeurope#;#string#westindia#;#string#westus#}#]]></p-qual>
+      </p-param>
+      <p-param name="machinePrefixType">
+        <desc><![CDATA[Type of selected machine prefix]]></desc>
+        <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#custom#;#string#businessGroup#}#]]></p-qual>
+        <p-qual kind="static" name="defaultValue" type="string"><![CDATA[businessGroup]]></p-qual>
+      </p-param>
+      <p-param name="machinePrefix">
+        <desc><![CDATA[machinePrefix]]></desc>
+        <p-qual kind="ognl" name="mandatory" type="boolean"><![CDATA[#machinePrefixType == "custom"]]></p-qual>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#machinePrefixType == "custom"]]></p-qual>
+      </p-param>
+      <p-param name="vmName">
+        <desc><![CDATA[Virtual machine name]]></desc>
+        <p-qual kind="ognl" name="mandatory" type="boolean"><![CDATA[#machinePrefixType == "vmName"]]></p-qual>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#machinePrefixType == "vmName"]]></p-qual>
+      </p-param>
+      <p-param name="passwordAuthenticationType">
+        <desc><![CDATA[Use password authentication]]></desc>
+        <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#ssh#;#string#password#}#]]></p-qual>
+        <p-qual kind="static" name="defaultValue" type="string"><![CDATA[ssh]]></p-qual>
+      </p-param>
+      <p-param name="adminUsername">
+        <desc><![CDATA[Admin username]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      </p-param>
+      <p-param name="adminPassword">
+        <desc><![CDATA[Admin password]]></desc>
+        <p-qual kind="ognl" name="mandatory" type="boolean"><![CDATA[#passwordAuthenticationType == "password"]]></p-qual>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#passwordAuthenticationType == "password"]]></p-qual>
+        <p-qual kind="ognl" name="ognlValidator" type="String"><![CDATA[GetAction("com.vmware.vra.endpoint.azure","validatePassword").call( #adminPassword)]]></p-qual>
+      </p-param>
+      <p-param name="adminPasswordConfirm">
+        <desc><![CDATA[Confirm admin password]]></desc>
+        <p-qual kind="ognl" name="mandatory" type="boolean"><![CDATA[#passwordAuthenticationType == "password"]]></p-qual>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#passwordAuthenticationType == "password"]]></p-qual>
+        <p-qual kind="ognl" name="ognlValidator" type="String"><![CDATA[#adminPassword == #adminPasswordConfirm ? "" : "Passwords should match"]]></p-qual>
+      </p-param>
+      <p-param name="adminSshPublicKey">
+        <desc><![CDATA[Admin SSH public key ]]></desc>
+        <p-qual kind="static" name="textInput" type="void"><![CDATA[__NULL__]]></p-qual>
+        <p-qual kind="ognl" name="mandatory" type="boolean"><![CDATA[#passwordAuthenticationType == "ssh"]]></p-qual>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#passwordAuthenticationType == "ssh"]]></p-qual>
+      </p-param>
+    </p-step>
+    <p-step>
+      <title><![CDATA[Resource group]]></title>
+      <p-param name="resourceGroupCreationType">
+        <desc><![CDATA[Create or reuse Resource group]]></desc>
+        <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#new#;#string#existing#}#]]></p-qual>
+        <p-qual kind="static" name="defaultValue" type="string"><![CDATA[existing]]></p-qual>
+      </p-param>
+      <p-param name="resourceGroupName">
+        <desc><![CDATA[Resource group name]]></desc>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#resourceGroupCreationType == "existing"]]></p-qual>
+      </p-param>
+    </p-step>
+    <p-step>
+      <title><![CDATA[Storage]]></title>
+      <p-param name="storageType">
+        <desc><![CDATA[Storage Type]]></desc>
+        <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#Storage Account#;#string#Managed Disk#}#]]></p-qual>
+        <p-qual kind="static" name="defaultValue" type="string"><![CDATA[Storage Account]]></p-qual>
+      </p-param>
+      <p-param name="storageAccountName">
+        <desc><![CDATA[Storage account name]]></desc>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#storageType == "Storage Account"]]></p-qual>
+      </p-param>
+      <p-param name="managedDiskType">
+        <desc><![CDATA[VM Disk Type]]></desc>
+        <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#PREMIUM_LRS#;#string#STANDARD_LRS#}#]]></p-qual>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#storageType == "Managed Disk"]]></p-qual>
+      </p-param>
+      <p-param name="diagnosticsStorageAccountEnabled">
+        <desc><![CDATA[Add diagnostics storage]]></desc>
+        <p-qual kind="static" name="defaultValue" type="boolean"><![CDATA[__NULL__]]></p-qual>
+      </p-param>
+      <p-param name="diagnosticsStorageAccountName">
+        <desc><![CDATA[Diagnostics storage account name]]></desc>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#diagnosticsStorageAccountEnabled]]></p-qual>
+      </p-param>
+      <p-param name="numberOfStorages">
+        <desc><![CDATA[Number of Storages]]></desc>
+        <p-qual kind="static" name="genericEnumeration" type="Array/number"><![CDATA[#{#number#0.0#;#number#1.0#;#number#2.0#;#number#3.0#;#number#4.0#}#]]></p-qual>
+        <p-qual kind="static" name="defaultValue" type="number"><![CDATA[0.0]]></p-qual>
+        <p-qual kind="static" name="numberFormat" type="String"><![CDATA[##]]></p-qual>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      </p-param>
+      <p-group>
+        <title><![CDATA[Storage1]]></title>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfStorages > 0]]></p-qual>
+        <p-param name="storage1Header">
+          <desc><![CDATA[Placeholder for storage 1 header visualization]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfStorages > 0]]></p-qual>
+        </p-param>
+        <p-param name="storage1DiskName">
+          <desc><![CDATA[Storage1 disk name]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfStorages > 0]]></p-qual>
+          <p-qual kind="ognl" name="ognlValidator" type="String"><![CDATA[GetAction("com.vmware.vra.endpoint.azure","validateDiskName").call( #storage1DiskName )]]></p-qual>
+        </p-param>
+        <p-param name="storage1DiskSize">
+          <desc><![CDATA[Storage1 disk size]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfStorages > 0]]></p-qual>
+          <p-qual kind="static" name="numberFormat" type="String"><![CDATA[##]]></p-qual>
+          <p-qual kind="static" name="minNumberValue" type="Number"><![CDATA[0]]></p-qual>
+          <p-qual kind="static" name="maxNumberValue" type="Number"><![CDATA[1023.0]]></p-qual>
+        </p-param>
+        <p-param name="storage1HostCaching">
+          <desc><![CDATA[Storage1 host caching]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfStorages > 0]]></p-qual>
+          <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#None#;#string#ReadOnly#;#string#ReadWrite#}#]]></p-qual>
+        </p-param>
+        <p-param name="storage1DiskConfigurationType">
+          <desc><![CDATA[Storage1 disk configuration type]]></desc>
+          <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#storageAccount#;#string#diskDetails#}#]]></p-qual>
+          <p-qual kind="static" name="defaultValue" type="string"><![CDATA[diskDetails]]></p-qual>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfStorages > 0]]></p-qual>
+        </p-param>
+        <p-param name="storage1DiskType">
+          <desc><![CDATA[Storage1 disk type]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfStorages > 0 && #storage1DiskConfigurationType == "diskDetails"]]></p-qual>
+          <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#HDD#;#string#SSD#}#]]></p-qual>
+          <p-qual kind="static" name="defaultValue" type="string"><![CDATA[HDD]]></p-qual>
+        </p-param>
+        <p-param name="storage1Replication">
+          <desc><![CDATA[Storage1 replication]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfStorages > 0 && #storageType == "Storage Account"  && #storage1DiskConfigurationType == "diskDetails" && #storage1DiskType == "HDD"]]></p-qual>
+          <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#LRS#;#string#ZRS#;#string#GRS#;#string#RA-GRS#}#]]></p-qual>
+          <p-qual kind="static" name="defaultValue" type="string"><![CDATA[RA-GRS]]></p-qual>
+        </p-param>
+        <p-param name="storage1ReplicationSSD">
+          <desc><![CDATA[storage1ReplicationSDD]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfStorages > 0 && #storageType == "Storage Account" && #storage1DiskConfigurationType == "diskDetails" && #storage1DiskType == "SSD"]]></p-qual>
+          <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#LRS#}#]]></p-qual>
+          <p-qual kind="static" name="defaultValue" type="string"><![CDATA[LRS]]></p-qual>
+        </p-param>
+        <p-param name="storage1StorageAccount">
+          <desc><![CDATA[Storage1 storage account]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfStorages > 0 && #storage1DiskConfigurationType == "storageAccount"]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Storage2]]></title>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfStorages > 1]]></p-qual>
+        <p-param name="storage2Header">
+          <desc><![CDATA[Placeholder for storage 2 header visualization]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfStorages > 1]]></p-qual>
+        </p-param>
+        <p-param name="storage2DiskName">
+          <desc><![CDATA[Storage2 disk name]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfStorages > 1]]></p-qual>
+          <p-qual kind="ognl" name="ognlValidator" type="String"><![CDATA[GetAction("com.vmware.vra.endpoint.azure","validateDiskName").call( #storage2DiskName )]]></p-qual>
+        </p-param>
+        <p-param name="storage2DiskSize">
+          <desc><![CDATA[Storage2 disk size]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfStorages > 1]]></p-qual>
+          <p-qual kind="static" name="numberFormat" type="String"><![CDATA[##]]></p-qual>
+          <p-qual kind="static" name="minNumberValue" type="Number"><![CDATA[0]]></p-qual>
+          <p-qual kind="static" name="maxNumberValue" type="Number"><![CDATA[1023.0]]></p-qual>
+        </p-param>
+        <p-param name="storage2HostCaching">
+          <desc><![CDATA[Storage2 host caching]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfStorages > 1]]></p-qual>
+          <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#None#;#string#ReadOnly#;#string#ReadWrite#}#]]></p-qual>
+        </p-param>
+        <p-param name="storage2DiskConfigurationType">
+          <desc><![CDATA[Storage2 disk configuration type]]></desc>
+          <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#storageAccount#;#string#diskDetails#}#]]></p-qual>
+          <p-qual kind="static" name="defaultValue" type="string"><![CDATA[diskDetails]]></p-qual>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfStorages > 1]]></p-qual>
+        </p-param>
+        <p-param name="storage2DiskType">
+          <desc><![CDATA[Storage2 disk type]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfStorages > 1 && #storage2DiskConfigurationType == "diskDetails"]]></p-qual>
+          <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#HDD#;#string#SSD#}#]]></p-qual>
+          <p-qual kind="static" name="defaultValue" type="string"><![CDATA[HDD]]></p-qual>
+        </p-param>
+        <p-param name="storage2Replication">
+          <desc><![CDATA[Storage2 replication]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfStorages > 1 && #storageType == "Storage Account" && #storage2DiskConfigurationType == "diskDetails" && #storage2DiskType == "HDD"]]></p-qual>
+          <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#LRS#;#string#ZRS#;#string#GRS#;#string#RA-GRS#}#]]></p-qual>
+          <p-qual kind="static" name="defaultValue" type="string"><![CDATA[RA-GRS]]></p-qual>
+        </p-param>
+        <p-param name="storage2ReplicationSSD">
+          <desc><![CDATA[Storage2 replication]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfStorages > 1 && #storageType == "Storage Account" && #storage2DiskConfigurationType == "diskDetails" && #storage2DiskType == "SSD"]]></p-qual>
+          <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#LRS#}#]]></p-qual>
+          <p-qual kind="static" name="defaultValue" type="string"><![CDATA[LRS]]></p-qual>
+        </p-param>
+        <p-param name="storage2StorageAccount">
+          <desc><![CDATA[Storage2 storage account]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfStorages > 1 && #storage2DiskConfigurationType == "storageAccount"]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Storage3]]></title>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfStorages > 2]]></p-qual>
+        <p-param name="storage3Header">
+          <desc><![CDATA[Placeholder for storage 3 header visualization]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfStorages > 2]]></p-qual>
+        </p-param>
+        <p-param name="storage3DiskName">
+          <desc><![CDATA[Storage3 disk name]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfStorages > 2]]></p-qual>
+          <p-qual kind="ognl" name="ognlValidator" type="String"><![CDATA[GetAction("com.vmware.vra.endpoint.azure","validateDiskName").call( #storage3DiskName )]]></p-qual>
+        </p-param>
+        <p-param name="storage3DiskSize">
+          <desc><![CDATA[Storage3 disk size]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfStorages > 2]]></p-qual>
+          <p-qual kind="static" name="numberFormat" type="String"><![CDATA[##]]></p-qual>
+          <p-qual kind="static" name="minNumberValue" type="Number"><![CDATA[0]]></p-qual>
+          <p-qual kind="static" name="maxNumberValue" type="Number"><![CDATA[1023.0]]></p-qual>
+        </p-param>
+        <p-param name="storage3HostCaching">
+          <desc><![CDATA[Storage3 host caching]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfStorages > 2]]></p-qual>
+          <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#None#;#string#ReadOnly#;#string#ReadWrite#}#]]></p-qual>
+        </p-param>
+        <p-param name="storage3DiskConfigurationType">
+          <desc><![CDATA[Storage3 disk configuration type]]></desc>
+          <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#storageAccount#;#string#diskDetails#}#]]></p-qual>
+          <p-qual kind="static" name="defaultValue" type="string"><![CDATA[diskDetails]]></p-qual>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfStorages > 2]]></p-qual>
+        </p-param>
+        <p-param name="storage3DiskType">
+          <desc><![CDATA[Storage3 disk type]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfStorages > 2 && #storage3DiskConfigurationType == "diskDetails"]]></p-qual>
+          <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#HDD#;#string#SSD#}#]]></p-qual>
+          <p-qual kind="static" name="defaultValue" type="string"><![CDATA[HDD]]></p-qual>
+        </p-param>
+        <p-param name="storage3Replication">
+          <desc><![CDATA[Storage3 replication]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfStorages > 2 && #storageType == "Storage Account" && #storage3DiskConfigurationType == "diskDetails" && #storage3DiskType == "HDD"]]></p-qual>
+          <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#LRS#;#string#ZRS#;#string#GRS#;#string#RA-GRS#}#]]></p-qual>
+          <p-qual kind="static" name="defaultValue" type="string"><![CDATA[RA-GRS]]></p-qual>
+        </p-param>
+        <p-param name="storage3ReplicationSSD">
+          <desc><![CDATA[Storage3 replication]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfStorages > 2 && #storageType == "Storage Account" && #storage3DiskConfigurationType == "diskDetails" && #storage3DiskType == "SSD"]]></p-qual>
+          <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#LRS#}#]]></p-qual>
+          <p-qual kind="static" name="defaultValue" type="string"><![CDATA[LRS]]></p-qual>
+        </p-param>
+        <p-param name="storage3StorageAccount">
+          <desc><![CDATA[Storage3 storage account]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfStorages > 2 && #storage3DiskConfigurationType == "storageAccount"]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Storage4]]></title>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfStorages > 3]]></p-qual>
+        <p-param name="storage4Header">
+          <desc><![CDATA[Placeholder for storage 4 header visualization]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfStorages > 3]]></p-qual>
+        </p-param>
+        <p-param name="storage4DiskName">
+          <desc><![CDATA[Storage4 disk name]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfStorages > 3]]></p-qual>
+          <p-qual kind="ognl" name="ognlValidator" type="String"><![CDATA[GetAction("com.vmware.vra.endpoint.azure","validateDiskName").call( #storage4DiskName )]]></p-qual>
+        </p-param>
+        <p-param name="storage4DiskSize">
+          <desc><![CDATA[Storage4 disk size]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfStorages > 3]]></p-qual>
+          <p-qual kind="static" name="numberFormat" type="String"><![CDATA[##]]></p-qual>
+          <p-qual kind="static" name="minNumberValue" type="Number"><![CDATA[0]]></p-qual>
+          <p-qual kind="static" name="maxNumberValue" type="Number"><![CDATA[1023.0]]></p-qual>
+        </p-param>
+        <p-param name="storage4HostCaching">
+          <desc><![CDATA[Storage4 host caching]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfStorages > 3]]></p-qual>
+          <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#None#;#string#ReadOnly#;#string#ReadWrite#}#]]></p-qual>
+        </p-param>
+        <p-param name="storage4DiskConfigurationType">
+          <desc><![CDATA[Storage4 disk configuration type]]></desc>
+          <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#storageAccount#;#string#diskDetails#}#]]></p-qual>
+          <p-qual kind="static" name="defaultValue" type="string"><![CDATA[diskDetails]]></p-qual>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfStorages > 3]]></p-qual>
+        </p-param>
+        <p-param name="storage4DiskType">
+          <desc><![CDATA[Storage4 disk type]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfStorages > 3 && #storage4DiskConfigurationType == "diskDetails"]]></p-qual>
+          <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#HDD#;#string#SSD#}#]]></p-qual>
+          <p-qual kind="static" name="defaultValue" type="string"><![CDATA[HDD]]></p-qual>
+        </p-param>
+        <p-param name="storage4Replication">
+          <desc><![CDATA[Storage4 replication]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfStorages > 3 && #storageType == "Storage Account" && #storage4DiskConfigurationType == "diskDetails" && #storage4DiskType == "HDD"]]></p-qual>
+          <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#LRS#;#string#ZRS#;#string#GRS#;#string#RA-GRS#}#]]></p-qual>
+          <p-qual kind="static" name="defaultValue" type="string"><![CDATA[RA-GRS]]></p-qual>
+        </p-param>
+        <p-param name="storage4ReplicationSSD">
+          <desc><![CDATA[Storage4 replication]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfStorages > 3 && #storageType == "Storage Account" && #storage4DiskConfigurationType == "diskDetails" && #storage4DiskType == "SSD"]]></p-qual>
+          <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#LRS#}#]]></p-qual>
+          <p-qual kind="static" name="defaultValue" type="string"><![CDATA[LRS]]></p-qual>
+        </p-param>
+        <p-param name="storage4StorageAccount">
+          <desc><![CDATA[Storage4 storage account]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfStorages > 3 && #storage4DiskConfigurationType == "storageAccount"]]></p-qual>
+        </p-param>
+      </p-group>
+    </p-step>
+    <p-step>
+      <title><![CDATA[Network]]></title>
+      <p-param name="loadBalancerName">
+        <desc><![CDATA[Load Balancer name]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[false]]></p-qual>
+      </p-param>
+      <p-param name="backendAddressPoolName">
+        <desc><![CDATA[Backend Address Pool name]]></desc>
+        <p-qual kind="ognl" name="mandatory" type="boolean"><![CDATA[#loadBalancerName != null && #loadBalancerName != ""]]></p-qual>
+      </p-param>
+      <p-param name="numberOfNics">
+        <desc><![CDATA[Number of NICs]]></desc>
+        <p-qual kind="static" name="genericEnumeration" type="Array/number"><![CDATA[#{#number#0.0#;#number#1.0#;#number#2.0#;#number#3.0#;#number#4.0#}#]]></p-qual>
+        <p-qual kind="static" name="defaultValue" type="number"><![CDATA[0.0]]></p-qual>
+        <p-qual kind="static" name="numberFormat" type="String"><![CDATA[##]]></p-qual>
+      </p-param>
+      <p-group>
+        <title><![CDATA[NIC1]]></title>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfNics >= 1]]></p-qual>
+        <p-param name="network1Header">
+          <desc><![CDATA[Placeholder for network 1 header visualization]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfNics > 0]]></p-qual>
+        </p-param>
+        <p-param name="nic1Name">
+          <desc><![CDATA[NIC1 name]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfNics > 0]]></p-qual>
+        </p-param>
+        <p-param name="nic1IpAddressType">
+          <desc><![CDATA[NIC1 IP address type]]></desc>
+          <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#Dynamic#;#string#Static#}#]]></p-qual>
+          <p-qual kind="static" name="defaultValue" type="string"><![CDATA[Dynamic]]></p-qual>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfNics > 0]]></p-qual>
+          <p-qual kind="ognl" name="mandatory" type="boolean"><![CDATA[#numberOfNics > 0]]></p-qual>
+        </p-param>
+        <p-param name="nic1NetworkConfigurationType">
+          <desc><![CDATA[NIC1 network configuration type]]></desc>
+          <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#networks#;#string#networkProfile#}#]]></p-qual>
+          <p-qual kind="static" name="defaultValue" type="string"><![CDATA[networks]]></p-qual>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfNics > 0]]></p-qual>
+        </p-param>
+        <p-param name="nic1vNetName">
+          <desc><![CDATA[NIC1 vNet name]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfNics > 0 && #nic1NetworkConfigurationType == 'networks']]></p-qual>
+        </p-param>
+        <p-param name="nic1SubnetName">
+          <desc><![CDATA[NIC1 subnet name]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfNics > 0 && #nic1NetworkConfigurationType == 'networks']]></p-qual>
+        </p-param>
+        <p-param name="nic1NetworkProfileName">
+          <desc><![CDATA[nic1NetworkProfileName]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfNics > 0 && #nic1NetworkConfigurationType == 'networkProfile']]></p-qual>
+        </p-param>
+        <p-param name="nic1SecurityGroupEnabled">
+          <desc><![CDATA[NIC1 enable security group]]></desc>
+          <p-qual kind="static" name="defaultValue" type="boolean"><![CDATA[false]]></p-qual>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfNics > 0]]></p-qual>
+        </p-param>
+        <p-param name="nic1SecurityGroupName">
+          <desc><![CDATA[NIC1 security group name]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfNics > 0 && #nic1SecurityGroupEnabled == true]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[NIC2]]></title>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfNics >= 2]]></p-qual>
+        <p-param name="network2Header">
+          <desc><![CDATA[Placeholder for network 2 header visualization]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfNics > 1]]></p-qual>
+        </p-param>
+        <p-param name="nic2Name">
+          <desc><![CDATA[NIC2 name]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfNics > 1]]></p-qual>
+        </p-param>
+        <p-param name="nic2IpAddressType">
+          <desc><![CDATA[NIC2 IP address type]]></desc>
+          <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#Dynamic#;#string#Static#}#]]></p-qual>
+          <p-qual kind="static" name="defaultValue" type="string"><![CDATA[Dynamic]]></p-qual>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfNics > 1]]></p-qual>
+          <p-qual kind="ognl" name="mandatory" type="boolean"><![CDATA[#numberOfNics > 1]]></p-qual>
+        </p-param>
+        <p-param name="nic2NetworkConfigurationType">
+          <desc><![CDATA[nic2NetworkConfigurationType]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfNics > 1]]></p-qual>
+          <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#networks#;#string#networkProfile#}#]]></p-qual>
+          <p-qual kind="static" name="defaultValue" type="string"><![CDATA[networks]]></p-qual>
+        </p-param>
+        <p-param name="nic2vNetName">
+          <desc><![CDATA[NIC2 vNet name]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfNics > 1 && #nic2NetworkConfigurationType == 'networks']]></p-qual>
+        </p-param>
+        <p-param name="nic2SubnetName">
+          <desc><![CDATA[NIC2 subnet name]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfNics > 1 && #nic2NetworkConfigurationType == 'networks']]></p-qual>
+        </p-param>
+        <p-param name="nic2NetworkProfileName">
+          <desc><![CDATA[nic2NetworkProfileName]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfNics > 1 && #nic2NetworkConfigurationType == 'networkProfile']]></p-qual>
+        </p-param>
+        <p-param name="nic2SecurityGroupEnabled">
+          <desc><![CDATA[NIC2 enable security group]]></desc>
+          <p-qual kind="static" name="defaultValue" type="boolean"><![CDATA[__NULL__]]></p-qual>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfNics > 1]]></p-qual>
+        </p-param>
+        <p-param name="nic2SecurityGroupName">
+          <desc><![CDATA[NIC2 security group name]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfNics > 1 && #nic2SecurityGroupEnabled == true]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[NIC3]]></title>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfNics >= 3]]></p-qual>
+        <p-param name="network3Header">
+          <desc><![CDATA[Placeholder for network 3 header visualization]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfNics > 2]]></p-qual>
+        </p-param>
+        <p-param name="nic3Name">
+          <desc><![CDATA[NIC3 name]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfNics > 2]]></p-qual>
+        </p-param>
+        <p-param name="nic3IpAddressType">
+          <desc><![CDATA[NIC3 IP address type]]></desc>
+          <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#Dynamic#;#string#Static#}#]]></p-qual>
+          <p-qual kind="static" name="defaultValue" type="string"><![CDATA[Dynamic]]></p-qual>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfNics > 2]]></p-qual>
+          <p-qual kind="ognl" name="mandatory" type="boolean"><![CDATA[#numberOfNics > 2]]></p-qual>
+        </p-param>
+        <p-param name="nic3NetworkConfigurationType">
+          <desc><![CDATA[nic3NetworkConfigurationType]]></desc>
+          <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#networks#;#string#networkProfile#}#]]></p-qual>
+          <p-qual kind="static" name="defaultValue" type="string"><![CDATA[networks]]></p-qual>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfNics > 2]]></p-qual>
+        </p-param>
+        <p-param name="nic3vNetName">
+          <desc><![CDATA[NIC3 vNet name]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfNics > 2 && #nic3NetworkConfigurationType == 'networks']]></p-qual>
+        </p-param>
+        <p-param name="nic3SubnetName">
+          <desc><![CDATA[NIC3 subnet name]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfNics > 2 && #nic3NetworkConfigurationType == 'networks']]></p-qual>
+        </p-param>
+        <p-param name="nic3NetworkProfileName">
+          <desc><![CDATA[nic3NetworkProfileName]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfNics > 2 && #nic3NetworkConfigurationType == 'networkProfile']]></p-qual>
+        </p-param>
+        <p-param name="nic3SecurityGroupEnabled">
+          <desc><![CDATA[NIC3 enable security group]]></desc>
+          <p-qual kind="static" name="defaultValue" type="boolean"><![CDATA[__NULL__]]></p-qual>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfNics > 2]]></p-qual>
+        </p-param>
+        <p-param name="nic3SecurityGroupName">
+          <desc><![CDATA[NIC3 security group name]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfNics > 2 && #nic3SecurityGroupEnabled == true]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[NIC4]]></title>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfNics >= 4]]></p-qual>
+        <p-param name="network4Header">
+          <desc><![CDATA[Placeholder for network 4 header visualization]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfNics > 3]]></p-qual>
+        </p-param>
+        <p-param name="nic4Name">
+          <desc><![CDATA[NIC4 name]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfNics > 3]]></p-qual>
+        </p-param>
+        <p-param name="nic4IpAddressType">
+          <desc><![CDATA[NIC4 IP address type]]></desc>
+          <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#Dynamic#;#string#Static#}#]]></p-qual>
+          <p-qual kind="static" name="defaultValue" type="string"><![CDATA[Dynamic]]></p-qual>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfNics > 3]]></p-qual>
+          <p-qual kind="ognl" name="mandatory" type="boolean"><![CDATA[#numberOfNics > 3]]></p-qual>
+        </p-param>
+        <p-param name="nic4NetworkConfigurationType">
+          <desc><![CDATA[nic4NetworkConfigurationType]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfNics > 3]]></p-qual>
+          <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#networks#;#string#networkProfile#}#]]></p-qual>
+          <p-qual kind="static" name="defaultValue" type="string"><![CDATA[networks]]></p-qual>
+        </p-param>
+        <p-param name="nic4vNetName">
+          <desc><![CDATA[NIC4 vNet name]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfNics > 3 && #nic4NetworkConfigurationType == 'networks']]></p-qual>
+        </p-param>
+        <p-param name="nic4SubnetName">
+          <desc><![CDATA[NIC4 subnet name]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfNics > 3 && #nic4NetworkConfigurationType == 'networks']]></p-qual>
+        </p-param>
+        <p-param name="nic4NetworkProfileName">
+          <desc><![CDATA[nic4NetworkProfileName]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfNics > 3 && #nic4NetworkConfigurationType == 'networkProfile']]></p-qual>
+        </p-param>
+        <p-param name="nic4SecurityGroupEnabled">
+          <desc><![CDATA[NIC4 enable security group]]></desc>
+          <p-qual kind="static" name="defaultValue" type="boolean"><![CDATA[__NULL__]]></p-qual>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfNics > 3]]></p-qual>
+        </p-param>
+        <p-param name="nic4SecurityGroupName">
+          <desc><![CDATA[NIC4 security group name]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#numberOfNics > 3 && #nic4SecurityGroupEnabled == true]]></p-qual>
+        </p-param>
+      </p-group>
+    </p-step>
+    <p-step>
+      <title><![CDATA[Availability set]]></title>
+      <p-param name="availabilitySetCreationType">
+        <desc><![CDATA[Create or reuse Availability set]]></desc>
+        <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#none#;#string#new#;#string#existing#}#]]></p-qual>
+        <p-qual kind="static" name="defaultValue" type="string"><![CDATA[none]]></p-qual>
+      </p-param>
+      <p-param name="availabilitySetName">
+        <desc><![CDATA[Availability set name]]></desc>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#availabilitySetCreationType == "existing"]]></p-qual>
+        <p-qual kind="ognl" name="mandatory" type="boolean"><![CDATA[#availabilitySetCreationType == "existing"]]></p-qual>
+      </p-param>
+    </p-step>
+    <p-step>
+      <title><![CDATA[Image]]></title>
+      <p-param name="instanceSizeSeries">
+        <desc><![CDATA[instanceSizeSeries]]></desc>
+        <p-qual kind="ognl" name="genericEnumeration" type="Array/string"><![CDATA[GetAction("com.vmware.vra.endpoint.azure","getVMSeries").call( #locationId )]]></p-qual>
+      </p-param>
+      <p-param name="instanceSize">
+        <desc><![CDATA[instanceSize]]></desc>
+        <p-qual kind="ognl" name="genericEnumeration" type="Array/string"><![CDATA[GetAction("com.vmware.vra.endpoint.azure","getVMSizesBySeries").call( #locationId , #instanceSizeSeries )]]></p-qual>
+      </p-param>
+      <p-param name="instanceDetails">
+        <desc><![CDATA[instanceDetails]]></desc>
+        <p-qual name="textInput" type="void"><![CDATA[__NULL__]]></p-qual>
+        <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[GetAction("com.vmware.vra.endpoint.azure","getInstanceDetails").call( #instanceSizeSeries , #instanceSize )]]></p-qual>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#instanceSize!=""]]></p-qual>
+      </p-param>
+      <p-param name="imageType">
+        <desc><![CDATA[Virtual machine image type]]></desc>
+        <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#Stock#;#string#Custom#}#]]></p-qual>
+        <p-qual kind="static" name="defaultValue" type="string"><![CDATA[Stock]]></p-qual>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      </p-param>
+      <p-param name="imageURN">
+        <desc><![CDATA[VIrtual machine image URN]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        <p-qual kind="ognl" name="ognlValidator" type="String"><![CDATA[GetAction("com.vmware.vra.endpoint.azure","validateMachineImage").call( #imageURN , #imageType, #locationId )]]></p-qual>
+      </p-param>
+      <p-param name="imageOSType">
+        <desc><![CDATA[Virtual machine image OS type]]></desc>
+        <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#Windows#;#string#Linux#}#]]></p-qual>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#imageType == "Custom"]]></p-qual>
+        <p-qual kind="static" name="defaultValue" type="string"><![CDATA[Linux]]></p-qual>
+        <p-qual kind="ognl" name="mandatory" type="boolean"><![CDATA[#imageType == "Custom"]]></p-qual>
+      </p-param>
+    </p-step>
+    <p-param name="nic1vNetSubnetRGName">
+      <desc><![CDATA[nic1vNetSubnetRGName]]></desc>
+    </p-param>
+    <p-param name="nic2vNetSubnetRGName">
+      <desc><![CDATA[nic2vNetSubnetRGName]]></desc>
+    </p-param>
+    <p-param name="nic3vNetSubnetRGName">
+      <desc><![CDATA[nic3vNetSubnetRGName]]></desc>
+    </p-param>
+    <p-param name="nic4vNetSubnetRGName">
+      <desc><![CDATA[nic4vNetSubnetRGName]]></desc>
+    </p-param>
+    <p-param name="nic1SecurityGroupRGName">
+      <desc><![CDATA[nic1SecurityGroupRGName]]></desc>
+    </p-param>
+    <p-param name="nic2SecurityGroupRGName">
+      <desc><![CDATA[nic2SecurityGroupRGName]]></desc>
+    </p-param>
+    <p-param name="nic3SecurityGroupRGName">
+      <desc><![CDATA[nic3SecurityGroupRGName]]></desc>
+    </p-param>
+    <p-param name="nic4SecurityGroupRGName">
+      <desc><![CDATA[nic4SecurityGroupRGName]]></desc>
+    </p-param>
+    <p-param name="aggregatedAllocationData">
+      <desc><![CDATA[aggregatedAllocationData]]></desc>
+    </p-param>
+    <p-param name="loadBalancerRGName">
+      <desc><![CDATA[The Resource Group where the selected Load Balancer resides]]></desc>
+    </p-param>
+    <p-param name="softwareComponentProperties">
+      <desc><![CDATA[Software component properties]]></desc>
+    </p-param>
+    <p-param name="connection">
+      <desc><![CDATA[connection]]></desc>
+    </p-param>
+    <p-param name="destinationRG">
+      <desc><![CDATA[The destination RG where to create the NIC]]></desc>
+    </p-param>
+    <p-param name="assignableTags1">
+      <desc><![CDATA[assignableTags1]]></desc>
+    </p-param>
+    <p-param name="region">
+      <desc><![CDATA[region]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

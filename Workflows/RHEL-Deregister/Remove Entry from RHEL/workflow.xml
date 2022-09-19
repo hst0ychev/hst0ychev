@@ -1,0 +1,127 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="f952364f-9d5c-415e-8580-fb913934b2c8" version="0.0.1" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Remove Entry from RHEL]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="payload" type="Properties">
+      <description><![CDATA[Request Details]]></description>
+    </param>
+  </input>
+  <attrib name="vCACHost" type="vCAC:VCACHost" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='7678fd07-7e94-41fb-b504-826e693933a5'&dunesName='vCAC:VCACHost']]></value>
+  </attrib>
+  <attrib name="vm" type="VC:VirtualMachine" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="524.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item2" type="task">
+    <display-name><![CDATA[Scriptable task]]></display-name>
+    <script encoded="false"><![CDATA[function displayVar(variable){
+  if(!variable){
+    return "Not defined";
+  }
+  return variable;
+}
+
+function getProperty(field,from_var){
+  if(from_var && from_var.get(field))
+  {
+    return from_var.get(field);
+  }
+  return false;
+}
+
+function getPropertyFromJSONObject(field,from_var){
+  if(from_var && typeof from_var[field] !== 'undefined')
+  {
+    return from_var.get(field);
+  }
+  return false;
+}
+
+
+//Request id(STRING)
+var request_id = getProperty("requestId",payload);
+
+//Machine(Infrastructure.EBS.MachineDetail)
+var machine = getProperty("machine",payload);
+
+//Virtual Machine Event(STRING)
+var virtual_machine_event = getProperty("virtualMachineEvent",payload);
+
+//Lifecycle state(Infrastructure.EBS.LifecycleStateInfo.Provision)
+var lifecycle_object = getProperty("lifecycleState",payload);
+
+//Lifecycle State phase(STRING)
+var lifecycle_phase = getProperty("phase",lifecycle_object);
+
+//Lifecycle state name(STRING)
+var lifecycle_state = getProperty("state",lifecycle_object);
+
+//properties - Properties(Array Of Infrastructure.Machine.Properties)
+var machine_properties = getProperty("properties",machine);
+
+//virtualMachineAddOrUpdateProperties - Properties of the virtual machine to be added or updated(Array Of Infrastructure.CustomProperty)
+var virtual_machine_add_or_update_properties = getProperty("virtualMachineAddOrUpdateProperties",payload);
+
+//virtualMachineDeleteProperties - Properties of the virtual machine to be deleted(Array Of Infrastructure.CustomProperty)
+var virtual_machine_delete_properties = getProperty("virtualMachineDeleteProperties",payload);
+
+//id - Machine id(STRING)
+var machine_id = getProperty("id",machine);
+
+//name - Machine name(STRING)
+var machine_name = getProperty("name",machine);
+
+System.log("Machine name requested: "+machine_name);
+
+  vm = undefined;
+  var vms = Server.findAllForType("VC:VirtualMachine");
+  for each (var single_vm in vms){
+   if(single_vm.name === machine_name){
+      vm = single_vm;
+      System.log("VM found");
+      System.log("VM ID: "+vm.instanceId);
+    }
+  }
+
+if(!vm)
+{
+    throw "VM Not found";
+}]]></script>
+    <in-binding>
+      <bind name="machine_name" type="string" explicitly-not-bound="true" export-name="NULL"/>
+      <bind name="payload" type="Properties" export-name="payload"/>
+      <bind name="vCACHost" type="vCAC:VCACHost" export-name="vCACHost"/>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vm"/>
+    </in-binding>
+    <out-binding>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vm"/>
+    </out-binding>
+    <position y="37.22727272727273" x="204.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item0" type="link" linked-workflow-id="7520eb30-9516-404a-b3b3-7eab0c31b197">
+    <display-name><![CDATA[Run script in VM guest-PSO]]></display-name>
+    <in-binding>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vm"/>
+      <bind name="scriptVariables" type="Array/CompositeType(stringToReplace:string,replacingString:string):scriptVariables" explicitly-not-bound="true"/>
+    </in-binding>
+    <out-binding>
+      <bind name="scriptExitCodeOut" type="number" explicitly-not-bound="true"/>
+      <bind name="scriptOutputTextOut" type="string" explicitly-not-bound="true"/>
+    </out-binding>
+    <description><![CDATA[Run a script in a guest using existing script configurations. Replaces variables in the script. Optionaly copy additional file and replace its variables as well.
+
+If no working directory is specified:
+- it is set to the guest default temp directory if there is a resource file copied
+- it is set to default (c:\windows\system32 for Windows /root for Linux) if there is no resource file copied.]]></description>
+    <position y="55.40909090909091" x="344.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="payload">
+      <desc><![CDATA[Request Details]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

@@ -1,0 +1,147 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="Workflow:name=generic" id="cab0eee5-3e76-41ec-a475-18fd60ad29f7" version="1.0.1" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Retrieve messages (via MailClient)]]></display-name>
+  <description><![CDATA[Retrieves the messages of a certain email account, without deleting them, by using the new scripting API provided by Mail Client.]]></description>
+  <position y="20.0" x="180.0"/>
+  <input>
+    <param name="server" type="string">
+      <description><![CDATA[Server IP address or DNS name]]></description>
+    </param>
+    <param name="port" type="number">
+      <description><![CDATA[Port]]></description>
+    </param>
+    <param name="protocol" type="string">
+      <description><![CDATA[Protocol to use (IMAP or POP3)]]></description>
+    </param>
+    <param name="useSSL" type="boolean">
+      <description><![CDATA[True if SSL is used]]></description>
+    </param>
+    <param name="accountName" type="string">
+      <description><![CDATA[Email account name]]></description>
+    </param>
+    <param name="password" type="SecureString">
+      <description><![CDATA[Email account password]]></description>
+    </param>
+  </input>
+  <attrib name="errorCode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Catch any exceptions]]></description>
+  </attrib>
+  <workflow-note x="20.0" y="72.72727272727272" w="340.0" h="81.81818181818181">
+    <description><![CDATA[Checks the emails for
+a specified account]]></description>
+  </workflow-note>
+  <workflow-item name="item0" out-name="item1" catch-name="item2" throw-bind-name="errorCode" type="task">
+    <display-name><![CDATA[Check Emails]]></display-name>
+    <script encoded="false"><![CDATA[var myMailClient = new MailClient();
+
+myMailClient.setProtocol(mailProtocol);
+if(useSSL){
+ myMailClient.enableSSL();
+}
+
+myMailClient.connect( mailServer, mailPort, mailUsername, mailPassword);
+System.log("Successfully login!");
+
+try {
+	myMailClient.openFolder("Inbox");
+	
+	var messages = myMailClient.getMessages();
+	System.log("Reading messages...!");
+	if ( messages != null && messages.length > 0 ) {
+	  System.log( "You have " + messages.length + " email(s) in your inbox" );
+	 for (i = 0; i < messages.length; i++) {
+	  System.log("");
+	  System.log("-----MSG-------");
+	  System.log("Headers: ");
+	  var headerProp = messages[i].getHeaders();
+	  for each(key in headerProp.keys){
+	   System.log(key+": "+headerProp.get(key));
+	  }
+	  System.log("");  
+	
+	  System.log( "Message["+ i +"] with from: " + messages[i].from + " to: " + messages[i].to);
+	  System.log( "Message["+ i +"] with subject: " + messages[i].subject);
+	  var content = messages[i].getContent();
+	  System.log("Msg content as string: " + content);
+	  if(messages[i].isContentMultiPart()){
+   	   // get as multipart content
+	   var multiPartContent = messages[i].getMultiPartContent();
+	   System.log("==== Multipart msg detected ====");
+	   for (p = 0; p < multiPartContent.getPartsCount(); p++){
+	    System.log("== Body part " + p + " ==");
+	    var bodyPart = multiPartContent.getBodyPart(p);
+	    System.log("Content Type: " + bodyPart.contentType);
+	    System.log("Disposition: " + bodyPart.disposition);
+	    System.log("isAttachment: " + bodyPart.isAttachment());
+	    System.log("fileName: " + bodyPart.fileName);
+	    System.log("size: " + bodyPart.getSize());
+	    System.log("content: " + bodyPart.getContent());
+	    if(bodyPart.isAttachment()){
+	     System.log("Getting as MimeAttachment:");
+	     var attachment = bodyPart.getAsMimeAttachment();
+		 // could be saved to a file
+	     System.log("Mime Name: " + attachment.name);
+	     System.log("Mime Type: " + attachment.mimeType);
+	    }
+	   }
+	  }
+	 }
+	} else {
+	  System.warn( "No messages found" );
+	}
+} finally {
+	myMailClient.closeFolder();
+	myMailClient.close();
+}]]></script>
+    <in-binding>
+      <bind name="mailServer" type="string" export-name="server"/>
+      <bind name="mailPort" type="number" export-name="port"/>
+      <bind name="mailUsername" type="string" export-name="accountName"/>
+      <bind name="mailPassword" type="SecureString" export-name="password"/>
+      <bind name="useSSL" type="boolean" export-name="useSSL"/>
+      <bind name="mailProtocol" type="string" export-name="protocol"/>
+    </in-binding>
+    <out-binding/>
+    <position y="100.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item1" type="end" end-mode="0">
+    <position y="164.09090909090907" x="185.0"/>
+  </workflow-item>
+  <workflow-item name="item2" throw-bind-name="errorCode" type="end" end-mode="1">
+    <position y="90.86363636363636" x="424.5"/>
+  </workflow-item>
+  <presentation>
+    <p-group>
+      <title><![CDATA[Connection details]]></title>
+      <desc><![CDATA[Provide connection details]]></desc>
+      <p-param name="server">
+        <desc><![CDATA[Server IP address or DNS name]]></desc>
+      </p-param>
+      <p-param name="protocol">
+        <desc><![CDATA[Protocol]]></desc>
+        <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#imap#;#string#pop3#}#]]></p-qual>
+      </p-param>
+      <p-param name="port">
+        <desc><![CDATA[Port]]></desc>
+        <p-qual kind="ognl" name="dataBinding" type="number"><![CDATA[GetAction("com.vmware.library.mail","getDefaultPort").call( #protocol )]]></p-qual>
+      </p-param>
+      <p-param name="useSSL">
+        <desc><![CDATA[Use SSL]]></desc>
+        <p-qual kind="static" name="defaultValue" type="boolean"><![CDATA[false]]></p-qual>
+      </p-param>
+    </p-group>
+    <p-group>
+      <title><![CDATA[Account details]]></title>
+      <desc><![CDATA[Provide account details]]></desc>
+      <p-param name="accountName">
+        <desc><![CDATA[Account name]]></desc>
+        <p-qual name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      </p-param>
+      <p-param name="password">
+        <desc><![CDATA[Password]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      </p-param>
+    </p-group>
+  </presentation>
+</workflow>

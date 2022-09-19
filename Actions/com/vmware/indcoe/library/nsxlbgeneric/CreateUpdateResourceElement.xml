@@ -1,0 +1,68 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="CreateUpdateResourceElement" result-type="Any" api-version="6.0.0" id="b38af020-e7da-3f2b-82f2-c7b4d26d2fd5" version="1.0.0" allowed-operations="evf" category-name="com.vmware.indcoe.library.nsxlbgeneric">
+  <param n="categoryPath" t="string"><![CDATA[path of the resource element]]></param>
+  <param n="elementName" t="string"><![CDATA[Element Name]]></param>
+  <script encoded="false"><![CDATA[var CreateUpdate = {
+    categoryPath : categoryPath,
+    elementName : elementName,            
+    createResElement : function(jsonContent,mType){
+		jsonContent = JSON.stringify(jsonContent);
+        var createIfMissingFlag = false
+        var existingResourceElement;
+        var category = Server.getResourceElementCategoryWithPath(categoryPath);
+        if(category == null || category == undefined)
+            createIfMissingFlag = true
+        else{
+            System.log("Entered into else loop")
+            var resourceElements = category.resourceElements
+            if(resourceElements == null || resourceElements == undefined ||resourceElements=="")
+                createIfMissingFlag = true
+            else{
+                for(var x in resourceElements){
+					createIfMissingFlag = true
+                    System.log("Entered into for loop");
+                    if(resourceElements[x].name == elementName){
+                        createIfMissingFlag = false
+                        existingResourceElement = resourceElements[x]
+                        break;
+                    }
+                }
+            }
+        }
+        if(createIfMissingFlag) {
+            System.log("Creating new resource element at: " + categoryPath + "/" + elementName);
+            resourceElement = Server.createResourceElement(categoryPath, elementName);
+            createContent(jsonContent, resourceElement,mType);
+        }else{
+            System.debug("Element with category path exists");
+            this.updateResElement(existingResourceElement,jsonContent,mType)
+        }
+        function createContent(newContent, resourceElement,mType){
+            System.log("Entered into create content function");
+            var contentMime = new MimeAttachment();
+            contentMime.content = newContent;
+            mimeType = mType;
+            contentMime.mimeType = mimeType;
+            resourceElement.setContentFromMimeAttachment(contentMime);
+        }
+    },
+    updateResElement : function(resourceElement,jsonContent,mType){
+        System.log("Entered into update content function "+resourceElement);
+        //Converting to json object
+        stringContent = JSON.stringify(jsonContent)
+        var contentMime = new MimeAttachment();
+        contentMime.content = stringContent;
+        mimeType = mType;
+        contentMime.mimeType = mimeType;
+        resourceElement.setContentFromMimeAttachment(contentMime);
+    },
+    getResElementContent : function(resourceElement){
+        var mimeContent = resourceElement.getContentAsMimeAttachment();
+        var content = mimeContent.content;
+        var jsonContent = JSON.parse(content);
+        return jsonContent
+    }
+}
+return CreateUpdate;
+]]></script>
+</dunes-script-module>

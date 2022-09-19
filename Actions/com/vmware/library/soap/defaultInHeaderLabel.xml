@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="defaultInHeaderLabel" result-type="string" api-version="6.0.0" id="91808080808080808080808080808080F6808080013220404425363c0250095dc" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.soap">
+  <description><![CDATA[Returns the default label for a parameter from a SOAP operation.]]></description>
+  <param n="operation" t="SOAP:Operation"><![CDATA[SOAP operation]]></param>
+  <param n="headerNumber" t="number"><![CDATA[Number of the header]]></param>
+  <script encoded="false"><![CDATA[if ((operation != null) && (operation.getInHeaders().length >= headerNumber)) {
+	return "<" + operation.getInHeaders()[headerNumber - 1].replace("[]", "[0]") + ">";
+} else {
+	return "";
+}
+]]></script>
+</dunes-script-module>

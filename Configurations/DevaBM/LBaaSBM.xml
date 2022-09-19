@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="3b8fca76-9d90-4240-9761-2bdab6a30071" version="0.0.0">
+  <display-name><![CDATA[LBaaSBM]]></display-name>
+  <atts>
+    <att name="username" type="string" read-only="false">
+      <value encoded="n"><![CDATA[admin]]></value>
+    </att>
+    <att name="password" type="SecureString" read-only="false">
+      <value encoded="n"><![CDATA[__NULL__]]></value>
+    </att>
+    <att name="restHost" type="REST:RESTHost" read-only="false">
+      <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='72cd40b1-af6e-43b1-b07e-4f1f0f149144'&dunesName='REST:RESTHost']]></value>
+    </att>
+    <att name="restHost_passive" type="REST:RESTHost" read-only="false">
+      <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='1a71c01c-d1eb-43c4-8487-13665bf0ec5c'&dunesName='REST:RESTHost']]></value>
+    </att>
+  </atts>
+</config-element>

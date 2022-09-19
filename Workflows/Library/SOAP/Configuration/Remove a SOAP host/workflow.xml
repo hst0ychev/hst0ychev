@@ -1,0 +1,61 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item3" object-name="Workflow:name=generic" id="83808080808080808080808080808080B58080800129726455395757fdafc0fce" version="1.0.2" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Remove a SOAP host]]></display-name>
+  <description><![CDATA[Removes a SOAP host from the plug-in's inventory. CAUTION! When you remove a host from the inventory, all workflows generated from it will stop working.]]></description>
+  <ref-types><![CDATA[(SOAP:Host)]]></ref-types>
+  <position y="20.0" x="180.0"/>
+  <input>
+    <param name="host" type="SOAP:Host">
+      <description><![CDATA[Host to remove]]></description>
+    </param>
+  </input>
+  <attrib name="errorCode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="id" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <workflow-item name="item1" type="end" end-mode="0">
+    <position y="210.0" x="180.0"/>
+  </workflow-item>
+  <workflow-item name="item2" throw-bind-name="errorCode" type="end" end-mode="1">
+    <position y="150.0" x="340.0"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item0" type="task">
+    <display-name><![CDATA[Prepare id]]></display-name>
+    <script encoded="false"><![CDATA[id = host.id;]]></script>
+    <in-binding>
+      <bind name="host" type="SOAP:Host" export-name="host"/>
+    </in-binding>
+    <out-binding>
+      <bind name="id" type="string" export-name="id"/>
+    </out-binding>
+    <position y="100.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item0" out-name="item1" catch-name="item2" throw-bind-name="errorCode" type="task" script-module="com.vmware.library.soap.configuration/removeSOAPHost">
+    <display-name><![CDATA[removeSOAPHost]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.soap.configuration").removeSOAPHost(id) ;]]></script>
+    <in-binding>
+      <bind name="id" type="string" export-name="id"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="SOAP:Host" explicitly-not-bound="true" export-name="NULL"/>
+    </out-binding>
+    <position y="160.0" x="140.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Remove a SOAP host]]></title>
+      <p-group>
+        <title><![CDATA[SOAP host]]></title>
+        <desc><![CDATA[Specify the host to be removed.]]></desc>
+        <p-param name="host">
+          <desc><![CDATA[Host]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual name="contextualParameter" type="void"><![CDATA[]]></p-qual>
+        </p-param>
+      </p-group>
+    </p-step>
+  </presentation>
+</workflow>

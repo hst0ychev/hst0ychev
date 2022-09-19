@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="removePowerShellHost" result-type="void" api-version="6.0.0" id="81828080808080808080808080808080CD80808001270557368849c62c352aa82" version="4.0.1" allowed-operations="vfe" category-name="com.vmware.library.powershell.configuration">
+  <description><![CDATA[Removes a Power Shell Host object from the plug-in's repository.]]></description>
+  <param n="host" t="PowerShell:PowerShellHost"><![CDATA[The host to remove]]></param>
+  <script encoded="false"><![CDATA[try  {
+	PowerShellHostManager.remove(host.id);
+	System.log("PowerShellHost object removed: " + host.name);
+} catch (e)	{
+	throw "PowerShellError: Unable to remove host. " + e.message;
+} 
+
+
+
+]]></script>
+</dunes-script-module>

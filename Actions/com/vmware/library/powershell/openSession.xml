@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="openSession" result-type="string" api-version="6.0.0" id="F5858080808080808080808080808080A68080800126658240472157fdafc0fce" version="2.0.0" allowed-operations="vfe" category-name="com.vmware.library.powershell">
+  <param n="host" t="PowerShell:PowerShellHost"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var oSession = host.openSession();
+return oSession.getSessionId();
+]]></script>
+</dunes-script-module>

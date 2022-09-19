@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getVolumeByName" result-type="StoreServ:Volume" api-version="6.0.0" id="9e16b408-fca6-458c-9e61-d58e8e635bdf" version="1.0.0" allowed-operations="vf" category-name="com.hpe.storeserv.volume">
+  <description><![CDATA[Queries specefic Virtual Volume form seleted HPE 3PAR StoreServ array.]]></description>
+  <param n="connection" t="StoreServ:Connection"><![CDATA[StoreServ Connection]]></param>
+  <param n="virtualVolumeName" t="string"><![CDATA[Virtual Volume name]]></param>
+  <script encoded="false"><![CDATA[var out = connection.getVolumeByName(virtualVolumeName);
+
+if(out !== null && out != undefined ){
+	System.log("Get Volume by name result: Success");
+	System.log("Get Volume by name operation detailed result: "+"Volume name: "+out.name);
+	System.debug("Volume"+out);
+}else{
+	System.log("Get Volume by name result: Failure");
+	throw "Volume not found"
+}
+
+return out;]]></script>
+</dunes-script-module>

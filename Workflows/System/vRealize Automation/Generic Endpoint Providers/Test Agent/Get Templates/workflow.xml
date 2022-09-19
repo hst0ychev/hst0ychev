@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="a9d10dc9-03ad-4776-afb7-a8a1b1b122f3" version="0.1.0" api-version="6.0.0" allowed-operations="vf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Get Templates]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="EndpointIn" type="Any"/>
+  </input>
+  <output>
+    <param name="TemplatesOut" type="Array/Any"/>
+  </output>
+  <attrib name="ComputeResources" type="Array/Any" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="704.5"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item0" type="task">
+    <display-name><![CDATA[Create Global Templates]]></display-name>
+    <script encoded="false"><![CDATA[MachinesOut = [];
+	
+ 
+var newTemplate = GEFMachine.build("GlobalTemplate");
+newTemplate.machineName = "GlobalTemplate";
+newTemplate.notes = "Global Template";
+newTemplate.isTemplate = true;
+newTemplate.isComponent = true;
+
+newTemplate.cpuCount = 2;
+newTemplate.memoryBytes = 8388608;
+newTemplate.totalStorageBytes = 10485760;
+
+// TEMP Hack until global templates are supported!!!!!		
+newTemplate.computeResource = null;
+//if(ComputeResources.length > 0) {
+//	newTemplate.computeResource = ComputeResources[0]; // No ComputeResource for Global Templates
+//}
+
+var name = "Disk" + 0;
+var newDisk = GEFMachineStorage.build(name);
+newDisk.index = 0;
+newDisk.deviceId = 0;
+newDisk.isFixed = true;
+newDisk.name = name;
+newDisk.sizeBytes = 10485760;
+newDisk.uniqueId = "GlobalTemplateDisk0";
+
+newTemplate.addStorage(newDisk);
+
+	
+System.log("Adding global template " + newTemplate.machineName);
+MachinesOut.push(newTemplate);
+
+
+
+]]></script>
+    <in-binding>
+      <bind name="EndpointIn" type="Any" export-name="EndpointIn"/>
+      <bind name="ComputeResources" type="Array/Any" export-name="ComputeResources"/>
+    </in-binding>
+    <out-binding>
+      <bind name="MachinesOut" type="Array/Any" export-name="TemplatesOut"/>
+    </out-binding>
+    <position y="55.40909090909091" x="344.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item3" type="link" linked-workflow-id="f2552641-b28f-41dd-b799-4bd9ccd26ada">
+    <display-name><![CDATA[GetComputeResources]]></display-name>
+    <in-binding>
+      <bind name="EndpointIn" type="Any" export-name="EndpointIn"/>
+    </in-binding>
+    <out-binding>
+      <bind name="ComputeResourcesOut" type="Array/Any" export-name="ComputeResources"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="EndpointIn">
+      <desc><![CDATA[EndpointIn]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

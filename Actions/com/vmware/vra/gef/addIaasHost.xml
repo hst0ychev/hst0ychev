@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="addIaasHost" result-type="vCAC:VCACHost" api-version="6.0.0" id="c9df19d0-dd8e-4f65-a950-d8281888b26d" version="0.0.1" allowed-operations="vf" category-name="com.vmware.vra.gef">
+  <param n="name" t="string"><![CDATA[]]></param>
+  <param n="hostAddress" t="string"><![CDATA[]]></param>
+  <param n="authUserName" t="string"><![CDATA[]]></param>
+  <param n="authPassword" t="SecureString"><![CDATA[]]></param>
+  <param n="connectionTimeout" t="number"><![CDATA[]]></param>
+  <param n="operationTimeout" t="number"><![CDATA[]]></param>
+  <param n="workstation" t="string"><![CDATA[]]></param>
+  <param n="domain" t="string"><![CDATA[]]></param>
+  <param n="autoAccept" t="boolean"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var hostToReturn = null;
+
+try {
+	System.log("Adding IaaS Host: " + name);
+	
+	// Add an IaaS host
+	var wf = Server.getWorkflowWithId("5ca252c4-b831-4746-8ffc-db3eb50f5b80");
+	var args = new Properties();
+	
+	args.put("name", name);
+	args.put("hostAddress", hostAddress);
+	args.put("authUserName", authUserName);
+	args.put("authPassword", authPassword);
+	args.put("connectionTimeout", connectionTimeout);
+	args.put("operationTimeout", operationTimeout);
+	args.put("sessionMode", "Shared Session");
+	args.put("workstation", workstation);
+	args.put("domain", domain);
+	args.put("autoAccept", autoAccept);
+	args.put("addProxySettings", false);
+	args.put("proxyHost", null);
+	args.put("proxyPort", null);
+	args.put("authentication", "NTLM");
+	args.put("defaultConnectionSettings", null);
+	
+	var wfToken = wf.execute(args);			
+	System.getModule("com.vmware.library.workflow").waitForCompletion([wfToken]);	
+						
+	var outParameters = wfToken.getOutputParameters();
+	hostToReturn = outParameters["restHost"];
+}
+catch(e)
+{
+	System.log("addIaasHost Failed: " + e);
+}
+
+return hostToReturn;	
+	]]></script>
+</dunes-script-module>

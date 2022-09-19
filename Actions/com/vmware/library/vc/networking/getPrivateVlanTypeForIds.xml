@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getPrivateVlanTypeForIds" result-type="string" api-version="6.0.0" id="f3e728dd-1840-4f2a-914b-f69d1e19da6c" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.networking">
+  <param n="dvSwitch" t="VC:VmwareDistributedVirtualSwitch"><![CDATA[]]></param>
+  <param n="primaryVlanId" t="number"><![CDATA[]]></param>
+  <param n="secondaryVlanId" t="number"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var vlanType = "";
+if (dvSwitch != null) {
+	var pvlanConfigs = dvSwitch.config.pvlanConfig;
+	if(pvlanConfigs != null){
+		for each (pvlanConfig in pvlanConfigs){
+			if (pvlanConfig.primaryVlanId == primaryVlanId && pvlanConfig.secondaryVlanId == secondaryVlanId){
+				vlanType = pvlanConfig.pvlanType;
+				break;
+			}
+		}
+	}else{
+		System.log("pVLAN Config is null");
+	}
+} else {
+	System.log("dvSwitch is null is null");
+}
+return vlanType;]]></script>
+</dunes-script-module>

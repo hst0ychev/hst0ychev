@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="copyApprovalPolicy" result-type="vCACCAFE:ApprovalPolicy" api-version="6.0.0" id="fc3cdc59-856e-4b78-9c67-6201c9354900" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.approvalpolicy">
+  <param n="approvalPolicy" t="vCACCAFE:ApprovalPolicy"><![CDATA[The approval policy to be copied]]></param>
+  <param n="name" t="string"><![CDATA[Name of the copy]]></param>
+  <script encoded="false"><![CDATA[System.getModule("com.vmware.library.vcaccafe.util").validateObject(approvalPolicy, "Approval policy");
+var host = vCACCAFEEntitiesFinder.getHostForEntity(approvalPolicy);
+var client = host.createApprovalClient().getApprovalApprovalPolicyService();
+
+if ((name == null) || (name == "")) {
+	name = "Copy of " + approvalPolicy.getName()
+}
+
+var copy = approvalPolicy;
+copy.setId(null);
+copy.setName(name);
+copy.setState(vCACCAFEApprovalPolicyState.DRAFT);
+
+var copyPhases = copy.getPhases();
+for (var i = 0; i < copyPhases.length; i++) {
+	copyPhases[i].setId(null);
+	var copyLevels = copyPhases[i].getLevels();
+	for (var j = 0; j < copyLevels.length; j++) {
+		copyLevels[j].setId(null);
+	}	
+}
+
+System.log("Copying approval policy '" + approvalPolicy.getName() + "'...");
+copy = client.createPolicy(copy);
+System.log("Approval policy '" + approvalPolicy.getName() + "' copied to '" + copy.getName() + "'.");
+
+return vCACCAFEEntitiesFinder.getApprovalPolicy(host, copy.getId());]]></script>
+</dunes-script-module>

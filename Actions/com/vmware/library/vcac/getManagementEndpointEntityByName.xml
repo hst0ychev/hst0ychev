@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getManagementEndpointEntityByName" result-type="vCAC:Entity" api-version="6.0.0" id="c30ac7b8-3518-4309-ba92-793d9a40dfe2" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcac">
+  <param n="vcacHost" t="vCAC:VCACHost"><![CDATA[vCAC Host to search]]></param>
+  <param n="endpointName" t="string"><![CDATA[Management Endpoint Name]]></param>
+  <script encoded="false"><![CDATA[if (vcacHost == null) return null;
+var model = "ManagementModelEntities.svc";
+var entitySetName = "ManagementEndpoints";
+
+var endpointProperty = {
+	ManagementEndpointName:endpointName,
+}
+
+var entities = vCACEntityManager.readModelEntitiesByCustomFilter(vcacHost.id, model, entitySetName, endpointProperty, null);
+if (entities != null){
+	return entities[0];
+}else{
+	System.warn("No Management Endpoint found with name: "+endpointName);
+	return null;
+}]]></script>
+</dunes-script-module>

@@ -1,0 +1,453 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="1ced2af5-1f2e-4c96-9b78-6547a5e8b38b" version="0.0.7" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[FileLevelBrowse]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="vCACVm" type="VC:VirtualMachine"/>
+  </input>
+  <output>
+    <param name="BrowseURL" type="string"/>
+  </output>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Scriptable task]]></display-name>
+    <script encoded="false"><![CDATA[
+var fileBrowseURL =  "";//"http://vinodcs.testlab.commvault.com/webconsole/browse/fsBrowse.do?clientName=HyperVAD&clientId=2354&applicationId=106&proxyClientId=233&proxyClientName=Paris&vmName=HyperVAD&vmClientName=HyperVAD&path=%5C8114AFAE-7040-4A66-ADED-3DB47BEC41FD&showDeletedItems=false";
+
+var  requestType = "POST";
+var browseUrl = "DoBrowse"
+var  getClientIdUrl = "Client";
+var  getbackupSetIdUrl = "Backupset?clientId=";
+var getSubClientIdUrl = "Subclient?clientId=";
+var getProxyListUrl = "Instance";
+var restoreUrl = "CreateTask";
+var vmBrowseUrl = "VM?forUser=true&status=0";
+var getVMIdUrl = "VM";
+var vmguid = ""
+//Globals
+var vCenterName = "";
+var vcClientName = "";
+var backupSetName = "";
+var vcClientID = "";
+var backupSetId = "";
+var subClientName = "";
+var subClientId = "";
+var instanceID = "";
+var copyPrecedence = "0";
+var appId = "106";
+var vmName = vCACVm.name;
+var vmUUID = "";
+var vsaProxyId = "";
+var vsaProxyName = "";
+var newVMName = "";
+var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",encode:function(e){var t="";var n,r,i,s,o,u,a;var f=0;e=Base64._utf8_encode(e);while(f<e.length){n=e.charCodeAt(f++);r=e.charCodeAt(f++);i=e.charCodeAt(f++);s=n>>2;o=(n&3)<<4|r>>4;u=(r&15)<<2|i>>6;a=i&63;if(isNaN(r)){u=a=64}else if(isNaN(i)){a=64}t=t+this._keyStr.charAt(s)+this._keyStr.charAt(o)+this._keyStr.charAt(u)+this._keyStr.charAt(a)}return t},decode:function(e){var t="";var n,r,i;var s,o,u,a;var f=0;e=e.replace(/[^A-Za-z0-9\+\/\=]/g,"");while(f<e.length){s=this._keyStr.indexOf(e.charAt(f++));o=this._keyStr.indexOf(e.charAt(f++));u=this._keyStr.indexOf(e.charAt(f++));a=this._keyStr.indexOf(e.charAt(f++));n=s<<2|o>>4;r=(o&15)<<4|u>>2;i=(u&3)<<6|a;t=t+String.fromCharCode(n);if(u!=64){t=t+String.fromCharCode(r)}if(a!=64){t=t+String.fromCharCode(i)}}t=Base64._utf8_decode(t);return t},_utf8_encode:function(e){e=e.replace(/\r\n/g,"\n");var t="";for(var n=0;n<e.length;n++){var r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r)}else if(r>127&&r<2048){t+=String.fromCharCode(r>>6|192);t+=String.fromCharCode(r&63|128)}else{t+=String.fromCharCode(r>>12|224);t+=String.fromCharCode(r>>6&63|128);t+=String.fromCharCode(r&63|128)}}return t},_utf8_decode:function(e){var t="";var n=0;var r=c1=c2=0;while(n<e.length){r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r);n++}else if(r>191&&r<224){c2=e.charCodeAt(n+1);t+=String.fromCharCode((r&31)<<6|c2&63);n+=2}else{c2=e.charCodeAt(n+1);c3=e.charCodeAt(n+2);t+=String.fromCharCode((r&15)<<12|(c2&63)<<6|c3&63);n+=3}}return t}}
+var status = "";
+
+
+//Restore Variables
+var destESXServer = "";
+var destDatastore = "";
+var destresourcePoolPath = "";
+var disklist = [];
+var inplaceFlag = "true";
+var unconditionalOverwrite = "1";
+var bFound = false;
+var bBackupFound = false;
+
+//Get VM and Host Details
+var moRefId = vCACVm.config.instanceUuid;
+var uid = vCACVm.config.instanceUuid;
+System.log("instance uuid " + uid);
+var type  = 'VC:VirtualMachine';
+var objArray = Server.findAllForType("vCAC:VirtualMachine", "VMUniqueID eq '" + moRefId + "'");
+var vmEntity =  objArray[0].getEntity();
+var bpName = vmEntity.getProperty("BlueprintName");
+var bps = Server.findAllForType("VCACCAFE:CompositeBlueprint");
+for(var i = 0; i< bps.length; i++){
+	if(bps[i].name == bpName)
+	{
+		System.log("Found Tentant name from Blueprint used " + bps[i].tenantId);
+		backupSetName = bps[i].tenantId;
+		break;
+		
+	}
+}
+if (backupSetName == null)
+{
+	throw "Tenant ID null";
+	
+}
+System.log("vCenter Host Name :" + vCACVm.vimHost.id);
+vCenterName =  vCACVm.vimHost.id;
+vcClientName = vCenterName;
+
+
+
+//Get REST host URL and credentials
+var hosts = RESTHostManager.getHosts();
+for(var i =0;  i < hosts.length; i++ )
+{
+	var host = (RESTHostManager.getHost(hosts[i]));
+	if (((host.url).search("CVWebService.svc")) != -1)
+	{
+		//System.log(host.name);
+		restHost = host;
+     	csName = host.name;
+		var creds = host.authentication;
+		csUser = creds.username;
+		csPwd = creds.password;
+			
+	}
+}
+
+
+//Prepare cvLogin
+
+var operationUrl = "Login";
+var requestType = "POST";
+var csPwd = Base64.encode(csPwd);
+
+var requestContent = "<DM2ContentIndexing_CheckCredentialReq mode=\"Webconsole\" domain=\"\" username="+"\""+csUser+"\""+"  password="+ "\""+csPwd+"\"" + " />";
+var request = restHost.createRequest(requestType, operationUrl, requestContent);
+
+System.log("request: " + request.fullUrl);
+var response = request.execute();
+
+result = new Properties();
+result.put("statusCode", response.statusCode);
+result.put("contentLength", response.contentLength);
+result.put("headers", response.getAllHeaders());
+result.put("contentAsString", response.contentAsString);
+//Process Login token
+var temp = result.contentAsString
+
+var document = XMLManager.fromString(result.contentAsString);
+var list = document.getElementsByTagName("DM2ContentIndexing_CheckCredentialResp");
+var token = "";
+for(var i = 0; i < list.length ; i++)
+{
+	token = list.item(i).getAttribute("token");
+	//System.log("Authtoken: "+ token);
+	
+}
+if (token == "")
+{
+	throw("CV login failed");
+}
+
+//Get Client ID
+vcClientID = getClientId(vcClientName)
+if (vcClientID == false)
+{
+	throw("Error: Could not find Virtualization client configured in commcell with the End point name. Please configure Virtualization client with the name as End point name in VRA");
+
+}
+
+	
+
+
+//Get BackupSet ID
+bFound = false;
+getbackupSetIdUrl = getbackupSetIdUrl + vcClientID ;
+System.log("Executing get BackupSet Id URL "+ getbackupSetIdUrl);
+var request = restHost.createRequest("GET", getbackupSetIdUrl, "");
+request.setHeader("Authtoken",token);
+var response = request.execute();
+
+var document = XMLManager.fromString(response.contentAsString);
+var list = document.getElementsByTagName("backupsetProperties");
+var total = list.length;
+	
+for(var i = 0; i < total ; i++)
+{
+	var backupSetEntity = list.item(i).getChildNodes();
+	for(var j = 0 ; j < backupSetEntity.length; j++)
+	{
+		if(backupSetEntity.item(j).nodeName == "backupSetEntity")
+		{
+			if(backupSetEntity.item(j).getAttribute("backupsetName") == backupSetName && bFound == false)
+			{
+				backupSetId = backupSetEntity.item(j).getAttribute("backupsetId");
+				instanceID = backupSetEntity.item(j).getAttribute("instanceId");
+				bFound = true;
+				break;
+			}
+			
+		}
+	}
+}
+if (bFound == false)
+{
+	throw ("Cannot find BackupSetId for backupset name "+ backupSetName);
+}
+	
+
+
+
+//Get Subclient ID
+bFound = false;
+
+System.log("Executing get SubclientId URL "+ vmBrowseUrl);
+var request = restHost.createRequest("GET", vmBrowseUrl, "");
+request.setHeader("Authtoken",token);
+request.setHeader("pagingInfo","0,10000");
+var response = request.execute();
+
+var document = XMLManager.fromString(response.contentAsString);
+var list = document.getElementsByTagName("App_VMStatusInfoResp");
+
+for(var i = 0; i < list.length ; i++)
+{
+	var vmStatusInfoList = list.item(i).getChildNodes();
+	for(var j = 0 ; j < vmStatusInfoList.length; j++)
+	{
+		if(vmStatusInfoList.item(j).nodeName == "vmStatusInfoList")
+		{
+			if(vmStatusInfoList.item(j).getAttribute("name") == vmName)
+			{
+				subClientName = vmStatusInfoList.item(j).getAttribute("subclientName");
+				subClientId = vmStatusInfoList.item(j).getAttribute("subclientId");
+				vmguid = vmStatusInfoList.item(j).getAttribute("strGUID");
+				bFound = true;
+			}
+			
+		}
+	}
+}
+
+if(bFound == false)
+{
+	throw "Cannot find subclient for the VM, VM may have not backedup "+ vmName;
+}
+
+System.log("Subclient Id "+ subClientId);
+
+
+
+//Get proxy members from Instance
+var getProxyUrl =  getProxyListUrl+"/"+instanceID;
+var request = restHost.createRequest("GET", getProxyUrl, "");
+request.setHeader("Authtoken",token);
+request.setHeader("pagingInfo","0,10000");
+var response = request.execute();
+
+var document = XMLManager.fromString(response.contentAsString);
+var list = document.getElementsByTagName("instanceProperties");
+var total = list.length;
+
+for(var i = 0; i < total ; i++)
+{
+	var virtualServerInstance = list.item(i).getChildNodes();
+	for(var j = 0 ; j < virtualServerInstance.length; j++)
+	{
+		if(virtualServerInstance.item(j).nodeName == "virtualServerInstance")
+		{
+			var associatedClients = virtualServerInstance.item(j).getChildNodes();
+			for(var k = 0; k < associatedClients.length; k++)
+			{
+				if (associatedClients.item(k).nodeName == "associatedClients")
+				{
+					var memberServers = associatedClients.item(k).getChildNodes();
+					for(var l = 0; l < memberServers.length; l++)
+					{
+						if(memberServers.item(l).nodeName == "memberServers")
+						{
+							var clients = memberServers.item(l).getChildNodes();
+							for(var m = 0; m < clients.length; m++)
+							{
+								if(clients.item(m).nodeName == "client")
+								{
+									vsaProxyId = clients.item(m).getAttribute("clientId");
+									vsaProxyName = clients.item(m).getAttribute("clientName");
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+			
+		}
+	}
+}
+
+
+//Perform VM browse
+var vmbrowseUrl = "/Subclient/"+subClientId+"/Browse?";
+System.log("Executing VM browse URL "+ vmbrowseUrl);
+var request = restHost.createRequest("GET", vmbrowseUrl, "");
+request.setHeader("Authtoken",token);
+request.setHeader("pagingInfo","0,10000");
+var response = request.execute();
+
+
+var document = XMLManager.fromString(response.contentAsString);
+var list = document.getElementsByTagName("dataResultSet");
+
+
+var total = list.length;
+for(var i = 0; i < total ; i++)
+{
+	var tempVM = list.item(i).getAttribute("displayName");
+	if (tempVM == vmName)
+	{
+		bBackupFound = true;
+		vmUUID =  list.item(i).getAttribute("name");
+		
+		break;
+	
+	} 
+
+}
+
+
+// Prepare file level browse URL
+
+var vmdetails = getVMId(vmName)
+if (vmdetails != false)
+{
+	var vmid = vmdetails.split(":");
+	//fileBrowseURL = "http://"+ csName +"/webconsole/browse/fsBrowse.do?clientName="+ vmid[1] +"&clientId="+ vmid[0] +"&backupsetId="+ backupSetId +"&instanceId=" + instanceID +"&applicationId=106&proxyClientId="+ vsaProxyId +"&proxyClientName="+ vsaProxyName +"&vmName="+ vmName +"&vmClientName="+ vmName +"&subclientId="+ subClientId +"&path=%"+vmUUID+"&showDeletedItems=false";
+	var xm= "\\"+vmguid;
+	var res = encodeURIComponent(xm);
+	fileBrowseURL = "http://"+csName+"/adminconsole/#/browse/vsFileBrowse/"+subClientId+"/"+res+"?toTime=&fromTime=&copyPrecedence=&vmname=" + vCACVm.name +"&bc=&owner=0&vendor=VMW"
+	
+	System.log("FILE LEVEL Browse link is " + fileBrowseURL );
+
+}
+
+else
+{
+	throw "VM not found, may have no valid backup jobs";
+}
+
+BrowseURL =  fileBrowseURL;
+
+
+
+
+
+
+
+
+
+
+
+// supporting Methods
+
+function getClientId(clientName)
+{
+	var bFound = false;
+	var request = restHost.createRequest("GET", getClientIdUrl, "");
+	request.setHeader("Authtoken",token);
+	var response = request.execute();
+	
+	var document = XMLManager.fromString(response.contentAsString);
+	var list = document.getElementsByTagName("clientProperties");
+	var total = list.length;
+	for(var i = 0; i < total ; i++)
+	{
+		var client = list.item(i).getChildNodes();
+		for(var j = 0; j < client.length;j++)
+		{
+			if(client.item(j).nodeName == "client")
+			{
+				var clientEntity = client.item(j).getChildNodes();
+				for(var k = 0; k < clientEntity.length; k++)
+				{
+					if(clientEntity.item(k).nodeName == "clientEntity")
+					{	
+						//This checks if vCenter and simpana client name matching. If vCenter name is FQDN and simpana client is short it checks substring as below
+						if(clientEntity.item(k).getAttribute("clientName").toLowerCase() == clientName.toLowerCase() )
+						{
+							vcClientID = clientEntity.item(k).getAttribute("clientId");
+							
+							bFound = true;
+							break;
+							
+						}
+					}
+				}
+				
+				 
+			} 
+		}
+		
+	}
+	
+	if (bFound)
+	{
+		return vcClientID;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+
+
+function getVMId(vmName)
+{
+		
+	var bFound = false;
+	var request = restHost.createRequest("GET", getVMIdUrl, "");
+	request.setHeader("Authtoken",token);
+	request.setHeader("pagingInfo","0,10000");
+	var response = request.execute();
+	
+	var document = XMLManager.fromString(response.contentAsString);
+	var list = document.getElementsByTagName("vmStatusInfoList");
+	var total = list.length;
+	//System.log("Length" + total);
+	for(var i = 0; i < total ; i++)
+	{
+		if(list.item(i).getAttribute("name") == vmName)
+		{
+			System.log("VM found in database " + vmName);
+			bFound = true;
+			var client = list.item(i).getChildNodes();
+			for(var j = 0; j < client.length;j++)
+			{
+		//		System.log(client.item(j).nodeName);
+				if(client.item(j).nodeName == "client")
+				{
+					var vmid = client.item(j).getAttribute("clientId");
+					var vmClientName = client.item(j).getAttribute("clientName");
+					
+					
+					 
+				} 
+			}
+		
+		}
+		
+		
+	}
+	
+	if (bFound)
+	{
+		return vmid+":"+vmClientName;
+	}
+	else
+	{
+		return false;
+	}
+}]]></script>
+    <in-binding>
+      <bind name="vCACVm" type="VC:VirtualMachine" export-name="vCACVm"/>
+    </in-binding>
+    <out-binding>
+      <bind name="BrowseURL" type="string" export-name="BrowseURL"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="vCACVm">
+      <desc><![CDATA[Virtual Machine]]></desc>
+      <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+    </p-param>
+  </presentation>
+</workflow>

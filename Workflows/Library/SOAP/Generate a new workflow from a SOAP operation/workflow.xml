@@ -1,0 +1,124 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="Workflow:name=generic" id="D4808080808080808080808080808080808080800129726455395757fdafc0fce" version="1.0.3" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Generate a new workflow from a SOAP operation]]></display-name>
+  <description><![CDATA[Generates a new workflow from a SOAP operation.]]></description>
+  <ref-types><![CDATA[(SOAP:Operation)]]></ref-types>
+  <position y="20.0" x="180.0"/>
+  <input>
+    <param name="operation" type="SOAP:Operation">
+      <description><![CDATA[Operation to use for generation]]></description>
+    </param>
+    <param name="name" type="string">
+      <description><![CDATA[Name of the new workflow]]></description>
+    </param>
+    <param name="category" type="WorkflowCategory">
+      <description><![CDATA[Category for the new workflow]]></description>
+    </param>
+    <param name="dateFormat" type="string">
+      <description><![CDATA[Date format.]]></description>
+    </param>
+  </input>
+  <output>
+    <param name="workflowOut" type="Workflow">
+      <description><![CDATA[The new generated workflow]]></description>
+    </param>
+  </output>
+  <attrib name="errorCode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="operationName" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="host" type="SOAP:Host" read-only="false"/>
+  <attrib name="options" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <workflow-item name="item0" out-name="item1" type="task">
+    <display-name><![CDATA[Prepare Parameters]]></display-name>
+    <script encoded="false"><![CDATA[operationName = operation.name;
+
+host = Server.findForType("SOAP:Host", operation.getHost().id);
+
+options = new Properties();
+options.put("datetime.format", dateFormat);
+]]></script>
+    <in-binding>
+      <bind name="operation" type="SOAP:Operation" export-name="operation"/>
+      <bind name="dateFormat" type="string" export-name="dateFormat"/>
+    </in-binding>
+    <out-binding>
+      <bind name="operationName" type="string" export-name="operationName"/>
+      <bind name="host" type="SOAP:Host" export-name="host"/>
+      <bind name="options" type="Properties" export-name="options"/>
+    </out-binding>
+    <position y="100.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item2" type="end" end-mode="0">
+    <position y="210.0" x="180.0"/>
+  </workflow-item>
+  <workflow-item name="item3" throw-bind-name="errorCode" type="end" end-mode="1">
+    <position y="150.0" x="340.0"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item2" catch-name="item3" throw-bind-name="errorCode" type="task" script-module="com.vmware.library.soap/generateWorkflowFromSOAPOperation">
+    <display-name><![CDATA[generateWorkflowFromSOAPOperation]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.soap").generateWorkflowFromSOAPOperation(host,operationName,workflowName,category,options) ;]]></script>
+    <in-binding>
+      <bind name="host" type="SOAP:Host" export-name="host">
+        <description><![CDATA[SOAP host]]></description>
+      </bind>
+      <bind name="operationName" type="string" export-name="operationName">
+        <description><![CDATA[Name of the operation]]></description>
+      </bind>
+      <bind name="workflowName" type="string" export-name="name">
+        <description><![CDATA[Name of the workflow]]></description>
+      </bind>
+      <bind name="category" type="WorkflowCategory" export-name="category">
+        <description><![CDATA[Workflow category]]></description>
+      </bind>
+      <bind name="options" type="Properties" export-name="options"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Workflow" export-name="workflowOut"/>
+    </out-binding>
+    <description><![CDATA[Generates a workflow from a SOAP operation.]]></description>
+    <position y="160.0" x="140.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Generate a new workflow from a SOAP operation]]></title>
+      <p-group>
+        <title><![CDATA[Operation]]></title>
+        <desc><![CDATA[Name of the operation to run using the generated worklow.]]></desc>
+        <p-param name="operation">
+          <desc><![CDATA[Operation]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual name="contextualParameter" type="void"><![CDATA[]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Workflow]]></title>
+        <desc><![CDATA[Name and folder of the new generated workflow.]]></desc>
+        <p-qual kind="ognl" name="notVisible" type="boolean"><![CDATA[#operation == null]]></p-qual>
+        <p-param name="name">
+          <desc><![CDATA[Name]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[GetAction("com.vmware.library.soap","getDefaultWorkflowName").call( #operation ).replaceAll("[\\\\/]", "_")]]></p-qual>
+          <p-qual kind="static" name="regexp" type="Regexp"><![CDATA[[^\/\\]+]]></p-qual>
+        </p-param>
+        <p-param name="category">
+          <desc><![CDATA[Folder]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Advanced]]></title>
+        <p-qual kind="ognl" name="notVisible" type="boolean"><![CDATA[#operation == null]]></p-qual>
+        <p-param name="dateFormat">
+          <desc><![CDATA[Date format]]></desc>
+          <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#RFC822#;#string#ISO8601#}#]]></p-qual>
+        </p-param>
+      </p-group>
+    </p-step>
+  </presentation>
+</workflow>

@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="Workflow:name=generic" id="958080808080808080808080808080804281808001175609873343b6bbd2e3eea" version="1.1.0" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Destroy an organizational unit]]></display-name>
+  <description><![CDATA[Deletes an organizational unit from an Active Directory instance.]]></description>
+  <ref-types><![CDATA[(AD:OrganizationalUnit)]]></ref-types>
+  <position y="20.0" x="180.0"/>
+  <input>
+    <param name="organizationalUnit" type="AD:OrganizationalUnit">
+      <description><![CDATA[Organizational unit to destroy]]></description>
+    </param>
+  </input>
+  <workflow-item name="item2" type="end" end-mode="0">
+    <position y="170.0" x="180.0"/>
+  </workflow-item>
+  <workflow-item name="item0" out-name="item2" type="task" script-module="com.vmware.library.microsoft.activeDirectory/destroyElement">
+    <display-name><![CDATA[destroyElement]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+System.getModule("com.vmware.library.microsoft.activeDirectory").destroyElement(element) ;]]></script>
+    <in-binding>
+      <bind name="element" type="Any" export-name="organizationalUnit">
+        <description><![CDATA[Any valid element from Active Directoy to destroy]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Destroys an element of the Active Directory.]]></description>
+    <position y="100.0" x="140.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Destroy]]></title>
+      <p-group>
+        <title><![CDATA[Select an organizational unit]]></title>
+        <desc><![CDATA[Select an empty organizational unit to destroy it]]></desc>
+        <p-param name="organizationalUnit">
+          <desc><![CDATA[Organizational unit to destroy]]></desc>
+          <p-qual name="mandatory"><![CDATA[true]]></p-qual>
+          <p-qual kind="static" name="show-select-as" type="string"><![CDATA[drop-down]]></p-qual>
+          <p-qual name="contextualParameter"><![CDATA[]]></p-qual>
+        </p-param>
+      </p-group>
+    </p-step>
+  </presentation>
+</workflow>

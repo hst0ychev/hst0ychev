@@ -1,0 +1,5 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getWorkflowLastToken" result-type="WorkflowToken" api-version="6.0.0" id="eb183916-a71c-42d6-a952-466fae3de588" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcac">
+  <param n="wf" t="Workflow"><![CDATA[Workflow whose token is retrieved]]></param>
+  <script encoded="false"><![CDATA[return wf.executions[wf.executions.length -1];]]></script>
+</dunes-script-module>

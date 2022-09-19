@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="updatePropertyGroup" result-type="vCACCAFE:PropertyGroup" api-version="6.0.0" id="17e458d9-3dfd-4dcd-83f5-a17487d0f8ac" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.propertygroup">
+  <param n="group" t="vCACCAFE:PropertyGroup"><![CDATA[]]></param>
+  <param n="name" t="string"><![CDATA[]]></param>
+  <param n="description" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[if(group == "notfound") {
+	throw "Property group not found!";
+}
+var host = vCACCAFEEntitiesFinder.getHostForEntity(group);
+var service = host.createPropertyClient().getPropertyContextPropertyGroupService();
+group.setName(name);
+group.setDescription(description);
+
+System.log("Updating property group...");
+service.savePropertyGroup(group.getId() ,group);
+
+System.log("Property group: " + group.getId() + " updated.");
+return vCACCAFEEntitiesFinder.getPropertyGroup(host, group.getId());]]></script>
+</dunes-script-module>

@@ -1,0 +1,109 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="Blueprint" result-type="Any" api-version="6.0.0" id="fa0f465e-f592-3b31-ad9f-aae75b7b5ec5" version="1.0.0" allowed-operations="evf" category-name="com.vmware.indcoe.library.vrautil">
+  <param n="host" t="vCACCAFE:VCACHost"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var BlueprintConverter = System.getModule("com.vmware.indcoe.library.vrautil").BlueprintConverter(host);
+var ComponentType = System.getModule("com.vmware.indcoe.library.vrautil").ComponentType(host);
+var CafeRestClient = System.getModule("com.vmware.indcoe.library.vrautil").CafeRestClient(host,
+    vCACCAFEServicesEnum.COMPOSITION_SERVICE);
+var restClient = new CafeRestClient("blueprints");
+
+function processProperties(propsObj, properties) {
+    for (var i in properties.keys) {
+        var key = properties.keys[i];
+        if (properties.get(key) == null) {
+            delete propsObj[key];
+        } else {
+            propsObj[key] = properties.get(key);
+        }
+    }
+    return propsObj;
+}
+
+var Blueprint = function (bp) {
+    //	System.log(JSON.stringify(bp, null, 2))
+    //Copy blueprint to this.
+    for (var key in bp) {
+        this[key] = bp[key];
+    }
+
+    this.getPropertyGroups = function () {
+        return this.propertyGroups;
+    };
+
+    this.setPropertyGroups = function (pgs) {
+        this.propertyGroups = pgs;
+    };
+
+    this.getProperties = function () {
+        return this.properties;
+    };
+
+    this.updateProperties = function (properties) {
+        this.properties = processProperties(this.properties, properties);
+        this.save();
+    };
+
+    this.getComponentNames = function () {
+        return Object.keys(this.components);
+    };
+
+    this.getComponent = function (name) {
+        var component = this.components[name];
+        var self = this;
+
+        component.updateProperties = function (properties) {
+            self.components[name].properties = processProperties(self.components[name].properties, properties);
+            self.save();
+        };
+
+        component.getProperties = function () {
+            return self.components[name].properties;
+        };
+
+        component.getPropertyGroups = function () {
+            return self.components[name].propertyGroups;
+        };
+
+        component.setPropertyGroups = function (propertyGroups) {
+            self.components[name].propertyGroups = propertyGroups;
+        };
+
+        component.getType = function () {
+            return ComponentType.getByName(self.components[name].type);
+        };
+
+        return component;
+    };
+
+    this.save = function () {
+        var bpJson = BlueprintConverter.fromJson(this);
+        var id = restClient.createOrUpdate(bpJson);
+        this.id = id;
+    };
+};
+
+Blueprint.get = function (id) {
+    var bp = restClient.get(id);
+    return new Blueprint(BlueprintConverter.toJson(bp));
+};
+
+Blueprint.getByName = function (name) {
+    var bp = restClient.getByName(name);
+    return bp ? new Blueprint(BlueprintConverter.toJson(bp)) : null;
+};
+
+Blueprint.importFrom = function (resourceElement) {
+   // Import into multiple tenants is not supported by the API
+    var allTenants = false;
+    return System.getModule("com.vmware.indcoe.library.vrautil").importVraObject(
+        host, "Blueprint", resourceElement, allTenants);
+};
+
+Blueprint.exportTo = function (name, resourceElementCategory) {
+    System.getModule("com.vmware.indcoe.library.vrautil").exportVraObject(
+       host, "Blueprint", name, resourceElementCategory);
+};
+
+return Blueprint;
+]]></script>
+</dunes-script-module>

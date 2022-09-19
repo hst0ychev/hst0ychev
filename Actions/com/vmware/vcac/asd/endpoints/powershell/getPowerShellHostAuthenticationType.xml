@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getPowerShellHostAuthenticationType" result-type="string" api-version="6.0.0" id="bbe6922d-ca7e-4d50-9e70-edf37955136e" version="0.0.1" allowed-operations="vf" category-name="com.vmware.vcac.asd.endpoints.powershell">
+  <param n="powerShellHost" t="PowerShell:PowerShellHost"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var powerShellHostConfig = powerShellHost.getHostConfig();
+var authentication = powerShellHostConfig.authentication;
+
+return authentication;
+
+
+]]></script>
+</dunes-script-module>

@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="deactivateEntitlement" result-type="void" api-version="6.0.0" id="b22a1049-f5a7-410e-8a8d-5563f511890d" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.catalog.entitlement">
+  <param n="entitlement" t="vCACCAFE:Entitlement"><![CDATA[Entitlement to be deactivated]]></param>
+  <script encoded="false"><![CDATA[var host = vCACCAFEEntitiesFinder.getHostForEntity(entitlement);
+var client = host.createCatalogClient().getCatalogEntitlementService();
+
+entitlement.setStatus(vCACCAFEEntitlementStatus.INACTIVE);
+
+System.log("Deactivating entitlement " + entitlement.getName() + "...");
+client.update(entitlement);
+System.log("Entitlement: " + entitlement.getName() + " deactivated.");]]></script>
+</dunes-script-module>

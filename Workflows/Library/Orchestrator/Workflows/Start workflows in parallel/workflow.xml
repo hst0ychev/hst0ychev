@@ -1,0 +1,140 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="Workflow:name=generic" id="998080808080808080808080808080808080808001180944837309b6bbd2e3eea" version="1.3.0" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Start workflows in parallel]]></display-name>
+  <description><![CDATA[Starts the provided workflow multiple times, with different parameters. You provide workflow parameters in an array, providing a property list (with one property per workflow input) for each instance of the workflow that starts.]]></description>
+  <position y="10.0" x="160.0"/>
+  <input>
+    <param name="wf" type="Workflow">
+      <description><![CDATA[The workflow to run]]></description>
+    </param>
+    <param name="parameters" type="Array/Properties">
+      <description><![CDATA[An array of parameters the workflow requires to run]]></description>
+    </param>
+  </input>
+  <output>
+    <param name="worfklowTokens" type="Array/WorkflowToken">
+      <description><![CDATA[Array of completed workflows from which you can extract the results]]></description>
+    </param>
+  </output>
+  <attrib name="wfTokens" type="Array/WorkflowToken" read-only="false">
+    <value encoded="n"><![CDATA[#{##}#]]></value>
+    <description><![CDATA[Array of tokens for each instance of the workflow that runs]]></description>
+  </attrib>
+  <attrib name="currentParametersId" type="number" read-only="false">
+    <value encoded="n"><![CDATA[0.0]]></value>
+    <description><![CDATA[Index in the array of the parameters of the current workflow]]></description>
+  </attrib>
+  <attrib name="currentParameters" type="Properties" read-only="false">
+    <description><![CDATA[Parameters of the current workflow]]></description>
+  </attrib>
+  <workflow-item name="item2" out-name="item1" type="task">
+    <display-name><![CDATA[Wait for completion]]></display-name>
+    <script encoded="false"><![CDATA[var allComplete = false;
+while(! allComplete){
+	System.sleep(15000); // Wait 15 seconds
+	allComplete = true;
+	for(var i=0; i<wfTokens.length; i++){
+		if(wfTokens[i].state != "running" && wfTokens[i].state != "waiting" && wfTokens[i].state != "waiting-signal") {
+			// completed, error or canceled
+			System.log("Workflow '"+wfTokens[i].name+"' ("+i+") terminated with status '"+wfTokens[i].state+"'"); 
+			Server.log("Workflow '"+wfTokens[i].name+"' ("+i+") terminated with status '"+wfTokens[i].state+"'"); 
+		}
+		else {
+			// running or waiting
+			allComplete = false;
+		}
+	}
+}
+
+var worfklowTokens = new Array();
+for (var i in wfTokens) {
+	worfklowTokens.push(wfTokens[i]);
+}
+System.log("All workflows completed");
+Server.log("All workflows completed");]]></script>
+    <in-binding>
+      <bind name="wfTokens" type="Array/WorkflowToken" export-name="wfTokens"/>
+    </in-binding>
+    <out-binding>
+      <bind name="worfklowTokens" type="Array/WorkflowToken" export-name="worfklowTokens"/>
+    </out-binding>
+    <position y="80.0" x="480.0"/>
+  </workflow-item>
+  <workflow-item name="item1" type="end" end-mode="0">
+    <position y="130.0" x="520.0"/>
+  </workflow-item>
+  <workflow-item name="item0" out-name="item3" type="custom-condition" alt-out-name="item2">
+    <display-name><![CDATA[For each]]></display-name>
+    <script encoded="false"><![CDATA[return parameters != null && currentParametersId < parameters.length;]]></script>
+    <in-binding>
+      <bind name="parameters" type="Array/Properties" export-name="parameters"/>
+      <bind name="currentParametersId" type="number" export-name="currentParametersId"/>
+    </in-binding>
+    <position y="70.0" x="120.0"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item4" type="task">
+    <display-name><![CDATA[Get current params]]></display-name>
+    <script encoded="false"><![CDATA[currentParameters = parameters[currentParametersId];]]></script>
+    <in-binding>
+      <bind name="parameters" type="Array/Properties" export-name="parameters"/>
+      <bind name="currentParametersId" type="number" export-name="currentParametersId"/>
+    </in-binding>
+    <out-binding>
+      <bind name="currentParameters" type="Properties" export-name="currentParameters"/>
+    </out-binding>
+    <position y="140.0" x="20.0"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item5" type="task">
+    <display-name><![CDATA[Execute wf]]></display-name>
+    <script encoded="false"><![CDATA[var token = wf.execute(currentParameters);
+wfTokens.push(token);]]></script>
+    <in-binding>
+      <bind name="wf" type="Workflow" export-name="wf"/>
+      <bind name="currentParameters" type="Properties" export-name="currentParameters"/>
+      <bind name="wfTokens" type="Array/WorkflowToken" export-name="wfTokens"/>
+    </in-binding>
+    <out-binding>
+      <bind name="wfTokens" type="Array/WorkflowToken" export-name="wfTokens"/>
+    </out-binding>
+    <position y="200.0" x="120.0"/>
+  </workflow-item>
+  <workflow-item name="item5" out-name="item0" content-mode="x" type="task">
+    <display-name><![CDATA[Increase counter]]></display-name>
+    <script encoded="false"><![CDATA[//Auto-generated script
+counter = counter+1;]]></script>
+    <in-binding>
+      <bind name="counter" type="number" export-name="currentParametersId">
+        <description><![CDATA[counter to increment]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="counter" type="number" export-name="currentParametersId">
+        <description><![CDATA[counter incremented]]></description>
+      </bind>
+    </out-binding>
+    <description><![CDATA[Increment a counter by one]]></description>
+    <position y="140.0" x="240.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[New step]]></title>
+      <p-group>
+        <title><![CDATA[Workflow]]></title>
+        <desc><![CDATA[Workflow to start]]></desc>
+        <p-param name="wf">
+          <desc><![CDATA[The workflow to run]]></desc>
+          <p-qual name="mandatory"><![CDATA[true]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Parameters]]></title>
+        <desc><![CDATA[Array of parameters, on set for each workflow to start.
+This cannot be entered by a user, this workflow can only be used from another workflow.]]></desc>
+        <p-param name="parameters">
+          <desc><![CDATA[Parameters]]></desc>
+          <p-qual name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+      </p-group>
+    </p-step>
+  </presentation>
+</workflow>

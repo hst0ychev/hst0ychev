@@ -1,0 +1,83 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="819ef500-f4b2-458d-b110-5bd3aadfec51" version="1.0.0" api-version="6.0.0" allowed-operations="vf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Unexport Virtual Volume from host set]]></display-name>
+  <description><![CDATA[Unexports Virtual Volume from Host Set in the selected HPE 3PAR StoreServ array.]]></description>
+  <ref-types><![CDATA[>(StoreServ:Connection)(StoreServ:Volume)(StoreServ:HostSet)]]></ref-types>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="connection" type="StoreServ:Connection">
+      <description><![CDATA[StoreServ Connection.]]></description>
+    </param>
+    <param name="virtualVolume" type="StoreServ:Volume">
+      <description><![CDATA[Virtual Volume to be unexported.]]></description>
+    </param>
+    <param name="lun" type="number">
+      <description><![CDATA[LUN ID.]]></description>
+    </param>
+    <param name="hostSet" type="StoreServ:HostSet">
+      <description><![CDATA[Host Set from which the Virtual Volume is to be unexported.]]></description>
+    </param>
+  </input>
+  <output>
+    <param name="unexportResult" type="boolean">
+      <description><![CDATA[Status of the unexport Virtual Volume operation.]]></description>
+    </param>
+  </output>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task" script-module="com.hpe.storeserv.export/unexportVirtualVolumeFromHostSet">
+    <display-name><![CDATA[unexportVirtualVolumeFromHostSet]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.hpe.storeserv.export").unexportVirtualVolumeFromHostSet(connection,virtualVolume,lun,hostSet) ;]]></script>
+    <in-binding>
+      <bind name="connection" type="StoreServ:Connection" export-name="connection">
+        <description><![CDATA[StoreServ Connection.]]></description>
+      </bind>
+      <bind name="virtualVolume" type="StoreServ:Volume" export-name="virtualVolume">
+        <description><![CDATA[Virtual Volume to be unexported.]]></description>
+      </bind>
+      <bind name="lun" type="number" export-name="lun">
+        <description><![CDATA[LUN ID.]]></description>
+      </bind>
+      <bind name="hostSet" type="StoreServ:HostSet" export-name="hostSet">
+        <description><![CDATA[Host Set from which the Virtual Volume is to be unexported.]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="boolean" export-name="unexportResult"/>
+    </out-binding>
+    <description><![CDATA[Unexports Virtual Volume from Host Set in the selected HPE 3PAR StoreServ array.]]></description>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Connection]]></title>
+      <p-param name="connection">
+        <desc><![CDATA[StoreServ Connection]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        <p-qual name="contextualParameter" type="void"><![CDATA[__NULL__]]></p-qual>
+      </p-param>
+    </p-step>
+    <p-step>
+      <title><![CDATA[Unexport Parameters]]></title>
+      <p-param name="virtualVolume">
+        <desc><![CDATA[Virtual Volume to unexport]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        <p-qual kind="ognl" name="sdkRootObject" type="any"><![CDATA[#connection]]></p-qual>
+        <p-qual name="contextualParameter" type="void"><![CDATA[__NULL__]]></p-qual>
+      </p-param>
+      <p-param name="lun">
+        <desc><![CDATA[Exported LUN value]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        <p-qual kind="static" name="numberFormat" type="String"><![CDATA[##]]></p-qual>
+      </p-param>
+      <p-param name="hostSet">
+        <desc><![CDATA[Host set from which Virtual Volume is to be unexported]]></desc>
+        <p-qual kind="ognl" name="sdkRootObject" type="any"><![CDATA[#connection]]></p-qual>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        <p-qual name="contextualParameter" type="void"><![CDATA[__NULL__]]></p-qual>
+      </p-param>
+    </p-step>
+  </presentation>
+</workflow>

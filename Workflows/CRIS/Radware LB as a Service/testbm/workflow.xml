@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="43ace917-fd09-4ab3-8991-732496e7799e" version="0.0.0" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[testbm]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="a" type="string"/>
+  </input>
+  <attrib name="aa" type="string" read-only="false">
+    <value encoded="n"><![CDATA[a]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="36.81818181818181" x="545.0"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Scriptable task]]></display-name>
+    <in-binding>
+      <bind name="a" type="string" export-name="a"/>
+      <bind name="aa" type="string" export-name="aa"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.90909090909091" x="225.0"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="a">
+      <desc><![CDATA[a]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

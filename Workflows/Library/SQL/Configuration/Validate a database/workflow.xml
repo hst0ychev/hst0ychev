@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="Workflow:name=generic" id="9180808080808080808080808080808080808080013050415040353c595e3a533" version="1.0.0" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Validate a database]]></display-name>
+  <description><![CDATA[Validates a database in the plug-in's inventory.]]></description>
+  <ref-types><![CDATA[(SQL:Database)]]></ref-types>
+  <position y="20.0" x="180.0"/>
+  <input>
+    <param name="database" type="SQL:Database">
+      <description><![CDATA[A database to be validated]]></description>
+    </param>
+  </input>
+  <attrib name="errorCode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[An error message or code]]></description>
+  </attrib>
+  <workflow-item name="item1" type="end" end-mode="0">
+    <position y="152.5" x="185.0"/>
+  </workflow-item>
+  <workflow-item name="item2" throw-bind-name="errorCode" type="end" end-mode="1">
+    <position y="82.5" x="325.0"/>
+  </workflow-item>
+  <workflow-item name="item0" out-name="item1" catch-name="item2" throw-bind-name="errorCode" type="task" script-module="com.vmware.library.sql.configuration/validateDatabase">
+    <display-name><![CDATA[validateDatabase]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+System.getModule("com.vmware.library.sql.configuration").validateDatabase(database) ;]]></script>
+    <in-binding>
+      <bind name="database" type="SQL:Database" export-name="database"/>
+    </in-binding>
+    <out-binding/>
+    <position y="92.0" x="145.0"/>
+  </workflow-item>
+  <presentation>
+    <p-group>
+      <title><![CDATA[Select a database]]></title>
+      <desc><![CDATA[Database configuration to validate]]></desc>
+      <p-param name="database">
+        <desc><![CDATA[Database]]></desc>
+        <p-qual name="contextualParameter" type="void"><![CDATA[]]></p-qual>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      </p-param>
+    </p-group>
+  </presentation>
+</workflow>

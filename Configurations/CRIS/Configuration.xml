@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="b076846e-b485-4746-92c6-455f2f4b048d" version="0.0.0">
+  <display-name><![CDATA[Configuration]]></display-name>
+  <atts>
+    <att name="restHost" type="REST:RESTHost" read-only="false">
+      <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='b6143e33-adfe-43c1-81b4-ab10ab97ad83'&dunesName='REST:RESTHost']]></value>
+      <description><![CDATA[REST Host to be used for NSX-T Engagements.]]></description>
+    </att>
+    <att name="username" type="string" read-only="false">
+      <value encoded="n"><![CDATA[admin]]></value>
+      <description><![CDATA[The username to be used for NSX-T]]></description>
+    </att>
+    <att name="password" type="SecureString" read-only="false">
+      <value encoded="n"><![CDATA[__NULL__]]></value>
+      <description><![CDATA[The password of above user]]></description>
+    </att>
+    <att name="dfwSectionNameForRules" type="string" read-only="false">
+      <value encoded="n"><![CDATA[vRA]]></value>
+      <description><![CDATA[The section to use for creation of DFW Rules]]></description>
+    </att>
+  </atts>
+</config-element>

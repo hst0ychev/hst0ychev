@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="generateReadWorkflow" result-type="Workflow" api-version="6.0.0" id="f5447356-65be-4315-9b78-c409214271f0" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.sql">
+  <param n="table" t="SQL:Table"><![CDATA[A table object]]></param>
+  <param n="category" t="WorkflowCategory"><![CDATA[A workflow category object]]></param>
+  <param n="overwriteWorkflow" t="boolean"><![CDATA[Pass true to overwrite the existing read workflow. Otherwise pass false.]]></param>
+  <script encoded="false"><![CDATA[var resultWorkflow = SQLDatabaseManager.generateReadWorkflow(table,category, overwriteWorkflow);
+System.log("ReadRecord workflow for table '" + table.name + "' was created in " + category.path);
+return resultWorkflow;]]></script>
+</dunes-script-module>

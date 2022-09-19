@@ -1,0 +1,81 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="af45a6da-c80f-4e41-8723-c6dda6c4cfaf" version="0.0.6" api-version="6.0.0" allowed-operations="vf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Get Repository Host]]></display-name>
+  <description><![CDATA[Finds an vCACHost (IaaS server) based on the hostname provided.  If none can be found, it adds it.  If the username has changed, the IaaS server is updated.]]></description>
+  <position y="63.59090909090908" x="45.0"/>
+  <input>
+    <param name="endpoint" type="Any">
+      <description><![CDATA[Endpoint representing a GEFEndpoint scriptable object]]></description>
+    </param>
+  </input>
+  <output>
+    <param name="vCACHost" type="vCAC:VCACHost"/>
+  </output>
+  <attrib name="hostname" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Hostname of the IaaS system]]></description>
+  </attrib>
+  <attrib name="authDomain" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Domain to use when creating or update IaaS vCACHost]]></description>
+  </attrib>
+  <attrib name="authUsername" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Username to use when creating or update IaaS vCACHost]]></description>
+  </attrib>
+  <attrib name="password" type="SecureString" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Password to use when creating or update IaaS vCACHost]]></description>
+  </attrib>
+  <attrib name="endpointName" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Name to use when creating or update IaaS vCACHost]]></description>
+  </attrib>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[extract inputs]]></display-name>
+    <script encoded="false"><![CDATA[endpointName = endpoint.name;
+hostname = endpoint.getHostname();
+authDomain = endpoint.extractAuthDomain();
+authUsername = endpoint.extractAuthUsername();
+password = System.getModule("com.vmware.vra.gef").DecodeString(endpoint.password);]]></script>
+    <in-binding>
+      <bind name="endpoint" type="Any" export-name="endpoint"/>
+    </in-binding>
+    <out-binding>
+      <bind name="hostname" type="string" export-name="hostname">
+        <description><![CDATA[Hostname of the IaaS system]]></description>
+      </bind>
+      <bind name="authUsername" type="string" export-name="authUsername"/>
+      <bind name="password" type="SecureString" export-name="password"/>
+      <bind name="endpointName" type="string" export-name="endpointName">
+        <description><![CDATA[Name to use when creating or update IaaS vCACHost]]></description>
+      </bind>
+      <bind name="authDomain" type="string" export-name="authDomain"/>
+    </out-binding>
+    <position y="73.59090909090908" x="145.0"/>
+  </workflow-item>
+  <workflow-item name="item0" out-name="item2" type="link" linked-workflow-id="f2a886b5-b827-44ed-a5bb-18f53a95b02d">
+    <display-name><![CDATA[Find, Add or Update vRA IaaS Host]]></display-name>
+    <in-binding>
+      <bind name="password" type="SecureString" export-name="password">
+        <description><![CDATA[Password]]></description>
+      </bind>
+      <bind name="authDomain" type="string" export-name="authDomain"/>
+      <bind name="hostname" type="string" export-name="hostname"/>
+      <bind name="authUsername" type="string" export-name="authUsername"/>
+    </in-binding>
+    <out-binding>
+      <bind name="vCACHost" type="vCAC:VCACHost" export-name="vCACHost"/>
+    </out-binding>
+    <description><![CDATA[Finds an vCACHost (IaaS server) based on the URL provided.  If none can be found, it adds it.  If the username or password have changed, the IaaS server is updated.]]></description>
+    <position y="73.59090909090908" x="285.0"/>
+  </workflow-item>
+  <workflow-item name="item2" type="end" end-mode="0">
+    <position y="63.59090909090908" x="465.0"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="endpoint">
+      <desc><![CDATA[Endpoint representing a GEFEndpoint scriptable object]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

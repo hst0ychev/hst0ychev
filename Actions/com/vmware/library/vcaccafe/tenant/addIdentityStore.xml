@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="addIdentityStore" result-type="vCACCAFE:IdentityStore" api-version="6.0.0" id="1d837bcc-c331-4319-b798-5f6d4730418b" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.tenant">
+  <param n="tenant" t="vCACCAFE:Tenant"><![CDATA[Tenant]]></param>
+  <param n="name" t="string"><![CDATA[Name]]></param>
+  <param n="type" t="string"><![CDATA[Type]]></param>
+  <param n="url" t="string"><![CDATA[URL]]></param>
+  <param n="domain" t="string"><![CDATA[Domain]]></param>
+  <param n="alias" t="string"><![CDATA[Domain alias]]></param>
+  <param n="userNameDn" t="string"><![CDATA[Login user DN]]></param>
+  <param n="password" t="SecureString"><![CDATA[Password]]></param>
+  <param n="groupBaseSearchDn" t="string"><![CDATA[Group search base DN]]></param>
+  <param n="userBaseSearchDn" t="string"><![CDATA[User search base DN]]></param>
+  <script encoded="false"><![CDATA[var store = new vCACCAFEIdentityStore();
+store.setName(name);
+store.setType(vCACCAFEIdentityStoreType.fromValue(type));
+store.setUrl(url);
+store.setDomain(domain);
+store.setAlias(alias);
+store.setUserNameDn(userNameDn);
+store.setPassword(password);
+store.setGroupBaseSearchDn(groupBaseSearchDn);
+if ((userBaseSearchDn == null) || (userBaseSearchDn.trim() == "")) {
+	store.setUserBaseSearchDn(groupBaseSearchDn);
+} else {
+    store.setUserBaseSearchDn(userBaseSearchDn);
+}
+
+System.log("Adding identity store '" + name + "'...");
+var host = vCACCAFEEntitiesFinder.getHostForEntity(tenant);
+var service = host.createAuthenticationClient().getAuthenticationIdentityStoreClientService();
+service.createIdentityStore(tenant.getId(), store);
+System.log("Identity store '" + name + "' added.");
+
+return vCACCAFEEntitiesFinder.getIdentityStore(tenant, domain);]]></script>
+</dunes-script-module>

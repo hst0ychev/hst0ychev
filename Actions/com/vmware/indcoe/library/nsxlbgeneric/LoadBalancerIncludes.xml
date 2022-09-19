@@ -1,0 +1,203 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="LoadBalancerIncludes" result-type="Any" api-version="6.0.0" id="b663f6ef-5f2e-300b-ae75-0733af522f2d" version="1.0.0" allowed-operations="evf" category-name="com.vmware.indcoe.library.nsxlbgeneric">
+  <param n="restHost" t="REST:RESTHost"><![CDATA[The REST Host on which the operation needs to be performed]]></param>
+  <param n="header" t="Properties"><![CDATA[Key : value]]></param>
+  <script encoded="false"><![CDATA[var LoadBalancerIncludes ={
+            restHost:restHost,
+            header:header,
+            createAppProfile : function(content){
+                this.apiUrl = "/api/v1/loadbalancer/application-profiles";
+                this.requestMethod = "POST"
+                this.typeContent = "json"
+                var actionResult = System.getModule("com.vmware.indcoe.library.nsxlbgeneric").ExecuteRest(this.restHost,this.apiUrl,this.requestMethod,content,this.typeContent,this.header)
+                System.debug("Application Profile result :"+actionResult["contentAsString"])
+                return actionResult;
+            },
+            getAppProfiles : function (content){
+                this.apiUrl = "/api/v1/loadbalancer/application-profiles";
+                this.requestMethod = "GET"
+                this.typeContent = "json"
+                var actionResult = System.getModule("com.vmware.indcoe.library.nsxlbgeneric").ExecuteRest(this.restHost,this.apiUrl,this.requestMethod,content,this.typeContent,this.header)
+                System.debug("Application Profile result :"+actionResult["contentAsString"])
+                return actionResult;
+            },
+            createClientSslProf : function (content){
+                this.apiUrl = "/api/v1/loadbalancer/client-ssl-profiles";
+                this.requestMethod = "POST"
+                this.typeContent = "json"
+                var actionResult = System.getModule("com.vmware.indcoe.library.nsxlbgeneric").ExecuteRest(this.restHost,this.apiUrl,this.requestMethod,content,this.typeContent,this.header)
+                System.debug("SSL Profile result :"+actionResult["contentAsString"])
+                return actionResult;
+            },
+            getClientSslProfiles : function(content){
+                this.apiUrl = "/api/v1/loadbalancer/client-ssl-profiles";
+                this.requestMethod = "GET"
+                this.typeContent = "json"
+                var actionResult = System.getModule("com.vmware.indcoe.library.nsxlbgeneric").ExecuteRest(this.restHost,this.apiUrl,this.requestMethod,content,this.typeContent,this.header)
+                System.debug("SSL Profiles result :"+actionResult["contentAsString"])
+                return actionResult;
+            },
+            createMonitor : function (content){
+                this.apiUrl = "/api/v1/loadbalancer/monitors";
+                this.requestMethod = "POST"
+                this.typeContent = "json"
+                var actionResult = System.getModule("com.vmware.indcoe.library.nsxlbgeneric").ExecuteRest(this.restHost,this.apiUrl,this.requestMethod,content,this.typeContent,this.header)
+                System.debug("Create Monitor result :"+actionResult["contentAsString"])
+                return actionResult;
+            },
+            getMonitors : function (content){
+                this.apiUrl = "/api/v1/loadbalancer/monitors";
+                this.requestMethod = "GET"
+                this.typeContent = "json"
+                var actionResult = System.getModule("com.vmware.indcoe.library.nsxlbgeneric").ExecuteRest(this.restHost,this.apiUrl,this.requestMethod,content,this.typeContent,this.header)
+                System.debug("All Monitors :"+actionResult["contentAsString"])
+                return actionResult;
+            },
+            createPersisProfile : function (content){
+                this.apiUrl = "/api/v1/loadbalancer/persistence-profiles";
+                this.requestMethod = "POST"
+                this.typeContent = "json"
+                var actionResult = System.getModule("com.vmware.indcoe.library.nsxlbgeneric").ExecuteRest(this.restHost,this.apiUrl,this.requestMethod,content,this.typeContent,this.header)
+                System.debug("Create Persistance result :"+actionResult["contentAsString"])
+                return actionResult;
+            },
+            getPersisProfiles : function(content){
+                this.apiUrl = "/api/v1/loadbalancer/persistence-profiles";
+                this.requestMethod = "GET"
+                this.typeContent = "json"
+                var actionResult = System.getModule("com.vmware.indcoe.library.nsxlbgeneric").ExecuteRest(this.restHost,this.apiUrl,this.requestMethod,content,this.typeContent,this.header)
+                System.debug("GEt Persistance result :"+actionResult["contentAsString"]) 
+                return actionResult;
+            },
+            createPoolMem : function(content){
+                this.apiUrl = "/api/v1/loadbalancer/pools";
+                this.requestMethod = "POST"
+                this.typeContent = "json"
+                var actionResult = System.getModule("com.vmware.indcoe.library.nsxlbgeneric").ExecuteRest(this.restHost,this.apiUrl,this.requestMethod,content,this.typeContent,this.header)
+                System.debug("Create Pool Members result :"+actionResult["contentAsString"])
+                return actionResult;
+            },
+            getPools : function(content){
+                this.apiUrl = "/api/v1/loadbalancer/pools";
+                this.requestMethod = "GET"
+                this.typeContent = "json"
+                var actionResult = System.getModule("com.vmware.indcoe.library.nsxlbgeneric").ExecuteRest(this.restHost,this.apiUrl,this.requestMethod,content,this.typeContent,this.header)
+                System.debug("Get all pool:"+actionResult["contentAsString"]) 
+                return actionResult;
+            },
+            getSpecificPool : function(content,poolId){
+                this.apiUrl = "/api/v1/loadbalancer/pools/"+poolId;
+                this.requestMethod = "GET"
+                this.typeContent = "json"
+                var actionResult = System.getModule("com.vmware.indcoe.library.nsxlbgeneric").ExecuteRest(this.restHost,this.apiUrl,this.requestMethod,content,this.typeContent,this.header)
+                System.debug("Get Specific Pool and it's member: "+actionResult["contentAsString"])
+                return actionResult;
+            },
+            addMember :  function(content,poolId){
+                this.apiUrl = "/api/v1/loadbalancer/pools/"+poolId+"?action=ADD_MEMBERS";
+                this.requestMethod = "POST"
+                this.typeContent = "json"
+                var actionResult = System.getModule("com.vmware.indcoe.library.nsxlbgeneric").ExecuteRest(this.restHost,this.apiUrl,this.requestMethod,content,this.typeContent,this.header)
+                System.debug("Pool Member udpated: "+actionResult["contentAsString"])
+                return actionResult;
+            },
+			removeMember :  function(content,poolId){
+                this.apiUrl = "/api/v1/loadbalancer/pools/"+poolId+"?action=REMOVE_MEMBERS";
+                this.requestMethod = "POST"
+                this.typeContent = "json"
+                var actionResult = System.getModule("com.vmware.indcoe.library.nsxlbgeneric").ExecuteRest(this.restHost,this.apiUrl,this.requestMethod,content,this.typeContent,this.header)
+                System.debug("Pool Member udpated: "+actionResult["contentAsString"])
+                return actionResult;
+            },
+            createServerSslProfile : function(content){
+                this.apiUrl = "/api/v1/loadbalancer/server-ssl-profiles";
+                this.requestMethod = "POST"
+                this.typeContent = "json"
+                var actionResult = System.getModule("com.vmware.indcoe.library.nsxlbgeneric").ExecuteRest(this.restHost,this.apiUrl,this.requestMethod,content,this.typeContent,this.header)
+                System.debug("Server SSL Profile created : "+actionResult["contentAsString"])
+                return actionResult;
+            },
+            getServerSslProfiles : function(content){
+                this.apiUrl = "/api/v1/loadbalancer/server-ssl-profiles";
+                this.requestMethod = "GET"
+                this.typeContent = "json"
+                var actionResult = System.getModule("com.vmware.indcoe.library.nsxlbgeneric").ExecuteRest(this.restHost,this.apiUrl,this.requestMethod,content,this.typeContent,this.header)
+                System.debug("Server SSL Profile created : "+actionResult["contentAsString"])
+                return actionResult;
+            },
+            createLBService : function(content){
+                this.apiUrl = "/api/v1/loadbalancer/services";
+                this.requestMethod = "POST"
+                this.typeContent = "json"
+                var actionResult = System.getModule("com.vmware.indcoe.library.nsxlbgeneric").ExecuteRest(this.restHost,this.apiUrl,this.requestMethod,content,this.typeContent,this.header)
+                System.debug("Create LB Service result: "+actionResult["contentAsString"])
+                return actionResult;
+        
+            },
+            getLBService : function(content){
+                this.apiUrl = "/api/v1/loadbalancer/services";
+                this.requestMethod = "GET"
+                this.typeContent = "json"
+                var actionResult = System.getModule("com.vmware.indcoe.library.nsxlbgeneric").ExecuteRest(this.restHost,this.apiUrl,this.requestMethod,content,this.typeContent,this.header)
+                System.debug("LB Service result: "+actionResult["contentAsString"])
+                return actionResult;
+        
+            },
+            getLBSpecificService : function(serviceId,content){
+                this.apiUrl = "/api/v1/loadbalancer/services/"+serviceId;
+                this.requestMethod = "GET"
+                this.typeContent = "json"
+                var actionResult = System.getModule("com.vmware.indcoe.library.nsxlbgeneric").ExecuteRest(this.restHost,this.apiUrl,this.requestMethod,content,this.typeContent,this.header)
+                System.debug("LB Service result: "+actionResult["contentAsString"])
+                return actionResult;
+            },
+            updateLBService : function(serviceId,content){
+                this.apiUrl = "/api/v1/loadbalancer/services/"+serviceId;
+                this.requestMethod = "PUT"
+                this.typeContent = "json"
+                var actionResult = System.getModule("com.vmware.indcoe.library.nsxlbgeneric").ExecuteRest(this.restHost,this.apiUrl,this.requestMethod,content,this.typeContent,this.header)
+                System.debug("LB Service result: "+actionResult["contentAsString"])
+                return actionResult;
+            },
+            createTCPProfile : function(content){
+                this.apiUrl = "/api/v1/loadbalancer/tcp-profiles";
+                this.requestMethod = "POST"
+                this.typeContent = "json"
+                var actionResult = System.getModule("com.vmware.indcoe.library.nsxlbgeneric").ExecuteRest(this.restHost,this.apiUrl,this.requestMethod,content,this.typeContent,this.header)
+                System.debug("TCP Profile Result : "+actionResult["contentAsString"])
+                return actionResult;
+            
+            },
+            getTCPProfile : function(content){
+                this.apiUrl = "/api/v1/loadbalancer/tcp-profiles";
+                this.requestMethod = "GET"
+                this.typeContent = "json"
+                var actionResult = System.getModule("com.vmware.indcoe.library.nsxlbgeneric").ExecuteRest(this.restHost,this.apiUrl,this.requestMethod,content,this.typeContent,this.header)
+                System.debug("All TCP Profiles Result : "+actionResult["contentAsString"])
+                return actionResult;
+        
+            },
+            createLBVirtualServer : function(content){
+                this.apiUrl = "/api/v1/loadbalancer/virtual-servers";
+                this.requestMethod = "POST"
+                this.typeContent = "json"
+                var actionResult = System.getModule("com.vmware.indcoe.library.nsxlbgeneric").ExecuteRest(this.restHost,this.apiUrl,this.requestMethod,content,this.typeContent,this.header)
+                System.debug("Create Virtual Server Result : "+actionResult["contentAsString"])
+                return actionResult;
+        
+            },
+            getLBVirtualServer : function(content){
+                this.apiUrl = "/api/v1/loadbalancer/virtual-servers";
+                this.requestMethod = "GET"
+                this.typeContent = "json"
+                var actionResult = System.getModule("com.vmware.indcoe.library.nsxlbgeneric").ExecuteRest(this.restHost,this.apiUrl,this.requestMethod,content,this.typeContent,this.header)
+                System.debug("Create Virtual Server Result : "+actionResult["contentAsString"])
+                return actionResult;
+        
+            }
+}
+return LoadBalancerIncludes;
+
+
+]]></script>
+</dunes-script-module>

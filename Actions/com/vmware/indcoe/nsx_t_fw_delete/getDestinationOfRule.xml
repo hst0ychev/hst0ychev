@@ -1,0 +1,110 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getDestinationOfRule" result-type="string" api-version="6.0.0" id="69f3ac3e-f970-4163-b3c4-e870e31f2228" version="0.0.0" allowed-operations="evf" category-name="com.vmware.indcoe.nsx_t_fw_delete">
+  <param n="username" t="string"><![CDATA[]]></param>
+  <param n="password" t="SecureString"><![CDATA[]]></param>
+  <param n="section" t="string"><![CDATA[]]></param>
+  <param n="ruleName" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[//Getting Authentication token
+var authenticationToken = System.getModule("com.vmware.indcoe.util").base64encode(username + ":" + password)
+
+//Preparting header prop for rest api
+var header = new Properties()
+header.put("Authorization", "Basic " +authenticationToken);
+/**
+	Get the NSX T REST host from configuration element
+**/
+var restHost;
+var category = Server.getConfigurationElementCategoryWithPath("Helper")
+//die in a fire if non-existent
+if (category == null) {
+    throw "Configuration element category '" + categoryPath + "' not found or empty!";
+}
+//get _all_ the elements
+var elements = category.configurationElements;
+var elementName = "NSXTHost";
+var attributeName = "nsxtHost"
+//retrieve names
+for (i = 0; i < elements.length; i++) {
+     if (elements[i].name == elementName) {
+         //found required element
+         restHost = elements[i].getAttributeWithKey(attributeName).value;
+         if (restHost != null) {
+             System.debug("Found attribute '" + attributeName + "' in '" + elementName + "' with value '" +restHost + "'");
+         }
+     }
+}
+var sectionId = getSectionID(restHost,section,header);
+System.log("sectionId:"+sectionId);
+ruleSpilt = ruleName.split("-");
+ruleElem = ruleSpilt[0];
+rule = ruleElem.trim();
+var ruleID = getRuleID(restHost,sectionId,rule,header);
+System.log("ruleID:"+ruleID);
+var ruleDest =getRuleDest(restHost,sectionId,ruleID,header);
+System.log("ruleSource:"+ruleDest.length);
+return ruleDest;
+
+function getSectionID(restHost,section,header){
+var apiUrl = "/api/v1/firewall/sections/";
+var requestMethod = "GET"
+var typeContent = "json"
+var sectionResult = System.getModule("com.vmware.indcoe.library.nsxlbgeneric").ExecuteRest(restHost,apiUrl,requestMethod,null,typeContent,header)
+if(sectionResult["statusCode"]==200 ||sectionResult["statusCode"]==201 || sectionResult["statusCode"]==204){
+	System.debug("Getting section rule rest operation completed ")
+}else throw "Getting section rule failed"
+System.debug("rules:"+sectionResult["contentAsString"]);
+var secContent = sectionResult["contentAsString"];
+var secJson = JSON.parse(secContent);
+var sectionId;
+for(var i in secJson.results){
+var secDisplayName = secJson.results[i].display_name;
+	if(secJson.results[i].display_name == section){
+		sectionId = secJson.results[i].id;
+		break;
+		System.debug("sectionId:"+sectionId);
+		}
+	}
+	return sectionId;
+}
+
+function getRuleID(restHost,sectionId,ruleName, header){
+var apiUrl = "/api/v1/firewall/sections/"+sectionId+"/rules";
+var requestMethod = "GET"
+var typeContent = "json"
+var sectionRuleIDResult = System.getModule("com.vmware.indcoe.library.nsxlbgeneric").ExecuteRest(restHost,apiUrl,requestMethod,null,typeContent,header)
+if(sectionRuleIDResult["statusCode"]==200 ||sectionRuleIDResult["statusCode"]==201 || sectionRuleIDResult["statusCode"]==204){
+	System.debug("Getting section rule rest operation completed ")
+}else throw "Getting section rule failed"
+System.debug("rules:"+sectionRuleIDResult["contentAsString"]);
+var secRuleIDContent = sectionRuleIDResult["contentAsString"];
+var secRuleIDJson = JSON.parse(secRuleIDContent);
+var ruleId =[];
+for(var j in secRuleIDJson.results){
+	if(secRuleIDJson.results[j].display_name == ruleName){
+	ruleId = secRuleIDJson.results[j].id;
+	break;
+	}
+	System.debug("ruleId:" +ruleId);
+	}
+return ruleId;
+}
+
+function getRuleDest(restHost,sectionId,ruleID, header){
+var apiUrl = "/api/v1/firewall/sections/"+sectionId+"/rules/"+ruleID+"";
+var requestMethod = "GET"
+var typeContent = "json"
+var sectionRuleResult = System.getModule("com.vmware.indcoe.library.nsxlbgeneric").ExecuteRest(restHost,apiUrl,requestMethod,null,typeContent,header)
+if(sectionRuleResult["statusCode"]==200 ||sectionRuleResult["statusCode"]==201 || sectionRuleResult["statusCode"]==204){
+	System.debug("Getting section rule rest operation completed ")
+}else throw "Getting section rule failed"
+System.debug("rules:"+sectionRuleResult["contentAsString"]);
+var secRuleContent = sectionRuleResult["contentAsString"];
+var secRuleJson = JSON.parse(secRuleContent);
+var destinationsArray =[];
+for(var j in secRuleJson.destinations){
+	destinationsArray.push(secRuleJson.destinations[j].target_display_name);
+	}
+destinations = destinationsArray.toString();
+return destinations;
+}]]></script>
+</dunes-script-module>

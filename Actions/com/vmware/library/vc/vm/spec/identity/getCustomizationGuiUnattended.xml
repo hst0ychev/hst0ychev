@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getCustomizationGuiUnattended" result-type="Any" api-version="6.0.0" id="9d289486-f841-4cb4-9de4-50ebb764418f" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.vm.spec.identity">
+  <param n="autoLogon" t="boolean"><![CDATA[Flag to determine whether or not the machine automatically logs on as Administrator]]></param>
+  <param n="autoLogonCount" t="number"><![CDATA[If the AutoLogon flag is set, then the AutoLogonCount property specifies the number of times the machine should automatically log on as Administrator]]></param>
+  <param n="password" t="Any"><![CDATA[[Optional] VimCustomizationPassword: The new administrator password for the machine. To specify that the password should be set to blank (that is, no password), set the password value to NULL. Because of encryption, "" is NOT a valid value.]]></param>
+  <param n="timeZone" t="number"><![CDATA[The time zone for the new virtual machine. Numbers correspond to time zones listed in sysprep documentation]]></param>
+  <script encoded="false"><![CDATA[var guiUnattended;
+
+try {
+	checkParams();
+	guiUnattended = new VcCustomizationGuiUnattended();
+	affectParams();
+	return guiUnattended;
+}
+catch (ex) {
+	throw "Unable to create VcCustomizationGuiUnattended: " + ex;
+}
+
+
+function affectParams() {
+	guiUnattended.autoLogon = autoLogon;
+	guiUnattended.autoLogonCount = autoLogonCount;
+	guiUnattended.password = password;
+	guiUnattended.timeZone = timeZone;
+}
+
+function checkParams() {
+	if (autoLogon == null) throw "autologon cannot be null";
+	if (autoLogonCount == null) autoLogonCount = 0;
+	if (autoLogon && autoLogonCount < 1) throw "autoLogonCount cannot be lesser or equal to 0 if autoLogon is set to true";
+	if (password != null && ((password instanceof VcCustomizationPassword) == false)) throw "password must be of type VcCustomizationPassword";
+	if (timeZone == null) throw "timezone cannot be null";
+}]]></script>
+</dunes-script-module>

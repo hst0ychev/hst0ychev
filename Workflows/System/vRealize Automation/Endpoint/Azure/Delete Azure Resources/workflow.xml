@@ -1,0 +1,113 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item4" object-name="workflow:name=generic" id="d9bb22cf-8c46-4f39-a657-297096ea2e9c" version="7.5.0" api-version="6.0.0" allowed-operations="vf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Delete Azure Resources]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="requestData" type="Properties"/>
+    <param name="virtualMachine" type="Azure:VirtualMachine"/>
+  </input>
+  <attrib name="preparedRequestData" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="apiVersion" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="764.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task" script-module="com.vmware.vra.endpoint.azure/DeleteAzureResources">
+    <display-name><![CDATA[DeleteAzureResources]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+System.getModule("com.vmware.vra.endpoint.azure").DeleteAzureResources(requestData,apiVersion,vm) ;]]></script>
+    <in-binding>
+      <bind name="requestData" type="Properties" export-name="preparedRequestData"/>
+      <bind name="apiVersion" type="string" export-name="apiVersion"/>
+      <bind name="vm" type="Azure:VirtualMachine" export-name="virtualMachine"/>
+    </in-binding>
+    <out-binding/>
+    <position y="128.13636363636363" x="564.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item3" type="task">
+    <display-name><![CDATA[Prepare requestData]]></display-name>
+    <script encoded="false"><![CDATA[if (virtualMachine && !requestData) {
+    // This is the case when the workflow is invoked from vRA during 'Destroy deployment' second day operations. In this case
+    // we need to build the requestData on our own.
+     
+    var existingTags = new Properties();
+    var tags = AzureVirtualMachineManager.listTags(virtualMachine);
+    for each(var item in tags) {
+        var field = item.split(':');
+        existingTags.put(field[0], field[1]);
+    }
+    if (tags.length > 0) {
+        preparedRequestData = new Properties();
+        preparedRequestData.put("subscriptionId", virtualMachine.subscriptionId);
+        preparedRequestData.put("resourceGroupName", virtualMachine.resourceGroupName);
+        preparedRequestData.put("vmName", virtualMachine.name);
+        preparedRequestData.put("vmLocation", virtualMachine.region);
+
+        var tag = getTag(existingTags);
+        preparedRequestData.put("tag", tag);
+     } else {
+        // This could happen if the machine has already been deleted in the Subscription, but is still present in vRA Catalog Items.
+        System.warn("Cannot continue with the resource clean up as the machine does not exist in the Subscription. This will lead to " +
+            "a left over of all related resources that are no more used and they need to be removed manually.");
+     }
+
+} else {
+    // This requestData is coming from the clean up process when the VirtualMachine deployment has failed, so use it directly.
+    preparedRequestData = requestData;
+    preparedRequestData.put("vmLocation", virtualMachine.location);
+}
+
+function getTag(tags) {
+    var result = null;
+
+    for each (var tag in tags.keys) {
+        if (tag.indexOf("xaas.allocation.") != "-1") {
+            result = tag;
+            break;
+        }
+    }
+
+    return result;
+}]]></script>
+    <in-binding>
+      <bind name="requestData" type="Properties" export-name="requestData"/>
+      <bind name="virtualMachine" type="Azure:VirtualMachine" export-name="virtualMachine"/>
+    </in-binding>
+    <out-binding>
+      <bind name="preparedRequestData" type="Properties" export-name="preparedRequestData"/>
+    </out-binding>
+    <position y="55.40909090909091" x="344.5"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item1" type="custom-condition" alt-out-name="item0">
+    <display-name><![CDATA[Is preparation successful]]></display-name>
+    <script encoded="false"><![CDATA[return preparedRequestData != null;]]></script>
+    <in-binding>
+      <bind name="preparedRequestData" type="Properties" export-name="preparedRequestData"/>
+    </in-binding>
+    <position y="45.40909090909091" x="564.5"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item2" type="task">
+    <display-name><![CDATA[Init Configuration]]></display-name>
+    <script encoded="false"><![CDATA[var attributeResults = System.getModule("com.vmware.vra.endpoint.azure.configuration").getAzureConfigurations({
+    'General': ["apiVersion"],
+});
+
+apiVersion = attributeResults['General']['apiVersion'];]]></script>
+    <in-binding/>
+    <out-binding>
+      <bind name="apiVersion" type="string" export-name="apiVersion"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="requestData">
+      <desc><![CDATA[requestData]]></desc>
+    </p-param>
+    <p-param name="virtualMachine">
+      <desc><![CDATA[virtualMachine]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

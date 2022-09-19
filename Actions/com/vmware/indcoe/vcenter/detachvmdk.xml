@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="detachvmdk" result-type="Any" api-version="6.0.0" id="a31d5718-3998-48af-89cc-3597be54d38a" version="0.0.11" allowed-operations="evf" category-name="com.vmware.indcoe.vcenter">
+  <script encoded="false"><![CDATA[var detachObj = {
+	detachVMDK : function(vmName,vmdkPath){
+		System.debug("VM name "+vmName) 
+		vmName = vmName.replace(" ","")
+		var vCACVms = Server.findAllForType("vCAC:VirtualMachine", "VirtualMachineName eq '"+vmName+"'");
+		var sdkConnections = VcPlugin.allSdkConnections;  
+		var vcenterName;        
+		var psHost;      
+		for(var j in sdkConnections){
+			System.debug("VM id "+vCACVms[0].vmUniqueID)
+			try{
+		    	vcVirtualMachine = sdkConnections[j].searchIndex.findByUuid(null,vCACVms[0].vmUniqueID,true,true);
+				if(vcVirtualMachine){
+					vcenterName = sdkConnections[j].id
+					System.debug("SDK id "+sdkConnections[j].id)
+				}
+			}catch(e){System.debug("Unable to find vc vm by uuid in sdkConnection "+sdkConnections[j]);}
+		}
+		//get category
+		var category = Server.getConfigurationElementCategoryWithPath("Helper");
+		//die in a fire if non-existent
+		if (category == null) {
+		    throw "Configuration element category not found or empty!";
+		}
+		//get _all_ the elements
+		var elements = category.configurationElements;
+		//retrieve names
+		for (i = 0; i < elements.length; i++) {
+		    if (elements[i].name == "vCenterCreds") {
+				//found required element
+				var split_val = vcenterName.split('.')
+				var attrib='';
+				for(var hh in split_val){ attrib = attrib+split_val[hh]}
+				vcenterCompVar = elements[i].getAttributeWithKey(attrib).value;
+				psHost = elements[i].getAttributeWithKey("psHost").value
+				//System.debug(psHost)
+				break
+			}
+		}
+		var username = vcenterCompVar.get("username")
+		var password = vcenterCompVar.get("password")
+		var powerObj = System.getModule("com.vmware.indoce.library.executepowershell").ExecutePowershell()
+		var script = ""
+		script += "Import-Module Vmware.VimAutomation.Core\n"
+		script += "Connect-VIServer -Server '"+vcenterName+"' -User '"+username+"' -Password '"+password+"'\n"
+		script += "Get-VM -Name '"+vmName+"' | Get-HardDisk | Where-Object -Property Filename -EQ '"+vmdkPath.trim()+"' | Remove-HardDisk -confirm:$false\n"
+		System.log("script "+script)
+		var response = powerObj.executeScript(psHost,script)
+		System.debug("Response "+response)
+	}
+}
+return detachObj]]></script>
+</dunes-script-module>

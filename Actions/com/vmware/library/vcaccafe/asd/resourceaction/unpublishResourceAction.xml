@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="unpublishResourceAction" result-type="void" api-version="6.0.0" id="8debdbb0-2bfa-46f2-80e2-945694966414" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.asd.resourceaction">
+  <param n="resourceAction" t="vCACCAFE:ResourceAction"><![CDATA[Resource action to be unpublished]]></param>
+  <script encoded="false"><![CDATA[System.getModule("com.vmware.library.vcaccafe.util").validateObject(resourceAction, "Resource action");
+var host = vCACCAFEEntitiesFinder.getHostForEntity(resourceAction);
+var resourceOperationClient = host.createAdvancedDesignerClient().getAdvancedDesignerCsResourceOperationService();
+
+System.log("Unpublishing resource action " + resourceAction.getName() + "...");
+resourceOperationClient.updateResourceOperationStatus(resourceAction.getId(), vCACCAFEDesignerPublishStatus.DRAFT);
+System.log("Resource action " + resourceAction.getName() + " unpublished.");]]></script>
+</dunes-script-module>

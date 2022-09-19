@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="deletePropertyGroup" result-type="void" api-version="6.0.0" id="7b076bdd-206d-416a-aece-e4bba98cf10d" version="0.0.0" allowed-operations="vf" category-name="com.vmware.library.vcaccafe.propertygroup">
+  <param n="group" t="vCACCAFE:PropertyGroup"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[if(group == "notfound") {
+	throw "Property group not found!";
+}
+var host = vCACCAFEEntitiesFinder.getHostForEntity(group);
+var service = host.createPropertyClient().getPropertyContextPropertyGroupService();
+
+System.log("Deleting property group...");
+service.deletePropertyGroup(group.getId());
+System.log("Property definition: " + group.getName() + " deleted.");]]></script>
+</dunes-script-module>

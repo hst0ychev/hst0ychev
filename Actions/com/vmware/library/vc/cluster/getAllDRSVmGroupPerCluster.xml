@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getAllDRSVmGroupPerCluster" result-type="Array/string" api-version="6.0.0" id="dd488077-ee54-440e-a0e4-e5dcd6403ad6" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.cluster">
+  <param n="cluster" t="VC:ClusterComputeResource"><![CDATA[Cluster computer resource]]></param>
+  <script encoded="false"><![CDATA[//Liste Virtual Machine Groups in a given cluster
+var groupArray = new Array ();
+System.log("Searching for a Cluster VM group by name ");
+for (i in cluster.configurationEx.group) {	
+	if (cluster.configurationEx.group[i] instanceof VcClusterVmGroup){
+	groupArray.push(cluster.configurationEx.group[i].name);
+	}	
+}
+return groupArray;]]></script>
+</dunes-script-module>

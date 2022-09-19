@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="createComputer" result-type="void" api-version="6.0.0" id="36818080808080808080808080808080CE80808001270557368849c62c352aa82" version="1.1.1" allowed-operations="vf" category-name="com.vmware.library.microsoft.activeDirectory">
+  <description><![CDATA[Create a computer in the Active Directory]]></description>
+  <param n="parent" t="Any"><![CDATA[Parent for the new computer]]></param>
+  <param n="computerName" t="string"><![CDATA[Name for the new computer]]></param>
+  <param n="domainName" t="string"><![CDATA[Domain name if provided]]></param>
+  <script encoded="false"><![CDATA[parent.createComputer(computerName, domainName);]]></script>
+</dunes-script-module>

@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="FindVMObjectById" result-type="Any" api-version="6.0.0" id="4812d190-86a2-34a5-93c6-894c2a3ee57d" version="1.0.0" allowed-operations="evf" category-name="com.vmware.indcoe.library.vrautil">
+  <param n="vmId" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var tmpVCAC = Server.findAllForType("vCAC:VirtualMachine", "ExternalReferenceId eq '" + vmId + "'");
+System.debug("Number of found VMs: " + tmpVCAC.length);
+
+return tmpVCAC[0];
+]]></script>
+</dunes-script-module>

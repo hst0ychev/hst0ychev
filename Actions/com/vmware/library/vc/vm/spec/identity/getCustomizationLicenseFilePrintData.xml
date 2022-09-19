@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getCustomizationLicenseFilePrintData" result-type="Any" api-version="6.0.0" id="b03a5404-39a4-429e-925d-731756db41ff" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.vm.spec.identity">
+  <param n="autoMode" t="VC:CustomizationLicenseDataMode"><![CDATA[Server licensing mode]]></param>
+  <param n="autoUsers" t="number"><![CDATA[This key is valid only if AutoMode = PerServer.]]></param>
+  <script encoded="false"><![CDATA[var license;
+try {
+	checkParam();
+	license = new VcCustomizationLicenseFilePrintData();
+	affectParam();
+	return license;
+}
+catch (ex) {
+	throw "Unable to create VcCustomizationLicenseFilePrintData: " + ex;
+}
+
+function affectParam() {
+	//if (autoMode != null)
+	license.autoMode = VcCustomizationLicenseDataMode.fromString(autoMode.name);
+	if (autoUsers != null && autoUsers >= 0)
+		license.autoUsers = autoUsers;
+	else
+		System.debug("autoUsers is " + autoUsers);
+}
+
+function checkParam() {
+	if (autoMode == null) throw "autoMode cannot be null";
+	if (autoMode == VcCustomizationLicenseDataMode.perServer && autoUsers == null) throw "autoMode is set to perServer, autoUsers cannot be null";
+}]]></script>
+</dunes-script-module>

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="deleteFabricGroup" result-type="void" api-version="6.0.0" id="78359a71-d235-4d3e-a43a-c511d1e9075b" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.fabricgroup">
+  <param n="group" t="vCACCAFE:FabricGroup"><![CDATA[Group]]></param>
+  <script encoded="false"><![CDATA[var host = vCACCAFEEntitiesFinder.getHostForEntity(group);
+var service = host.createInfrastructureClientWithCurrentUserRights().getFabricGroupService();
+service.delete(group.getId());]]></script>
+</dunes-script-module>

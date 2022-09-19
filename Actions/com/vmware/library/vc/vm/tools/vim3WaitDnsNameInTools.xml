@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="vim3WaitDnsNameInTools" result-type="void" api-version="6.0.0" id="520cf9ce-f61c-4212-9eb7-a9eb9275f79d" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.vm.tools">
+  <param n="vm" t="VC:VirtualMachine"><![CDATA[VM in which the action look to get the new DNS Name]]></param>
+  <param n="pollingRate" t="number"><![CDATA[Time between all request information on the tools [seconds]]]></param>
+  <param n="dnsNameToWait" t="string"><![CDATA[Define a specific DNS name to wait for (either in compute.dunes.ch or compute form)]]></param>
+  <param n="timeout" t="number"><![CDATA[Timeout before throwing a timeout exception [minutes]]]></param>
+  <param n="addNumberToName" t="boolean"><![CDATA[Specify if the DNS name has an automatically number added at end (not known at clone time)]]></param>
+  <script encoded="false"><![CDATA[if (vm == null) throw "ReferenceError: vm is not defined for waiting for the DNS name";
+if (vm.name == null) throw "ReferenceError: vm is not initialized for waiting for the DNS name";
+
+timeout = timeout * 60;
+
+while (true) {
+	if (vm.guest != null) {
+		if (vm.guest.toolsStatus == VcVirtualMachineToolsStatus.toolsOk || vm.guest.toolsStatus == VcVirtualMachineToolsStatus.toolsOld) {
+			if (vm.guest.guestState == "running") {
+				hostname = vm.guest.hostName;
+				if (hostname.indexOf(".") > 0) {
+					if (dnsNameToWait.indexOf(".") > 0 && hostname.toLowerCase() == dnsNameToWait.toLowerCase()) {
+						break;
+					}
+					if (dnsNameToWait.indexOf(".") < 0) {
+						if (hostname.substring(0, hostname.indexOf(".")).toLowerCase() == dnsNameToWait.toLowerCase()) {
+							break;
+						}
+					}
+				}
+				else {
+					if (dnsNameToWait.indexOf(".") > 0 ) {
+						if (dnsNameToWait.substring(0, dnsNameToWait.indexOf(".")).toLowerCase() == hostname.toLowerCase()) {
+							break;
+						}
+					}
+					if (dnsNameToWait.indexOf(".") < 0 && hostname.toLowerCase() == dnsNameToWait.toLowerCase()) {
+						break;
+					}
+				}
+			}
+		}
+	}
+	// wait the poolingRate
+	System.sleep(pollingRate * 1000);
+	// test timeout
+	timeout -= pollingRate;
+	if (timeout <= 0) {
+		throw "Timeout: Unable to get a DNS name for the VM before reaching the Timeout";
+	}
+}
+
+System.log("Found name '" + hostname + "' for VM '" + vm.name + "'");]]></script>
+</dunes-script-module>

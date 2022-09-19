@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="deletePropertyFromVirtualMachineEntity" result-type="void" api-version="6.0.0" id="ccc42fcf-458a-4d1f-999c-2e7e9e1212bc" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcac">
+  <param n="host" t="vCAC:VCACHost"><![CDATA[vCloud Automation Center host]]></param>
+  <param n="virtualMachineEntity" t="vCAC:Entity"><![CDATA[vCloud Automation Center virtual machine entity]]></param>
+  <param n="propertyName" t="string"><![CDATA[Property to be deleted]]></param>
+  <script encoded="false"><![CDATA[var virtualMachinePropertiesEntities = virtualMachineEntity.getLink(host, "VirtualMachineProperties");
+for each (var virtualMachinePropertiesEntity in virtualMachinePropertiesEntities) {
+	if (virtualMachinePropertiesEntity.getProperty("PropertyName") == propertyName) {
+		var entityKey = virtualMachinePropertiesEntity.entityKey;
+		var entityKeyId = entityKey.get("Id");
+		System.log("Delete entity with id " + entityKeyId + " from virtualMachine " + virtualMachineEntity.getProperty("VirtualMachineName"));
+		vCACEntityManager.deleteModelEntityBySerializedKey(host.id , "ManagementModelEntities.svc" , "VirtualMachineProperties" , entityKeyId , null);
+	}
+}]]></script>
+</dunes-script-module>

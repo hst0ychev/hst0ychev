@@ -1,0 +1,241 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="5b2e847d-4537-4df9-998f-40738a3362fb" version="0.0.11" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Remove Pool Member]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="payload" type="Properties"/>
+  </input>
+  <attrib name="categoryPath" type="string" read-only="false">
+    <value encoded="n"><![CDATA[Autoscale/Service]]></value>
+  </attrib>
+  <attrib name="elementName" type="string" read-only="false">
+    <value encoded="n"><![CDATA[LBDetails]]></value>
+  </attrib>
+  <attrib name="vCACHost" type="vCAC:VCACHost" read-only="false" conf-id="8f368667-13ac-4498-850f-ae6734e9e98b" conf-key="vcacHost">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='7678fd07-7e94-41fb-b504-826e693933a5'&dunesName='vCAC:VCACHost']]></value>
+  </attrib>
+  <attrib name="cafeHost" type="vCACCAFE:VCACHost" read-only="false" conf-id="8f368667-13ac-4498-850f-ae6734e9e98b" conf-key="vcaccafeHost">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='e8dc59dd-9ae4-44aa-86ad-50240e6c34d3'&dunesName='vCACCAFE:VCACHost']]></value>
+  </attrib>
+  <attrib name="username" type="string" read-only="false" conf-id="b076846e-b485-4746-92c6-455f2f4b048d" conf-key="username">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="password" type="SecureString" read-only="false" conf-id="b076846e-b485-4746-92c6-455f2f4b048d" conf-key="password">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="lbCategory" type="string" read-only="false">
+    <value encoded="n"><![CDATA[Autoscale/Service]]></value>
+  </attrib>
+  <attrib name="elementName1" type="string" read-only="false">
+    <value encoded="n"><![CDATA[TemplateDetails]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Scriptable task]]></display-name>
+    <script encoded="false"><![CDATA[//Gettting Payload Properties
+var machine=payload.get("machine");
+var vmId = machine.get("id")
+var virtualMachineName = machine.get("name");
+//Getting vcac vm properties
+var properties = new Properties();
+properties.put("VirtualMachineID",vmId);
+var virtualMachineEntity = vCACEntityManager.readModelEntity(vCACHost.id, "ManagementModelEntities.svc", "VirtualMachines", properties, null);
+System.log("virtualMachineEntity"+virtualMachineEntity);
+var vCACVmProperties = new Properties();
+var virtualMachinePropertiesEntities = virtualMachineEntity.getLink(vCACHost, "VirtualMachineProperties");
+for(var i in virtualMachinePropertiesEntities) {
+    var propertyName = virtualMachinePropertiesEntities[i].getProperty("PropertyName");
+    var propertyValue = virtualMachinePropertiesEntities[i].getProperty("PropertyValue");
+    System.log("Found property " + propertyName + " = " + propertyValue);
+    vCACVmProperties.put(propertyName, propertyValue);
+}
+var serverIP = vCACVmProperties.get("VirtualMachine.Network0.Address");
+System.debug("Server ip "+serverIP)
+//Get Vcac VM
+var vcacVM;
+var allVMs = Server.findAllForType("vCAC:VirtualMachine",null);
+for(var vm in allVMs){
+	if(allVMs[vm].virtualMachineName == virtualMachineName){
+		vcacVM = allVMs[vm];
+	}
+}
+var provisionOrScale = false;
+var reqId = vCACVmProperties.get("__Cafe.Root.Request.Id");
+var deploymentId = "";
+var deploymentName = "";
+var templateName;
+try {
+	request = vCACCAFEEntitiesFinder.getCatalogItemRequest(cafeHost,reqId);
+	provisionOrScale = false;
+} catch(ex) {
+	System.debug("Unable to find catalog request with ID: " + reqId + ". Checking if this is Scale Out/In.");
+	var scaleOutRequest = vCACCAFEEntitiesFinder.getResourceActionRequest(cafeHost,reqId);
+    var catalogResource = vCACCAFEEntitiesFinder.getCatalogResource(cafeHost, scaleOutRequest.resourceRef.getId());
+    var CatalogResource = System.getModule("com.vmware.indcoe.library.vrautil").CatalogResource(cafeHost);
+    var deployment = CatalogResource.getDeploymentByRequestId(catalogResource.requestId);
+    System.debug("Deployment with Name found '"+deployment.name+"'");
+    System.debug("Deployment with ID found '"+deployment.id+"'");
+    deploymentName = deployment.name;
+    System.debug("Deployment with Name found '"+deploymentName+"'");
+	provisionOrScale = true;
+}
+var lbBoolean = false;
+var category = Server.getResourceElementCategoryWithPath(lbCategory)
+var resourceElements = category.resourceElements
+for(var j in resourceElements){
+	if(resourceElements[j].name == elementName1){
+	    var mimeAttach = resourceElements[j].getContentAsMimeAttachment()
+	    var content = mimeAttach.content
+	    var jsonContent = JSON.parse(content)
+	    var templateDetails = jsonContent.templateDetails
+	    for(var i in templateDetails){
+	    	if(templateDetails[i].deploymentName == deploymentName){
+	        	lbBoolean = templateDetails[i].lbBoolean
+				System.debug("lbBoolean "+lbBoolean);
+	        	break;
+	        }
+	    }
+    }
+}
+if(lbBoolean){
+	var props = new Properties();
+	if(!provisionOrScale){
+		System.debug("Provision of virtual machine From Blueprint");
+	}else{
+		var lbPort;
+		var lbServerName;
+		var foundResourceElement;
+		var category = Server.getResourceElementCategoryWithPath(categoryPath);
+		var resourceElements = category.resourceElements;
+		for(var j in resourceElements){
+				if(resourceElements[j].name == elementName){
+					foundResourceElement = resourceElements[j];
+				}
+		}
+		
+		var mimeContent = foundResourceElement.getContentAsMimeAttachment();
+		System.debug("MiME Content: "+mimeContent);
+		
+		var content = mimeContent.content;
+		
+		System.debug("Content: "+content);
+		
+		//Converting to json object
+		var jsonContent = JSON.parse(content);
+		
+		System.debug("JSON Content: "+JSON.stringify(jsonContent));
+		
+		System.debug("LBDetails: "+ jsonContent.LBDetails);
+		
+		var lbDetails = jsonContent.LBDetails;
+		
+		System.debug("Load Balancer Length: "+lbDetails.length);
+		
+		for(var i=0;i<lbDetails.length;i++){
+			if(lbDetails[i].deploymentName == deploymentName){
+				lbPort = lbDetails[i].lbPort
+				lbServerName = lbDetails[i].lbName
+				System.debug("LB Server name "+lbServerName);
+				System.debug("LB Port "+lbPort);
+			}
+		}
+		var poolName = lbServerName+"pool"
+		System.debug("Pool Name "+poolName);
+		/** 
+		Get Authentication token
+		**/
+		var authenticationToken = System.getModule("com.vmware.indcoe.util").base64encode(username + ":" + password)
+		var header = new Properties()
+		header.put("Authorization", "Basic " +authenticationToken);
+		/**
+			Get the NSX T REST host from configuration element
+		**/
+		var restHost;
+		var category = Server.getConfigurationElementCategoryWithPath("Helper")
+		//die in a fire if non-existent
+		if (category == null) {
+		    throw "Configuration element category '" + categoryPath + "' not found or empty!";
+		}
+		//get _all_ the elements
+		var elements = category.configurationElements;
+		var elementName = "NSXTHost";
+		var attributeName = "nsxtHost"
+		//retrieve names
+		for (i = 0; i < elements.length; i++) {
+		     if (elements[i].name == elementName) {
+		         //found required element
+		         restHost = elements[i].getAttributeWithKey(attributeName).value;
+		         if (restHost != null) {
+		             System.debug("Found attribute '" + attributeName + "' in '" + elementName + "' with value '" +restHost + "'");
+		         }
+		     }
+		}
+		/**
+		Creating object
+		**/
+		var lbIncludeObject = System.getModule("com.vmware.indcoe.library.nsxlbgeneric").LoadBalancerIncludes(restHost,header);
+		var allPools = lbIncludeObject.getPools(null);
+		var poolId;
+		for(var q in allPools["contentAsObject"].results){
+			if(allPools["contentAsObject"].results[q].display_name == poolName){
+				poolId = allPools["contentAsObject"].results[q].id
+				System.debug("Pool id "+poolId);
+				break;
+			}
+		}
+		var specPool = lbIncludeObject.getSpecificPool(null,poolId)
+		var objPoolContent = specPool["contentAsObject"];
+		var indexNo = false;
+		var adminState;
+		var memContent;
+		var port;
+		for(var m in objPoolContent.members){
+			if(objPoolContent.members[m].ip_address == serverIP){
+				adminState = objPoolContent.members[m].admin_state;
+				try{
+					port = objPoolContent.members[m].port
+				}catch(e){
+					port = null
+				}
+				memContent = {
+			 	 "members":[
+			    	{
+			      	"port":lbPort,
+			      	"admin_state":adminState,
+			      	"ip_address":serverIP
+			    	}]
+				}
+			
+			break;						
+			}
+		}
+		
+		var newPoolContent = JSON.stringify(memContent);
+		System.debug("updated content "+newPoolContent);
+		var updateResult = lbIncludeObject.removeMember(newPoolContent,poolId)
+		System.debug("Updated Pool Members :"+updateResult["contentAsString"]);
+		
+	}
+}]]></script>
+    <in-binding>
+      <bind name="categoryPath" type="string" export-name="categoryPath"/>
+      <bind name="elementName" type="string" export-name="elementName"/>
+      <bind name="vCACHost" type="vCAC:VCACHost" export-name="vCACHost"/>
+      <bind name="cafeHost" type="vCACCAFE:VCACHost" export-name="cafeHost"/>
+      <bind name="username" type="string" export-name="username"/>
+      <bind name="password" type="SecureString" export-name="password"/>
+      <bind name="payload" type="Properties" export-name="payload"/>
+      <bind name="lbCategory" type="string" export-name="lbCategory"/>
+      <bind name="elementName1" type="string" export-name="elementName1"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="payload">
+      <desc><![CDATA[payload]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

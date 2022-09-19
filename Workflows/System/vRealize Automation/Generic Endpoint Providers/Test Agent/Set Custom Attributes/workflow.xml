@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="700b5aad-005e-4315-a4a0-715fd2c69848" version="0.0.2" api-version="6.0.0" allowed-operations="vf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Set Custom Attributes]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="EndpointIn" type="Any"/>
+    <param name="MachineIn" type="Any"/>
+    <param name="PropertiesIn" type="Properties"/>
+  </input>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Dump Inputs]]></display-name>
+    <script encoded="false"><![CDATA[System.log("EndpointIn:");
+System.log(EndpointIn.toSource());
+
+System.log("MachineIn:");
+System.log(MachineIn.toSource());
+
+System.log("PropertiesIn:");
+System.log(PropertiesIn.toSource());]]></script>
+    <in-binding>
+      <bind name="EndpointIn" type="Any" export-name="EndpointIn"/>
+      <bind name="MachineIn" type="Any" export-name="MachineIn"/>
+      <bind name="PropertiesIn" type="Properties" export-name="PropertiesIn"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="EndpointIn">
+      <desc><![CDATA[EndpointIn]]></desc>
+    </p-param>
+    <p-param name="MachineIn">
+      <desc><![CDATA[MachineIn]]></desc>
+    </p-param>
+    <p-param name="PropertiesIn">
+      <desc><![CDATA[DescriptionIn]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

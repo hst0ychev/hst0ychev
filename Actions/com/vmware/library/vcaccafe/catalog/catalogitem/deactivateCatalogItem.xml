@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="deactivateCatalogItem" result-type="void" api-version="6.0.0" id="dace52df-2cca-45a6-87b6-e59a40c74ac6" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.catalog.catalogitem">
+  <param n="catalogItem" t="vCACCAFE:AdminCatalogItem"><![CDATA[Catalog item to be deactivated]]></param>
+  <script encoded="false"><![CDATA[var host = vCACCAFEEntitiesFinder.getHostForEntity(catalogItem);
+var client = host.createCatalogClient().getCatalogAdminCatalogItemService();
+
+catalogItem.setStatus(vCACCAFEPublishStatus.RETIRED);
+
+System.log("Deactivating catalog item "+ catalogItem.getName() +"...");
+client.updateCatalogItem(catalogItem);
+System.log("Catalog item: " + catalogItem.getName() + " deactivated.");]]></script>
+</dunes-script-module>

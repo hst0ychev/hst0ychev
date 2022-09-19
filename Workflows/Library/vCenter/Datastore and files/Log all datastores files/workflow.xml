@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="Workflow:name=generic" id="85808080808080808080808080808080128080800123780023911323ba1c368d4" version="1.2.0" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Log all datastores files]]></display-name>
+  <description><![CDATA[Creates a log for every virtual machine configuration file and every virtual machine file found in all datastores.]]></description>
+  <position y="20.0" x="180.0"/>
+  <attrib name="diskFiles" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Disk files]]></description>
+  </attrib>
+  <attrib name="vmFiles" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Virtual machine files]]></description>
+  </attrib>
+  <workflow-item name="item0" out-name="item1" type="link" linked-workflow-id="85808080808080808080808080808080F28080800123780023911323ba1c368d4">
+    <display-name><![CDATA[Get all config, template and disks files on VMs]]></display-name>
+    <in-binding/>
+    <out-binding>
+      <bind name="diskFiles" type="Properties" export-name="diskFiles"/>
+      <bind name="vmFiles" type="Properties" export-name="vmFiles"/>
+    </out-binding>
+    <position y="100.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item2" type="task" interaction="l">
+    <display-name><![CDATA[Log files]]></display-name>
+    <script encoded="false"><![CDATA[System.log("VM config Files found");
+var keys = vmFiles.keys;
+for each (var key in keys) {
+	System.log(key);
+}
+
+System.log("VM disk Files found");
+var keys = diskFiles.keys;
+for each (var key in keys) {
+	System.log(key);
+}]]></script>
+    <in-binding>
+      <bind name="diskFiles" type="Properties" export-name="diskFiles"/>
+      <bind name="vmFiles" type="Properties" export-name="vmFiles"/>
+    </in-binding>
+    <out-binding/>
+    <position y="160.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item2" type="end" end-mode="0">
+    <position y="210.0" x="180.0"/>
+  </workflow-item>
+  <presentation/>
+</workflow>

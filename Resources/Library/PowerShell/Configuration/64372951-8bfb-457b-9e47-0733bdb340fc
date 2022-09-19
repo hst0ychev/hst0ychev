@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<endpoint pluginVersion="1.0.13">
+    <properties>
+        <property type="password" name="password">vcoencrypted:{riv}QWsqjohvpP7UVQdw/tyhjeOOtFu+4V+p+xxHFbPVo/0=</property>
+        <property type="string" name="shellCodePage">65001</property>
+        <property type="string" name="port">5985</property>
+        <property type="string" name="transportProtocol">HTTP</property>
+        <property type="string" name="name">psHost</property>
+        <property type="string" name="connectionURL">10.77.16.119</property>
+        <property type="string" name="authorizationMode">Shared Session</property>
+        <property type="string" name="type">WinRM</property>
+        <property type="string" name="username">administrator</property>
+        <property type="string" name="authentication">Basic</property>
+    </properties>
+</endpoint>

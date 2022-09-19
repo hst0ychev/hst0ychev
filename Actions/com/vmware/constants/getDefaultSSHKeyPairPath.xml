@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getDefaultSSHKeyPairPath" result-type="Path" api-version="6.0.0" id="84808080808080808080808080808080588E808001297259131125b940b51f82d" version="1.1.3" allowed-operations="vfe" category-name="com.vmware.constants">
+  <description><![CDATA[Path on the VCO server where the Key Pair for SSH is stored.]]></description>
+  <script encoded="false"><![CDATA[// Store in server conf directory
+if (new File("/var/lib/vco").exists) {
+    // vCO 5.5
+    return "/var/lib/vco/app-server/conf/vco_key";
+} else {
+    // vCO 5.1
+    return "/opt/vmo/app-server/server/vmo/conf/vco_key";
+}
+]]></script>
+</dunes-script-module>

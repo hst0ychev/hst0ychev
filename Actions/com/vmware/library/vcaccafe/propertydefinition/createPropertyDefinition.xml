@@ -1,0 +1,99 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="createPropertyDefinition" result-type="vCACCAFE:PropertyDefinition" api-version="6.0.0" id="f9bcbeca-7f77-462f-95fa-8de7edc2d8a3" version="0.0.1" allowed-operations="vf" category-name="com.vmware.library.vcaccafe.propertydefinition">
+  <param n="host" t="vCACCAFE:VCACHost"><![CDATA[]]></param>
+  <param n="allTenantsVisibility" t="boolean"><![CDATA[]]></param>
+  <param n="definitionName" t="string"><![CDATA[]]></param>
+  <param n="description" t="string"><![CDATA[]]></param>
+  <param n="label" t="string"><![CDATA[]]></param>
+  <param n="dataTypeId" t="string"><![CDATA[]]></param>
+  <param n="orderIndex" t="number"><![CDATA[]]></param>
+  <param n="displayAdviceId" t="string"><![CDATA[]]></param>
+  <param n="multiValued" t="boolean"><![CDATA[]]></param>
+  <param n="mandatory" t="boolean"><![CDATA[]]></param>
+  <param n="encrypted" t="boolean"><![CDATA[]]></param>
+  <param n="staticValues" t="boolean"><![CDATA[]]></param>
+  <param n="predefinedValues" t="Array/CompositeType(name:string,value:string):Entries"><![CDATA[]]></param>
+  <param n="customAllowed" t="boolean"><![CDATA[]]></param>
+  <param n="externalAction" t="Action"><![CDATA[]]></param>
+  <param n="actionInputs" t="Array/CompositeType(inputName:string,bind:boolean,value:string):actionInputs"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var service = host.createPropertyClient().getPropertyContextPropertyDefinitionService();
+
+var propertyDefinition = new vCACCAFEContextPropertyDefinition();
+
+if(allTenantsVisibility) {
+	propertyDefinition.setTenantId(null);
+} else {
+	propertyDefinition.setTenantId(host.tenant);
+}
+propertyDefinition.setId(definitionName);
+propertyDefinition.setDescription(description);
+propertyDefinition.setLabel(label);
+var dataType = vCACCAFEDataTypeId.fromId(dataTypeId);
+propertyDefinition.setDataType(vCACCAFEPrimitiveDataType.fromTypeId(dataType));
+propertyDefinition.setOrderIndex(orderIndex);
+
+var facets = new Properties() ;
+var encryptedEvaluator = vCACCAFEConditionalEvaluator.fromBoolean(encrypted);
+var mandatoryEvaluator = vCACCAFEConditionalEvaluator.fromBoolean(mandatory);
+facets.put("encrypted",encryptedEvaluator);
+facets.put("mandatory",mandatoryEvaluator);
+propertyDefinition.setFacets(facets);
+//Set Permissible values
+var StaticPermissibleValueList;
+if(displayAdviceId == "dropdown") {
+	if(staticValues) {
+		var values = [];
+		
+		for each (predefinedValue in predefinedValues) {
+			var literal = vCACCAFEStringLiteral.fromString(predefinedValue.value);
+			var value = new vCACCAFEPermissibleValue(literal , predefinedValue.name);
+			values.push(value);
+		}
+		StaticPermissibleValueList = new vCACCAFEStaticPermissibleValueList(values)
+		StaticPermissibleValueList.setCustomAllowed(customAllowed);
+		propertyDefinition.setPermissibleValues(StaticPermissibleValueList);
+	} else {
+		var actionFQN = externalAction.module.name+"/"+externalAction.name;
+		var valueContext;
+		if(externalAction.parameters == "") {
+			valueContext = new vCACCAFEDynamicValueContext(actionFQN , null);
+		} else {
+			var  parameterMappingArray = [];
+			if(actionInputs.length != externalAction.parameters.length) {
+				throw("Number of supplied action inputs mismatch");
+			}
+			for each (var input in actionInputs) {
+				if(input.bind) {
+					var fieldEvaluator = new vCACCAFEFieldReference(input.value);
+					var parameterMapping = new vCACCAFEParameterMapping(input.inputName ,fieldEvaluator);
+					parameterMappingArray.push(parameterMapping);
+				} else {
+					var stringEvaluator = vCACCAFEConditionalEvaluator.fromString(input.value);
+					var parameterMapping = new vCACCAFEParameterMapping(input.inputName ,stringEvaluator);
+					parameterMappingArray.push(parameterMapping);
+				}
+			}
+			var mappingCollection = new vCACCAFEParameterMappingCollection();
+			mappingCollection.setMappings(parameterMappingArray);
+			valueContext = new vCACCAFEDynamicValueContext(actionFQN , mappingCollection);
+		}
+		
+		var dynamicPermissibleValueList = new vCACCAFEDynamicPermissibleValueList(null, valueContext);
+		dynamicPermissibleValueList.setCustomAllowed(customAllowed);
+		propertyDefinition.setPermissibleValues(dynamicPermissibleValueList);
+	}
+}
+
+
+
+var DA = dataType.getDefaultMultiValueDisplayAdvice().fromId(displayAdviceId);
+propertyDefinition.displayAdvice = DA;
+propertyDefinition.setIsMultiValued(multiValued);
+System.log("Creating property definition...");
+
+service.createPropertyDefinition(propertyDefinition);
+
+System.log("Property definition: " + definitionName + " created.");
+return vCACCAFEEntitiesFinder.getPropertyDefinition(host, definitionName);
+]]></script>
+</dunes-script-module>

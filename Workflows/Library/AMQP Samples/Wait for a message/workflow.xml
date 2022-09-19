@@ -1,0 +1,95 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="Workflow:name=generic" id="9F80808080808080808080808080808081808080013049260427240aee8dc5c71" version="1.0.1" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Wait for a message]]></display-name>
+  <description><![CDATA[Constructs a trigger from specified broker and queue. Waits on the constructed trigger until message is received.]]></description>
+  <position y="20.0" x="180.0"/>
+  <input>
+    <param name="broker" type="AMQP:Broker">
+      <description><![CDATA[Broker to use]]></description>
+    </param>
+    <param name="queue" type="string">
+      <description><![CDATA[Queue in the broker to wait for message]]></description>
+    </param>
+  </input>
+  <output>
+    <param name="body" type="string">
+      <description><![CDATA[Message body]]></description>
+    </param>
+    <param name="headers" type="Properties">
+      <description><![CDATA[Message headeres]]></description>
+    </param>
+    <param name="properties" type="Properties">
+      <description><![CDATA[Message properties]]></description>
+    </param>
+  </output>
+  <attrib name="messageTrigger" type="Trigger" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="errorCode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <workflow-item name="item0" out-name="item1" catch-name="item4" throw-bind-name="errorCode" type="task">
+    <display-name><![CDATA[Create a trigger]]></display-name>
+    <script encoded="false"><![CDATA[messageTrigger = broker.receiveAsync(queue, 0);]]></script>
+    <in-binding>
+      <bind name="broker" type="AMQP:Broker" export-name="broker"/>
+      <bind name="queue" type="string" export-name="queue"/>
+    </in-binding>
+    <out-binding>
+      <bind name="messageTrigger" type="Trigger" export-name="messageTrigger"/>
+    </out-binding>
+    <position y="80.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item2" catch-name="item4" throw-bind-name="errorCode" type="waiting-event">
+    <display-name><![CDATA[Waiting event]]></display-name>
+    <in-binding>
+      <bind name="trigger.ref" type="Trigger" export-name="messageTrigger">
+        <description><![CDATA[After a specified event occurs trigger continues workflow execution.]]></description>
+      </bind>
+    </in-binding>
+    <position y="130.0" x="180.0"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item3" catch-name="item4" throw-bind-name="errorCode" type="task">
+    <display-name><![CDATA[Process a message]]></display-name>
+    <script encoded="false"><![CDATA[System.log("Trigger: " + messageTrigger);
+//System.log("Trigger properties: " + messageTrigger.getProperties());
+var msg = broker.retrieveMessage(messageTrigger);
+
+if (msg != null) {
+  body = msg.bodyAsText
+  properties = msg.properties;
+  headers = msg.headers;
+}]]></script>
+    <in-binding>
+      <bind name="messageTrigger" type="Trigger" export-name="messageTrigger"/>
+      <bind name="broker" type="AMQP:Broker" export-name="broker"/>
+    </in-binding>
+    <out-binding>
+      <bind name="body" type="string" export-name="body"/>
+      <bind name="headers" type="Properties" export-name="headers"/>
+      <bind name="properties" type="Properties" export-name="properties"/>
+    </out-binding>
+    <position y="200.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item3" type="end" end-mode="0">
+    <position y="250.0" x="180.0"/>
+  </workflow-item>
+  <workflow-item name="item4" throw-bind-name="errorCode" type="end" end-mode="1">
+    <position y="130.0" x="300.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Wait for a message]]></title>
+      <p-group>
+        <title><![CDATA[Message source properties]]></title>
+        <desc><![CDATA[Select a broker and specify a queue to construct a trigger that waits for a message.]]></desc>
+        <p-param name="broker">
+          <desc><![CDATA[Broker]]></desc>
+        </p-param>
+        <p-param name="queue">
+          <desc><![CDATA[Queue]]></desc>
+        </p-param>
+      </p-group>
+    </p-step>
+  </presentation>
+</workflow>

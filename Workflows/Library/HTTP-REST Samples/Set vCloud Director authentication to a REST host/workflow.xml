@@ -1,0 +1,108 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="Workflow:name=generic" id="908080808080808080808080808080809B808080013049260427240aee8dc5c71" version="1.0.2" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Set vCloud Director authentication to a REST host]]></display-name>
+  <description><![CDATA[Sets a REST host to use vCloud Director authentication. The vCloud Director session token retrieval and renewal are handled automatically by the HTTP-REST plug-in.]]></description>
+  <ref-types><![CDATA[(REST:RESTHost)]]></ref-types>
+  <position y="20.0" x="180.0"/>
+  <input>
+    <param name="host" type="REST:RESTHost">
+      <description><![CDATA[REST host to add authentication]]></description>
+    </param>
+    <param name="sessionMode" type="string">
+      <description><![CDATA[Authentication session mode]]></description>
+    </param>
+    <param name="username" type="string">
+      <description><![CDATA[vCloud™ Director user name]]></description>
+    </param>
+    <param name="password" type="SecureString">
+      <description><![CDATA[vCloud™ Director password]]></description>
+    </param>
+    <param name="organization" type="string">
+      <description><![CDATA[vCloud™ Director organization]]></description>
+    </param>
+    <param name="loginUrl" type="string">
+      <description><![CDATA[vCloud™ Director REST API login URL]]></description>
+    </param>
+    <param name="version" type="string"/>
+  </input>
+  <output>
+    <param name="restHost" type="REST:RESTHost"/>
+  </output>
+  <attrib name="errorCode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <workflow-item name="item0" out-name="item1" catch-name="item2" throw-bind-name="errorCode" type="task">
+    <display-name><![CDATA[Add vCloud™ Director Authenticat]]></display-name>
+    <script encoded="false"><![CDATA[var authParams = [sessionMode, username, password, organization, loginUrl];
+var authenticationObject = RESTAuthenticationManager.createAuthentication(version, authParams);
+System.log("REST host authentication: " + authenticationObject);
+host.authentication = authenticationObject;
+restHost = RESTHostManager.updateHost(host);]]></script>
+    <in-binding>
+      <bind name="host" type="REST:RESTHost" export-name="host"/>
+      <bind name="sessionMode" type="string" export-name="sessionMode"/>
+      <bind name="username" type="string" export-name="username"/>
+      <bind name="password" type="SecureString" export-name="password"/>
+      <bind name="organization" type="string" export-name="organization"/>
+      <bind name="loginUrl" type="string" export-name="loginUrl"/>
+      <bind name="version" type="string" export-name="version"/>
+    </in-binding>
+    <out-binding>
+      <bind name="restHost" type="REST:RESTHost" export-name="restHost"/>
+    </out-binding>
+    <position y="80.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item1" type="end" end-mode="0">
+    <position y="130.0" x="180.0"/>
+  </workflow-item>
+  <workflow-item name="item2" throw-bind-name="errorCode" type="end" end-mode="1">
+    <position y="70.0" x="300.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Set vCloud™ Director authentication to a REST host]]></title>
+      <p-group>
+        <title><![CDATA[REST Host]]></title>
+        <desc><![CDATA[Select a host to assign vCloud™ Director specific authentication to. For details, see https://www.vmware.com/products/cloud-director.html]]></desc>
+        <p-param name="host">
+          <desc><![CDATA[Host]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual name="contextualParameter" type="void"><![CDATA[]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[vCloud™ Director Authentication Properties]]></title>
+        <desc><![CDATA[Fill in the vCloud™ Director specific authentication properties. For details, see the vCloud™ Director documentation at https://docs.vmware.com/en/VMware-Cloud-Director/index.html.]]></desc>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#host != null]]></p-qual>
+        <p-param name="sessionMode">
+          <desc><![CDATA[Session mode]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#Shared Session#;#string#Per User Session#}#]]></p-qual>
+        </p-param>
+        <p-param name="username">
+          <desc><![CDATA[User name]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#sessionMode=="Shared Session"]]></p-qual>
+        </p-param>
+        <p-param name="password">
+          <desc><![CDATA[Password]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#sessionMode=="Shared Session"]]></p-qual>
+        </p-param>
+        <p-param name="organization">
+          <desc><![CDATA[Organization]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+        <p-param name="loginUrl">
+          <desc><![CDATA[Login URL]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+        <p-param name="version">
+          <desc><![CDATA[version]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#vCloud Authentication#;#string#vCloud Authentication 1.5#}#]]></p-qual>
+        </p-param>
+      </p-group>
+    </p-step>
+  </presentation>
+</workflow>

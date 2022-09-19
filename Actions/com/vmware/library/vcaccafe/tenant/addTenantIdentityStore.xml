@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="addTenantIdentityStore" result-type="vCACCAFE:IdentityStore" api-version="6.0.0" id="15fb9775-b390-4a6d-bf69-73bd3e880344" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.tenant">
+  <param n="tenant" t="vCACCAFE:Tenant"><![CDATA[Tenant]]></param>
+  <param n="name" t="string"><![CDATA[Name]]></param>
+  <param n="type" t="string"><![CDATA[Type]]></param>
+  <param n="url" t="string"><![CDATA[URL]]></param>
+  <param n="domain" t="string"><![CDATA[Domain]]></param>
+  <param n="userNameDn" t="string"><![CDATA[Login user DN]]></param>
+  <param n="password" t="SecureString"><![CDATA[Password]]></param>
+  <param n="subdomains" t="Array/string"><![CDATA[Subdomains]]></param>
+  <param n="groupBaseSearchDns" t="Array/string"><![CDATA[Group search base DN]]></param>
+  <param n="userBaseSearchDns" t="Array/string"><![CDATA[User search base DN]]></param>
+  <script encoded="false"><![CDATA[var store = new vCACCAFEIdentityStore();
+store.setName(name);
+store.setType(vCACCAFEIdentityStoreType.fromValue(type));
+store.setUrl(url);
+store.setDomain(domain);
+store.setUserNameDn(userNameDn);
+store.setPassword(password);
+vCACCAFEEntityHelper.addElementsToList(store , "getSubdomains", subdomains);
+vCACCAFEEntityHelper.addElementsToList(store , "getGroupBaseSearchDns", groupBaseSearchDns);
+if ((userBaseSearchDns == null) || (userBaseSearchDns.length == 0)) {
+	vCACCAFEEntityHelper.addElementsToList(store , "getUserBaseSearchDns", groupBaseSearchDns);
+} else {
+    vCACCAFEEntityHelper.addElementsToList(store , "getUserBaseSearchDns", userBaseSearchDns);
+}
+
+System.log("Adding identity store '" + name + "'...");
+var host = vCACCAFEEntitiesFinder.getHostForEntity(tenant);
+var service = host.createAuthenticationClient().getAuthenticationIdentityStoreClientService();
+service.createIdentityStore(tenant.getId(), store);
+System.log("Identity store '" + name + "' added.");
+
+return vCACCAFEEntitiesFinder.getIdentityStore(tenant, domain);]]></script>
+</dunes-script-module>

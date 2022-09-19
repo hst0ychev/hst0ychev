@@ -1,0 +1,60 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="TenantSubscription" result-type="Any" api-version="6.0.0" id="24916edf-5b8b-32ce-bd61-25d813e6e5a7" version="2.9.10" allowed-operations="evf" category-name="com.vmware.pscoe.library.vra">
+  <param n="host" t="vCACCAFE:VCACHost"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var CafeRestClient = System.getModule("com.vmware.pscoe.library.vra").CafeRestClient(host,
+	vCACCAFEServicesEnum.ADVANCED_DESIGNER_SERVICE);
+var restClient = new CafeRestClient("tenants/" + host.tenant + "/event-broker/subscriptions/");
+
+var Subscription = function (cr) {
+	for (var key in cr) {
+		this[key] = cr[key];
+	}
+
+	this.save = function () {
+		var id = restClient.createOrUpdate(this, true);
+		this.id = id;
+	};
+};
+
+Subscription.getAll = function () {
+	var subs = restClient.getAll();
+	var arr = [];
+	for (var i = 0; i < subs.content.length; i++) {
+		var sub = subs.content[i];
+		arr.push(new Subscription(sub));
+	}
+
+	return arr;
+};
+
+Subscription.get = function (id) {
+	var cr = restClient.get(id);
+	if (!cr) {
+		return null;
+	}
+
+	return new Subscription(cr);
+};
+
+Subscription.getByName = function (name) {
+	var cr = restClient.getByName(name);
+	if (!cr) {
+		return null;
+	}
+
+	return new Subscription(cr);
+};
+
+Subscription.importFrom = function (resourceElement, allTenants) {
+	return System.getModule("com.vmware.pscoe.library.vra.import.export").importVraObject(
+		host, "TenantSubscription", resourceElement, allTenants);
+};
+
+Subscription.exportTo = function (name, resourceElementCategory) {
+	System.getModule("com.vmware.pscoe.library.vra.import.export").exportVraObject(
+		host, "TenantSubscription", name, resourceElementCategory);
+};
+
+return Subscription;
+]]></script>
+</dunes-script-module>

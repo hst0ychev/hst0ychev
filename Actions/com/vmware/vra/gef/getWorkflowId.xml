@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getWorkflowId" result-type="string" api-version="6.0.0" id="848e2f2d-0fe1-43eb-951b-61b5dbfc5174" version="0.0.0" allowed-operations="vf" category-name="com.vmware.vra.gef">
+  <param n="workflowIn" t="Workflow"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var url = workflowIn.getExecutionUrl(null, null, null, null, null);
+
+var pattern = /.*workflowId=([0-9a-z-]+)&.*/;
+var matches = pattern.exec(url);
+var workflowId = matches[1];
+
+return workflowId;]]></script>
+</dunes-script-module>

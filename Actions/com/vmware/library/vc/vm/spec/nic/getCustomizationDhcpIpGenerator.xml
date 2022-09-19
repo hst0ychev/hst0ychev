@@ -1,0 +1,4 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getCustomizationDhcpIpGenerator" result-type="Any" api-version="6.0.0" id="a7fe124c-e419-4b17-a481-db82544de7a6" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.vm.spec.nic">
+  <script encoded="false"><![CDATA[return new VcCustomizationDhcpIpGenerator();]]></script>
+</dunes-script-module>

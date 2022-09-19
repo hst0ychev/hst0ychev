@@ -1,0 +1,73 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item2" object-name="Workflow:name=generic" id="98808080808080808080808080808080A4808080013049260427240aee8dc5c71" version="1.0.0" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Bind]]></display-name>
+  <description><![CDATA[Creates a binding in a specified broker.]]></description>
+  <ref-types><![CDATA[(AMQP:Broker)]]></ref-types>
+  <position y="20.0" x="160.0"/>
+  <input>
+    <param name="broker" type="AMQP:Broker">
+      <description><![CDATA[Broker to create a binding in]]></description>
+    </param>
+    <param name="queueName" type="string">
+      <description><![CDATA[Name of the queue to bind]]></description>
+    </param>
+    <param name="exchangeName" type="string">
+      <description><![CDATA[Name of the exchange to bind]]></description>
+    </param>
+    <param name="routingKey" type="string">
+      <description><![CDATA[Routing key for the binding]]></description>
+    </param>
+  </input>
+  <attrib name="errorCode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <workflow-item name="item0" throw-bind-name="errorCode" type="end" end-mode="1">
+    <position y="90.0" x="280.0"/>
+  </workflow-item>
+  <workflow-item name="item1" type="end" end-mode="0">
+    <position y="150.0" x="160.0"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item1" catch-name="item0" throw-bind-name="errorCode" type="task">
+    <display-name><![CDATA[Declare a binding]]></display-name>
+    <script encoded="false"><![CDATA[broker.bind(queueName, exchangeName, {
+   routingKey: routingKey
+});]]></script>
+    <in-binding>
+      <bind name="broker" type="AMQP:Broker" export-name="broker"/>
+      <bind name="queueName" type="string" export-name="queueName"/>
+      <bind name="exchangeName" type="string" export-name="exchangeName"/>
+      <bind name="routingKey" type="string" export-name="routingKey"/>
+    </in-binding>
+    <out-binding/>
+    <position y="100.0" x="120.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Declare a binding]]></title>
+      <p-group>
+        <title><![CDATA[AMQP Broker]]></title>
+        <desc><![CDATA[Select a broker to create binding in.]]></desc>
+        <p-param name="broker">
+          <desc><![CDATA[Broker]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual name="contextualParameter" type="void"><![CDATA[]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Binding Properties]]></title>
+        <desc><![CDATA[Fill in the binding properties.]]></desc>
+        <p-param name="queueName">
+          <desc><![CDATA[Queue name]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+        <p-param name="exchangeName">
+          <desc><![CDATA[Exchange name]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+        <p-param name="routingKey">
+          <desc><![CDATA[Routing key]]></desc>
+        </p-param>
+      </p-group>
+    </p-step>
+  </presentation>
+</workflow>

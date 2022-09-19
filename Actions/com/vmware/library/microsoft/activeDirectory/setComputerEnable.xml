@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="setComputerEnable" result-type="void" api-version="6.0.0" id="36818080808080808080808080808080C280808001270557368849c62c352aa82" version="1.1.0" allowed-operations="vfe" category-name="com.vmware.library.microsoft.activeDirectory">
+  <description><![CDATA[Allow to enable or disable a computer in the Active Directory]]></description>
+  <param n="computer" t="AD:ComputerAD"><![CDATA[Computer to enable / disable]]></param>
+  <param n="enable" t="boolean"><![CDATA[Enable or disable?]]></param>
+  <script encoded="false"><![CDATA[computer.enabled = enable;]]></script>
+</dunes-script-module>

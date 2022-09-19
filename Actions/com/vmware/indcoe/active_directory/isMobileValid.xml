@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="isMobileValid" result-type="string" api-version="6.0.0" id="ff2f49f2-f60e-46f6-8af1-ea66228db05c" version="0.0.0" allowed-operations="vfe" category-name="com.vmware.indcoe.active_directory">
+  <param n="mobileNo" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[
+if(mobileNo != parseInt(mobileNo, 10))
+{
+	System.log("Not a number");
+	return "false";
+}
+if(mobileNo.length < 10)
+{
+	System.log("Not a valid mobile number");
+    return "false";
+}
+System.log("Valid mobile number");
+return "true";]]></script>
+</dunes-script-module>

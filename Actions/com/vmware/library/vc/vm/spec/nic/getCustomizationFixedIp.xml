@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getCustomizationFixedIp" result-type="Any" api-version="6.0.0" id="4f1e108c-ee6b-457e-81c6-95fafa1d2d20" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.vm.spec.nic">
+  <param n="ipAddress" t="string"><![CDATA[A Fixed valid IP Address]]></param>
+  <script encoded="false"><![CDATA[var fixedIp = new VcCustomizationFixedIp();
+fixedIp.ipAddress = ipAddress;
+return fixedIp;]]></script>
+</dunes-script-module>

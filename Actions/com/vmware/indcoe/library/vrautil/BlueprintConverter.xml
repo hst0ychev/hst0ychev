@@ -1,0 +1,313 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="BlueprintConverter" result-type="Any" api-version="6.0.0" id="5c240ea3-9af7-3660-a0a1-e02959f006b4" version="1.0.0" allowed-operations="evf" category-name="com.vmware.indcoe.library.vrautil">
+  <param n="cafeHost" t="vCACCAFE:VCACHost"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var compositionClient = cafeHost.createCompositionClient();
+var compositionComponentTypeService = compositionClient.getCompositionComponentTypeService();
+var ConverterHelpers = System.getModule("com.vmware.indcoe.library.vrautil").ConverterHelpers();
+
+function getComponentType(name) {
+    var filter = [];
+    filter[0] = vCACCAFEFilterParam.equal("name", vCACCAFEFilterParam.string(name));
+    var query = vCACCAFEOdataQuery.query().addFilter(filter);
+
+    var types = compositionComponentTypeService.getComponentTypes(new vCACCAFEPageOdataRequest(query)).getContent();
+    for (var i = 0; i < types.length; i++) {
+        var type = types[i];
+        if (type.getName() == name) {
+            return type;
+        }
+    }
+    return null;
+}
+
+function getRealValue(value) {
+    try {
+        return JSON.parse(value);
+    } catch (e) {
+        return value;
+    }
+}
+
+function getComplexValues(value) {
+    var arr = [];
+    if (value.facets.defaultValue && value.facets.defaultValue.value && value.facets.defaultValue.value.items) {
+        var items = value.facets.defaultValue.value.items;
+        for (var i = 0; i < items.length; i++) {
+            var complexItem = items[i];
+            var entries = complexItem.values.entries;
+            var json = {};
+
+            for (var j = 0; j < entries.length; j++) {
+                var entry = entries[j];
+                var key = entry.key;
+                var val = entry.value ? entry.value.value : null;
+                json[key] = entry.value && entry.value.type != "string" ? getRealValue(val) : val;
+            }
+            arr.push(json);
+        }
+    }
+    return arr;
+}
+
+function getFacetValues(value) {
+    var json = {};
+    for (var key in value.facets) {
+        if (value.facets[key] && value.facets[key].value) {
+            if (value.facets[key].value.type != "string") {
+                json[key] = getRealValue(value.facets[key].value.value);
+            } else {
+                json[key] = value.facets[key].value.value;
+            }
+        } else {
+            System.warn("value for key: " + key + " is null");
+        }
+    }
+    return json;
+}
+
+function getFixedOrDefaultValue(value) {
+    if (value.facets.fixedValue) {
+        return value.facets.fixedValue;
+    } else {
+        return value.facets.defaultValue ? value.facets.defaultValue : null;
+    }
+}
+
+return {
+    toJson: function (blueprint) {
+        var json = JSON.parse(JSON.stringify(blueprint));
+        var properties = {};
+        if (json.properties) {
+            for (var propName in json.properties) {
+                properties[propName] = getFacetValues(json.properties[propName]);
+            }
+
+            json.properties = properties;
+        }
+
+        var components = {};
+        for (var componentName in json.components) {
+            var component = json.components[componentName];
+            var componentJson = {
+                type: compositionComponentTypeService.getComponentType(component.type).getName(),
+                dependson: component.dependson,
+                propertyGroups: component.propertyGroups,
+                componentProfiles: component.componentProfiles,
+                properties: {}
+            };
+
+            var data = component.data;
+            for (var key in data) {
+
+                var value = data[key];
+                var subValue = getFixedOrDefaultValue(value);
+                switch (key) {
+                    case "provisioning_workflow":
+                        if (subValue && subValue.value) {
+                            componentJson[key] = {
+                                id: subValue.value.id,
+                                label: subValue.value.label,
+                                classId: subValue.value.classId
+                            };
+                        }
+                        break;
+                    case "reservation_policy":
+                    case "machine_prefix":
+                    case "source_machine_vmsnapshot":
+                        if (subValue && subValue.value) {
+                            componentJson[key] = subValue.value.id;
+                        }
+                        break;
+                    case "source_machine":
+                        if (subValue && subValue.value) {
+                            componentJson[key] = {
+                                id: subValue.value.id,
+                                name: subValue.value.label
+                            };
+                        }
+                        break;
+                    case "disks":
+                    case "nics":
+                    case "security_groups":
+                    case "security_tags":
+                        componentJson[key] = getComplexValues(value);
+                        break;
+                    case "cpu":
+                    case "memory":
+                    case "storage":
+                    case "_cluster":
+                    case "max_network_adapters":
+                    case "max_volumes":
+                    case "guest_customization_specification":
+                        componentJson[key] = getFacetValues(value);
+                        break;
+                    case "action":
+                    case "display_location":
+                    case "source_machine_name":
+                    case "blueprint_type":
+                    case "allow_storage_policies":
+                    case "source_machine_external_snapshot":
+                        if (subValue && subValue.value) {
+                            if (subValue.value.type != "string") {
+                                componentJson[key] = getRealValue(subValue.value.value);
+                            } else {
+                                componentJson[key] = subValue.value.value;
+                            }
+                        }
+                        break;
+                    default:
+                        componentJson.properties[key] = getFacetValues(value);
+                }
+            }
+            components[componentName] = componentJson;
+        }
+        json.components = components;
+        return json;
+    },
+
+    fromJson: function (json) {
+        var blueprint = JSON.parse(JSON.stringify(json));
+        var components = {};
+        for (var componentId in blueprint.components) {
+            var component = blueprint.components[componentId];
+            var componentDeclaration = {
+                "data": {},
+                "dependson": component.dependson,
+                "propertyGroups": component.propertyGroups,
+                "componentProfiles": component.componentProfiles
+            };
+
+            for (var componentName in component) {
+                var value = component[componentName];
+                switch (componentName) {
+                    case "type":
+                        var componentType = getComponentType(component.type);
+                        if (!componentType) {
+                            if (component.type == "vSphere Machine") {
+                                component.type = "vSphere (vCenter) Machine";
+                                System.log("Component type vSphere Machine is chaged to vSphere (vCenter) Machine.");
+
+                                componentType = getComponentType(component.type);
+                                if (!componentType) {
+                                    throw "Content Type not found for name: " + component.type;
+                                }
+                            } else {
+                                throw "Content Type not found for name: " + component.type;
+                            }
+                        }
+                        componentDeclaration.type = componentType.getId();
+                        break;
+                    case "provisioning_workflow":
+                        componentDeclaration.data[componentName] = ConverterHelpers.getEntityRef(null,
+                            value.classId ? value.classId : "Infrastructure.Compute.ProvisioningWorkflow",
+                            value.id ? value.id : "CloneWorkflow", value.label ? value.label : "CloneWorkflow");
+                        break;
+                    case "reservation_policy":
+                        componentDeclaration.data[componentName] = ConverterHelpers.getEntityRef(null,
+                            "Infrastructure.Reservation.Policy.ComputeResource", value, value);
+                        componentDeclaration.data[componentName].facets.defaultValue = componentDeclaration.data[componentName].facets.fixedValue;
+                        delete componentDeclaration.data[componentName].facets.fixedValue;
+                        break;
+                    case "machine_prefix":
+                        componentDeclaration.data[componentName] = ConverterHelpers.getEntityRef(null,
+                            "Infrastructure.Compute.MachinePrefix", value, null);
+                        break;
+                    case "source_machine":
+                        componentDeclaration.data[componentName] = ConverterHelpers.getEntityRef(null,
+                            "Infrastructure.Virtual.Schema", value.id, value.name);
+                        break;
+                    case "disks":
+                        var disksList = [];
+                        for (var i = 0; i < value.length; i++) {
+                            var disk = value[i];
+                            disksList.push(ConverterHelpers.getComplexType(disk,
+                                "com.vmware.csp.iaas.blueprint.service", null,
+                                "Infrastructure.Compute.Machine.MachineDisk", null));
+                        }
+                        componentDeclaration.data[componentName] = ConverterHelpers.getMultipleItems(disksList,
+                            "COMPLEX");
+                        break;
+                    case "nics":
+                        var nicsList = [];
+                        for (var j = 0; j < value.length; j++) {
+                            var nic = value[j];
+                            nicsList.push(ConverterHelpers.getComplexType(nic, "com.vmware.csp.iaas.blueprint.service",
+                                null, "Infrastructure.Compute.Machine.Nic", null));
+                        }
+                        componentDeclaration.data[componentName] = ConverterHelpers.getMultipleItems(nicsList,
+                            "COMPLEX");
+                        break;
+                    case "security_groups":
+                    case "security_tags":
+                        var complexArray = [];
+                        // TODO
+                        componentDeclaration.data[componentName] = ConverterHelpers.getMultipleItems(complexArray,
+                            "ENTITY_REFERENCE");
+                        break;
+                    case "properties":
+                        for (var key in value) {
+                            var subValue = value[key];
+                            if (!(subValue instanceof Object)) {
+                                subValue = {
+                                    defaultValue: subValue
+                                };
+                            }
+                            componentDeclaration.data[key] = ConverterHelpers.getSimpleComponentFieldValue(subValue);
+                        }
+                        break;
+                    case "source_machine_vmsnapshot":
+                        componentDeclaration.data[componentName] = ConverterHelpers.getEntityRef(null,
+                            "Infrastructure.Compute.Machine.Snapshot", value, null);
+                        break;
+                    case "cpu":
+                    case "memory":
+                    case "storage":
+                    case "_cluster":
+                    case "max_network_adapters":
+                    case "max_volumes":
+                    case "guest_customization_specification":
+                        if (!(value instanceof Object)) {
+                            value = {
+                                defaultValue: value
+                            };
+                        }
+                        componentDeclaration.data[componentName] = ConverterHelpers.getSimpleComponentFieldValue(value);
+                        break;
+                    case "action":
+                    case "display_location":
+                    case "source_machine_name":
+                    case "blueprint_type":
+                    case "allow_storage_policies":
+                    case "source_machine_external_snapshot":
+                        if (!(value instanceof Object)) {
+                            value = {
+                                fixedValue: value
+                            };
+                        }
+                        componentDeclaration.data[componentName] = ConverterHelpers.getSimpleComponentFieldValue(value);
+                        break;
+                    default:
+                        System.log("Skipping property: " + componentName);
+                }
+            }
+
+            components[componentId] = componentDeclaration;
+        }
+        var properties = new Properties();
+        for (var propName in blueprint.properties) {
+            var propValue = blueprint.properties[propName];
+            if (!(propValue instanceof Object)) {
+                propValue = {
+                    defaultValue: propValue
+                };
+            }
+            properties[propName] = ConverterHelpers.getSimpleComponentFieldValue(propValue);
+        }
+        blueprint.properties = properties;
+        blueprint.components = components;
+
+        return blueprint;
+    }
+};
+]]></script>
+</dunes-script-module>

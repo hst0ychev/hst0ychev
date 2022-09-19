@@ -1,0 +1,5 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="collectPostProvisioningActions" result-type="Array/string" api-version="6.0.0" id="d9b25919-962b-4b81-ba93-3b573661a49c" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcac">
+  <param n="vm" t="vCAC:VirtualMachine"><![CDATA[vCloud Automation Center blueprint instance.]]></param>
+  <script encoded="false"><![CDATA[return vm.collectPostProvisiningActions();]]></script>
+</dunes-script-module>

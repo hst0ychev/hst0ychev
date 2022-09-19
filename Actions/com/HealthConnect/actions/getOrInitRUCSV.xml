@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getOrInitRUCSV" result-type="ResourceElement" api-version="6.0.0" id="46928346-3af8-4357-9d0f-becd7397bae6" version="1.0.0" allowed-operations="vfe" category-name="com.HealthConnect.actions">
+  <script encoded="false"><![CDATA[categoryName = 'Health Connect';
+elementName = 'ru.txt';
+
+var category = Server.getResourceElementCategoryWithPath(categoryName);
+var deployments = null;
+
+if (category) {
+   for each (var resourceElement in category.resourceElements) {
+		if (resourceElement.name == elementName) {
+			deployments = resourceElement;
+			break;
+		}
+	}
+} 
+
+//Init the file
+if (!deployments) { 
+   deployments = Server.createResourceElement(category, elementName, null);
+   addCSVHeaders(deployments)
+} else if (deployments.getContentAsMimeAttachment().content.trim() == '') {
+   addCSVHeaders(deployments)
+}
+
+return deployments;
+
+function addCSVHeaders(resourceElement) {
+   var headers = 'Server name,Region,ABCID,BCI Code,Transaction IP,Service IP,OS,vCPU,Memory,DC,Environment,HIPPA/SOX/PCI,AD Admin Group,Reboot type,Reboot Window,OS Maintenance Window,Backup Y/N,Tivoli needed Y/N,UUID'
+
+   var mimeAttachment = new MimeAttachment();
+   mimeAttachment.content = headers;
+   mimeAttachment.mimeType = "text/plain";
+   mimeAttachment.name = resourceElement.name;
+   resourceElement.setContentFromMimeAttachment(mimeAttachment);
+}]]></script>
+</dunes-script-module>

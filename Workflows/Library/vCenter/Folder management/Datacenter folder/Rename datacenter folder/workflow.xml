@@ -1,0 +1,75 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="Workflow:name=generic" id="8F808080808080808080808080808080748E80800120523434428525559a3425f" version="1.1.0" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Rename datacenter folder]]></display-name>
+  <description><![CDATA[Renames a datacenter folder and waits for the task to complete.]]></description>
+  <ref-types><![CDATA[(VC:DatacenterFolder)]]></ref-types>
+  <position y="20.0" x="180.0"/>
+  <input>
+    <param name="folder" type="VC:DatacenterFolder">
+      <description><![CDATA[Datacenter folder to rename]]></description>
+    </param>
+    <param name="newName" type="string">
+      <description><![CDATA[New name for the datacenter folder]]></description>
+    </param>
+  </input>
+  <attrib name="task" type="VC:Task" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Task to await]]></description>
+  </attrib>
+  <attrib name="progress" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+    <description><![CDATA[Log progress while waiting for the task]]></description>
+  </attrib>
+  <attrib name="pollRate" type="number" read-only="false">
+    <value encoded="n"><![CDATA[1.0]]></value>
+    <description><![CDATA[Polling rate for the task state, in seconds]]></description>
+  </attrib>
+  <workflow-item name="item4" type="end" end-mode="0">
+    <position y="190.0" x="180.0"/>
+  </workflow-item>
+  <workflow-item name="item0" out-name="item1" type="task">
+    <display-name><![CDATA[Rename folder]]></display-name>
+    <script encoded="false"><![CDATA[task = folder.rename_Task(newName);]]></script>
+    <in-binding>
+      <bind name="folder" type="VC:DatacenterFolder" export-name="folder"/>
+      <bind name="newName" type="string" export-name="newName"/>
+    </in-binding>
+    <out-binding>
+      <bind name="task" type="VC:Task" export-name="task"/>
+    </out-binding>
+    <position y="80.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item4" type="task" script-module="com.vmware.library.vc.basic/vim3WaitTaskEnd">
+    <display-name><![CDATA[vim3WaitTaskEnd]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.vc.basic").vim3WaitTaskEnd(task,progress,pollRate) ;]]></script>
+    <in-binding>
+      <bind name="task" type="VC:Task" export-name="task">
+        <description><![CDATA[Task to Wait for]]></description>
+      </bind>
+      <bind name="progress" type="boolean" export-name="progress">
+        <description><![CDATA[Log progess while waiting for the task]]></description>
+      </bind>
+      <bind name="pollRate" type="number" export-name="pollRate">
+        <description><![CDATA[Polling rate for the task state [seconds]]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Any" explicitly-not-bound="true" export-name="NULL"/>
+    </out-binding>
+    <description><![CDATA[Wait a VIM 3 Task to end.
+When task ended, return the ]]></description>
+    <position y="140.0" x="140.0"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="folder">
+      <desc><![CDATA[Datacenter folder to rename]]></desc>
+      <p-qual name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      <p-qual name="contextualParameter" type="Void"><![CDATA[]]></p-qual>
+    </p-param>
+    <p-param name="newName">
+      <desc><![CDATA[New name for the datacenter folder]]></desc>
+      <p-qual name="mandatory"><![CDATA[true]]></p-qual>
+    </p-param>
+  </presentation>
+</workflow>

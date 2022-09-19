@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getVSwitchVMkernelPortgroups" result-type="Array/string" api-version="6.0.0" id="1b790870-4444-4ece-95b4-e42e9731467b" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.networking">
+  <param n="host" t="VC:HostSystem"><![CDATA[Host]]></param>
+  <param n="vSwitchName" t="string"><![CDATA[vSwitch name]]></param>
+  <script encoded="false"><![CDATA[var result = new Array();
+if ( host != null ) {
+	for each (portgroup in host.configManager.networkSystem.networkInfo.portgroup) {
+		if ( portgroup.spec.vswitchName == vSwitchName && System.getModule("com.vmware.library.vc.networking").hasVnicAssociatedTo(host,portgroup.spec.name)) {
+			result.push(portgroup.spec.name);
+		}
+	}
+} 
+return result;]]></script>
+</dunes-script-module>

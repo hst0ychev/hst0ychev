@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="5477703e-f0be-4626-b3c1-d78d94fcf99b" version="0.0.0">
+  <display-name><![CDATA[Host Security Hardening Options]]></display-name>
+  <atts>
+    <att name="password" type="SecureString" read-only="false"/>
+    <att name="vropsPassword" type="SecureString" read-only="false"/>
+  </atts>
+</config-element>

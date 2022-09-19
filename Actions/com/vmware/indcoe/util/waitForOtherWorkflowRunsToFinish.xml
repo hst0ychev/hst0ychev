@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="waitForOtherWorkflowRunsToFinish" result-type="void" api-version="6.0.0" id="4a253bbb-cb2c-484f-af6a-45f3614d9dba" version="0.0.0" allowed-operations="vfe" category-name="com.vmware.indcoe.util">
+  <param n="theWorkflow" t="Workflow"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[if(!theWorkflow)
+{
+	throw "No workflow provided to wait";
+}
+function waitForOtherRunsToComplete(currentIteration) {
+	if(!currentIteration)
+	{
+		currentIteration = 0;
+	}
+	currentIteration++;
+		
+	// Ensure only one instance of the this workflow is running.
+	var calledWorkflow = theWorkflow.rootWorkflow;
+
+	// Current Token
+	var currentToken = theWorkflow.id;
+
+	// The max number of retries to check
+	var maxRetries = 1800; //1800 = 30 mins
+
+	if (currentIteration >= maxRetries) {
+		throw "Error occurred waiting";
+	}
+
+	while (true) {
+
+		var tokens = calledWorkflow.executions;
+		var runningWorkflowCount = 0;
+		for (var i in tokens) {
+			if (tokens[i].isStillValid) {
+				if (tokens[i].state === "running" || tokens[i].state === "waiting-signal") {
+					//Increment the running Workflows by 1
+					runningWorkflowCount = runningWorkflowCount + 1;
+
+					//If this is the only running workflow...
+					if (runningWorkflowCount === 1 && currentToken == tokens[i].id) {
+						return true;
+					}
+					else {
+						//Wait for 1 second and call this function again.
+						System.sleep(1000);
+						System.debug("Another workflow is executing, waiting for 1 second, Wait Cycle: "+currentIteration);
+						return waitForOtherRunsToComplete(currentIteration);
+					}
+				}
+			}
+		}
+	}
+}
+waitForOtherRunsToComplete(0);
+]]></script>
+</dunes-script-module>

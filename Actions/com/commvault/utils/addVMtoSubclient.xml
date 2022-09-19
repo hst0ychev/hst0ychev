@@ -1,0 +1,115 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="addVMtoSubclient" result-type="void" api-version="6.0.0" id="a92d7b82-be9b-4d2d-8062-4f98113b80f3" version="0.0.0" allowed-operations="evf" category-name="com.commvault.utils">
+  <description><![CDATA[Adds a vm to the subclient]]></description>
+  <param n="vmName" t="string"><![CDATA[Virtual Machine]]></param>
+  <param n="vmGUID" t="string"><![CDATA[VM guid]]></param>
+  <param n="subclientId" t="string"><![CDATA[subclient id]]></param>
+  <param n="token" t="string"><![CDATA[CV token for REST API]]></param>
+  <param n="host" t="REST:RESTHost"><![CDATA[CV REST Host]]></param>
+  <script encoded="false"><![CDATA[/*
+	Inputs 
+	vmName - string 
+	vmGUID - string
+	subclientid - string
+	token - string
+	
+	API used 
+	/Subclient/subclientId
+	
+	Output
+	Adds the given VMGUID to the subclient
+
+
+*/
+var addVMtoSubclientURL = "/Subclient/" + subclientId;
+var vmAdded = false;
+var responseCurrent = System.getModule("com.commvault.utils").processRESTRequest(addVMtoSubclientURL,"GET",null,token,null,host);
+if(responseCurrent.statusCode != 200)
+{
+	throw("Error: Failed to execute REST request to add VM to Subclient. Recieved status:  "+ responseCurrent.contentAsString);
+}
+if(responseCurrent.statusCode == 404)
+{
+	throw("Error: VM cannot be added to the Subclient. Subclient Not Found. Recieved status:  "+ responseCurrent.contentAsString);
+}
+var document = XMLManager.fromString(responseCurrent.contentAsString);
+		
+var list = document.getElementsByTagName("vmContent");
+
+var totalvmContent =  list.length;
+
+var childrenList = new Properties();
+for( var i =0; i<totalvmContent; i++){
+	var vmContent = list.item(i);
+	var children = vmContent.getElementsByTagName("children");
+	for(var j=0; j<children.length ; j++){
+		var vmname = children.item(j).getAttribute("displayName");
+		var vmguid = children.item(j).getAttribute("name");
+    	if(vmname == vmName && vmguid == vmGUID){
+			vmAdded = true;
+			break;
+		}
+		childrenList.put(vmguid,vmname);
+	
+	}
+	
+	
+}
+if(vmAdded == false){
+	var addVMXML = new XML('<App_UpdateSubClientPropertiesRequest/>');
+	var subClientProperties = new XML('<subClientProperties/>');
+	subClientProperties.@vmContentOperationType="1";
+	subClientProperties.@vmDiskFilterOperationType="1";
+	subClientProperties.@vmFilterOperationType="1";
+	
+	var vmContent = new XML('<vmContent/>');
+	
+	for each(vmguid in childrenList.keys){
+		var vmname = childrenList.get(vmguid);
+		var children = new XML('<children/>');
+	    children.@allOrAnyChildren="1";
+	    children.@displayName=vmname;
+	    children.@equalsOrNotEquals="1";
+	    children.@name=vmguid;
+	    children.@path="";
+	    children.@type="9";
+	
+	    vmContent.appendChild(children);
+	
+	}
+	
+	var childrenNew = new XML('<children/>');
+	childrenNew.@allOrAnyChildren="1";
+	childrenNew.@displayName=vmName;
+	childrenNew.@equalsOrNotEquals="1";
+	childrenNew.@name=vmGUID;
+	childrenNew.@path="";
+	childrenNew.@type="9";
+	vmContent.appendChild(childrenNew);
+	
+	subClientProperties.appendChild(vmContent);
+	
+	var vmFilter = new XML('<vmFilter/>');
+	subClientProperties.appendChild(vmFilter);
+	
+	var vmDiskFilter = new XML('<vmDiskFilter/>');
+	subClientProperties.appendChild(vmDiskFilter);
+	
+	addVMXML.appendChild(subClientProperties);
+	
+	//System.log("Final XML TO ADD VM " );
+	//System.log(addVMXML);
+	System.log("Adding VM to subclient id " + subclientId);
+	var response = System.getModule("com.commvault.utils").processRESTRequest(addVMtoSubclientURL,"POST",addVMXML,token,null,host);
+	if(response.statusCode != 200)
+	{
+		throw("Error: Failed to execute REST request to add VM to Subclient. Recieved status:  "+ response.contentAsString);
+	}
+	
+	return response;
+}
+else{
+	System.log("Not adding VM to VM Group as it is already added as content.");
+	return -1;
+}]]></script>
+</dunes-script-module>

@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getNetworkForGivenNic" result-type="VC:Network" api-version="6.0.0" id="1761fbff-3169-4972-bc1c-4a25a398dfe4" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.vm.network">
+  <param n="vm" t="VC:VirtualMachine"><![CDATA[VM to get the first network]]></param>
+  <param n="nicNumber" t="number"><![CDATA[1 to 4: the nic number]]></param>
+  <script encoded="false"><![CDATA[var devices = vm.config.hardware.device;
+
+for (var i in devices) {
+	if (System.getModule("com.vmware.library.vc.vm.network").isSupportedNic(devices[i])) {
+		if (--nicNumber == 0) {
+			if (devices[i].backing instanceof VcVirtualEthernetCardNetworkBackingInfo) {
+				return VcPlugin.convertToVimManagedObject(vm ,devices[i].backing.network);
+			} else if (devices[i].backing instanceof VcVirtualEthernetCardDistributedVirtualPortBackingInfo) {
+				var portgroupId = null;
+				var portgroupKey = devices[i].backing.port.portgroupKey;
+				var networks = vm.network;
+				for (var j in networks) {
+					var network = networks[j];
+					if (network instanceof VcDistributedVirtualPortgroup) {
+						if (network.key == portgroupKey) {
+							portgroupId = network.id;
+							break;
+						}
+					}
+				}
+				if (portgroupId == null) {
+					return null;
+				}
+				var moRef = new VcManagedObjectReference();
+				moRef.type = "DistributedVirtualPortgroup";
+				moRef.value = portgroupId;
+				return VcPlugin.convertToVimManagedObject(vm ,moRef);
+			} else {
+				return null;
+			}
+		}
+	}
+}
+return null;]]></script>
+</dunes-script-module>

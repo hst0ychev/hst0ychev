@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="requestResourceActionWithRequestTemplate" result-type="vCACCAFE:ResourceActionRequest" api-version="6.0.0" id="c1a36186-3564-419f-81c4-09cc8cc0f2c6" version="1.0.0" allowed-operations="vf" category-name="com.vmware.library.vcaccafe.request">
+  <param n="operation" t="vCACCAFE:ConsumerResourceOperation"><![CDATA[]]></param>
+  <param n="request" t="Any"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[return vCACCAFERequestsHelper.requestResourceActionWithRequest(operation, request);]]></script>
+</dunes-script-module>

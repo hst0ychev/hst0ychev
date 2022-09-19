@@ -1,0 +1,72 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="Workflow:name=generic" id="B8808080808080808080808080808080A580808001223281930284530e3e80cba" version="1.0.2" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Create task]]></display-name>
+  <description><![CDATA[Schedules a workflow to run at a later time and date, as a task.]]></description>
+  <position y="20.0" x="180.0"/>
+  <input>
+    <param name="workflowId" type="string">
+      <description><![CDATA[ID of the workflow to run]]></description>
+    </param>
+    <param name="date" type="Date">
+      <description><![CDATA[Date to start task]]></description>
+    </param>
+    <param name="workflowArguments" type="Properties">
+      <description><![CDATA[Properties the workflow requires to run]]></description>
+    </param>
+  </input>
+  <output>
+    <param name="newTask" type="Task">
+      <description><![CDATA[The task that this workflow creates]]></description>
+    </param>
+  </output>
+  <attrib name="workflowToCall" type="Workflow" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[The workflow to call when the task runs]]></description>
+  </attrib>
+  <workflow-item name="item0" out-name="item2" type="task" script-module="com.vmware.library.tasks/createTask">
+    <display-name><![CDATA[createTask]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.tasks").createTask(workflowToCall,date,workflowArguments) ;]]></script>
+    <in-binding>
+      <bind name="workflowToCall" type="Workflow" export-name="workflowToCall"/>
+      <bind name="date" type="Date" export-name="date"/>
+      <bind name="workflowArguments" type="Properties" export-name="workflowArguments"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Task" export-name="newTask"/>
+    </out-binding>
+    <description><![CDATA[Create a VS-O Task. Return the newly created task]]></description>
+    <position y="160.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task" script-module="com.vmware.library.workflow/getWorkflowById">
+    <display-name><![CDATA[getWorkflowById]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.workflow").getWorkflowById(workflowId) ;]]></script>
+    <in-binding>
+      <bind name="workflowId" type="string" export-name="workflowId">
+        <description><![CDATA[A valid workfow ID]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Workflow" export-name="workflowToCall"/>
+    </out-binding>
+    <description><![CDATA[Return the workflow for the given ID.
+
+Throw an exception if the workflow is not found]]></description>
+    <position y="100.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item2" type="end" end-mode="0">
+    <position y="210.0" x="180.0"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="date">
+      <desc><![CDATA[Date to start task]]></desc>
+    </p-param>
+    <p-param name="workflowArguments">
+      <desc><![CDATA[Properties the workflow requires to run]]></desc>
+    </p-param>
+    <p-param name="workflowId">
+      <desc><![CDATA[ID of the workflow to run]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

@@ -1,0 +1,53 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="Workflow:name=generic" id="AD80808080808080808080808080808084808080012995053491651398b094fa1" version="1.0.0" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Show a vCloud Director organization]]></display-name>
+  <description><![CDATA[Lists the content of a vCloud Director organization.]]></description>
+  <position y="30.0" x="200.0"/>
+  <input>
+    <param name="vlcoud_host" type="REST:RESTHost"/>
+  </input>
+  <attrib name="success" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+  </attrib>
+  <attrib name="org_list" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <workflow-item name="item0" out-name="item1" type="task">
+    <display-name><![CDATA[List organizations]]></display-name>
+    <script encoded="false"><![CDATA[var response = vlcoud_host.createRequest("GET", "/org", null).execute();
+
+org_list = response.contentAsString;]]></script>
+    <in-binding>
+      <bind name="vlcoud_host" type="REST:RESTHost" export-name="vlcoud_host"/>
+    </in-binding>
+    <out-binding>
+      <bind name="success" type="boolean" export-name="success"/>
+      <bind name="org_list" type="string" export-name="org_list"/>
+    </out-binding>
+    <position y="100.0" x="160.0"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item2" type="task">
+    <display-name><![CDATA[Print first organization]]></display-name>
+    <script encoded="false"><![CDATA[
+var doc = new XML(org_list);
+default xml namespace = doc.namespace();
+var names = doc..Org.@name;
+for (var i in names) {
+   System.log(names[i]);
+}]]></script>
+    <in-binding>
+      <bind name="vlcoud_host" type="REST:RESTHost" export-name="vlcoud_host"/>
+      <bind name="org_list" type="string" export-name="org_list"/>
+    </in-binding>
+    <out-binding/>
+    <position y="160.0" x="160.0"/>
+  </workflow-item>
+  <workflow-item name="item2" type="end" end-mode="0">
+    <position y="210.0" x="200.0"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="vlcoud_host">
+      <desc><![CDATA[vCloud Director host]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

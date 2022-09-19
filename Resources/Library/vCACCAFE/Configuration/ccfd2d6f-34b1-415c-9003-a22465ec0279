@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<endpoint nativeId="2df2c64f-b329-4629-8629-c697209c0664" pluginVersion="7.6.0">
+    <properties>
+        <property type="password" name="password">vcoencrypted:{riv}llKxeiS7XjXU9dM1xg5GLHcinkBFB4KbAyvUu73yi7Y=</property>
+        <property type="integer" name="operationTimeout">60</property>
+        <property type="string" name="name">portal</property>
+        <property type="string" name="connectionId">ccfd2d6f-34b1-415c-9003-a22465ec0279</property>
+        <property type="integer" name="pageSize">100</property>
+        <property type="string" name="sessionMode">Shared Session</property>
+        <property type="integer" name="connectionTimeout">60</property>
+        <property type="string" name="url">https://portal.cloud.cris.in/</property>
+        <property type="string" name="tenant">CRIS</property>
+        <property type="string" name="username">vraadmin@vsphere.local</property>
+    </properties>
+</endpoint>

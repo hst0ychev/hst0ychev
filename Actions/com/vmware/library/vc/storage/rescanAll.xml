@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="rescanAll" result-type="void" api-version="6.0.0" id="e17779a3-c8df-4a40-ac46-b2ce9fb16485" version="1.1.0" allowed-operations="vfe" category-name="com.vmware.library.vc.storage">
+  <description><![CDATA[Rescans all HBA, VMFS and StorageSystem of a HostSystem.]]></description>
+  <param n="host" t="VC:HostSystem"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var hostStorageSystem = VcPlugin.convertToVimManagedObject( host, host.configManager.storageSystem );
+hostStorageSystem.rescanAllHba();
+hostStorageSystem.rescanVmfs();
+hostStorageSystem.refreshStorageSystem();
+]]></script>
+</dunes-script-module>

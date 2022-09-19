@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<endpoint pluginVersion="2.3.0">
+    <properties>
+        <property type="string" name="systemPWD">vcoencrypted:{riv}Jb5bP3Ni7NFfAgBfgd7UO2tcsI8N1mvF67uru7/FRtQ=</property>
+        <property type="string" name="systemId">161122</property>
+        <property type="string" name="serialNumber">SGH109YK2K</property>
+        <property type="string" name="name">HPE Primera 3 Par</property>
+        <property type="string" name="connectionId">HGxDYMADQV6avH9iqsYe9w</property>
+        <property type="string" name="model">HPE_3PAR A670</property>
+        <property type="string" name="storageSystem">10.77.16.241</property>
+        <property type="string" name="user">3paradm</property>
+        <property type="string" name="systemVersion">4.2.6.2</property>
+    </properties>
+</endpoint>

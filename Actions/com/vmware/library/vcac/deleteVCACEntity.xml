@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="deleteVCACEntity" result-type="void" api-version="6.0.0" id="19125041-ee93-435f-8b0d-ae4cf6e6856c" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcac">
+  <param n="doHostId" t="string"><![CDATA[The vCloud Automation Center host object's ID.]]></param>
+  <param n="modelName" t="string"><![CDATA[The vCloud Automation Center's model name of the vCloud Automation Center entity.]]></param>
+  <param n="entitySetName" t="string"><![CDATA[The entity set of the vCloud Automation Center entity.]]></param>
+  <param n="entityKeyString" t="string"><![CDATA[A map of property name, value containing the ID of the vCloud Automation Center's entity.]]></param>
+  <param n="headers" t="Properties"><![CDATA[A map of the HTTP headers.]]></param>
+  <script encoded="false"><![CDATA[vCACEntityManager.deleteModelEntityBySerializedKey(doHostId, modelName, entitySetName, entityKeyString, headers);]]></script>
+</dunes-script-module>

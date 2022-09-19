@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getCustomizationSysprep" result-type="Any" api-version="6.0.0" id="02e32661-4641-483c-b49b-1ee0672494b5" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.vm.spec.identity">
+  <param n="guiRunOnce" t="Any"><![CDATA[[Optional] VimCustomizationGuiRunOnce: An object representation of the sysprep GuiRunOnce key.]]></param>
+  <param n="guiUnattended" t="Any"><![CDATA[VimCustomizationGuiUnattended: An object representation of the sysprep GuiUnattended key. VimCustomizationGuiUnattended:]]></param>
+  <param n="identification" t="Any"><![CDATA[VimCustomizationIdentification: An object representation of the sysprep Identification key.]]></param>
+  <param n="licenseFilePrintData" t="Any"><![CDATA[[Optional] VimCustomizationLicenseFilePrintData: An object representation of the sysprep LicenseFilePrintData key. Required only for Windows 2000 Server and Windows Server 2003.]]></param>
+  <param n="userData" t="Any"><![CDATA[VimCustomizationUserData: An object representation of the sysprep UserData key.]]></param>
+  <script encoded="false"><![CDATA[var sysprep;
+try {
+	checkParams();
+	sysprep = new VcCustomizationSysprep();
+	affectParams();
+	return sysprep;
+}
+catch (ex) {
+	throw "Unable to create VcCustomizationSysprep: " + ex;
+}
+
+function affectParams() {
+	sysprep.guiRunOnce = guiRunOnce;
+	sysprep.guiUnattended = guiUnattended;
+	sysprep.identification = identification;
+	sysprep.licenseFilePrintData = licenseFilePrintData;
+	sysprep.userData = userData;
+}
+
+function checkParams() {
+	if (guiRunOnce != null && ((guiRunOnce instanceof VcCustomizationGuiRunOnce) == false)) throw "guiRunOnce must be of type VcCustomizationGuiRunOnce";
+	if (guiUnattended == null) throw "guiUnattended cannot be null"; 
+	if ((guiUnattended instanceof VcCustomizationGuiUnattended) == false) throw "guiUnattended must be of type VcCustomizationGuiUnattended";
+	if (identification == null) throw "identification cannot be null"; 
+	if ((identification instanceof VcCustomizationIdentification) == false) throw "identification must be of type VcCustomizationIdentification";
+	if (licenseFilePrintData != null && ((licenseFilePrintData instanceof VcCustomizationLicenseFilePrintData) == false)) throw "licenseFilePrintData must be of type VcCustomizationLicenseFilePrintData";
+	if (userData == null) throw "userData cannot be null"; 
+	if ((userData instanceof VcCustomizationUserData) == false) throw "userData must be of type VcCustomizationUserData";
+}]]></script>
+</dunes-script-module>

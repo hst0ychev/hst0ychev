@@ -1,0 +1,77 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="invokeSOAPOperation" result-type="Properties" api-version="6.0.0" id="e8292a5d-5ce2-4122-8c15-8e6ec060a345" version="1.0.1" allowed-operations="vfe" category-name="com.vmware.library.soap">
+  <description><![CDATA[Invokes a SOAP operation.]]></description>
+  <param n="operation" t="SOAP:Operation"><![CDATA[SOAP operation]]></param>
+  <param n="header" t="Properties"><![CDATA[Input headers of the operation]]></param>
+  <param n="parameter" t="Properties"><![CDATA[Input parameters of the operation]]></param>
+  <param n="attribute" t="Properties"><![CDATA[Input attributes of the operation]]></param>
+  <script encoded="false"><![CDATA[System.log("creating request...");
+var request = operation.createSOAPRequest();
+var inHeaders = header.keys;
+
+System.log("in headers:");
+for (i = 0; i < inHeaders.length; i++) {
+	var name = inHeaders[i];
+	var value = header.get(name);
+	request.setInHeader(name, value);
+	System.log("  + name: '" + name + "', value: '" + value + "'");
+}
+
+var keysIn = parameter.keys;
+System.log("in parameters:");
+for (i = 0; i < keysIn.length; i++) {
+	var name = keysIn[i];
+	var value = parameter.get(name);
+	request.setInParameter(name, value);
+	System.log("  + name: '" + name + "', value: '" + value + "'");
+}
+
+var inAttributes = attribute.keys;
+System.log("in attributes:");
+for (i = 0; i < inAttributes.length; i++) {
+	var name = inAttributes[i];
+	var value = attribute.get(name);
+	var attributeName = name.substring(name.lastIndexOf('(')+1, name.lastIndexOf(')'));
+    var parameterName = name.substring(0, name.lastIndexOf('('));
+
+    request.addInParameterAttribute(parameterName, attributeName, value);
+}
+
+System.log("invoking '" + operation.name + "' operation...");
+var response = operation.invoke(request);
+System.log("operation '" + operation.name + "' successfully invoked.");
+
+System.log("processing response...");
+var result = new Properties();
+
+System.log("processing headers...");
+var outHeaders = new Properties();
+var headerNames = response.getOutHeaders();
+if (headerNames.length > 0) {
+    System.log("out headers available:");
+    for (i = 0; i < headerNames.length; i++) {
+        var name = headerNames[i];
+        var value = response.getOutHeader(name);
+        outHeaders.put(name, value);
+        System.log("  + header: '" + name + "', value: '" + value + "'");
+    }
+}
+
+
+var outParamNames = response.getOutParameters();
+var outParameters = new Properties();
+if (outParamNames.length > 0) {
+	System.log("out parameters available:");	
+	for (i = 0; i < outParamNames.length; i++) {
+		var name = outParamNames[i];
+		var value = response.getOutParameter(name);
+		outParameters.put(name, value);
+		System.log("  + name: '" + name + "', value: '" + value + "'");
+	}
+}
+
+result.put("SOAP_OUT_HEADERS", outHeaders);
+result.put("SOAP_OUT_PARAMETERS", outParameters);
+return result;
+]]></script>
+</dunes-script-module>

@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="isAPICompatible" result-type="boolean" api-version="6.0.0" id="6bef8f6c-b0af-4ad8-8687-20a1452949bd" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.storage">
+  <param n="host" t="VC:HostSystem"><![CDATA[The VC SDK Connection object.]]></param>
+  <param n="requiredVersion" t="string"><![CDATA[The version against we want to check the API compatability.]]></param>
+  <script encoded="false"><![CDATA[var aboutInfo = host.sdkConnection.aboutInfo;
+
+if(!aboutInfo) {
+	// In case of vSphere API 4.0
+	aboutInfo = host.sdkConnection.about;
+}
+
+var apiVersion = aboutInfo.apiVersion;
+System.log("vCenter Server API version " + apiVersion);
+
+var apiVersionArray = apiVersion.split('.');
+var requiredVersionArray = requiredVersion.split('.');
+
+for (var i=0; i < requiredVersionArray.length; i++) {
+	if( i < apiVersionArray.length ) {
+		if (parseInt(requiredVersionArray[i], 10) > parseInt(apiVersionArray[i], 10) ) {
+			return false;
+		}
+	} else {
+		break;
+	}
+}
+
+return true;]]></script>
+</dunes-script-module>

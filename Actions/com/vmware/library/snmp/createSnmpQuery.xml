@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="createSnmpQuery" result-type="SNMP:SnmpQuery" api-version="6.0.0" id="DF8080808080808080808080808080809380808001297259131125b940b51f82d" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.snmp">
+  <param n="device" t="SNMP:SnmpDevice"><![CDATA[]]></param>
+  <param n="type" t="string"><![CDATA[]]></param>
+  <param n="oid" t="string"><![CDATA[]]></param>
+  <param n="name" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var query = new SNMPSnmpQuery();
+query.validateAndSetType(type);
+query.validateAndSetOid(oid);
+if (name) {
+	query.validateAndSetName(name);
+} else {
+	query.validateAndSetName(type + " " + oid);
+}
+
+return SnmpService.addQuery(device, query);]]></script>
+</dunes-script-module>

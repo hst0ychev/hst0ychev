@@ -1,0 +1,101 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item2" object-name="workflow:name=generic" id="3fbe872a-46de-484e-8232-8b110fcee02b" version="1.0.4" api-version="6.0.0" allowed-operations="vf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Update an IaaS model entity]]></display-name>
+  <description><![CDATA[Updates a vCloud Automation Center model entity by its ID.]]></description>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="entity" type="vCAC:Entity">
+      <description><![CDATA[The IaaS' entity instance]]></description>
+    </param>
+    <param name="inputProperties" type="Properties">
+      <description><![CDATA[A map of property name, value of the simple properties of the IaaS entity]]></description>
+    </param>
+    <param name="links" type="Properties">
+      <description><![CDATA[A map of link name and entity of the complex properties of the IaaS entity]]></description>
+    </param>
+    <param name="headers" type="Properties">
+      <description><![CDATA[A map of the HTTP headers]]></description>
+    </param>
+  </input>
+  <output>
+    <param name="updatedEntity" type="vCAC:Entity">
+      <description><![CDATA[The updated IaaS entity]]></description>
+    </param>
+  </output>
+  <attrib name="hostId" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[The IaaS host object's ID]]></description>
+  </attrib>
+  <attrib name="modelName" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[The IaaS' model name of the IaaS entity]]></description>
+  </attrib>
+  <attrib name="entitySetName" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[The entity set of the IaaS entity]]></description>
+  </attrib>
+  <attrib name="entityIdString" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[The entity ID's key string]]></description>
+  </attrib>
+  <attrib name="errorCode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[The returned error message]]></description>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="625.0"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item1" type="task">
+    <display-name><![CDATA[Prepare update entity]]></display-name>
+    <script encoded="false"><![CDATA[hostId = entity.hostId;
+modelName = entity.modelName;
+entitySetName = entity.entitySetName;
+entityIdString = entity.keyString;]]></script>
+    <in-binding>
+      <bind name="entity" type="vCAC:Entity" export-name="entity"/>
+    </in-binding>
+    <out-binding>
+      <bind name="hostId" type="string" export-name="hostId"/>
+      <bind name="modelName" type="string" export-name="modelName"/>
+      <bind name="entitySetName" type="string" export-name="entitySetName"/>
+      <bind name="entityIdString" type="string" export-name="entityIdString"/>
+    </out-binding>
+    <position y="55.90909090909091" x="225.0"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" catch-name="item3" throw-bind-name="errorCode" type="task" script-module="com.vmware.library.vcac/updateVCACEntity">
+    <display-name><![CDATA[updateVCACEntity]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.vcac").updateVCACEntity(hostId,modelName,entitySetName,entityIdString,properties,links,headers) ;]]></script>
+    <in-binding>
+      <bind name="hostId" type="string" export-name="hostId"/>
+      <bind name="modelName" type="string" export-name="modelName"/>
+      <bind name="entitySetName" type="string" export-name="entitySetName"/>
+      <bind name="entityIdString" type="string" export-name="entityIdString"/>
+      <bind name="properties" type="Properties" export-name="inputProperties"/>
+      <bind name="links" type="Properties" export-name="links"/>
+      <bind name="headers" type="Properties" export-name="headers"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="vCAC:Entity" export-name="updatedEntity"/>
+    </out-binding>
+    <position y="55.90909090909091" x="385.0"/>
+  </workflow-item>
+  <workflow-item name="item3" throw-bind-name="errorCode" type="end" end-mode="1">
+    <position y="109.04545454545453" x="425.0"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="entity">
+      <desc><![CDATA[The vCloud Automation Center entity]]></desc>
+      <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+    </p-param>
+    <p-param name="inputProperties">
+      <desc><![CDATA[Input properties]]></desc>
+    </p-param>
+    <p-param name="links">
+      <desc><![CDATA[Links]]></desc>
+    </p-param>
+    <p-param name="headers">
+      <desc><![CDATA[HTTP headers]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="VROES" result-type="Any" api-version="6.0.0" id="ed49e4bb-6b26-34c6-afe4-cb84d401a506" version="2.13.6" allowed-operations="evf" category-name="com.vmware.pscoe.library.ecmascript">
+  <script encoded="false"><![CDATA[var GLOBAL = System.getContext() || (function () {
+    return this;
+}).call(null);
+if (!GLOBAL.__vroes__) {
+    var vroes = GLOBAL.__vroes__ = {};
+    var moduleName_1 = "com.vmware.pscoe.library.ecmascript";
+    var actions = ["Shims", "Map", "Set", "Promise", "tslib"];
+    var Module_1 = System.getModule(moduleName_1).Module();
+    vroes.import = Module_1.import;
+    vroes.export = Module_1.export;
+    vroes.load = Module_1.load;
+    vroes.class = Module_1.import("default").from(moduleName_1 + ".Class");
+    vroes.require = function (name) {
+        return Module_1.import("*").from(name.replace(/[\\\/]/g, "."));
+    };
+    vroes.importLazy = function (name) {
+        var result = {};
+        Object.defineProperty(result, "_", {
+            get: function () {
+                return result.__lazyAction__ || (result.__lazyAction__ = Module_1.import("*").from(name.replace(/[\\\/]/g, ".")));
+            },
+            enumerable: true,
+            configurable: true
+        });
+        return result;
+    };
+    var _loop_1 = function (actionName) {
+        Object.defineProperty(vroes, actionName, {
+            get: function () { return Module_1.import("default").from(moduleName_1 + "." + actionName); },
+            enumerable: true,
+            configurable: true
+        });
+    };
+    for (var _i = 0, actions_1 = actions; _i < actions_1.length; _i++) {
+        var actionName = actions_1[_i];
+        _loop_1(actionName);
+    }
+}
+return GLOBAL.__vroes__;
+]]></script>
+</dunes-script-module>

@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="startBackup" result-type="void" api-version="6.0.0" id="14370a28-968c-4921-849c-b42aea98282c" version="0.0.0" allowed-operations="evf" category-name="com.commvault.utils">
+  <description><![CDATA[Action to start the subclient backup]]></description>
+  <param n="token" t="string"><![CDATA[]]></param>
+  <param n="requestContent" t="string"><![CDATA[]]></param>
+  <param n="subclientId" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[/*
+	Inputs-
+	token - CV token for REST API
+	requestContent - content to be used for backup
+	subclientId - subclientID
+	
+	Output
+	Starts the backup and returns the response
+
+*/
+var backupUrl = "Subclient/"+subclientId+"/action/backup?backupLevel=Incremental";
+
+System.log("Backup operation requested: " + backupUrl );
+
+System.log("Backup requested");
+System.log(requestContent);
+
+var response = System.getModule("com.commvault.utils").processRESTRequest(backupUrl,"POST", requestContent, token,null,null);
+if(response.statusCode != 200)
+{
+	throw("Error: Failed to execute REST request to submitBackup. Recieved status:  "+response.contentAsString);
+}
+
+return response;]]></script>
+</dunes-script-module>

@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="exportTenantWorkflowSubscriptions" result-type="MimeAttachment" api-version="6.0.0" id="0bbe52ff-c8f8-4445-81ec-51b90035ba7b" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.workflow.subscription">
+  <param n="vraHost" t="vCACCAFE:VCACHost"><![CDATA[vRA host used to retrieve the workflow subscribtions]]></param>
+  <param n="resourceName" t="string"><![CDATA[Name of the exported resource]]></param>
+  <param n="persist" t="boolean"><![CDATA[If the resource should be persisted as a resource element]]></param>
+  <param n="resourceCategory" t="ResourceElementCategory"><![CDATA[The resource element category where to persist the exported resource]]></param>
+  <script encoded="false"><![CDATA[var tenant = vraHost.tenant;
+
+var MAX_INT = 2147483647;
+
+System.log("Exporting subscriptions for tenant: " + tenant + " with user: " + vraHost.username);
+
+var output = System.createTempFile("json");
+var client = vraHost.createEventClient();
+var path = "tenants/" + tenant + "/event-broker/subscriptions?limit=" + MAX_INT;
+var result = client.get(path);
+
+output.write(JSON.stringify(result.getBodyAsJson().content));
+
+var fullName = resourceName + ".json";
+bundle = new MimeAttachment(output);
+bundle.name = fullName;
+
+if(resourceCategory != null) {
+	Server.createResourceElement(resourceCategory , fullName , bundle, "application/json");
+}
+
+return bundle;]]></script>
+</dunes-script-module>

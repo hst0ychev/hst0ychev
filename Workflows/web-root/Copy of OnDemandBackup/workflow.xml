@@ -1,0 +1,287 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="c1007460-e2c5-4c5f-a28f-59b52b9d8c22" version="0.0.3" api-version="6.0.0" allowed-operations="evf" editor-version="2.0" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Copy of OnDemandBackup]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="vCACVm" type="VC:VirtualMachine">
+      <description><![CDATA[Virtual Machine]]></description>
+    </param>
+    <param name="backupPolicy" type="string">
+      <description><![CDATA[VM Group]]></description>
+    </param>
+  </input>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Scriptable task]]></display-name>
+    <script encoded="false"><![CDATA[var requestContent = "";
+var restHost = "";
+//Globals
+var vCenterName = "";
+var vcClientName = "";
+var vcClientID = "";
+var backupSetId = "";
+var backupSetName = "";
+var subClientName = "";
+var subClientId = "";
+var instanceID = "";
+var vmName = vCACVm.name;
+var bnewSubclient = false;
+var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",encode:function(e){var t="";var n,r,i,s,o,u,a;var f=0;e=Base64._utf8_encode(e);while(f<e.length){n=e.charCodeAt(f++);r=e.charCodeAt(f++);i=e.charCodeAt(f++);s=n>>2;o=(n&3)<<4|r>>4;u=(r&15)<<2|i>>6;a=i&63;if(isNaN(r)){u=a=64}else if(isNaN(i)){a=64}t=t+this._keyStr.charAt(s)+this._keyStr.charAt(o)+this._keyStr.charAt(u)+this._keyStr.charAt(a)}return t},decode:function(e){var t="";var n,r,i;var s,o,u,a;var f=0;e=e.replace(/[^A-Za-z0-9\+\/\=]/g,"");while(f<e.length){s=this._keyStr.indexOf(e.charAt(f++));o=this._keyStr.indexOf(e.charAt(f++));u=this._keyStr.indexOf(e.charAt(f++));a=this._keyStr.indexOf(e.charAt(f++));n=s<<2|o>>4;r=(o&15)<<4|u>>2;i=(u&3)<<6|a;t=t+String.fromCharCode(n);if(u!=64){t=t+String.fromCharCode(r)}if(a!=64){t=t+String.fromCharCode(i)}}t=Base64._utf8_decode(t);return t},_utf8_encode:function(e){e=e.replace(/\r\n/g,"\n");var t="";for(var n=0;n<e.length;n++){var r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r)}else if(r>127&&r<2048){t+=String.fromCharCode(r>>6|192);t+=String.fromCharCode(r&63|128)}else{t+=String.fromCharCode(r>>12|224);t+=String.fromCharCode(r>>6&63|128);t+=String.fromCharCode(r&63|128)}}return t},_utf8_decode:function(e){var t="";var n=0;var r=c1=c2=0;while(n<e.length){r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r);n++}else if(r>191&&r<224){c2=e.charCodeAt(n+1);t+=String.fromCharCode((r&31)<<6|c2&63);n+=2}else{c2=e.charCodeAt(n+1);c3=e.charCodeAt(n+2);t+=String.fromCharCode((r&15)<<12|(c2&63)<<6|c3&63);n+=3}}return t}}
+var status = "";
+var token = "";
+//Set Subclient Name with input choosen if not default value Gold will be assigned
+if(backupPolicy != "")
+{
+	 subClientName = backupPolicy;
+}
+else
+{
+	 subClientName = "Gold";
+}
+
+//Get VM and Host Details
+var uuId = vCACVm.config.instanceUuid;
+var type  = 'VC:VirtualMachine';
+vCenterName =  vCACVm.vimHost.id;
+var vcClientName = vCenterName;
+//System.getModule("com.vmware.vcac.asd").findVcObjectsByMoRefId(type,moRefId);
+var objArray = Server.findAllForType("vCAC:VirtualMachine", "VMUniqueID eq '" + uuId + "'");
+if (objArray.length == 0)
+{
+	throw ("Error: couldn't find vCAC:VirtualMachine matching VC:VirtualMachine "+ vCACVm.name);
+}
+var vmEntity =  objArray[0].getEntity();
+//Enable on high verbosity
+System.log("Size: " +objArray.length);
+
+//Get Blueprint name for the selected VM
+var bpName = vmEntity.getProperty("BlueprintName");
+if (bpName != null)
+{
+	System.log("Expected BluePrint Name : "  +  bpName);
+}
+else
+{
+	throw ("Error: couldn't find Blueprint name for the VM selected  "  +  vCACVm.name);
+}
+//Get all VCACCAFE blueprint names to match the passed Blueprint name
+var bps = Server.findAllForType("VCACCAFE:CompositeBlueprint");
+if (bps.length > 0)
+{
+	for(var i = 0; i< bps.length; i++){
+		System.log("BP " + bps[i].name);
+		if(bps[i].name == bpName)
+		{
+			System.log("Found Tentant name from Blueprint used :" + bps[i].tenantId);
+			backupSetName = bps[i].tenantId;
+			System.log("backupset Name " +  backupSetName );
+			break;
+		}
+	}
+}
+else
+{
+	throw ("Error: Blueprint list is empty");
+}
+if (backupSetName == null)
+{
+	throw("Error: BackupSet name couldn't be resolved, tenant id null");
+}
+//Print summary to the logs
+System.log("============================Init============================");
+System.log("vCenter Host Name :" + vcClientName);
+System.log("VM Name :" + vCACVm.name);
+System.log("VM UUID :" + uuId);
+System.log("VM Moref :" + vCACVm.id);
+System.log("VM Blueprint Name :" + bpName);
+System.log("VM Tenant :" + backupSetName);
+System.log("==========================End Init==========================");
+
+//GetHost
+var restHost = System.getModule("com.commvault.utils").getHost();
+if(restHost == null)
+{
+    throw("Error: couldn't find the REST host, please add REST host on vRO with Commvault webservice URL. example: http://server1.company.com:81/SearchSvc/CVWebService.svc/");
+}
+System.log("HOST: " +restHost);
+//Prepare cvLogin
+token = System.getModule("com.vmware.test").Test_getToken(restHost);
+if(token == -1)
+{
+    throw("Error: Failed to generate token. please check Commvault WebServer log for login request");
+}
+
+//Get Client ID
+vcClientID = System.getModule("com.commvault.utils").getClientId(token,vcClientName);
+if (vcClientID == -1)
+{
+	throw("Error: Could not find Virtualization client configured in commcell with the End point name. Please configure Virtualization client with the name as End point name in VRA");
+}
+	
+//Check if BackupSet exists
+var Ids = System.getModule("com.commvault.utils").getBackupSet(token, vcClientID, backupSetName) //This will get BackupSetId and instanceId
+if ( Ids != -1)
+{
+    //BackupSet exists, also check for Subclient
+    aID  = Ids.split(",")
+	instanceID = aID[1];
+	backupSetId = aID[0];
+	System.log("BackupSetId exists, backupsetId and Instance Id found: "+ Ids)
+		
+    //Check if subclient exists
+    subClientId = System.getModule("com.commvault.utils").getSubclient(token,vcClientID,backupSetName,subClientName);
+	if (subClientId == -1)
+	{
+		bnewSubclient = true;
+		System.log("Subclient not found, calling createSubclient");
+		subClientId = System.getModule("com.commvault.utils").createSubclient(token,vcClientName,backupSetName,subClientName);
+	}
+}
+
+else	//Need to create new BackupSet and Subclient
+{
+        System.log("Creating new BackupSet and SubClient");
+        var status = System.getModule("com.commvault.utils").createBackupSet(token,vcClientName, backupSetName);
+		if (status != 0)
+		{
+			throw("Error: BackupSet creation failed "+ response.contentAsString);
+		}
+		else
+		{
+			//Get BackupSetID
+			var Ids = System.getModule("com.commvault.utils").getBackupSet(token, vcClientID, backupSetName) //This will get BackupSetId and instanceId
+            if ( Ids != -1){
+            //BackupSet exists, Now check for Subclient
+                aID  = Ids.split(",")
+                instanceID = aID[1];
+                backupSetId = aID[0];
+                System.log("BackupSetId and Instance Id: "+ Ids)
+                    
+                //Check if subclient exists
+                subClientId = System.getModule("com.commvault.utils").getSubclient(token,vcClientID);
+                if (subClientId == -1)
+                {
+                    bnewSubclient = true;
+                    System.log("Subclient not found, calling createSubclient");
+                    subClientId = System.getModule("com.commvault.utils").createSubclient(token,vcClientName,backupSetName,subClientName);
+                }
+            }
+            else{
+                throw("Error: Couldn't find the backupSetId of newly created BackupSet, please check WebServer logs on CommServ");
+            }
+		}		
+}
+//Flag to determine whther VM should be added or appended to the subclient
+if(bnewSubclient == "false")
+{
+    requestContent = "<App_UpdateSubClientPropertiesRequest><association><entity><appName>Virtual Server</appName><instanceName>VMware</instanceName><backupsetName>"+backupSetName+"</backupsetName><clientName>"+vcClientName+"</clientName><subclientName>"+subClientName+"</subclientName></entity></association><subClientProperties><vmContentOperationType>ADD</vmContentOperationType><vmContent><children equalsOrNotEquals=\"1\" name=\"\" displayName="+"\""+vmName+"\""+" type=\"VMName\"/></vmContent></subClientProperties></App_UpdateSubClientPropertiesRequest>";
+    System.log(requestContent);
+}
+else
+{
+    requestContent = "<App_UpdateSubClientPropertiesRequest><association><entity><appName>Virtual Server</appName><instanceName>VMware</instanceName><backupsetName>"+backupSetName+"</backupsetName><clientName>"+vcClientName+"</clientName><subclientName>"+subClientName+"</subclientName></entity></association><subClientProperties><vmContentOperationType>OVERWRITE</vmContentOperationType><vmContent><children equalsOrNotEquals=\"1\" name=\"\" displayName="+"\""+vmName+"\""+" type=\"VMName\"/></vmContent></subClientProperties></App_UpdateSubClientPropertiesRequest>";
+    System.log(requestContent);
+}
+//Add content to the subclient
+var response = System.getModule("com.commvault.utils").addContenttoSubclient(token,vcClientName,backupSetName,subClientName,vmName,bnewSubclient,subClientId);
+System.log("content added to subclient");
+
+
+var OnDemandBackupXML = new XML('<TMMsg_CreateTaskReq><taskInfo/></TMMsg_CreateTaskReq>');
+
+//tasks block 
+var task = new XML('<task/>');
+task.@taskType="1";
+task.@ownerName="admin";
+task.@policyType="0";
+task.@initiatedFrom="1";
+var taskFlags = new XML('<taskFlags/>');
+taskFlags.@disabled="0";
+task.appendChild(taskFlags);
+
+OnDemandBackupXML.taskInfo.appendChild(task);
+
+//associations XML
+var associations = new XML('<associations/>');
+associations.@srmReportSet ="0";
+associations.@applicationId ="106";
+associations.@subclientId = subClientId;
+associations.@srmReportType="0";
+associations.@commCellId = "0";
+associations.@clientSidePackage = "1";
+associations.@_type_="3";
+associations.@consumeLicense ="1";
+OnDemandBackupXML.taskInfo.appendChild(associations);
+//SubTasks block
+var subTasks = new XML('<subTasks/>');
+
+//SubTask
+var subTask = new XML('<subTask/>');
+subTask.@subTaskName = "";
+subTask.@subTaskType="2" ;
+subTask.@operationType="2";
+subTasks.appendChild(subTask);
+
+OnDemandBackupXML.taskInfo.appendChild(subTasks);
+
+//Options XML
+var options = new XML('<options/>');
+
+var backupOpts = new XML('<backupOpts/>');
+backupOpts.@backupLevel="2";
+backupOpts.@runIncrementalBackup="1";
+backupOpts.@isSpHasInLineCopy="0";
+
+var vsaBackupOptions = new XML('<vsaBackupOptions/>');
+
+vsaBackupOptions.@backupFailedVMsOnly="0";
+
+var selectiveVMInfo = new XML('<selectiveVMInfo/>');
+selectiveVMInfo.@vmGuid=uuId;
+vsaBackupOptions.appendChild(selectiveVMInfo);
+
+backupOpts.appendChild(vsaBackupOptions);
+
+options.appendChild(backupOpts);
+
+var adminOpts = new XML('<adminOpts/>');
+
+var updateOption = new XML('<updateOption/>');
+updateOption.@invokeLevel = "0";
+
+adminOpts.appendChild(updateOption);
+options.appendChild(adminOpts);
+OnDemandBackupXML.taskInfo.subTasks.appendChild(options);
+
+System.log(OnDemandBackupXML);
+
+System.log("Executing on demand backup for vm " +  vCACVm.name);
+var OnDemandBackupURL = "/CreateTask"
+
+var response = System.getModule("com.commvault.utils").processRESTRequest(OnDemandBackupURL,"POST", OnDemandBackupXML, token,null,restHost);
+if(response.statusCode != 200)
+{
+	throw("Error: Failed to execute REST request to submit on demand backup  " + response.contentAsString);
+}
+
+System.log("On Demand backup job response: " + response.contentAsString);]]></script>
+    <in-binding>
+      <bind name="vCACVm" type="VC:VirtualMachine" export-name="vCACVm"/>
+      <bind name="backupPolicy" type="string" export-name="backupPolicy"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="vCACVm">
+      <desc><![CDATA[Virtual Machine]]></desc>
+      <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+    </p-param>
+    <p-param name="backupPolicy">
+      <desc><![CDATA[VM Group]]></desc>
+      <p-qual kind="ognl" name="linkedEnumeration" type="Array/string"><![CDATA[GetAction("com.commvault.utils","getSubclientsForVMClient").call( #vCACVm )]]></p-qual>
+    </p-param>
+  </presentation>
+</workflow>

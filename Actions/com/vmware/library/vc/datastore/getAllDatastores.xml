@@ -1,0 +1,4 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getAllDatastores" result-type="Array/VC:Datastore" api-version="6.0.0" id="e29e42a7-9ebc-4a2b-9181-22709443ab59" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.datastore">
+  <script encoded="false"><![CDATA[return VcPlugin.getAllDatastores();]]></script>
+</dunes-script-module>

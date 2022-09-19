@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getInfrastructureUrl" result-type="string" api-version="6.0.0" id="621f5a40-7f4e-4da5-9634-b936b9d76e42" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.infrastructure">
+  <param n="host" t="vCACCAFE:VCACHost"><![CDATA[vRA host]]></param>
+  <script encoded="false"><![CDATA[if (host == null) {
+	return "";
+}
+
+System.log("Getting Infrastructure URL for host '" + host.name + "'...");
+var url = host.createInfrastructureClient().getUrl();
+url = url.substring(0, url.lastIndexOf("/"));
+System.log("Infrastructure URL: " + url);
+return url;]]></script>
+</dunes-script-module>

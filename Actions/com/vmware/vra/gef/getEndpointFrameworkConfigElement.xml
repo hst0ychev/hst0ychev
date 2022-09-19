@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getEndpointFrameworkConfigElement" result-type="ConfigurationElement" api-version="6.0.0" id="14d1672c-0910-4741-a50f-f27cccd4497a" version="0.0.0" allowed-operations="vf" category-name="com.vmware.vra.gef">
+  <description><![CDATA[Returns the Properties which represents all of the Endpoint configurations.  Each entry  contains an endpoint name and a list of key-value mappings from the operationType to the Workflow itself.
+
+Ex: 
+endpointName: {
+    cloneMachine: endpointCloneMachineWorkflow
+    disposeMachine: endpointDisposeMachineWorkflow
+    ...
+}
+  ]]></description>
+  <script encoded="false"><![CDATA[var endpointFrameworkConfigElement = getEndpointFrameworkConfigElement();
+if (endpointFrameworkConfigElement == null) {
+	throw "Unable to find the 'Generic Endpoint Framework' configuration element - expected to find it in the Library\vRA folder";
+}
+
+return endpointFrameworkConfigElement;
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+function getEndpointFrameworkConfigElement() {
+	var libraryFolder = Server.getConfigurationElementCategoryWithPath("Library");
+	var libraryConfigs = libraryFolder.allConfigurationElements;
+	for each (var config in libraryConfigs) {
+		if (config.name === "Generic Endpoint Framework") {
+			return config;
+		}
+	}
+	return null;
+}]]></script>
+</dunes-script-module>

@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getTenant" result-type="Array/string" api-version="6.0.0" id="15a4fb6b-17f4-4087-aee8-c714e62baf9d" version="0.0.0" allowed-operations="evf" category-name="com.commvault.utils">
+  <description><![CDATA[This action displays a list of tenants we get from runtime properties.]]></description>
+  <script encoded="false"><![CDATA[/*
+	This action displays a list of tenants we get from runtime properties.
+
+*/
+
+var y = System.getContext().getParameter("__asd_tenantRef");
+var list = [];
+list.push(y);
+return list;]]></script>
+</dunes-script-module>

@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getDvPortgroupPvlanIds" result-type="Array/number" api-version="6.0.0" id="b26982ee-51f0-4cf5-8af9-467da7ec682a" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.networking">
+  <param n="dvPortgroup" t="VC:DistributedVirtualPortgroup"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[if (dvPortgroup != null) {
+	var dvSwitch = dvPortgroup.config.distributedVirtualSwitch;
+	return System.getModule("com.vmware.library.vc.networking").getDvSwitchPvlanIds(dvSwitch);
+} else {
+	return [];
+}]]></script>
+</dunes-script-module>

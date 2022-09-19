@@ -1,0 +1,408 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="1e00b077-9a36-4e35-b32d-13e62eaa5815" version="0.0.1" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[base_workflow]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="usersEmailId" type="string">
+      <description><![CDATA[Requester's Email ID]]></description>
+    </param>
+    <param name="vsPort" type="string">
+      <description><![CDATA[Virtual Server Port]]></description>
+    </param>
+    <param name="vsProtocol" type="string">
+      <description><![CDATA[Virtual Server Protocol]]></description>
+    </param>
+    <param name="serverName" type="string"/>
+    <param name="serverIP" type="string"/>
+    <param name="serverName2" type="string"/>
+    <param name="serverIP2" type="string"/>
+    <param name="serverName3" type="string"/>
+    <param name="serverIP3" type="string"/>
+    <param name="networkProfName" type="string"/>
+  </input>
+  <attrib name="username" type="string" read-only="false" conf-id="a4e58f50-5da8-475b-b6d6-a13f9419eab5" conf-key="username">
+    <value encoded="n"><![CDATA[admin]]></value>
+  </attrib>
+  <attrib name="password" type="SecureString" read-only="false" conf-id="a4e58f50-5da8-475b-b6d6-a13f9419eab5" conf-key="password">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="restHost" type="REST:RESTHost" read-only="false" conf-id="a4e58f50-5da8-475b-b6d6-a13f9419eab5" conf-key="restHost">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="smtp_host" type="string" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_host">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="smtp_port" type="number" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_port">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="smtp_username" type="string" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_username">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="smtp_password" type="SecureString" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_password">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="smtp_from_id" type="string" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_from_id">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="smtp_from_name" type="string" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_from_name">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="use_ssl" type="boolean" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="use_ssl">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="use_start_tls" type="boolean" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="use_start_tls">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="smtp_to_address" type="Array/string" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_to_address_LBaaS">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="vcacCafeHost" type="vCACCAFE:VCACHost" read-only="false" conf-id="66a86a5d-df46-4200-9c90-046802868f44" conf-key="vcacCafeHost">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="vCACHost" type="vCAC:VCACHost" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='7678fd07-7e94-41fb-b504-826e693933a5'&dunesName='vCAC:VCACHost']]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Process Request]]></display-name>
+    <script encoded="false"><![CDATA[function SendEmail(subject, body)
+{
+
+	//Add the user's email to the list of email IDs to send email to.
+	if (usersEmailId && usersEmailId != "")
+	{
+		smtp_to_address.push(usersEmailId);
+	}
+
+	var commaSeparatedEmails = '';
+	for (var i in smtp_to_address)
+	{
+		commaSeparatedEmails += smtp_to_address[i] + ',';
+	}
+
+	//workflow ID of Library -> Mail -> 'Send notification'
+	var workflowId = '8D80808080808080808080808080808089808080012318760241416446ce5b52f';
+
+	//ready the workflow params
+	var workflowParameters = new Properties();
+	workflowParameters.put("smtpHost", smtp_host);
+	workflowParameters.put("smtpPort", smtp_port);
+	workflowParameters.put("username", smtp_username);
+	workflowParameters.put("password", smtp_password);
+	workflowParameters.put("fromName", smtp_from_name);
+	workflowParameters.put("fromAddress", smtp_from_id);
+	workflowParameters.put("toAddress", commaSeparatedEmails);
+	workflowParameters.put("subject", subject);
+	workflowParameters.put("content", body);
+	workflowParameters.put("useSsl", use_ssl);
+	workflowParameters.put("UseStartTls", use_start_tls);
+
+	//Run this workflow.
+	var workflowToLaunch = Server.getWorkflowWithId(workflowId);
+
+	//Fetch a token.
+	var workflow_token = workflowToLaunch.execute(workflowParameters);
+	while (workflow_token.state === "running")
+	{
+		System.sleep(3000);
+	}
+	System.log("Email sent");
+	//return after workflow finished 'running'
+	return true;
+}
+
+try
+{
+	//Try to fetch catalog request ID
+	catalogRequestId = System.getContext().getParameter("__asd_catalogRequestId");
+}
+catch (e)
+{
+	//If we did not get catalog request ID, we use boolean false
+	catalogRequestId = false;
+}
+
+if (catalogRequestId)
+{
+	//We got catalogRequest ID from the inputs, now we try to get request number from that.
+	System.log("Request Id by vRA:" + catalogRequestId);
+	try
+	{
+		var request = vCACCAFEEntitiesFinder.getCatalogItemRequest(vcacCafeHost, catalogRequestId);
+		requestNumber = request.getRequestNumber();
+	}
+	catch (error)
+	{
+		//If unable to fetch the request number from vcaccafehost
+		var date = new Date();
+		requestNumber = date.getFullYear() + "_" + (date.getMonth() + 1) + "_" + date.getDate() + "_" + date.getHours() + "_" + date.getMinutes();
+	}
+}
+else
+{
+	var date = new Date();
+	requestNumber = date.getFullYear() + "_" + (date.getMonth() + 1) + "_" + date.getDate() + "_" + date.getHours() + "_" + date.getMinutes();
+	System.log("Using request number as current date-time since __asd_catalogRequestId was not found");
+}
+
+System.log("Request Number for this request:  " + requestNumber);
+
+if (!username || !password)
+{
+	var errorMsg = "Credentials not supplied, request can't proceed";
+	var subject = "Load Balancer creation request failed.";
+	var body = "Hello, <br/>The DFW Request with request number: " + requestNumber + " has failed. ";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if (SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+if (!restHost)
+{
+	var errorMsg = "REST Host Invalid, request can't proceed";
+	var subject = "Load Balancer creation request failed.";
+	var body = "Hello, <br/>The DFW Request with request number: " + requestNumber + " has failed. ";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if (SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+System.debug("Operation to be performed on " + restHost.name + ": Using username: " + username + " and password is supplied");
+
+
+// All Validation here.
+
+try{
+	System.log("Network Profile Name: "+networkProfName);
+	var actionResult = System.getModule("com.vmware.indcoe.library.vrautil").GetIPFromNetworkProfile(networkProfName,vCACHost);
+
+	var propResult = actionResult.getIpAndUpdate();
+	var virtualIP = propResult.get("ipAddress");
+	System.log("IP Retrieved: "+virtualIP);
+}
+catch(error)
+{
+	System.log("Error: "+error);
+	throw "Unable to get IP Address";
+}
+throw "Custom error";
+
+
+//var virtualIP = "10.11.12.13";
+var realPort = 80;
+var virtualPort = 80;
+var protocol = "tcp";
+
+var requestCategory = "TnD";
+
+var RealServerIPs = [];
+var RealServerIPIndexes = [];
+RealServerIPs.push("10.10.10.10");
+RealServerIPs.push("10.10.10.11");
+RealServerIPs.push("10.10.10.12");
+RealServerIPs.push("10.10.10.13");
+RealServerIPs.push("10.10.10.14");
+
+// End of validation.
+
+System.log("Requirement is to create a LB");
+
+var radwareObject = System.getModule("com.vmware.indcoe.radware_lbaas").class(username, password, restHost);
+
+if (!radwareObject)
+{
+	var errorMsg = "Error creating Radware Object, please check with admin team";
+	var subject = "New Load Balancer request failed.";
+	var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed. ";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if (SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+System.log("Using Radware Object: " + radwareObject.PrintAuthenticationToken());
+
+try
+{
+	//Encapsulating everything in a giant try catch so that it can revert the configuration in case we face an error.
+
+	for (var i in RealServerIPs)
+	{
+		var IndexOfServer = radwareObject.AddNewRealServer(RealServerIPs[i], requestNumber);
+		System.debug("Output of adding Real Server " + RealServerIPs[i] + " is " + IndexOfServer);
+		if (IndexOfServer == false)
+		{
+			throw "Error adding server " + RealServerIPs[i] + " to the LB";
+		}
+		else
+		{
+			System.log("Server: " + RealServerIPs[i] + " added, Index: " + IndexOfServer);
+			RealServerIPIndexes.push(IndexOfServer);
+		}
+	}
+	
+	System.log("Indexes of added real servers: "+RealServerIPIndexes);
+
+	System.log("Real Servers added, now creating server groups");
+
+	var IndexOfServerGroup = radwareObject.CreateNewServerGroup(RealServerIPIndexes, requestNumber);
+
+	if (IndexOfServerGroup == false)
+	{
+		throw "Error creating server group";
+	}
+	else
+	{
+		System.log("Server group created, ID: " + IndexOfServerGroup);
+	}
+
+	var IndexOfVirtualServer = radwareObject.CreateNewVirtualServer(virtualIP, requestNumber);
+
+	if (IndexOfVirtualServer == false)
+	{
+		throw "Error creating Virtual Server";
+	}
+	else
+	{
+		System.log("Virtual Server created, ID: " + IndexOfVirtualServer);
+	}
+	
+
+	var IndexOfVirtualService  = radwareObject.AddServiceToVirtualServer(1, realPort,virtualPort,protocol);
+
+	if (IndexOfVirtualService == false)
+	{
+		throw "Error creating new virtual service";
+	}
+	else
+	{
+		System.log("Virtual service created successfully");
+	}
+	
+	var statusOfProxyAddition  = radwareObject.AddProxyToVirtualServer(IndexOfVirtualServer, IndexOfVirtualService, requestCategory);
+
+	if (IndexOfVirtualService == false)
+	{
+		throw "Error creating new virtual service";
+	}
+	else
+	{
+		System.log("Virtual service created successfully");
+	}
+
+	//After everything is done, Apply and save.
+	var resultOfApplyConfig = radwareObject.ApplyConfig();
+
+	if (resultOfApplyConfig == false)
+	{
+		throw "Error applying config on radware";
+	}
+	else
+	{
+		System.log("Configuration applied successfully");
+	}
+
+	var resultOfSaveConfig = radwareObject.SaveConfig();
+
+	if (resultOfSaveConfig == false)
+	{
+		throw "Error saving config on radware";
+	}
+	else
+	{
+		System.log("Configuration saved successfully");
+	}
+
+	var subject = "New Load Balancer request completed successfully.";
+	var body = "Hello, <br/>The Request with request number: " + requestNumber + " has completed successfully. ";
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	SendEmail(subject, body);
+}
+catch (error)
+{
+	System.log("Error: "+error);
+	//Some error occurred, reverting configuration
+	radwareObject.RevertConfig();
+
+	var subject = "New Load Balancer request failed.";
+	var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed. ";
+	body += error;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if (SendEmail(subject, body))
+	{
+		throw error;
+	}
+}]]></script>
+    <in-binding>
+      <bind name="username" type="string" export-name="username"/>
+      <bind name="password" type="SecureString" export-name="password"/>
+      <bind name="restHost" type="REST:RESTHost" export-name="restHost"/>
+      <bind name="smtp_host" type="string" export-name="smtp_host"/>
+      <bind name="smtp_port" type="number" export-name="smtp_port"/>
+      <bind name="smtp_username" type="string" export-name="smtp_username"/>
+      <bind name="smtp_password" type="SecureString" export-name="smtp_password"/>
+      <bind name="smtp_from_id" type="string" export-name="smtp_from_id"/>
+      <bind name="smtp_from_name" type="string" export-name="smtp_from_name"/>
+      <bind name="use_ssl" type="boolean" export-name="use_ssl"/>
+      <bind name="use_start_tls" type="boolean" export-name="use_start_tls"/>
+      <bind name="smtp_to_address" type="Array/string" export-name="smtp_to_address"/>
+      <bind name="usersEmailId" type="string" export-name="usersEmailId"/>
+      <bind name="vcacCafeHost" type="vCACCAFE:VCACHost" export-name="vcacCafeHost"/>
+      <bind name="param1" type="string" export-name="usersEmailId"/>
+      <bind name="vsPort" type="string" export-name="vsPort"/>
+      <bind name="vsProtocol" type="string" export-name="vsProtocol"/>
+      <bind name="serverName" type="string" export-name="serverName"/>
+      <bind name="serverIP" type="string" export-name="serverIP"/>
+      <bind name="serverName2" type="string" export-name="serverName2"/>
+      <bind name="serverIP2" type="string" export-name="serverIP2"/>
+      <bind name="serverName3" type="string" export-name="serverName3"/>
+      <bind name="serverIP3" type="string" export-name="serverIP3"/>
+      <bind name="networkProfName" type="string" export-name="networkProfName"/>
+      <bind name="vCACHost" type="vCAC:VCACHost" export-name="vCACHost"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="usersEmailId">
+      <desc><![CDATA[Requester's Email ID]]></desc>
+    </p-param>
+    <p-param name="vsPort">
+      <desc><![CDATA[Virtual Server Port]]></desc>
+    </p-param>
+    <p-param name="vsProtocol">
+      <desc><![CDATA[Virtual Server Protocol]]></desc>
+    </p-param>
+    <p-param name="serverName">
+      <desc><![CDATA[serverName]]></desc>
+    </p-param>
+    <p-param name="serverIP">
+      <desc><![CDATA[serverIP]]></desc>
+    </p-param>
+    <p-param name="serverName2">
+      <desc><![CDATA[serverName2]]></desc>
+    </p-param>
+    <p-param name="serverIP2">
+      <desc><![CDATA[serverIP2]]></desc>
+    </p-param>
+    <p-param name="serverName3">
+      <desc><![CDATA[serverName3]]></desc>
+    </p-param>
+    <p-param name="serverIP3">
+      <desc><![CDATA[serverIP3]]></desc>
+    </p-param>
+    <p-param name="networkProfName">
+      <desc><![CDATA[networkProfName]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

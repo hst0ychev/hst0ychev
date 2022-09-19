@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item3" object-name="workflow:name=generic" id="1aeb333f-674c-401b-a4b7-3ae1718d2c63" version="0.0.3" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Power On VMs]]></display-name>
+  <position y="45.90909090909091" x="225.0"/>
+  <input>
+    <param name="vm" type="VC:VirtualMachine"/>
+  </input>
+  <attrib name="powerFlag" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+  </attrib>
+  <attrib name="host" type="VC:HostSystem" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[[Optional] The host where the virtual machine is to be powered on. If no host is specified, the current associated host is used. This field must specify a host that is part of the same compute resource that the virtual machine is currently associated with. If this host is not compatible, the current host association is used. ]]></description>
+  </attrib>
+  <attrib name="taskResult" type="VC:Task" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <workflow-item name="item3" out-name="item1" type="custom-condition" alt-out-name="item4">
+    <display-name><![CDATA[Power state]]></display-name>
+    <script encoded="false"><![CDATA[var status = vm.runtime.powerState.value;
+if(status == "poweredOff") return true			
+else return false]]></script>
+    <in-binding>
+      <bind name="powerFlag" type="boolean" export-name="powerFlag"/>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vm"/>
+    </in-binding>
+    <position y="45.40909090909091" x="344.5"/>
+  </workflow-item>
+  <workflow-item name="item4" type="end" end-mode="0">
+    <position y="109.04545454545453" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item4" type="task" script-module="com.vmware.library.vc.vm.power/startVM">
+    <display-name><![CDATA[startVM]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.vc.vm.power").startVM(vm,host) ;]]></script>
+    <in-binding>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vm">
+        <description><![CDATA[VM to start or resume]]></description>
+      </bind>
+      <bind name="host" type="VC:HostSystem" export-name="host">
+        <description><![CDATA[[Optional] The host where the virtual machine is to be powered on. If no host is specified, the current associated host is used. This field must specify a host that is part of the same compute resource that the virtual machine is currently associated with. If this host is not compatible, the current host association is used. ]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="VC:Task" export-name="taskResult"/>
+    </out-binding>
+    <description><![CDATA[Start / Resume a VM. Return the start task]]></description>
+    <position y="55.40909090909091" x="484.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="vm">
+      <desc><![CDATA[vm]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

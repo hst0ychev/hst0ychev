@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="createWorkflowSubscription" result-type="vCACCAFE:WorkflowSubscription" api-version="6.0.0" id="c8f4b552-99a6-4523-9364-919985b57654" version="1.0.0" allowed-operations="vf" category-name="com.vmware.library.vcaccafe.workflow.subscription">
+  <description><![CDATA[Registers system workflow subscription.]]></description>
+  <param n="name" t="string"><![CDATA[Name]]></param>
+  <param n="description" t="string"><![CDATA[Description]]></param>
+  <param n="eventTopicId" t="string"><![CDATA[Event topic ID]]></param>
+  <param n="workflowId" t="string"><![CDATA[Workflow ID]]></param>
+  <param n="status" t="string"><![CDATA[Status]]></param>
+  <param n="blocking" t="boolean"><![CDATA[Blocking]]></param>
+  <param n="reply" t="boolean"><![CDATA[Reply]]></param>
+  <param n="priority" t="number"><![CDATA[Priority]]></param>
+  <param n="timeout" t="number"><![CDATA[Timeout in minutes]]></param>
+  <param n="criteria" t="string"><![CDATA[Criteria as json string]]></param>
+  <param n="version" t="string"><![CDATA[Version as string]]></param>
+  <param n="stopProcessingOnError" t="boolean"><![CDATA[Stop processing on error]]></param>
+  <script encoded="false"><![CDATA[var workflowSubscription = new vCACCAFEWorkflowSubscription();
+workflowSubscription.setName(name);
+workflowSubscription.setDescription(description);
+workflowSubscription.setEventTopicId(eventTopicId);
+workflowSubscription.setWorkflowId(workflowId);
+workflowSubscription.setStatus(vCACCAFEDesignerPublishStatus.fromValue(status));
+workflowSubscription.setBlocking(blocking);
+workflowSubscription.setReply(reply);
+workflowSubscription.setPriority(priority);
+workflowSubscription.setTimeout(timeout);
+workflowSubscription.setFailOnError(stopProcessingOnError);
+var cafeVersion = new vCACCAFEVersion();
+cafeVersion.setVersion(version);
+workflowSubscription.setVersion(cafeVersion);
+if(criteria){
+   vCACCAFEEBSHelper.setCriteriaToWorkflowSubscription(workflowSubscription, criteria);
+}
+return workflowSubscription;]]></script>
+</dunes-script-module>

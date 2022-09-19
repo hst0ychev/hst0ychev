@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="createResourceMapping" result-type="vCACCAFE:CustomResource" api-version="6.0.0" id="3bca3337-b956-4563-8744-3ee5122d57a3" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.asd.resourcemapping">
+  <param n="host" t="vCACCAFE:VCACHost"><![CDATA[vRA CAFE host]]></param>
+  <param n="name" t="string"><![CDATA[Resource mapping name]]></param>
+  <param n="description" t="string"><![CDATA[Resource mapping description]]></param>
+  <param n="catalogResourceType" t="string"><![CDATA[Catalog resource type]]></param>
+  <param n="orchestratorType" t="string"><![CDATA[Orchestrator type]]></param>
+  <param n="mappingWorkflowId" t="string"><![CDATA[Mapping workflow id]]></param>
+  <param n="mappingScriptAction" t="string"><![CDATA[Mapping script action]]></param>
+  <script encoded="false"><![CDATA[var catalogResourceTypes = System.getModule("com.vmware.library.vcaccafe.asd.resourcemapping").getCatalogResourceTypes(host);
+var catalogResourceTypeId;
+for(var i = 0 ; i < catalogResourceTypes.length ; i++ ) {
+	if(catalogResourceType == catalogResourceTypes[i].getName()) {
+		catalogResourceTypeId = catalogResourceTypes[i].getId();
+	}
+}
+
+var client = host.createAdvancedDesignerClient().getAdvancedDesignerCsResourceTypeService();
+
+var resourceMapping = new vCACCAFECsResourceType();
+resourceMapping.setName(name);
+resourceMapping.setDescription(description);
+resourceMapping.setVcoType(orchestratorType);
+resourceMapping.setExternalTypeId(catalogResourceTypeId);
+if(mappingWorkflowId){
+	resourceMapping.setMappingWorkflowId(mappingWorkflowId);
+}
+if(mappingScriptAction){
+	resourceMapping.setMappingScriptActionFqn(mappingScriptAction);
+}
+System.log("Creating resource mapping...");
+var uri = client.createResourceType(host.tenant, resourceMapping);
+var uriString = uri.toString();
+System.log("Resource mapping created: " + uriString);
+
+var uriParts = uriString.split("/");
+var resourceId = uriParts[uriParts.length - 1];
+return vCACCAFEEntitiesFinder.getResourceMapping(host, resourceId);]]></script>
+</dunes-script-module>

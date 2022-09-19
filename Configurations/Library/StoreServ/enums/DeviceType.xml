@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="7c87a9d1-935b-47e6-8744-c87a060f743f" version="1.0.0">
+  <display-name><![CDATA[DeviceType]]></display-name>
+  <atts>
+    <att name="None" type="string" read-only="false">
+      <value encoded="n"><![CDATA[NONE]]></value>
+    </att>
+    <att name="FC" type="string" read-only="false">
+      <value encoded="n"><![CDATA[FC]]></value>
+    </att>
+    <att name="NL" type="string" read-only="false">
+      <value encoded="n"><![CDATA[NL]]></value>
+    </att>
+    <att name="SSD" type="string" read-only="false">
+      <value encoded="n"><![CDATA[SSD]]></value>
+    </att>
+  </atts>
+</config-element>

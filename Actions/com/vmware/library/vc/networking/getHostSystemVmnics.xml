@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getHostSystemVmnics" result-type="Array/string" api-version="6.0.0" id="c43e642d-b31d-441e-8f44-2ceb00372280" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.networking">
+  <param n="hostSystem" t="VC:HostSystem"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var vmnicNames = new Array();
+if (hostSystem != null) {
+	var pnics = hostSystem.configManager.networkSystem.networkConfig.pnic;
+	//System.log("Checking pnics from networkConfig: ");
+	for each (pnic in pnics){
+		System.log("Device: "+pnic.device);
+		vmnicNames.push(pnic.device);
+	}
+}
+return vmnicNames;]]></script>
+</dunes-script-module>

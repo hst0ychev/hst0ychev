@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getDvSwitchPvlanIds" result-type="Array/number" api-version="6.0.0" id="63253de5-ecf2-4461-82cb-68ca3739f7bf" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.networking">
+  <param n="dvSwitch" t="VC:VmwareDistributedVirtualSwitch"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var pvlanInfos = new Array();
+var uniqs = {};
+if ( dvSwitch != null ) {
+	var pvlanConfigs = dvSwitch.config.pvlanConfig;
+	// Create array of strings to return for use in workflow presentation:
+	if(pvlanConfigs != null){
+		for each (pvlanConfig in pvlanConfigs){
+			uniqs[pvlanConfig.primaryVlanId] = pvlanConfig.primaryVlanId;
+		}
+		for each (cfg in pvlanConfigs){
+			var y = uniqs[cfg.primaryVlanId];
+		    if (y != null) {
+				pvlanInfos.push(y);	
+			}
+			uniqs[y] = null;
+		}
+	}else{
+		System.log("pVLAN Config is null");
+	}
+}
+
+return pvlanInfos;]]></script>
+</dunes-script-module>

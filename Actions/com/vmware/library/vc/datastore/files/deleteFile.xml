@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="deleteFile" result-type="void" api-version="6.0.0" id="16b887db-6870-49fb-b5b8-595cb788512c" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.datastore.files">
+  <param n="datastore" t="VC:Datastore"><![CDATA[]]></param>
+  <param n="filePath" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[try {
+	if (datastore == null) {
+		throw "datastore parameter cannot be null";
+	}
+	if (filePath[0] != "[") {
+		filePath = "[" + datastore.name + "] " + filePath;
+	}
+	datastore.browser.deleteFile(filePath);
+}
+catch (e) {
+	System.error("Error when deleting file " + filePath + ": " + e);
+	Server.error("Error when deleting file " + filePath, e);
+	throw e;
+}]]></script>
+</dunes-script-module>

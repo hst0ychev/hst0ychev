@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="92fb9fd6-b304-45f7-874c-3ea462e831dd" version="1.1.0" api-version="6.0.0" allowed-operations="vf" restartMode="0" resumeFromFailedMode="0">
+  <display-name><![CDATA[Remove a vCenter Server instance]]></display-name>
+  <description><![CDATA[Removes a vCenter Server instance from the Orchestrator inventory. You will no longer be able to orchestrate this vCenter Server instance.]]></description>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="host" type="string">
+      <description><![CDATA[vCenter Server instance to remove]]></description>
+    </param>
+  </input>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Unregister vCenter Server instance]]></display-name>
+    <script encoded="false"><![CDATA[VcPlugin.unregisterVCenterServerInstance(host);]]></script>
+    <in-binding>
+      <bind name="host" type="string" export-name="host"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Select a vCenter Server instance]]></title>
+      <p-param name="host">
+        <desc><![CDATA[vCenter Server instance to remove]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        <p-qual kind="ognl" name="linkedEnumeration" type="Array/string"><![CDATA[GetAction("com.vmware.library.vc.configuration","getAllRegisteredInstances").call()]]></p-qual>
+      </p-param>
+    </p-step>
+  </presentation>
+</workflow>

@@ -1,0 +1,140 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="subclientBrowse" result-type="void" api-version="6.0.0" id="b5586420-736a-4cae-a3b3-19bce497195e" version="0.0.0" allowed-operations="evf" category-name="com.commvault.utils">
+  <description><![CDATA[Action to perform subclient browse and return the backup info ]]></description>
+  <param n="token" t="string"><![CDATA[rest api auth token]]></param>
+  <param n="subclientID" t="string"><![CDATA[subclient id]]></param>
+  <param n="jobToTime" t="string"><![CDATA[timeRange for browse]]></param>
+  <script encoded="false"><![CDATA[/*
+	Inputs-
+	
+	token - CV token for REST API
+	subclientID - subclient id to browse
+	
+	
+	API used-
+	/DoBrowse POST API
+	
+	Output-
+	
+	Destination info List contianing details of the subclient backup
+	[destDatastore ,destESXServer,destresourcePoolPath,inventoryPath]
+
+*/
+//var subclientBrowseUrl = "/Subclient/" + subclientId + "/Browse?";
+var subclientBrowseUrl = "/DoBrowse";
+var restHost = System.getModule("com.commvault.utils").getHost();
+
+var browseXML = new XML('<databrowse_BrowseRequest/>');
+browseXML.@opType="0";
+var entity = new XML('<entity/>');
+entity.@subclientId=subclientID;
+entity.@applicationId="106";
+browseXML.appendChild(entity);
+var paths = new XML('<paths/>');
+paths.@path="\\";
+browseXML.appendChild(paths);
+var timeRange = new XML('<timeRange/>');
+timeRange.toRime=jobToTime;
+browseXML.appendChild(timeRange);
+var options = new XML('<options/>');
+options.@showDeletedFiles="0";
+options.@restoreIndex="1";
+options.@vsDiskBrowse="1";
+options.@skipIndexRestore="0";
+browseXML.appendChild(options);
+var mode = new XML('<mode/>');
+mode.@mode="4";
+browseXML.appendChild(mode);
+var advOptions = new XML('<advOptions/>');
+browseXML.appendChild(advOptions);
+var queries = new XML('<queries/>');
+queries.@type="0";
+queries.@queryId="0";
+var dataParam = new XML('<dataParam/>');
+var paging = new XML('<paging/>');
+paging.@firstNode="0";
+paging.@skipNode="0";
+paging.@pageSize="100000";
+dataParam.appendChild(paging);
+var sortParam = new XML('<sortParam/>');
+sortParam.@ascending="1";
+var sortBy1 = new XML('<sortBy/>');
+sortBy1.@val="38";
+var sortBy2 = new XML('<sortBy/>');
+sortBy2.@val="0";
+sortParam.appendChild(sortBy1);
+sortParam.appendChild(sortBy2);
+dataParam.appendChild(sortParam);
+queries.appendChild(dataParam);
+browseXML.appendChild(queries);
+var queries1 = new XML('<queries/>');
+queries1.@type="1";
+queries1.@queryId="1";
+var aggrParam = new XML('<aggrParam/>');
+aggrParam.@aggrType="4";
+aggrParam.@field="0";
+browseXML.appendChild(queries1);
+
+System.log("browseXML : ");
+System.log(browseXML);
+if(restHost == null)
+{	
+	throw("Error: Coudln't find appropriate RESTHOST in VCO, cannot continue");
+	return -1;
+}	
+else{
+
+	System.log("Exceuting subclient browse with url " + subclientBrowseUrl);
+	var response = System.getModule("com.commvault.utils").processRESTRequest(subclientBrowseUrl,"POST", browseXML, token, null, restHost);
+	//Process the response
+	if(response.statusCode != 200)
+	{
+		throw("Error: Failed to execute REST request to get backupset id");
+	}
+	var document = XMLManager.fromString(response.contentAsString);
+	var list = document.getElementsByTagName("dataResultSet");
+	var total = list.length;
+	var destinationInfo = "";
+	for(var i = 0; i < total ; i++)
+	{
+	var tempVM = list.item(i).getAttribute("displayName");
+	if (tempVM == vmName)
+	{
+		vmUUID =  list.item(i).getAttribute("name");
+		var advancedData = list.item(i).getChildNodes();
+		for(var j = 0; j < advancedData.length; j++)
+		{
+			if (advancedData.item(j).nodeName == "advancedData")
+			{
+				var browseMetadata = advancedData.item(j).getChildNodes();
+				for(var k = 0 ; k < browseMetadata.length; k++)
+				{
+					if(browseMetadata.item(k).nodeName == "browseMetaData")
+					{
+						var vsMetadata = browseMetadata.item(k).getChildNodes();
+						for(var l =0; l < vsMetadata.length; l++)
+						{
+								if(vsMetadata.item(l).nodeName == "virtualServerMetaData")
+								{
+									destDatastore = vsMetadata.item(l).getAttribute("datastore");
+									destESXServer = vsMetadata.item(l).getAttribute("esxHost");
+									destresourcePoolPath = vsMetadata.item(l).getAttribute("resourcePoolPath");
+									inventoryPath = vsMetadata.item(l).getAttribute("inventoryPath");
+									destinationInfo = destDatastore + "," + destESXServer + "," + destresourcePoolPath + "," + inventoryPath;
+								}
+	
+						}
+					}
+					
+				}
+			}
+		}
+		
+	} 
+
+	}
+	System.log("Returning destination datastore "  + destDatastore + "destination ESX Server  " + destESXServer + " destination resource pool " + destresourcePoolPath );
+	return destinationInfo;
+
+}]]></script>
+</dunes-script-module>

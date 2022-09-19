@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item4" object-name="workflow:name=generic" id="3c5cec3b-f66c-4063-9135-c2b641a14327" version="0.0.3" api-version="6.0.0" allowed-operations="vf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Create Multi-Machine]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="EndpointIn" type="Any"/>
+    <param name="MachineIn" type="Any"/>
+  </input>
+  <output>
+    <param name="MachineOut" type="Any"/>
+  </output>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="344.5"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item0" type="task">
+    <display-name><![CDATA[Create Response]]></display-name>
+    <script encoded="false"><![CDATA[MachineOut = GEFMachine.build(MachineIn.machineName + "_container");
+MachineOut.machineName = MachineIn.machineName + "_container";
+MachineOut.state = "OFF";
+MachineOut.guestOperatingSystemFamily = null;
+MachineOut.isTemplate = false;
+MachineOut.isComponent = false;
+MachineOut.blueprintType = 3;
+
+
+System.debug("Created a Group - " + MachineOut.machineName + " (" + MachineOut.uniqueId + ")");]]></script>
+    <in-binding>
+      <bind name="EndpointIn" type="Any" export-name="EndpointIn"/>
+      <bind name="MachineIn" type="Any" export-name="MachineIn"/>
+    </in-binding>
+    <out-binding>
+      <bind name="MachineOut" type="Any" export-name="MachineOut"/>
+    </out-binding>
+    <position y="55.40909090909091" x="184.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="EndpointIn">
+      <desc><![CDATA[EndpointIn]]></desc>
+    </p-param>
+    <p-param name="MachineIn">
+      <desc><![CDATA[MachineIn]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

@@ -1,0 +1,75 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item2" object-name="Workflow:name=generic" id="7E8180808080808080808080808080808180808001220976564066218f32d8ddf" version="1.1.0" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Display all datastores and disks]]></display-name>
+  <description><![CDATA[Displays the existing datastores and available disks on a specified host.]]></description>
+  <position y="20.0" x="180.0"/>
+  <input>
+    <param name="host" type="VC:HostSystem">
+      <description><![CDATA[Host]]></description>
+    </param>
+  </input>
+  <workflow-item name="item0" out-name="item1" type="task">
+    <display-name><![CDATA[Get/Dispay info]]></display-name>
+    <script encoded="false"><![CDATA[var hostDatastoreSystem = VcPlugin.convertToVimManagedObject( host, host.configManager.datastoreSystem );
+
+// Display existing datastores
+var datastores = host.datastore;
+if ( datastores != null  &&  datastores.length > 0 )  {
+	System.log( "Found " + datastores.length + " datastores:" );
+	for each ( var datastore in datastores )  {
+		System.log( "\tDatastore : '" + datastore.name + "'" );
+	}
+}
+else  {
+	System.log( "No datastore found" );
+}
+
+// Display available disks
+var freeDisks = hostDatastoreSystem.queryAvailableDisksForVmfs();
+if ( freeDisks != null  &&  freeDisks.length > 0 )  {
+	System.log( "Found " + freeDisks.length + " available disks for VMFS creation:" );
+	for each ( var disk in freeDisks )  {
+		// Compute the size of the disk in GB
+		var size = (disk.capacity.block * disk.capacity.blockSize) / 1024 / 1024 / 1024;
+		System.log( "\tDisk.devicePath : '" + disk.devicePath + "' - Capacity : " + size + " GB" );
+	}
+}
+else  {
+	System.log( "No available disk found" );
+}
+]]></script>
+    <in-binding>
+      <bind name="host" type="VC:HostSystem" export-name="host"/>
+    </in-binding>
+    <out-binding/>
+    <position y="120.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item1" type="end" end-mode="0">
+    <position y="150.0" x="180.0"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item0" type="task" script-module="com.vmware.library.vc.storage/rescanAll">
+    <display-name><![CDATA[rescanAll]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+System.getModule("com.vmware.library.vc.storage").rescanAll(host) ;]]></script>
+    <in-binding>
+      <bind name="host" type="VC:HostSystem" export-name="host"/>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Rescans all HBA, VMFS and StorageSystem of a HostSystem.]]></description>
+    <position y="80.0" x="140.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Display all datastores and disks]]></title>
+      <p-group>
+        <title><![CDATA[Select a Host]]></title>
+        <desc><![CDATA[Select a vCenter Server host.]]></desc>
+        <p-param name="host">
+          <desc><![CDATA[Host]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual kind="static" name="show-select-as" type="string"><![CDATA[list]]></p-qual>
+        </p-param>
+      </p-group>
+    </p-step>
+  </presentation>
+</workflow>

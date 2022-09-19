@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getAvailableWorkItemActions" result-type="Array/vCACCAFE:WorkItemAction" api-version="6.0.0" id="d4277bfb-743c-4d3a-9b76-4926525552f5" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.request">
+  <param n="item" t="vCACCAFE:WorkItem"><![CDATA[Work item]]></param>
+  <script encoded="false"><![CDATA[if (item == null) {
+	return null;
+}
+return vCACCAFEEntitiesFinder.getWorkItemActions(item);]]></script>
+</dunes-script-module>

@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="deleteIdentityStoreFromHost" result-type="void" api-version="6.0.0" id="beb8eb90-4ff7-4cb5-ba8f-665c82b6988e" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.tenant">
+  <param n="host" t="vCACCAFE:VCACHost"><![CDATA[Host]]></param>
+  <param n="store" t="vCACCAFE:IdentityStore"><![CDATA[Identity store]]></param>
+  <script encoded="false"><![CDATA[System.getModule("com.vmware.library.vcaccafe.util").validateObject(store, "Identity store");
+var hostStore = vCACCAFEEntitiesFinder.getHostForEntity(store);
+if (hostStore == null) {
+	throw "Identity store does not exist!";
+}
+if (host.id != hostStore.id) {
+	throw "The identity store belongs to a different vCAC host!";
+}
+
+System.log("Deleting identity store '" + store.getName() + "'...");
+var service = host.createAuthenticationClient().getAuthenticationIdentityStoreClientService();
+service.deleteIdentityStore(host.tenant, store.getDomain());
+System.log("Identity store '" + store.getName() + "' deleted.");]]></script>
+</dunes-script-module>

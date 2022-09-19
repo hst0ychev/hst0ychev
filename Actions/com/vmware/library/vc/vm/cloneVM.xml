@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="cloneVM" result-type="VC:Task" api-version="6.0.0" id="26e6d44a-356e-46aa-b1a9-40c78632935a" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.vm">
+  <param n="vm" t="VC:VirtualMachine"><![CDATA[VM to clone]]></param>
+  <param n="folder" t="VC:VmFolder"><![CDATA[The location of the new virtual machine.]]></param>
+  <param n="name" t="string"><![CDATA[The name of the new virtual machine.]]></param>
+  <param n="spec" t="Any"><![CDATA[VimVirtualMachineCloneSpec: Specifies how to clone the virtual machine.]]></param>
+  <script encoded="false"><![CDATA[try {
+	checkParams();
+	return vm.cloneVM_Task(folder, name, spec);
+}
+catch (ex) {
+	throw "Unable to start clone operation: " + ex;
+}
+
+function checkParams() {
+	if (vm == null) throw "vm cannot be null";
+	if (folder == null) throw "folder cannot be null";
+	if (name == null || name == "") throw "name cannot be null";
+	if (spec == null) throw "spec cannot be null";
+	if ((spec instanceof VcVirtualMachineCloneSpec) == false) throw "spec must be of type VcVirtualMachineCloneSpec";
+}]]></script>
+</dunes-script-module>

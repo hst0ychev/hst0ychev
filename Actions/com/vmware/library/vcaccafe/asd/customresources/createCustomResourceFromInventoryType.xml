@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="createCustomResourceFromInventoryType" result-type="vCACCAFE:CustomResource" api-version="6.0.0" id="38f3667b-395f-4065-95d8-a737438db57a" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.asd.customresources">
+  <param n="host" t="vCACCAFE:VCACHost"><![CDATA[vRA CAFE host]]></param>
+  <param n="type" t="string"><![CDATA[Inventory type of the custom resource]]></param>
+  <param n="name" t="string"><![CDATA[Name of the custom resource]]></param>
+  <param n="description" t="string"><![CDATA[Description of the custom resource]]></param>
+  <script encoded="false"><![CDATA[var client = host.createAdvancedDesignerClient().getAdvancedDesignerCsResourceTypeService();
+var inventoryTypes = System.getModule("com.vmware.library.vcaccafe.asd.customresources").getAvailableInventoryTypes(host);
+var inventoryType;
+//getting resource type default form
+for(var i = 0 ; i < inventoryTypes.length ; i++ ) {
+   if(type == inventoryTypes[i].getName()) {
+      inventoryType = inventoryTypes[i];
+   }
+}
+var form = client.generateCsResourceTypeDetailsForm(host.tenant , inventoryType);
+
+var csResourceType = new vCACCAFECsResourceType();
+csResourceType.setName(name);
+csResourceType.setDescription(description);
+csResourceType.setVcoType(type);
+csResourceType.setTenantId(host.tenant);
+csResourceType.setDetailsForm(form);
+
+System.log("Creating custom resource...");
+var uri = client.createResourceType(host.tenant, csResourceType);
+var uriString = uri.toString();
+System.log("Custom resource created " + uriString);
+
+var uriParts = uriString.split("/");
+var resourceId = uriParts[uriParts.length - 1];
+return vCACCAFEEntitiesFinder.getCustomResource(host, resourceId);]]></script>
+</dunes-script-module>

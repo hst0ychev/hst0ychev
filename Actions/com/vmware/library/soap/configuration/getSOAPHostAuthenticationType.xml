@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getSOAPHostAuthenticationType" result-type="string" api-version="6.0.0" id="9180808080808080808080808080808095808080013220404425363c0250095dc" version="1.0.0" allowed-operations="vf" category-name="com.vmware.library.soap.configuration">
+  <description><![CDATA[Gets the authentication type for a SOAP host.]]></description>
+  <param n="host" t="SOAP:Host"><![CDATA[SOAP host which authentication type to return]]></param>
+  <script encoded="false"><![CDATA[return (host == null) ? "" : host.authentication.type;]]></script>
+</dunes-script-module>

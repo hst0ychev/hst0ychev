@@ -1,0 +1,4 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getSupportedDatabaseTypes" result-type="Array/string" api-version="6.0.0" id="c1394633-3a20-4580-adbf-8f1994cce95c" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.sql.configuration">
+  <script encoded="false"><![CDATA[return SQLDatabaseManager.getSupportedDatabaseTypes();]]></script>
+</dunes-script-module>

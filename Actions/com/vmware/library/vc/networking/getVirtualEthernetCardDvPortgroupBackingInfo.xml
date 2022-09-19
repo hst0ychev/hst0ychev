@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getVirtualEthernetCardDvPortgroupBackingInfo" result-type="Any" api-version="6.0.0" id="ab0b467b-0c03-4341-b61b-5f617d6c55f1" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.networking">
+  <param n="deviceName" t="string"><![CDATA[The name of the device on the host system.]]></param>
+  <param n="network" t="VC:DistributedVirtualPortgroup"><![CDATA[Reference to the network managed object to which this backing applies. This is not used during configuration.]]></param>
+  <script encoded="false"><![CDATA[if (deviceName == null) {
+	deviceName = network.name;
+}
+var connection = new VcDistributedVirtualSwitchPortConnection();
+connection.PortgroupKey = network.key;
+connection.SwitchUuid = network.config.distributedVirtualSwitch.uuid;
+backing = new VcVirtualEthernetCardDistributedVirtualPortBackingInfo();
+backing.Port = connection;
+
+return backing;]]></script>
+</dunes-script-module>

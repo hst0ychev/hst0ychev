@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="Workflow:name=generic" id="19053bce-e637-45f2-9ac8-4baa954fa144" version="1.0.0" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Delete an Orchestrator server]]></display-name>
+  <description><![CDATA[Removes an Orchestrator server from the plug-in's inventory.]]></description>
+  <ref-types><![CDATA[(VCO:RemoteServer)]]></ref-types>
+  <position y="109.04545454545453" x="85.0"/>
+  <input>
+    <param name="server" type="VCO:RemoteServer">
+      <description><![CDATA[The Orchestrator server to delete]]></description>
+    </param>
+  </input>
+  <workflow-item name="item0" out-name="item1" type="task">
+    <display-name><![CDATA[Delete Orchestrator]]></display-name>
+    <script encoded="false"><![CDATA[VCOServerManager.deleteOrchestrator(server);]]></script>
+    <in-binding>
+      <bind name="server" type="VCO:RemoteServer" export-name="server"/>
+    </in-binding>
+    <out-binding/>
+    <position y="119.54545454545453" x="185.0"/>
+  </workflow-item>
+  <workflow-item name="item1" type="end" end-mode="0">
+    <position y="109.54545454545453" x="365.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Delete an Orchestrator server]]></title>
+      <p-group>
+        <title><![CDATA[Server]]></title>
+        <desc><![CDATA[Select a remote Orchestrator server to remove.]]></desc>
+        <p-param name="server">
+          <desc><![CDATA[Orchestrator server ]]></desc>
+          <p-qual kind="static" name="contextualParameter" type="void"><![CDATA[__NULL__]]></p-qual>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+      </p-group>
+    </p-step>
+  </presentation>
+</workflow>

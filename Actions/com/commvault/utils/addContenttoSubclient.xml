@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="addContenttoSubclient" result-type="void" api-version="6.0.0" id="acfdef48-2278-4721-9f84-b14eda052bb3" version="0.0.0" allowed-operations="evf" category-name="com.commvault.utils">
+  <description><![CDATA[Add content to the subclient]]></description>
+  <param n="token" t="string"><![CDATA[CV token for REST API authentication]]></param>
+  <param n="clientName" t="string"><![CDATA[Name of the virtualization client]]></param>
+  <param n="backupSetName" t="string"><![CDATA[Name of backupset]]></param>
+  <param n="subClientName" t="string"><![CDATA[Name of subclient]]></param>
+  <param n="vmName" t="string"><![CDATA[Virtual Machine name]]></param>
+  <param n="bnewSubclient" t="boolean"><![CDATA[flag to indicate new or old subclient]]></param>
+  <param n="subClientId" t="string"><![CDATA[subclient Id]]></param>
+  <script encoded="false"><![CDATA[//Add content to the subclient
+
+/*
+	Inputs
+	token		  string   
+	clientName 	  string 
+	backupSetName string
+	subClientName string
+	vmName		  string
+	bnewSubclient string
+	subClientId   string
+
+	API used
+	Subclient/subClientId
+	
+	Output
+	Adds the given vm to the subclient content
+*/
+System.log("executing addContenttoSubclient module");
+var requestType = "POST";
+var requestContent = "";
+
+	if(bnewSubclient == false)
+	{
+		requestContent = "<App_UpdateSubClientPropertiesRequest><association><entity><appName>Virtual Server</appName><instanceName>VMware</instanceName><backupsetName>"+backupSetName+"</backupsetName><clientName>"+clientName+"</clientName><subclientName>"+subClientName+"</subclientName></entity></association><subClientProperties><vmContentOperationType>ADD</vmContentOperationType><vmDiskFilterOperationType>1</vmDiskFilterOperationType><vmFilterOperationType>1</vmFilterOperationType><vmContent><children equalsOrNotEquals=\"1\" name=\"\" displayName="+"\""+vmName+"\""+" type=\"9\"/></vmContent></subClientProperties></App_UpdateSubClientPropertiesRequest>";
+		System.log("Adding VM to the subclient "+ requestContent);
+	}
+	else
+	{
+		requestContent = "<App_UpdateSubClientPropertiesRequest><association><entity><appName>Virtual Server</appName><instanceName>VMware</instanceName><backupsetName>"+backupSetName+"</backupsetName><clientName>"+clientName+"</clientName><subclientName>"+subClientName+"</subclientName></entity></association><subClientProperties><vmContentOperationType>OVERWRITE</vmContentOperationType><vmContent><children equalsOrNotEquals=\"1\" name=\"\" displayName="+"\""+vmName+"\""+" type=\"9\"/></vmContent></subClientProperties></App_UpdateSubClientPropertiesRequest>";
+		System.log("Updating the subclientContent "+ requestContent);
+	}
+	
+	
+
+//post subclient content
+var postContent = "Subclient/"+subClientId;
+var response = System.getModule("com.commvault.utils").processRESTRequest(postContent,requestType, requestContent, token,null,null);
+]]></script>
+</dunes-script-module>

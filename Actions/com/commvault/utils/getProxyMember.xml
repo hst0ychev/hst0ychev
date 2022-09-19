@@ -1,0 +1,85 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getProxyMember" result-type="void" api-version="6.0.0" id="a4ff0b3d-d1ac-4c1b-9d31-95794ebd510c" version="0.0.0" allowed-operations="evf" category-name="com.commvault.utils">
+  <param n="instanceId" t="string"><![CDATA[Instance id for getting the proxy member]]></param>
+  <param n="token" t="string"><![CDATA[token for rest api authentication]]></param>
+  <param n="host" t="REST:RESTHost"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[/*
+	Inputs:
+	instanceId - instance of the client
+	token - CV token for REST Api 
+	
+	API used:
+	Instance/{instanceId}
+	
+	Output:
+	proxy name and id string
+	eg,
+	proxyIdName = vsaProxyId + "," + vsaProxyName;
+
+*/
+
+
+System.log("executing getProxyMember module");
+var getProxyListUrl = "Instance" + "/";
+var restHost = System.getModule("com.commvault.utils").getHost();
+var vsaProxyId = "";
+var vsaProxyName = "";
+if(restHost == null)
+{	
+	throw("Error: Coudln't find appropriate RESTHOST in VCO, cannot continue");
+	return -1;
+}
+else{
+	var getProxyUrl = getProxyListUrl + instanceId;
+	System.log("Using the rest api " + getProxyUrl);
+	var response = System.getModule("com.commvault.utils").processRESTRequest(getProxyUrl,"GET", null, token, null, host);
+	if(response.statusCode != 200)
+	{
+		throw("Error: Failed to execute REST request to get backupset id");
+	}
+	var document = XMLManager.fromString(response.contentAsString);
+	var list = document.getElementsByTagName("instanceProperties");
+    var total = list.length;
+    var proxyIdName = "";
+	for(var i = 0; i < total ; i++)
+	{
+		var virtualServerInstance = list.item(i).getChildNodes();
+		for(var j = 0 ; j < virtualServerInstance.length; j++)
+		{
+			if(virtualServerInstance.item(j).nodeName == "virtualServerInstance")
+			{
+				var associatedClients = virtualServerInstance.item(j).getChildNodes();
+				for(var k = 0; k < associatedClients.length; k++)
+				{
+					if (associatedClients.item(k).nodeName == "associatedClients")
+					{
+						var memberServers = associatedClients.item(k).getChildNodes();
+						for(var l = 0; l < memberServers.length; l++)
+						{
+							if(memberServers.item(l).nodeName == "memberServers")
+							{
+								var clients = memberServers.item(l).getChildNodes();
+								for(var m = 0; m < clients.length; m++)
+								{
+									if(clients.item(m).nodeName == "client")
+									{
+										vsaProxyId = clients.item(m).getAttribute("clientId");
+										vsaProxyName = clients.item(m).getAttribute("clientName");
+										proxyIdName = vsaProxyId + "," + vsaProxyName;
+										break;
+									}
+								}
+							}
+						}
+					}
+				}
+				
+			}
+		}
+	}
+	
+	return proxyIdName;
+
+}
+]]></script>
+</dunes-script-module>

@@ -1,0 +1,69 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="findVMAttachtoRDM" result-type="Any" api-version="6.0.0" id="e399d3a6-f891-4108-bcd0-d5bd1bbf124f" version="0.0.1" allowed-operations="evf" category-name="com.vmware.indcoe.vcenter">
+  <script encoded="false"><![CDATA[var findObj = {
+	findRDM : function(vmName, vmdkPath){
+		vmName = vmName.replace(" ","")
+		var vCACVms = Server.findAllForType("vCAC:VirtualMachine", "VirtualMachineName eq '"+vmName+"'");
+		var sdkConnections = VcPlugin.allSdkConnections;  
+		var vcenterName;        
+		var psHost;   
+		//var vmdkPath = "vml.020008000060002ac0000000000000002f00027562565620202020"  
+		for(var j in sdkConnections){
+					System.debug("VM id "+vCACVms[0].vmUniqueID)
+					try{
+				    	vcVirtualMachine = sdkConnections[j].searchIndex.findByUuid(null,vCACVms[0].vmUniqueID,true,true);
+						if(vcVirtualMachine){
+							vcenterName = sdkConnections[j].id
+							System.debug("SDK id "+sdkConnections[j].id)
+						}
+					}catch(e){System.debug("Unable to find vc vm by uuid in sdkConnection "+sdkConnections[j]);}
+				}
+				//get category
+				var category = Server.getConfigurationElementCategoryWithPath("Helper");
+		//die in a fire if non-existent
+				if (category == null) {
+				    throw "Configuration element category not found or empty!";
+				}
+				//get _all_ the elements
+				var elements = category.configurationElements;
+				//retrieve names
+				for (i = 0; i < elements.length; i++) {
+				    if (elements[i].name == "vCenterCreds") {
+						//found required element
+						var split_val = vcenterName.split('.')
+						var attrib='';
+						for(var hh in split_val){ attrib = attrib+split_val[hh]}
+						vcenterCompVar = elements[i].getAttributeWithKey(attrib).value;
+						psHost = elements[i].getAttributeWithKey("psHost").value
+						//System.debug(psHost)
+						break
+					}
+				}
+				var username = vcenterCompVar.get("username")
+				var password = vcenterCompVar.get("password")
+				var powerObj = System.getModule("com.vmware.indoce.library.executepowershell").ExecutePowershell()
+				var script = ""
+				script += "Import-Module Vmware.VimAutomation.Core\n"
+				script += "Connect-VIServer -Server '"+vcenterName+"' -User '"+username+"' -Password '"+password+"'\n"
+				//script += "Get-VM | Get-HardDisk -DiskType 'RawPhysical','RawVirtual' | Where-Object -Property Filename -EQ '"+vmdkPath+ "' | Select Parent\n"
+				script += "Get-VM | Get-HardDisk -DiskType 'RawPhysical','RawVirtual' | Where-Object -Property ScsiCanonicalName -EQ '"+vmdkPath.trim()+ "' | Select Parent | fl\n" 
+				System.log("script "+script)
+				var response = powerObj.executeScript(psHost,script)
+				System.debug("Response "+response)
+				var sp_val = response.split("\n");
+				//return sp_val
+				var response_val = new Array();
+				for(var jj in sp_val){
+					if(sp_val[jj].indexOf("Parent")!=-1){
+					response_val.push(sp_val[jj].split(":")[1])
+				//response_val.push(sp_val[jj].split("\n"))
+					}
+				}
+				
+				return response_val
+			
+				
+		}
+}
+return findObj]]></script>
+</dunes-script-module>

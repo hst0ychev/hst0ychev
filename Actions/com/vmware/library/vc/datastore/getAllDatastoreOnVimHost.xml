@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getAllDatastoreOnVimHost" result-type="Array/VC:Datastore" api-version="6.0.0" id="910e2d77-1246-49b3-ad35-13ff3bf392ef" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.datastore">
+  <param n="vimHost" t="VC:SdkConnection"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var keys = new Properties();
+var result = new Array();
+try {
+	searchInFolder(vimHost.rootFolder);
+	//System.log(result.length + " datastores found");
+	return result;
+}
+catch (ex) {
+	if (vimHost != null)
+		throw "Error getting datastore on " + vimHost.name + ". " + ex;
+	else
+		throw "Error getting datastore on null vimHost. " + ex;
+}
+
+
+
+function searchInFolder(folder) {
+	//System.log("searchInFolder(" + folder.name + ")");
+	if (folder.datacenter != null) {
+		var childs = folder.childEntity;
+		for (var i in childs) {
+			if (childs[i] instanceof VcFolder) {
+				System.log("a folder: " + childs[i].name);
+				searchInFolder(childs[i]);
+			}
+			if (childs[i] instanceof VcDatacenter) {
+				System.log("a datacenter: " + childs[i].name);
+				addDatastore(childs[i]);
+			}
+		}
+	}	
+}
+
+function addDatastore(datacenter) {
+	var allDS = datacenter.datastore;
+	for (var i in allDS) {
+		if (keys.get(allDS[i].sdkId) == null) {	
+			System.log(allDS[i].name + " found!");
+			result.push(allDS[i]);
+			keys.put(allDS[i].sdkId, allDS[i].sdkId);
+		}
+	}
+}]]></script>
+</dunes-script-module>

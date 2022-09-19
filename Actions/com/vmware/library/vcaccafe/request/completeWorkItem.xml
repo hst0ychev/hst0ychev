@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="completeWorkItem" result-type="void" api-version="6.0.0" id="a84f581b-2016-4756-8b26-b51dc14dc37c" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.request">
+  <param n="item" t="vCACCAFE:WorkItem"><![CDATA[Work item]]></param>
+  <param n="itemAction" t="vCACCAFE:WorkItemAction"><![CDATA[Work item action]]></param>
+  <param n="inputs" t="Properties"><![CDATA[Input values]]></param>
+  <script encoded="false"><![CDATA[System.getModule("com.vmware.library.vcaccafe.util").validateObject(itemAction, "Work item action");
+var map = vCACCAFERequestsHelper.createLiteralMap(inputs);
+System.log("Completing work item '" + item.getWorkItemNumber() + "'...");
+vCACCAFERequestsHelper.completeWorkItem(item, itemAction, map);
+System.log("Work item '" + item.getWorkItemNumber() + "' completed.");]]></script>
+</dunes-script-module>

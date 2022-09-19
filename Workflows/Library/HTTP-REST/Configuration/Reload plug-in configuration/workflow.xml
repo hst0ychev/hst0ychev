@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="Workflow:name=generic" id="098080808080808080808080808080808080808001299080088268176866967b3" version="1.0.0" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Reload plug-in configuration]]></display-name>
+  <description><![CDATA[Refreshes the list of REST hosts in the plug-in's inventory. You should invoke it after importing a package that updates the REST plug-in configuration.]]></description>
+  <position y="20.0" x="180.0"/>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="150.0" x="180.0"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Refresh hosts]]></display-name>
+    <script encoded="false"><![CDATA[RESTHostManager.reloadConfiguration();]]></script>
+    <in-binding/>
+    <out-binding/>
+    <position y="100.0" x="140.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Reload plug-in configuration]]></title>
+      <desc><![CDATA[You should invoke it after importing a package that updates the REST plug-in configuration.]]></desc>
+    </p-step>
+  </presentation>
+</workflow>

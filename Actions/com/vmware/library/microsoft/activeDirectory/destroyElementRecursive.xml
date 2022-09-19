@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="destroyElementRecursive" result-type="void" api-version="6.0.0" id="4ef7f5c8-64aa-4172-bfb3-a125cc824169" version="1.1.2" allowed-operations="vfe" category-name="com.vmware.library.microsoft.activeDirectory">
+  <description><![CDATA[Detroy an element of the Active Directory.]]></description>
+  <param n="element" t="Any"><![CDATA[Any valid element from Active Directoy to destroy]]></param>
+  <param n="deleteSubtree" t="boolean"><![CDATA[Delete element subtree]]></param>
+  <script encoded="false"><![CDATA[element.destroy(deleteSubtree);]]></script>
+</dunes-script-module>

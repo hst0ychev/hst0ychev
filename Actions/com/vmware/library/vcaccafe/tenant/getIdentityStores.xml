@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getIdentityStores" result-type="Array/vCACCAFE:IdentityStore" api-version="6.0.0" id="55686e9c-4500-4cb9-ab47-30e4559d31a3" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.tenant">
+  <param n="tenant" t="vCACCAFE:Tenant"><![CDATA[Tenant]]></param>
+  <param n="query" t="string"><![CDATA[Query]]></param>
+  <script encoded="false"><![CDATA[return vCACCAFEEntitiesFinder.findIdentityStores(tenant, query);]]></script>
+</dunes-script-module>

@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="generateDeleteWorkflow" result-type="Workflow" api-version="6.0.0" id="df9d360c-3a25-4839-83ae-cb980316e37c" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.sql">
+  <param n="table" t="SQL:Table"><![CDATA[A table object]]></param>
+  <param n="category" t="WorkflowCategory"><![CDATA[A workflow category where the generated workflow will be stored]]></param>
+  <param n="overwriteWorkflow" t="boolean"><![CDATA[Pass true to overwrite existing workflow in the given category. Otherwise pass false.]]></param>
+  <script encoded="false"><![CDATA[var resultWorkflow = SQLDatabaseManager.generateDeleteWorkflow(table, category, overwriteWorkflow);
+System.log("CreateRecord workflow for table '" + table.name + "' was created in " + category.path);
+return resultWorkflow;]]></script>
+</dunes-script-module>

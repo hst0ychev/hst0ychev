@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="addPSSnapIn" result-type="void" api-version="6.0.0" id="F5858080808080808080808080808080A08080800126658240472157fdafc0fce" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.powershell.generated">
+  <description><![CDATA[Auto generated.]]></description>
+  <param n="host" t="PowerShell:PowerShellHost"><![CDATA[]]></param>
+  <param n="sessionId" t="string"><![CDATA[]]></param>
+  <param n="psName" t="string"><![CDATA[]]></param>
+  <param n="psPassThru" t="boolean"><![CDATA[]]></param>
+  <param n="psVerbose" t="boolean"><![CDATA[]]></param>
+  <param n="psDebug" t="boolean"><![CDATA[]]></param>
+  <param n="psErrorVariable" t="string"><![CDATA[]]></param>
+  <param n="psOutVariable" t="string"><![CDATA[]]></param>
+  <param n="psOutBuffer" t="number"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[ var oSession = host.getSession(sessionId);
+ var cmd = oSession.addCommandFromString('Add-PSSnapin');
+ if (psName)
+   cmd.addParameter('Name', psName)
+ if (psPassThru && psPassThru==true)
+    cmd.addParameter('PassThru', '')
+ if (psVerbose && psVerbose==true)
+    cmd.addParameter('Verbose', '')
+ if (psDebug && psDebug==true)
+    cmd.addParameter('Debug', '')
+ if (psErrorVariable)
+   cmd.addParameter('ErrorVariable', psErrorVariable)
+ if (psOutVariable)
+   cmd.addParameter('OutVariable', psOutVariable)
+ if (psOutBuffer)
+   cmd.addParameter('OutBuffer', psOutBuffer)
+
+if ( host.inPipeline(sessionId) == false ){
+	System.getModule("com.vmware.library.powershell").invokeCommand(host,sessionId) ;
+}
+
+]]></script>
+</dunes-script-module>

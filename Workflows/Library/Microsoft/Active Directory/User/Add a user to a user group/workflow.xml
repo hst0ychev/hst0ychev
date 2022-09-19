@@ -1,0 +1,62 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="Workflow:name=generic" id="95808080808080808080808080808080F281808001175609873343b6bbd2e3eea" version="1.1.1" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Add a user to a user group]]></display-name>
+  <description><![CDATA[Adds one user as a member of a user group.]]></description>
+  <ref-types><![CDATA[(AD:UserGroup)(AD:User)]]></ref-types>
+  <position y="10.0" x="160.0"/>
+  <input>
+    <param name="group" type="AD:UserGroup"/>
+    <param name="user" type="AD:User"/>
+  </input>
+  <attrib name="users" type="Array/AD:User" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[User]]></description>
+  </attrib>
+  <workflow-item name="item2" type="end" end-mode="0">
+    <position y="190.0" x="160.0"/>
+  </workflow-item>
+  <workflow-item name="item0" out-name="item1" type="task">
+    <display-name><![CDATA[Create Array]]></display-name>
+    <script encoded="false"><![CDATA[users = new Array(user);]]></script>
+    <in-binding>
+      <bind name="user" type="AD:User" export-name="user"/>
+    </in-binding>
+    <out-binding>
+      <bind name="users" type="Array/AD:User" export-name="users"/>
+    </out-binding>
+    <position y="80.0" x="120.0"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item2" type="link" linked-workflow-id="958080808080808080808080808080800B81808001175609873343b6bbd2e3eea">
+    <display-name><![CDATA[Add users to group members]]></display-name>
+    <in-binding>
+      <bind name="userGroup" type="AD:UserGroup" export-name="group">
+        <description><![CDATA[Group in which to add the users]]></description>
+      </bind>
+      <bind name="users" type="Array/AD:User" export-name="users">
+        <description><![CDATA[User]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Adds one or more users as members of a user group.]]></description>
+    <position y="140.0" x="120.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Add a user to a user group]]></title>
+      <p-group>
+        <p-param name="group">
+          <desc><![CDATA[Group]]></desc>
+          <p-qual name="mandatory"><![CDATA[true]]></p-qual>
+          <p-qual kind="static" name="show-select-as" type="string"><![CDATA[drop-down]]></p-qual>
+          <p-qual name="contextualParameter" type="Void"><![CDATA[]]></p-qual>
+        </p-param>
+        <p-param name="user">
+          <desc><![CDATA[User]]></desc>
+          <p-qual name="mandatory"><![CDATA[true]]></p-qual>
+          <p-qual kind="static" name="show-select-as" type="string"><![CDATA[drop-down]]></p-qual>
+          <p-qual name="contextualParameter" type="Void"><![CDATA[]]></p-qual>
+        </p-param>
+      </p-group>
+    </p-step>
+  </presentation>
+</workflow>

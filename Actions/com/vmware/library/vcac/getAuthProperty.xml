@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getAuthProperty" result-type="string" api-version="6.0.0" id="509285f8-d90e-438d-8e88-26eac4283830" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcac">
+  <param n="host" t="vCAC:VCACHost"><![CDATA[The vCloud Automation Center's host instance.]]></param>
+  <param n="index" t="number"><![CDATA[The index of the property.]]></param>
+  <script encoded="false"><![CDATA[if (host == null) {
+ return "";
+}
+return host.getAuthProperty(index)]]></script>
+</dunes-script-module>

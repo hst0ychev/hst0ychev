@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="updateTenant" result-type="vCACCAFE:Tenant" api-version="6.0.0" id="aef70188-09c6-4a0a-b266-c824c37e5aed" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.tenant">
+  <param n="tenant" t="vCACCAFE:Tenant"><![CDATA[Tenant]]></param>
+  <param n="name" t="string"><![CDATA[Name]]></param>
+  <param n="description" t="string"><![CDATA[Description]]></param>
+  <param n="contactEmail" t="string"><![CDATA[Contact email]]></param>
+  <script encoded="false"><![CDATA[System.getModule("com.vmware.library.vcaccafe.util").validateObject(tenant, "Tenant");
+if (tenant.isDefaultTenant()) {
+	throw "Updating the default tenant is not allowed!";
+}
+
+if (name != null) {
+	tenant.setName(name);
+}
+if (description != null) {
+	tenant.setDescription(description);
+}
+if (contactEmail != null) {
+	tenant.setContactEmail(contactEmail);
+}
+
+System.log("Updating tenant '" + name + "'...");
+var host = vCACCAFEEntitiesFinder.getHostForEntity(tenant);
+var service = host.createAuthenticationClient().getAuthenticationTenantService();
+service.updateOrCreateTenant(tenant);
+System.log("Tenant '" + name + "' updated!");
+
+return vCACCAFEEntitiesFinder.getTenant(host, tenant.getId());]]></script>
+</dunes-script-module>

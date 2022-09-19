@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getComputerFromContainer" result-type="AD:ComputerAD" api-version="6.0.0" id="368180808080808080808080808080809880808001270557368849c62c352aa82" version="1.1.1" allowed-operations="vfe" category-name="com.vmware.library.microsoft.activeDirectory">
+  <description><![CDATA[Get a computer by its name in the given OU or Group (container)]]></description>
+  <param n="container" t="Any"><![CDATA[Organizational Unit / Group]]></param>
+  <param n="computerName" t="string"><![CDATA[Name of the computer]]></param>
+  <script encoded="false"><![CDATA[computers = container.computers;
+for (var index in computers) {
+	if (computers[index].name.toLowerCase() == computerName.toLowerCase()) {
+		return computers[index];
+	}
+}
+return null;]]></script>
+</dunes-script-module>

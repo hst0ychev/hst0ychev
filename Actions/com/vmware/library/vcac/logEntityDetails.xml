@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="logEntityDetails" result-type="void" api-version="6.0.0" id="a05ef5c3-c992-426c-8cfb-2d3403c89a20" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcac">
+  <param n="entity" t="vCAC:Entity"><![CDATA[Entity to log details of]]></param>
+  <param n="vcacHost" t="vCAC:VCACHost"><![CDATA[vCAC Host to get links from (optional - will not log links if null)]]></param>
+  <script encoded="false"><![CDATA[System.log("");
+System.log("===================== Entity Details ========================");
+System.log("entityKey: "+entity.entityKey);
+System.log("entitySetName: "+entity.entitySetName);
+System.log("hostId: "+entity.hostId);
+System.log("keyString: "+entity.keyString);
+System.log("modelName: "+entity.modelName);
+System.log("");
+System.log("===================== Properties ============================");
+var simpleProps = entity.getProperties();
+for (var propName in simpleProps ) {
+	System.log(propName + ":"+entity.getProperty(propName));
+}
+if(vcacHost != null){
+	System.log("");
+	System.log ("------- Complex Properties ----------");
+	var complexProps = entity.getLinks(vcacHost);
+	for (var propName in complexProps) {
+		System.log(propName + ":"+complexProps.get(propName));
+	}
+}]]></script>
+</dunes-script-module>

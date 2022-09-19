@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="registerVSOonHost" result-type="void" api-version="6.0.0" id="84808080808080808080808080808080C98F808001297259131125b940b51f82d" version="2.1.1" allowed-operations="vfe" category-name="com.vmware.library.ssh">
+  <description><![CDATA[Upload and register the VS-O public key to the target user@host.
+This will enable future connections to use public key authentication instead of password authentication for this user.]]></description>
+  <param n="host" t="string"><![CDATA[Host name of target host]]></param>
+  <param n="username" t="string"><![CDATA[username]]></param>
+  <param n="password" t="SecureString"><![CDATA[password]]></param>
+  <param n="localPath" t="Path"><![CDATA[File where file is  locally stored]]></param>
+  <param n="remotePath" t="string"><![CDATA[Temporary location of the public key file]]></param>
+  <script encoded="false"><![CDATA[try {
+	// New SSH session
+	var session = new SSHSession(host, username) ;
+	
+	// Connect with password
+	session.connectWithPassword(password);
+	
+	// upload pub key file
+	var errorCode = session.putFile(localPath+".pub",remotePath);
+
+	if ( errorCode != 0 )  {
+		session.disconnect();
+		throw "Registration of VS-O public key on '"+host+"' for user '"+username+"' failed (file transfer):"  + session.getError();
+	}
+
+	// Register the public key for this user
+	var fullRemoteFile = remotePath+"/"+System.getModule("com.vmware.basic").getFileName(localPath)+".pub";
+	var cmd = "cd ; mkdir -p .ssh ; cat "+ fullRemoteFile + " >> ~/.ssh/authorized_keys ; rm -f "+fullRemoteFile;
+	System.log("Executing: '"+cmd+"'");
+	session.executeCommand( cmd, true );
+	var error = session.getError();	
+	session.disconnect();
+
+	if ( error != null  &&  error.equals("") == false )  {
+		throw "Registration of VS-O public key on '"+host+"' for user '"+username+"' failed (cmd):"  + error;
+	}
+	
+	System.log( "Registration of VS-O public key completed on '"+host+"' for user '"+username+"'" );
+	Server.log( "Registration of VS-O public key completed on '"+host+"' for user '"+username+"'" );
+} catch (ex) {
+	throw "Registration of VS-O public key on '"+host+"' for user '"+username+"' failed."  + ex;
+}	]]></script>
+</dunes-script-module>

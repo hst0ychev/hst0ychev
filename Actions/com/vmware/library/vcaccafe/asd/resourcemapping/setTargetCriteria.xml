@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="setTargetCriteria" result-type="vCACCAFE:CustomResource" api-version="6.0.0" id="fa5cabc4-4842-4a1e-9b1d-d47fbf1710f7" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.asd.resourcemapping">
+  <param n="resourceMapping" t="vCACCAFE:CustomResource"><![CDATA[Resource mapping]]></param>
+  <param n="targetCriteria" t="string"><![CDATA[Target criteria]]></param>
+  <script encoded="false"><![CDATA[System.getModule("com.vmware.library.vcaccafe.util").validateObject(resourceMapping, "Resource mapping");
+var mapping = {
+    "id": {
+		"id": resourceMapping.getTenantedUuid().getId(),
+		"tenant": resourceMapping.getTenantedUuid().getTenant()
+	},
+    "name": resourceMapping.getName(),
+    "description": resourceMapping.getDescription(),
+    "vcoType": resourceMapping.getVcoType(),
+    "externalTypeId": resourceMapping.getExternalTypeId(),
+    "mappingScriptActionFqn": resourceMapping.getMappingScriptActionFqn(),
+    "mappingWorkflowId": resourceMapping.getMappingWorkflowId(),
+    "targetCriteria": JSON.parse(targetCriteria)
+};
+
+var host = vCACCAFEEntitiesFinder.getHostForEntity(resourceMapping);
+var client = host.createAdvancedDesignerClient();
+System.log("Setting target criteria to mapping: " + resourceMapping.getName());
+client.post("/tenants/" + host.tenant + "/types", mapping);
+System.log("Target criteria set successfully");
+
+return vCACCAFEEntitiesFinder.getResourceMapping(host, resourceMapping.getId().toString());]]></script>
+</dunes-script-module>

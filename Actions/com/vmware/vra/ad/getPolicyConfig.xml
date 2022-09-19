@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getPolicyConfig" result-type="Any" api-version="6.0.0" id="af1126dd-aeec-4791-bfd1-676bf23c0a45" version="0.0.0" allowed-operations="vf" category-name="com.vmware.vra.ad">
+  <param n="vcacHost" t="vCACCAFE:VCACHost"><![CDATA[]]></param>
+  <param n="policyId" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var restClient = vcacHost.createAdvancedDesignerClient();
+var policyObject = null;
+
+try {
+	policyObject = restClient.getWithVariables("policies/hrid/{hrid}", [policyId]).getBodyAsJson();
+} catch (error) {
+	throw "No policy with id '" + policyId + "' found. Error: " + error;
+}
+
+var ret = {};
+
+for each(prop in policyObject.properties.entries) {
+	var val = prop.value ? prop.value.value : null;
+	switch(prop.key) {
+		case "ext.policy.activedirectory.domain":
+			ret.domainName = val;
+			break;
+		case "ext.policy.activedirectory.orgunit":
+			ret.ouDN = val;
+			break;
+		case "ext.policy.activedirectory.endpoint.id":
+			ret.adHostId = val;
+			break;
+		default:
+			System.log("Unrecognized property '" + prop.key + "' with value = '" + val);
+	} 
+}
+
+return ret;]]></script>
+</dunes-script-module>

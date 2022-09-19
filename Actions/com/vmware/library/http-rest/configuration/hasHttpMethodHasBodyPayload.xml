@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="hasHttpMethodHasBodyPayload" result-type="boolean" api-version="6.0.0" id="44f8cb7f-5061-4269-a046-4e6dbb3a1f55" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.http-rest.configuration">
+  <param n="methodName" t="string"><![CDATA[method name]]></param>
+  <script encoded="false"><![CDATA[var methodsWithBodyParams = {
+   'POST' : true , 
+    'PUT'  : true,
+    'DELETE' : true,  // the RFC do not forbid the delete method to has content 
+    'OPTIONS' : true,
+    'CONNECT' : true,
+     'PATCH' : true 
+};
+
+if (methodsWithBodyParams[methodName]) return true;
+
+return false;]]></script>
+</dunes-script-module>

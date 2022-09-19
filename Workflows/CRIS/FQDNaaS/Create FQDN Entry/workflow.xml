@@ -1,0 +1,346 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="80b79af6-5ee6-4e6f-be7b-465685a00740" version="0.0.2" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Create FQDN Entry]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="usersEmailId" type="string">
+      <description><![CDATA[The requesting User's Email Address.]]></description>
+    </param>
+    <param name="vm_name" type="string">
+      <description><![CDATA[FQDN]]></description>
+    </param>
+    <param name="ip_address" type="string">
+      <description><![CDATA[IP]]></description>
+    </param>
+  </input>
+  <attrib name="DNSServer" type="VC:VirtualMachine" read-only="false" conf-id="09971c22-08eb-4bc5-bb09-d72f7678a8ed" conf-key="DNSServerVM">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="vmUsername" type="string" read-only="false" conf-id="09971c22-08eb-4bc5-bb09-d72f7678a8ed" conf-key="vmUsername">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="vmPassword" type="SecureString" read-only="false" conf-id="09971c22-08eb-4bc5-bb09-d72f7678a8ed" conf-key="vmPassword">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="script" type="ResourceElement" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/ResourceElement?id='7b2fe3d5-bf9f-477e-9f0b-2527e801a9dd'&dunesName='ResourceElement']]></value>
+  </attrib>
+  <attrib name="smtp_host" type="string" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_host">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="smtp_port" type="number" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_port">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="smtp_username" type="string" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_username">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="smtp_password" type="SecureString" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_password">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="smtp_from_id" type="string" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_from_id">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="smtp_from_name" type="string" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_from_name">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="use_ssl" type="boolean" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="use_ssl">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="use_start_tls" type="boolean" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="use_start_tls">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="smtp_to_address" type="Array/string" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_to_address_FQDNaaS">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="vcacCafeHost" type="vCACCAFE:VCACHost" read-only="false" conf-id="66a86a5d-df46-4200-9c90-046802868f44" conf-key="vcacCafeHost">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Process Request]]></display-name>
+    <script encoded="false"><![CDATA[function SendEmail(subject, body) {
+
+	//Add the user's email to the list of email IDs to send email to.
+	if (usersEmailId && usersEmailId != "") {
+		smtp_to_address.push(usersEmailId);
+	}
+	
+	var commaSeparatedEmails = '';
+	for(var i in smtp_to_address)
+	{
+		commaSeparatedEmails += smtp_to_address[i]+',';
+	}
+	
+	//workflow ID of Library -> Mail -> 'Send notification'
+	var workflowId = '8D80808080808080808080808080808089808080012318760241416446ce5b52f';
+
+	//ready the workflow params
+	var workflowParameters = new Properties();
+	workflowParameters.put("smtpHost", smtp_host);
+	workflowParameters.put("smtpPort", smtp_port);
+	workflowParameters.put("username", smtp_username);
+	workflowParameters.put("password", smtp_password);
+	workflowParameters.put("fromName", smtp_from_name);
+	workflowParameters.put("fromAddress", smtp_from_id);
+	workflowParameters.put("toAddress", commaSeparatedEmails);
+	workflowParameters.put("subject", subject);
+	workflowParameters.put("content", body);
+	workflowParameters.put("useSsl", use_ssl);
+	workflowParameters.put("UseStartTls", use_start_tls);
+
+	//Run this workflow.
+	var workflowToLaunch = Server.getWorkflowWithId(workflowId);
+	
+	//Fetch a token.
+	var workflow_token = workflowToLaunch.execute(workflowParameters);
+	while (workflow_token.state === "running") {
+		System.sleep(3000);
+	}
+	System.log("Email sent");
+	//return after workflow finished 'running'
+	return true;
+}
+
+// Get request number.
+
+try {
+	//Try to fetch catalog request ID
+	catalogRequestId = System.getContext().getParameter("__asd_catalogRequestId");
+}
+catch (e) {
+	//If we did not get catalog request ID, we use boolean false
+	catalogRequestId = false;
+}
+
+if (catalogRequestId) {
+	//We got catalogRequest ID from the inputs, now we try to get request number from that.
+	System.log("Request Id by vRA:" + catalogRequestId);
+  try
+  {
+      var request = vCACCAFEEntitiesFinder.getCatalogItemRequest(vcacCafeHost, catalogRequestId);
+      requestNumber = request.getRequestNumber();
+  }
+  catch (error)
+  {  
+      var date = new Date();
+      requestNumber = date.getFullYear() + "_" + (date.getMonth() + 1) + "_" + date.getDate() + "_" + date.getHours() + "_" + date.getMinutes();
+      System.log("Using request number as current date-time since there was some problems fetching request number");
+  }
+}
+else {
+	var date = new Date();
+	requestNumber = date.getFullYear() + "_" + (date.getMonth() + 1) + "_" + date.getDate() + "_" + date.getHours() + "_" + date.getMinutes();
+	System.log("Using request number as current date-time since __asd_catalogRequestId was not found");
+}
+
+
+//First, validate everything.
+
+if(!vm_name || vm_name == "")
+{
+	var errorMsg = "Hostname / VM Name blank or not provided.";
+	var subject = "Request #"+requestNumber+" failed";
+	var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed.";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if(SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+if(!ip_address || ip_address == "")
+{
+	var errorMsg = "IP Address blank or not provided.";
+	var subject = "Request #"+requestNumber+" failed";
+	var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed.";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if(SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+var ipAddressValid = false;
+
+//Should return true if IP is valid.
+ipAddressValid = System.getModule("com.vmware.indcoe.util").isValidIPv4Address(ip_address);
+
+if(!ipAddressValid)
+{
+	var errorMsg = "IP Address is not valid";
+	var subject = "Request #"+requestNumber+" failed";
+	var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed.";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if(SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+function serializeWorkflow(currentIteration) {
+    if(!currentIteration)
+    {
+        currentIteration = 0;
+    }
+	currentIteration++;
+	System.debug("Serializing Workflow: "+currentIteration);
+
+	// Ensure only one instance of the this workflow is running.
+	var thisWorkflow = workflow.rootWorkflow;
+
+	// Current Token
+	var currentToken = workflow;
+
+	// The max number of retries to check
+	var maxRetries = 120;
+
+	if (currentIteration >= maxRetries) {
+		throw "Error occurred waiting";
+	}
+
+	while (true) {
+
+		var tokens = thisWorkflow.executions;
+		var runningWorkflowCount = 0;
+		for (var i in tokens) {
+			if (tokens[i].isStillValid) {
+				if (tokens[i].state === "running" || tokens[i].state === "waiting-signal") {
+					//Increment the running Workflows by 1
+					runningWorkflowCount = runningWorkflowCount + 1;
+
+					//If this is the only running workflow...
+					if (runningWorkflowCount === 1 && currentToken.id == tokens[i].id) {
+						return true;
+					}
+					else {
+						//Wait for 1 second and call this function again.
+						System.sleep(1000);
+						System.debug("Another workflow is executing, waiting for 1 second, Wait Cycle: "+currentIteration);
+						return serializeWorkflow(currentIteration);
+					}
+				}
+			}
+		}
+	}
+}
+
+serializeWorkflow();
+// Executing Workflow Now..
+var scriptVariables = [];
+
+var vmNameParameters = new Properties();
+vmNameParameters.put("stringToReplace", "VMNAME");
+vmNameParameters.put("replacingString", vm_name);
+scriptVariables.push(vmNameParameters);
+
+var ipAddressParameters = new Properties();
+ipAddressParameters.put("stringToReplace", "IP_ADDRESS");
+ipAddressParameters.put("replacingString", ip_address);
+scriptVariables.push(ipAddressParameters);
+
+//Workflow ID of 'Run script in VM Guest'
+var workflowID = '24c23d4c-12be-4889-aa66-29b8a450f1cd';
+var workflowToLaunch = Server.getWorkflowWithId(workflowID);
+var workflowParameters = new Properties();
+workflowParameters.put("vm",DNSServer);
+workflowParameters.put("vmUsername",vmUsername);
+workflowParameters.put("vmPassword",vmPassword);
+workflowParameters.put("scriptConfigurationResource",script);
+workflowParameters.put("scriptVariables",scriptVariables);
+var workflowToken = workflowToLaunch.execute(workflowParameters);
+
+while (workflowToken.state === "running")
+{
+   System.log("Waiting for workflow to finish execution");
+   System.sleep(1000);
+}
+
+//After the execution is done..
+
+var workflowOutput = workflowToken.getOutputParameters();
+var workflowExitCode  = workflowOutput.scriptExitCodeOut;
+var workflowOuput  = workflowOutput.scriptOutputTextOut;
+
+System.log("Workflow output: ");
+System.log(workflowOuput);
+System.log("---");
+
+//Split worklow output one line per array entry
+var lines = workflowOuput.split('\n');
+var messageToPrint='';
+
+var i = lines.length;
+while (i > 0)
+{
+    if(lines[i] && lines[i] != "")
+    {
+        messageToPrint=lines[i];
+        i=0;
+    }
+    else
+    {
+        i--;
+    }
+}
+
+System.log(messageToPrint);
+
+if(workflowExitCode != 0)
+{
+	var errorMsg = "Error Occurred adding DNS Entry. "+messageToPrint;
+	var subject = "Request #"+requestNumber+" failed";
+	var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed.";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if(SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+	var message = "DNS Entry added successfully";
+	var subject = "Request #"+requestNumber+" completed successfully";
+	var body = "Hello, <br/>The Request with request number: " + requestNumber + " has completed successfully.";
+	body += message;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	SendEmail(subject, body);
+]]></script>
+    <in-binding>
+      <bind name="vm_name" type="string" export-name="vm_name"/>
+      <bind name="ip_address" type="string" export-name="ip_address"/>
+      <bind name="DNSServer" type="VC:VirtualMachine" export-name="DNSServer"/>
+      <bind name="vmUsername" type="string" export-name="vmUsername"/>
+      <bind name="vmPassword" type="SecureString" export-name="vmPassword"/>
+      <bind name="script" type="ResourceElement" export-name="script"/>
+      <bind name="smtp_host" type="string" export-name="smtp_host"/>
+      <bind name="smtp_port" type="number" export-name="smtp_port"/>
+      <bind name="smtp_username" type="string" export-name="smtp_username"/>
+      <bind name="smtp_password" type="SecureString" export-name="smtp_password"/>
+      <bind name="smtp_from_id" type="string" export-name="smtp_from_id"/>
+      <bind name="smtp_from_name" type="string" export-name="smtp_from_name"/>
+      <bind name="use_ssl" type="boolean" export-name="use_ssl"/>
+      <bind name="use_start_tls" type="boolean" export-name="use_start_tls"/>
+      <bind name="smtp_to_address" type="Array/string" export-name="smtp_to_address"/>
+      <bind name="usersEmailId" type="string" export-name="usersEmailId"/>
+      <bind name="vcacCafeHost" type="vCACCAFE:VCACHost" export-name="vcacCafeHost"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="vm_name">
+      <desc><![CDATA[FQDN]]></desc>
+    </p-param>
+    <p-param name="ip_address">
+      <desc><![CDATA[IP]]></desc>
+    </p-param>
+    <p-param name="usersEmailId">
+      <desc><![CDATA[The requesting User's Email Address.]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

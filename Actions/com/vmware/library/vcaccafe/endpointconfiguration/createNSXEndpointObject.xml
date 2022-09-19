@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="createNSXEndpointObject" result-type="vCACCAFE:Endpoint" api-version="6.0.0" id="22a2f3ab-ae75-4705-be32-094ad3d20b2c" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.endpointconfiguration">
+  <param n="host" t="vCACCAFE:VCACHost"><![CDATA[]]></param>
+  <param n="name" t="string"><![CDATA[The name of the endpoint]]></param>
+  <param n="description" t="string"><![CDATA[The description of the endpoint]]></param>
+  <param n="address" t="string"><![CDATA[The address of the endpoint]]></param>
+  <param n="username" t="string"><![CDATA[Credential username for the endpoint]]></param>
+  <param n="password" t="SecureString"><![CDATA[Credential password for the endpoint]]></param>
+  <param n="vsphereEndpoint" t="vCACCAFE:Endpoint"><![CDATA[vSphere endpoint to which NSX endpoint will be associated]]></param>
+  <param n="certificateThumbprint" t="string"><![CDATA[Certificate thumbprint]]></param>
+  <param n="trustAllCertificates" t="boolean"><![CDATA[Trust all certificates]]></param>
+  <script encoded="false"><![CDATA[if(vsphereEndpoint == null)
+{
+	System.log("No vsphere endpoint found. No association will be created");
+}
+
+var nsxEndpoint = vCACCAFEEndpointConfigurationHelper.createNsxEndpoint(host, name, description, address, username, password, certificateThumbprint, trustAllCertificates, vsphereEndpoint);
+
+if(nsxEndpoint == null)
+{
+	throw "Failed to create nsx endpoint.";
+}
+
+return nsxEndpoint;]]></script>
+</dunes-script-module>

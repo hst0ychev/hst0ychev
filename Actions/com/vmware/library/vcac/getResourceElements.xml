@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getResourceElements" result-type="Array/ResourceElement" api-version="6.0.0" id="1c848bc3-2236-44fb-888b-87b76b2e9a72" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcac">
+  <param n="resource" t="ResourceElement"><![CDATA[Resource element, whose category will be retrieved]]></param>
+  <script encoded="false"><![CDATA[if (resource == null) return null;
+return resource.getResourceElementCategory().resourceElements;]]></script>
+</dunes-script-module>

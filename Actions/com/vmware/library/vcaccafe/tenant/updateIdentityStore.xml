@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="updateIdentityStore" result-type="vCACCAFE:IdentityStore" api-version="6.0.0" id="cdd1f253-2956-4ed3-8c44-f4c306eee2ad" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.tenant">
+  <param n="tenant" t="vCACCAFE:Tenant"><![CDATA[Tenant]]></param>
+  <param n="store" t="vCACCAFE:IdentityStore"><![CDATA[Identity store]]></param>
+  <param n="name" t="string"><![CDATA[Name]]></param>
+  <param n="userNameDn" t="string"><![CDATA[Login user DN]]></param>
+  <param n="password" t="SecureString"><![CDATA[Password]]></param>
+  <param n="groupBaseSearchDn" t="string"><![CDATA[Group search base DN]]></param>
+  <param n="userBaseSearchDn" t="string"><![CDATA[User search base DN]]></param>
+  <script encoded="false"><![CDATA[System.getModule("com.vmware.library.vcaccafe.util").validateObject(store, "Identity store");
+if (name != null) {
+	store.setName(name);
+}
+if (userNameDn != null) {
+	store.setUserNameDn(userNameDn);
+}
+if ((password != null) && (password != "")) {
+	store.setPassword(password);
+}
+if (groupBaseSearchDn != null) {
+	store.setGroupBaseSearchDn(groupBaseSearchDn);
+    if (store.getGroupBaseSearchDns() != null) { // Horizon
+        vCACCAFEEntityHelper.replaceElementInList(store , "getGroupBaseSearchDns", 0 , groupBaseSearchDn);
+    }
+}
+
+if ((userBaseSearchDn == null) || (userBaseSearchDn.trim() == "")) {
+	store.setUserBaseSearchDn(groupBaseSearchDn);
+} else {
+    store.setUserBaseSearchDn(userBaseSearchDn);
+}
+
+if (store.getUserBaseSearchDns() != null) { // Horizon
+    vCACCAFEEntityHelper.replaceElementInList(store , "getUserBaseSearchDns", 0 , store.getUserBaseSearchDn());
+}
+
+var host = vCACCAFEEntitiesFinder.getHostForEntity(tenant);
+var hostStore = vCACCAFEEntitiesFinder.getHostForEntity(store);
+
+if (host.id != hostStore.id) {
+	throw "The tenant and the identity store belong to different vCAC hosts!";
+}
+
+System.log("Updating identity store '" + name + "'...");
+var authenticationClient = host.createAuthenticationClient();
+var service = authenticationClient.getAuthenticationIdentityStoreClientService();
+var tenantService = authenticationClient.getAuthenticationTenantService();
+tenantService.getTenant(tenant.getUrlName());
+
+service.updateOrCreateIdentityStore(tenant.getId(), store);
+System.log("Identity store '" + name + "' updated.");
+
+return vCACCAFEEntitiesFinder.getIdentityStore(tenant, store.getDomain());]]></script>
+</dunes-script-module>

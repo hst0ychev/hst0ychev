@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getVCACHostAuthenticationProperty" result-type="string" api-version="6.0.0" id="10f30df0-b319-48e0-aeea-f12279af2bd6" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcac">
+  <param n="host" t="vCAC:VCACHost"><![CDATA[vCloud Automation Center host which authentication property to return]]></param>
+  <param n="index" t="number"><![CDATA[Index of the property within raw authentication properties array]]></param>
+  <param n="newAuthentication" t="string"><![CDATA[The new authentication type.]]></param>
+  <param n="visible" t="boolean"><![CDATA[Is the property visible,]]></param>
+  <script encoded="false"><![CDATA[if (!host || !host.connection) {
+ return "";
+}
+var existingAuth = host.connection.connectionInfo.authentication;
+var shouldEstimate = visible && newAuthentication != null && host != null && newAuthentication == existingAuth.type;
+return shouldEstimate ? existingAuth.getRawAuthProperty(index) : "";]]></script>
+</dunes-script-module>

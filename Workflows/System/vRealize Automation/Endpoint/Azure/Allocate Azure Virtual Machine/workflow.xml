@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="2de7c323-c24b-415f-9d81-2cb4dd3e84c7" version="7.5.0" api-version="6.0.0" allowed-operations="vf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Allocate Azure Virtual Machine]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="requestData" type="Properties"/>
+    <param name="reservations" type="Array/Properties"/>
+    <param name="subtenant" type="Properties"/>
+    <param name="lastAllocatedData" type="Properties"/>
+  </input>
+  <output>
+    <param name="actionResult" type="Properties"/>
+  </output>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task" script-module="com.vmware.vra.endpoint.azure/AllocateAzureVM">
+    <display-name><![CDATA[AllocateAzureVM]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.vra.endpoint.azure").AllocateAzureVM(requestData,reservations,subtenant,lastAllocatedData) ;]]></script>
+    <in-binding>
+      <bind name="requestData" type="Properties" export-name="requestData"/>
+      <bind name="reservations" type="Array/Properties" export-name="reservations"/>
+      <bind name="subtenant" type="Properties" export-name="subtenant"/>
+      <bind name="lastAllocatedData" type="Properties" export-name="lastAllocatedData"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Properties" export-name="actionResult"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="requestData">
+      <desc><![CDATA[requestData]]></desc>
+    </p-param>
+    <p-param name="reservations">
+      <desc><![CDATA[reservations]]></desc>
+    </p-param>
+    <p-param name="subtenant">
+      <desc><![CDATA[subtenant]]></desc>
+    </p-param>
+    <p-param name="lastAllocatedData">
+      <desc><![CDATA[previousAllocationData]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

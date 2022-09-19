@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="createPropertyGroup" result-type="vCACCAFE:PropertyGroup" api-version="6.0.0" id="afb00fdc-b605-43cc-a054-d8084f40a63c" version="0.0.1" allowed-operations="vf" category-name="com.vmware.library.vcaccafe.propertygroup">
+  <param n="host" t="vCACCAFE:VCACHost"><![CDATA[]]></param>
+  <param n="name" t="string"><![CDATA[]]></param>
+  <param n="id" t="string"><![CDATA[]]></param>
+  <param n="description" t="string"><![CDATA[]]></param>
+  <param n="allTenantsVisibility" t="boolean"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var service = host.createPropertyClient().getPropertyContextPropertyGroupService();
+var group = new vCACCAFEContextPropertyGroup();
+group.setName(name);
+group.setId(id);
+group.setDescription(description);
+if(allTenantsVisibility) {
+	group.setTenantId(null);
+} else {
+	group.setTenantId(host.tenant);
+}
+
+System.log("Creating property group...");
+service.createPropertyGroup(group);
+
+return vCACCAFEEntitiesFinder.getPropertyGroup(host, id);
+
+]]></script>
+</dunes-script-module>

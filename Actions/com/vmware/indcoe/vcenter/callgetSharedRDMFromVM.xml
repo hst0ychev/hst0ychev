@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="callgetSharedRDMFromVM" result-type="Array/Any" api-version="6.0.0" id="c6a90cc6-75d0-406e-ad27-d60d7829f205" version="0.0.1" allowed-operations="evf" category-name="com.vmware.indcoe.vcenter">
+  <param n="vmName" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[if(vmName == undefined || vmName == null || vmName == ""){ return []}
+else{
+	var scObj = System.getModule("com.vmware.indcoe.vcenter").getSharedRDMFromVM()
+	return scObj.getSharedRDM(vmName)
+}]]></script>
+</dunes-script-module>

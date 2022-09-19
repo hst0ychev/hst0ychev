@@ -1,0 +1,5 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getCriteriaFromWorkflowSubscription" result-type="string" api-version="6.0.0" id="a8cc1d00-4def-4c06-b3a1-8cb2978c64f6" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.workflow.subscription">
+  <param n="subscription" t="vCACCAFE:WorkflowSubscription"><![CDATA[Workflow subscription]]></param>
+  <script encoded="false"><![CDATA[return vCACCAFEEBSHelper.getCriteriaFromWorkflowSubscription(subscription);]]></script>
+</dunes-script-module>

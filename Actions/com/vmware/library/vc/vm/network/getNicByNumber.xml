@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getNicByNumber" result-type="Any" api-version="6.0.0" id="6952e91e-819a-46e7-b7d8-9d5d0766e069" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.vm.network">
+  <param n="vm" t="VC:VirtualMachine"><![CDATA[VM from which to get the network card]]></param>
+  <param n="nicPosition" t="number"><![CDATA[Let you choose if you want to get the 1st, 2nd... 5th network card. If no valid value, 1st if used.]]></param>
+  <script encoded="false"><![CDATA[var devices = vm.config.hardware.device;
+if (nicPosition <= 0 || nicPosition > 5) nicPosition = 1;
+var actualPos = 1;
+for (var i in devices) {
+	if (System.getModule("com.vmware.library.vc.vm.network").isSupportedNic(devices[i])) {
+		if (actualPos++ == nicPosition) {
+			System.log("Found a Virtual Ethernet card at " + i + ". Key: " + devices[i].key);
+			return devices[i];
+		}
+	}
+
+}
+return null]]></script>
+</dunes-script-module>

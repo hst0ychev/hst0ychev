@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="Workflow:name=generic" id="8E81808080808080808080808080808080808080011809756029349943be4c882" version="1.1.2" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Display all locks]]></display-name>
+  <description><![CDATA[Shows all locks]]></description>
+  <position y="20.0" x="180.0"/>
+  <workflow-item name="item0" out-name="item1" type="task">
+    <display-name><![CDATA[Display all locks]]></display-name>
+    <script encoded="false"><![CDATA[var locks = LockingSystem.retrieveAll();
+if ( locks != null && locks.length > 0 )  {
+	System.log( "Found " + locks.length + " locks:" );
+	for ( var ii in locks )  {
+		System.log( "\tLock " + ii + " = '" + locks[ii] + "'" );
+	}
+}
+else  {
+	System.log( "No lock found." );
+}
+]]></script>
+    <in-binding/>
+    <out-binding/>
+    <position y="80.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item1" type="end" end-mode="0">
+    <position y="110.0" x="180.0"/>
+  </workflow-item>
+  <presentation/>
+</workflow>

@@ -1,0 +1,4 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getAdHosts" result-type="Array/AD:AdHost" api-version="6.0.0" id="47952f0c-8c6c-4cfe-8180-ad140e7aa1fa" version="0.0.0" allowed-operations="vf" category-name="com.vmware.vcac.asd.endpoints.ad">
+  <script encoded="false"><![CDATA[return Server.findAllForType("AD:AdHost");]]></script>
+</dunes-script-module>

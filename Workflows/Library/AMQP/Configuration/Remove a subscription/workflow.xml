@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="Workflow:name=generic" id="A281808080808080808080808080808081808080012995053491651398b094fa1" version="1.0.1" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Remove a subscription]]></display-name>
+  <description><![CDATA[Removes an AMQP message subscription.]]></description>
+  <ref-types><![CDATA[(AMQP:Subscription)]]></ref-types>
+  <position y="20.0" x="160.0"/>
+  <input>
+    <param name="subscription" type="AMQP:Subscription">
+      <description><![CDATA[Subscription to remove]]></description>
+    </param>
+  </input>
+  <attrib name="errorCode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <workflow-item name="item0" out-name="item1" catch-name="item2" throw-bind-name="errorCode" type="task">
+    <display-name><![CDATA[Remove Subscription]]></display-name>
+    <script encoded="false"><![CDATA[subscription.remove();]]></script>
+    <in-binding>
+      <bind name="subscription" type="AMQP:Subscription" export-name="subscription"/>
+    </in-binding>
+    <out-binding/>
+    <position y="100.0" x="120.0"/>
+  </workflow-item>
+  <workflow-item name="item1" type="end" end-mode="0">
+    <position y="150.0" x="160.0"/>
+  </workflow-item>
+  <workflow-item name="item2" throw-bind-name="errorCode" type="end" end-mode="1">
+    <position y="90.0" x="280.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Remove a subscription]]></title>
+      <p-group>
+        <title><![CDATA[AMQP Subscription]]></title>
+        <desc><![CDATA[Select a subscription to remove.]]></desc>
+        <p-param name="subscription">
+          <desc><![CDATA[Subscription]]></desc>
+          <p-qual name="contextualParameter" type="void"><![CDATA[]]></p-qual>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+      </p-group>
+    </p-step>
+  </presentation>
+</workflow>

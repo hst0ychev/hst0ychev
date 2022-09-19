@@ -1,0 +1,70 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="Workflow:name=generic" id="dd3bc873-fdd7-48e2-8f96-c2460e561407" version="1.0.0" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Wait for a trap on all devices]]></display-name>
+  <description><![CDATA[Waits to recieve an SNMP trap from an unspecified device.
+If it is necessary to handle traps continuously - use the SNMP trap policy instead.]]></description>
+  <position y="20.0" x="180.0"/>
+  <input>
+    <param name="oid" type="string">
+      <description><![CDATA[OID]]></description>
+    </param>
+  </input>
+  <output>
+    <param name="trapData" type="Array/Properties"/>
+  </output>
+  <attrib name="trigger" type="Trigger" read-only="false">
+    <value encoded="n"><![CDATA[rO0ABXQAAA==]]></value>
+  </attrib>
+  <workflow-item name="item0" out-name="item2" type="waiting-event">
+    <display-name><![CDATA[Waiting event]]></display-name>
+    <in-binding>
+      <bind name="trigger.ref" type="Trigger" export-name="trigger">
+        <description><![CDATA[Trigger waiting for a specific event before continuing workflow run.]]></description>
+      </bind>
+    </in-binding>
+    <position y="150.0" x="180.0"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Initialize trap]]></display-name>
+    <script encoded="false"><![CDATA[trigger = SnmpService.createTriggerForAllDevices(oid);]]></script>
+    <in-binding>
+      <bind name="oid" type="string" export-name="oid"/>
+    </in-binding>
+    <out-binding>
+      <bind name="trigger" type="Trigger" export-name="trigger"/>
+    </out-binding>
+    <position y="100.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item3" type="task">
+    <display-name><![CDATA[Trap received]]></display-name>
+    <script encoded="false"><![CDATA[var snmpResult = SnmpService.retrieveTriggerData(trigger);
+
+var data = System.getModule("com.vmware.library.snmp").processSnmpResult(snmpResult);
+
+trapData = data;
+
+System.log("Enterprise: " + snmpResult.enterprise);
+System.getModule("com.vmware.library.snmp").logResult(data);
+
+]]></script>
+    <in-binding>
+      <bind name="trigger" type="Trigger" export-name="trigger"/>
+    </in-binding>
+    <out-binding>
+      <bind name="trapData" type="Array/Properties" export-name="trapData"/>
+    </out-binding>
+    <position y="220.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item3" type="end" end-mode="0">
+    <position y="270.0" x="180.0"/>
+  </workflow-item>
+  <presentation>
+    <p-group>
+      <title><![CDATA[SNMP trap]]></title>
+      <desc><![CDATA[Leave OID empty to continue on any SNMP trap from this device.]]></desc>
+      <p-param name="oid">
+        <desc><![CDATA[OID (optional)]]></desc>
+      </p-param>
+    </p-group>
+  </presentation>
+</workflow>

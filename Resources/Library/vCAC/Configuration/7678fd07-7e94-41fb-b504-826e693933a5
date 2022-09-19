@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<endpoint nativeId="412840c2-4ac2-42dc-acf3-ce89c7fcb95f" pluginVersion="7.6.0">
+    <properties>
+        <property type="integer" name="proxyPort">0</property>
+        <property type="integer" name="operationTimeout">0</property>
+        <property type="string" name="host">https://pcpctiaasweblb.cloud.cris.in/</property>
+        <property type="string" name="name">Infrastucture - pcpctiaasweblb.cloud.cris.in</property>
+        <property type="string" name="connectionId">7678fd07-7e94-41fb-b504-826e693933a5</property>
+        <property type="string" name="authenticationType">SSO</property>
+        <property type="string" name="sessionMode">Shared Session</property>
+        <property type="bool" name="acceptAllCertificates">false</property>
+        <property type="integer" name="connectionTimeout">0</property>
+    </properties>
+</endpoint>

@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getNetworkForResourcePoolHostVm" result-type="Array/VC:Network" api-version="6.0.0" id="515e39f3-9730-45bf-a64c-53d69cc185f6" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.network">
+  <param n="pool" t="VC:ResourcePool"><![CDATA[]]></param>
+  <param n="host" t="VC:HostSystem"><![CDATA[]]></param>
+  <param n="vm" t="VC:VirtualMachine"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[if (pool != null) {
+	var parent = pool.parent;
+	while (! (parent instanceof VcClusterComputeResource || parent instanceof VcComputeResource)) {
+		parent = parent.parent;
+	}
+	return parent.network;
+}
+if (host != null) {
+	return host.network;
+}
+if (vm != null) {
+	return System.getModule("com.vmware.library.vc.network").getNetworksForVimHost(vm.vimHost);
+}]]></script>
+</dunes-script-module>

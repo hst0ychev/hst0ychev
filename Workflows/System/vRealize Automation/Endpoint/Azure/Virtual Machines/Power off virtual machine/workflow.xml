@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="4d781074-c6ed-42f2-9298-26c4bebcbe8e" version="7.5.0" api-version="6.0.0" allowed-operations="vf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Power off virtual machine]]></display-name>
+  <description><![CDATA[Powers off the specified virtual machine and waits for the power state to become 'stopped'. After 30 seconds if the state is not changed, the workflow will throw an error.]]></description>
+  <position y="9.545454545454543" x="45.0"/>
+  <input>
+    <param name="virtualMachine" type="Azure:VirtualMachine">
+      <description><![CDATA[Azure virtual machine]]></description>
+    </param>
+  </input>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="9.045454545454543" x="324.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Power off]]></display-name>
+    <script encoded="false"><![CDATA[AzureVirtualMachineManager.powerOff(virtualMachine);
+
+var retries = 20;
+// Wait for the power state to get updated on the model. Otherwise, the resource might end up with
+// state "stopping" in the catalog, preventing Start second day operation to appear in the actions list.
+while (true) {
+    var sid = virtualMachine.internalIdString.split(",")[0];
+    var connection = AzureConnectionManager.getConnectionBySid(sid);
+    var vm = AzureVirtualMachineManager.getVirtualMachineById(connection, virtualMachine.azureId);
+    System.log("state - " + vm.powerState);
+    if(vm.powerState == "PowerState/stopped") {
+        break;
+    }
+
+    System.sleep(3000);
+    retries--;
+
+    if (retries <= 0) {
+        throw "The machine was powered off, but it failed to update its power state.";
+    }
+}]]></script>
+    <in-binding>
+      <bind name="virtualMachine" type="Azure:VirtualMachine" export-name="virtualMachine">
+        <description><![CDATA[Azure virtual machine]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <position y="19.045454545454543" x="144.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="virtualMachine">
+      <desc><![CDATA[Azure virtual machine]]></desc>
+      <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+    </p-param>
+  </presentation>
+</workflow>

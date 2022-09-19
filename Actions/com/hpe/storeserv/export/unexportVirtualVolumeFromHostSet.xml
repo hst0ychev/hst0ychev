@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="unexportVirtualVolumeFromHostSet" result-type="boolean" api-version="6.0.0" id="50b3f0f7-8197-46d7-bef3-18d9f96a5f65" version="1.0.0" allowed-operations="vf" category-name="com.hpe.storeserv.export">
+  <description><![CDATA[Unexports Virtual Volume from Host Set in the selected HPE 3PAR StoreServ array.]]></description>
+  <param n="connection" t="StoreServ:Connection"><![CDATA[StoreServ Connection.]]></param>
+  <param n="virtualVolume" t="StoreServ:Volume"><![CDATA[Virtual Volume to be unexported.]]></param>
+  <param n="lun" t="number"><![CDATA[LUN ID.]]></param>
+  <param n="hostSet" t="StoreServ:HostSet"><![CDATA[Host Set from which the Virtual Volume is to be unexported.]]></param>
+  <script encoded="false"><![CDATA[var res = connection.unpresentVVfromHostSet(virtualVolume, lun, hostSet);
+
+if(res != undefined && res == true){
+	System.log("Unexported Virtual Volume ("+virtualVolume.name+") from host set ("+hostSet.name+") successfully");
+	return true;	
+}else {
+	return false;
+}]]></script>
+</dunes-script-module>

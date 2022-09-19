@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getCustomizationGuiRunOnce" result-type="Any" api-version="6.0.0" id="00a6980c-1239-4276-b92e-497e27b94c37" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.vm.spec.identity">
+  <param n="commandList" t="Array/string"><![CDATA[A list of commands to run at first user logon, after guest customization.]]></param>
+  <script encoded="false"><![CDATA[if (commandList == null) {
+	throw "Unable to create VcCustomizationGuiRunOnce. Reason: commandList cannot be null";
+}
+var result =  new VcCustomizationGuiRunOnce();
+result.commandList = commandList;
+return result;]]></script>
+</dunes-script-module>

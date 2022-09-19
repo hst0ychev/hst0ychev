@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="Workflow:name=generic" id="c2afdc7d-55d7-4dec-9747-fefba83c164a" version="1.1.0" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Destroy a computer and delete its subtree]]></display-name>
+  <description><![CDATA[Deletes a computer from an Active Directory instance and all objects within the computer subtree.]]></description>
+  <ref-types><![CDATA[(AD:ComputerAD)]]></ref-types>
+  <position y="20.0" x="180.0"/>
+  <input>
+    <param name="computer" type="AD:ComputerAD">
+      <description><![CDATA[Computer to destroy]]></description>
+    </param>
+  </input>
+  <attrib name="deleteSubtree" type="boolean" read-only="true">
+    <value encoded="n"><![CDATA[true]]></value>
+    <description><![CDATA[Delete element subtree]]></description>
+  </attrib>
+  <workflow-item name="item2" type="end" end-mode="0">
+    <position y="145.4090909090909" x="185.0"/>
+  </workflow-item>
+  <workflow-item name="item0" out-name="item2" type="task" script-module="com.vmware.library.microsoft.activeDirectory/destroyElementRecursive">
+    <display-name><![CDATA[destroyElementRecursive]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+System.getModule("com.vmware.library.microsoft.activeDirectory").destroyElementRecursive(element,deleteSubtree) ;]]></script>
+    <in-binding>
+      <bind name="element" type="Any" export-name="computer">
+        <description><![CDATA[Any valid element from Active Directoy to destroy]]></description>
+      </bind>
+      <bind name="deleteSubtree" type="boolean" export-name="deleteSubtree"/>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Detroy an element of the Active Directory.]]></description>
+    <position y="91.77272727272727" x="145.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Destroy]]></title>
+      <p-group>
+        <title><![CDATA[Select a computer]]></title>
+        <p-param name="computer">
+          <desc><![CDATA[Computer to destroy]]></desc>
+          <p-qual kind="static" name="show-select-as" type="string"><![CDATA[drop-down]]></p-qual>
+          <p-qual name="contextualParameter" type="Void"><![CDATA[]]></p-qual>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+      </p-group>
+    </p-step>
+  </presentation>
+</workflow>

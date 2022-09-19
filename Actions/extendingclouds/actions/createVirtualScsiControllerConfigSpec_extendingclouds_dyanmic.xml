@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="createVirtualScsiControllerConfigSpec_extendingclouds_dyanmic" result-type="Any" api-version="6.0.0" id="c0ae9da6-4ed7-4f63-9baf-838b508860fc" version="0.2.0" allowed-operations="evf" category-name="extendingclouds.actions">
+  <description><![CDATA[Create a new VimVirtualDeviceConfigSpec for a VimVirtualSCSIController
+The VirtualSCSIController data object type represents a SCSI controller in a virtual machine. ]]></description>
+  <param n="type" t="string"><![CDATA[Controller type ("LSI" ,"PARA","SAS"or "BUS")]]></param>
+  <param n="scsiNumber" t="number"><![CDATA[The next available SCSI bus number]]></param>
+  <script encoded="false"><![CDATA[// Create SCSI controller
+var controller = null;
+if ( type != null  &&  "LSI".equalsIgnoreCase( type.toUpperCase() ) == true )  {
+	controller = new VcVirtualLsiLogicController();
+}else if(type != null  &&  "PARA".equalsIgnoreCase( type.toUpperCase() ) == true){
+	controller = new VcParaVirtualSCSIController();
+}else if(type != null  &&  "SAS".equalsIgnoreCase( type.toUpperCase() ) == true){
+	controller = new VcVirtualLsiLogicSASController();
+}
+else  {
+	controller = new VcVirtualBusLogicController();
+}
+controller.key = scsiNumber;
+controller.device = new Array(0);
+controller.busNumber = scsiNumber;
+controller.sharedBus = VcVirtualSCSISharing.virtualSharing;
+// Create SCSI controller ConfigSpec
+var deviceConfigSpec = new VcVirtualDeviceConfigSpec();
+deviceConfigSpec.device = controller;
+deviceConfigSpec.operation = VcVirtualDeviceConfigSpecOperation.add;
+
+return deviceConfigSpec;
+]]></script>
+</dunes-script-module>

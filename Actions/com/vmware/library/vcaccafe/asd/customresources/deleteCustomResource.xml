@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="deleteCustomResource" result-type="void" api-version="6.0.0" id="a406af23-2348-4e57-ac61-e4f0789fa97e" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.asd.customresources">
+  <param n="customResource" t="vCACCAFE:CustomResource"><![CDATA[Custom Resource to be deleted]]></param>
+  <script encoded="false"><![CDATA[System.getModule("com.vmware.library.vcaccafe.util").validateObject(customResource, "Custom resource");
+var host = vCACCAFEEntitiesFinder.getHostForEntity(customResource);
+var client = host.createAdvancedDesignerClient().getAdvancedDesignerCsResourceTypeService();
+
+System.log("Deleting custom resource " + customResource.getName() + "...");
+client.deleteResourceType(host.tenant, customResource.getId());
+System.log("Custom resource deleted");]]></script>
+</dunes-script-module>

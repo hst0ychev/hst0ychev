@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="updateWorkflowSubscription" result-type="vCACCAFE:WorkflowSubscription" api-version="6.0.0" id="d5d00e3a-c280-497e-b8a0-920a78047614" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.workflow.subscription">
+  <param n="workflowSubscription" t="vCACCAFE:WorkflowSubscription"><![CDATA[Workflow subscription]]></param>
+  <param n="name" t="string"><![CDATA[Name]]></param>
+  <param n="description" t="string"><![CDATA[Description]]></param>
+  <param n="wf" t="Workflow"><![CDATA[Workflow]]></param>
+  <param n="status" t="string"><![CDATA[Status]]></param>
+  <param n="criteria" t="string"><![CDATA[Criteria as json string]]></param>
+  <param n="priority" t="number"><![CDATA[Priority]]></param>
+  <param n="timeout" t="number"><![CDATA[Timeout in minutes]]></param>
+  <param n="version" t="string"><![CDATA[Version]]></param>
+  <script encoded="false"><![CDATA[System.getModule("com.vmware.library.vcaccafe.util").validateObject(workflowSubscription, "System workflow subscription");
+var updatedWfSubscription;
+var service;
+var host = vCACCAFEEntitiesFinder.getHostForEntity(workflowSubscription);
+
+workflowSubscription.setName(name);
+workflowSubscription.setDescription(description);
+workflowSubscription.setWorkflowId(wf.id);
+workflowSubscription.setStatus(vCACCAFEDesignerPublishStatus.fromValue(status));
+workflowSubscription.setPriority(priority);
+workflowSubscription.setTimeout(timeout);
+if(criteria){
+   vCACCAFEEBSHelper.setCriteriaToWorkflowSubscription(workflowSubscription, criteria);
+}
+var cafeVersion = new vCACCAFEVersion();
+cafeVersion.setVersion(version);
+workflowSubscription.setVersion(cafeVersion);
+
+System.log("Updating workflow subscription...");
+if(workflowSubscription.getTenantId()) {
+	service = host.createEventClient().getEventTenantWorkflowSubscriptionService();
+	service.updateTenantSubscription(host.tenant, workflowSubscription);
+	updatedWfSubscription = vCACCAFEEntitiesFinder.getTenantWorkflowSubscription(host, workflowSubscription.getId());
+} else {
+	service = host.createEventClient().getEventSystemWorkflowSubscriptionService();
+	service.updateSystemSubscription(workflowSubscription);
+	updatedWfSubscription = vCACCAFEEntitiesFinder.getSystemWorkflowSubscription(host, workflowSubscription.getId());
+}
+System.log("Workflow subscription " + workflowSubscription.getName() + " updated.");
+return updatedWfSubscription;]]></script>
+</dunes-script-module>

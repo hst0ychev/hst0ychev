@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="0bacc34c-e6c2-4c85-8504-da008e98af5c" version="0.0.0">
+  <display-name><![CDATA[NSXTHost]]></display-name>
+  <atts>
+    <att name="nsxtHost" type="REST:RESTHost" read-only="false">
+      <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='c6d5a21b-6c2c-430a-9c6a-87759270e862'&dunesName='REST:RESTHost']]></value>
+    </att>
+  </atts>
+</config-element>

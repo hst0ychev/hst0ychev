@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<endpoint pluginVersion="2.3.8">
+    <properties>
+        <property type="string" name="schema">&lt;com.vmware.o11n.plugin.rest.schema.SchemaRespository&gt;
+  &lt;sources/&gt;
+&lt;/com.vmware.o11n.plugin.rest.schema.SchemaRespository&gt;</property>
+        <property type="string" name="proxyAuthenticationType">NONE</property>
+        <property type="integer" name="operationTimeout">60</property>
+        <property type="string" name="proxySessionMode">Shared Session</property>
+        <property type="bool" name="useProxy">true</property>
+        <property type="string" name="proxyHost"></property>
+        <property type="string" name="url">http://cluscommserv.cloud.cris.in:81/SearchSvc/CVWebService.svc/</property>
+        <property type="bool" name="automaticUrlRedirection">false</property>
+        <property type="bool" name="cleanHttpContextPerRequest">false</property>
+        <property type="integer" name="proxyPort">0</property>
+        <property type="password" name="password">vcoencrypted:{riv}iQf6kKIDkBfDOIpV+DHbySv+bHD2RkITwWAoLlWizog=</property>
+        <property type="string" name="operations">&lt;list/&gt;</property>
+        <property type="bool" name="hostVerification">true</property>
+        <property type="string" name="name">cluscommserv.cloud.cris.in</property>
+        <property type="string" name="authenticationType">Basic</property>
+        <property type="string" name="sessionMode">Shared Session</property>
+        <property type="integer" name="connectionTimeout">30</property>
+        <property type="string" name="username">admin</property>
+    </properties>
+</endpoint>

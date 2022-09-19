@@ -1,0 +1,86 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="stopVM" result-type="PowerShell:PowerShellRemotePSObject" api-version="6.0.0" id="F5858080808080808080808080808080DF8080800126658240472157fdafc0fce" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.powershell.generated">
+  <description><![CDATA[Auto generated.]]></description>
+  <param n="host" t="PowerShell:PowerShellHost"><![CDATA[]]></param>
+  <param n="sessionId" t="string"><![CDATA[]]></param>
+  <param n="psVM" t="PowerShell:PowerShellRemotePSObject"><![CDATA[]]></param>
+  <param n="psKill" t="boolean"><![CDATA[]]></param>
+  <param n="psRunAsync" t="boolean"><![CDATA[]]></param>
+  <param n="psServer" t="PowerShell:PowerShellRemotePSObject"><![CDATA[]]></param>
+  <param n="psVerbose" t="boolean"><![CDATA[]]></param>
+  <param n="psDebug" t="boolean"><![CDATA[]]></param>
+  <param n="psErrorAction" t="PowerShell:PowerShellRemotePSObject"><![CDATA[]]></param>
+  <param n="psErrorVariable" t="string"><![CDATA[]]></param>
+  <param n="psOutVariable" t="string"><![CDATA[]]></param>
+  <param n="psOutBuffer" t="number"><![CDATA[]]></param>
+  <param n="psWhatIf" t="boolean"><![CDATA[]]></param>
+  <param n="psConfirm" t="boolean"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[ var oSession = host.getSession(sessionId);
+ var cmd = oSession.addCommandFromString('Stop-VM');
+ if (psVM)
+   cmd.addParameter('VM', psVM)
+ if (psKill != null )
+ {
+    val = ':$false'
+    if (psKill == true) {
+        val = ':$true'
+    }
+    cmd.addParameter('Kill'+val,'')
+ }
+ if (psRunAsync != null )
+ {
+    val = ':$false'
+    if (psRunAsync == true) {
+        val = ':$true'
+    }
+    cmd.addParameter('RunAsync'+val,'')
+ }
+ if (psServer)
+   cmd.addParameter('Server', psServer)
+ if (psVerbose != null )
+ {
+    val = ':$false'
+    if (psVerbose == true) {
+        val = ':$true'
+    }
+    cmd.addParameter('Verbose'+val,'')
+ }
+ if (psDebug != null )
+ {
+    val = ':$false'
+    if (psDebug == true) {
+        val = ':$true'
+    }
+    cmd.addParameter('Debug'+val,'')
+ }
+ if (psErrorAction)
+   cmd.addParameter('ErrorAction', psErrorAction)
+ if (psErrorVariable)
+   cmd.addParameter('ErrorVariable', psErrorVariable)
+ if (psOutVariable)
+   cmd.addParameter('OutVariable', psOutVariable)
+ if (psOutBuffer)
+   cmd.addParameter('OutBuffer', psOutBuffer)
+ if (psWhatIf != null )
+ {
+    val = ':$false'
+    if (psWhatIf == true) {
+        val = ':$true'
+    }
+    cmd.addParameter('WhatIf'+val,'')
+ }
+ if (psConfirm != null )
+ {
+    val = ':$false'
+    if (psConfirm == true) {
+        val = ':$true'
+    }
+    cmd.addParameter('Confirm'+val,'')
+ }
+var res; 
+if ( host.inPipeline(sessionId) == false ){ 
+  res = System.getModule("com.vmware.library.powershell").invokeCommand(host,sessionId) ;
+}
+return res;
+]]></script>
+</dunes-script-module>

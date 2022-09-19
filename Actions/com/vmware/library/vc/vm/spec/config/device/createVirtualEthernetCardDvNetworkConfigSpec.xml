@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="createVirtualEthernetCardDvNetworkConfigSpec" result-type="Any" api-version="6.0.0" id="d229a3d5-71d7-418e-9f01-fbf9b194dc4a" version="1.2.0" allowed-operations="vfe" category-name="com.vmware.library.vc.vm.spec.config.device">
+  <description><![CDATA[Create a new VimVirtualDeviceConfigSpec for a VimVirtualEthernetCardNetworkBackingInfo
+The virtual Ethernet card backing class. ]]></description>
+  <param n="dvPortgroup" t="VC:DistributedVirtualPortgroup"><![CDATA[]]></param>
+  <param n="macAddress" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[// Create connectable info for dvPortgroup
+var connectInfo = new VcVirtualDeviceConnectInfo();
+connectInfo.allowGuestControl = false;
+connectInfo.connected = false;
+connectInfo.startConnected = true;
+// Create Network BackingInfo
+var dvsPortConnection = new VcDistributedVirtualSwitchPortConnection();
+var dvSwitch = VcPlugin.convertToVimManagedObject(dvPortgroup, dvPortgroup.config.distributedVirtualSwitch);
+dvsPortConnection.switchUuid = dvSwitch.uuid;
+dvsPortConnection.portgroupKey = dvPortgroup.key;
+
+var netBackingInfo = new VcVirtualEthernetCardDistributedVirtualPortBackingInfo() ;
+netBackingInfo.port = dvsPortConnection;
+
+//new VimVirtualEthernetCardNetworkBackingInfo();
+//netBackingInfo.deviceName = dvPortGroup.name;
+
+// Create VirtualNetwork
+var vNetwork = new VcVirtualPCNet32();
+vNetwork.backing = netBackingInfo;
+vNetwork.key = 0;
+vNetwork.unitNumber = 0;
+if ( macAddress != null  &&  macAddress != "" )  {
+	vNetwork.addressType = "Manual";
+	vNetwork.macAddress = macAddress;
+}
+else  {
+	vNetwork.addressType = "Generated";
+}
+vNetwork.connectable = connectInfo;
+// Create Network ConfigSpec
+var deviceConfigSpec = new VcVirtualDeviceConfigSpec();
+deviceConfigSpec.device = vNetwork;
+deviceConfigSpec.operation = VcVirtualDeviceConfigSpecOperation.add;
+
+return deviceConfigSpec;
+]]></script>
+</dunes-script-module>

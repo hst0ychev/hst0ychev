@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="Workflow:name=generic" id="978080808080808080808080808080809A80808001175609873343b6bbd2e3eea" version="1.1.1" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Create a user group in an organizational unit]]></display-name>
+  <description><![CDATA[Creates a new user group in an existing container (organizational unit).]]></description>
+  <position y="20.0" x="180.0"/>
+  <input>
+    <param name="ou" type="AD:OrganizationalUnit">
+      <description><![CDATA[Organizational unit]]></description>
+    </param>
+    <param name="name" type="string">
+      <description><![CDATA[Name for the new user group]]></description>
+    </param>
+  </input>
+  <output>
+    <param name="newUsergroup" type="AD:UserGroup"/>
+  </output>
+  <workflow-item name="item2" type="end" end-mode="0">
+    <position y="210.0" x="180.0"/>
+  </workflow-item>
+  <workflow-item name="item0" out-name="item1" type="task" script-module="com.vmware.library.microsoft.activeDirectory/createUserGroup">
+    <display-name><![CDATA[createUserGroup]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+System.getModule("com.vmware.library.microsoft.activeDirectory").createUserGroup(groupName,container) ;]]></script>
+    <in-binding>
+      <bind name="groupName" type="string" export-name="name">
+        <description><![CDATA[The name for the user group]]></description>
+      </bind>
+      <bind name="container" type="AD:OrganizationalUnit" export-name="ou">
+        <description><![CDATA[Container for the new user group (either an organizational unit or a group)]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Creates a new user group in the given container (organizational unit or group).]]></description>
+    <position y="100.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item2" type="task" script-module="com.vmware.library.microsoft.activeDirectory/getUsergroupFromContainer">
+    <display-name><![CDATA[getUsergroupFromContainer]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.microsoft.activeDirectory").getUsergroupFromContainer(container,usergroupName) ;]]></script>
+    <in-binding>
+      <bind name="container" type="AD:OrganizationalUnit" export-name="ou">
+        <description><![CDATA[Organizationl unit or group]]></description>
+      </bind>
+      <bind name="usergroupName" type="string" export-name="name">
+        <description><![CDATA[Name of the usergroup]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="AD:UserGroup" export-name="newUsergroup"/>
+    </out-binding>
+    <description><![CDATA[Gets a user group by its name in the given organizational unit or group (container).]]></description>
+    <position y="160.0" x="140.0"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="name">
+      <desc><![CDATA[Name for the new user group]]></desc>
+      <p-qual name="mandatory"><![CDATA[true]]></p-qual>
+    </p-param>
+    <p-param name="ou">
+      <desc><![CDATA[Organizational unit in which to create the user group]]></desc>
+      <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+    </p-param>
+  </presentation>
+</workflow>

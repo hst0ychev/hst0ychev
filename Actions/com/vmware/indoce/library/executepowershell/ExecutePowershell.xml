@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="ExecutePowershell" result-type="Any" api-version="6.0.0" id="59a392a6-a079-47ed-9731-5f2e4f3fcd41" version="0.0.2" allowed-operations="evf" category-name="com.vmware.indoce.library.executepowershell">
+  <script encoded="false"><![CDATA[var PS = {
+    executeScript : function(psHost,script){
+        try{
+            //Open a session 
+            session = psHost.openSession();
+            //Getting the session id of current session
+            var sessionId = psHost.getSession(session.getSessionId())
+            var response = sessionId.invokeScript(script);
+			System.debug("Script completion state :"+response.getInvocationState())
+            if(response.getInvocationState() == "Failed") throw "Script invocation failed"+response.getErrors();
+             //Extract the result
+            var responseOutput =  response.getHostOutput();
+            System.debug("Response output "+responseOutput);
+        }finally{
+            if(sessionId)   psHost.closeSession(session.getSessionId());
+        }
+        return responseOutput;
+    }
+
+}
+return PS]]></script>
+</dunes-script-module>

@@ -1,0 +1,57 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="29d545aa-32bd-4a03-8f2e-b70c376398ee" version="0.0.1" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Register TimeBased Autoscale]]></display-name>
+  <position y="45.40909090909091" x="125.0"/>
+  <input>
+    <param name="dailyTimeOff" type="string"/>
+    <param name="VirtualMachine" type="VC:VirtualMachine"/>
+    <param name="dailyTimeOn" type="string"/>
+  </input>
+  <attrib name="userName" type="string" read-only="false" conf-id="7b7d48a6-af20-4a49-83b2-f06710981cb6" conf-key="username">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="password" type="SecureString" read-only="false" conf-id="7b7d48a6-af20-4a49-83b2-f06710981cb6" conf-key="password">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="404.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Scriptable task]]></display-name>
+    <script encoded="false"><![CDATA[var wfId = "44ca81a5-ccb1-489c-9870-9b0942d55840";
+runWF(wfId,userName,password,dailyTimeOff,VirtualMachine,dailyTimeOn);
+// function to launch WF
+function runWF(wfId,user,pwd,dailyTimeOff,VirtualMachine,dailyTimeOn) {
+    var workflowToLaunch = Server.getWorkflowWithId(wfId);
+    if (workflowToLaunch == null) {
+        throw "Workflow not found";
+    }
+  	var param = new Properties();
+	param.put("dailyTimeOff",dailyTimeOff);
+	param.put("VirtualMachine",VirtualMachine);
+	param.put("dailyTimeOn",dailyTimeOn);
+    System.log("Launching the workflow after recieved trap : " + wfId);
+    var wfToken = workflowToLaunch.execute(param,user,pwd);
+}]]></script>
+    <in-binding>
+      <bind name="dailyTimeOff" type="string" export-name="dailyTimeOff"/>
+      <bind name="VirtualMachine" type="VC:VirtualMachine" export-name="VirtualMachine"/>
+      <bind name="dailyTimeOn" type="string" export-name="dailyTimeOn"/>
+      <bind name="userName" type="string" export-name="userName"/>
+      <bind name="password" type="SecureString" export-name="password"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="224.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="dailyTimeOff">
+      <desc><![CDATA[dailyTimeOff]]></desc>
+    </p-param>
+    <p-param name="VirtualMachine">
+      <desc><![CDATA[VirtualMachine]]></desc>
+    </p-param>
+    <p-param name="dailyTimeOn">
+      <desc><![CDATA[dailyTimeOn]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

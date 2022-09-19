@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="592dc74f-a4ad-4975-8afa-a83b975194de" version="0.0.1">
+  <display-name><![CDATA[scaleUpAlertDefinition]]></display-name>
+  <atts>
+    <att name="name" type="string" read-only="false">
+      <value encoded="n"><![CDATA[_VerticalUp_MemCPUAlert]]></value>
+    </att>
+    <att name="description" type="string" read-only="false">
+      <value encoded="n"><![CDATA[Vertical Up Memory and CPU Alert Definition]]></value>
+    </att>
+    <att name="waitCycle" type="number" read-only="false">
+      <value encoded="n"><![CDATA[1.0]]></value>
+    </att>
+    <att name="cancelCycle" type="number" read-only="false">
+      <value encoded="n"><![CDATA[1.0]]></value>
+    </att>
+  </atts>
+</config-element>

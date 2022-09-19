@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="cloneServiceBlueprint" result-type="vCACCAFE:ServiceBlueprint" api-version="6.0.0" id="d36fb904-189c-4d88-99c7-98b73e49cbe8" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.asd.blueprint">
+  <param n="serviceBlueprint" t="vCACCAFE:ServiceBlueprint"><![CDATA[Service blueprint to be cloned]]></param>
+  <script encoded="false"><![CDATA[System.getModule("com.vmware.library.vcaccafe.util").validateObject(serviceBlueprint, "Service blueprint");
+var host = vCACCAFEEntitiesFinder.getHostForEntity(serviceBlueprint);
+var blueprintService = host.createAdvancedDesignerClient().getAdvancedDesignerServiceBlueprintService();
+
+System.log("Creating clone of service blueprint " + serviceBlueprint.getName() + "...");
+var uri = blueprintService.cloneServiceBlueprint(serviceBlueprint.getTenant() , serviceBlueprint.getId());
+System.log("Created clone of service blueprint " + serviceBlueprint.getName() + ".");
+
+var uriString = uri.toString();
+var uriParts = uriString.split("/");
+var cloneId = uriParts[uriParts.length - 1];
+return vCACCAFEEntitiesFinder.getServiceBlueprint(host, cloneId);]]></script>
+</dunes-script-module>

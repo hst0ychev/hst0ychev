@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item10" object-name="workflow:name=generic" id="84fb94dd-91f4-47ca-8853-14383e2bbdee" version="0.0.10" api-version="6.0.0" allowed-operations="vf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Clone Machine]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="EndpointIn" type="Any"/>
+    <param name="MachineIn" type="Any"/>
+    <param name="TemplateIn" type="Any"/>
+  </input>
+  <output>
+    <param name="MachineOut" type="Any"/>
+  </output>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="364.5"/>
+  </workflow-item>
+  <workflow-item name="item10" out-name="item0" type="task">
+    <display-name><![CDATA[Create Out Machine]]></display-name>
+    <script encoded="false"><![CDATA[System.log("MachineIn: " + MachineIn.toSource());
+System.log("EndpointIn: " + EndpointIn.toSource());
+System.log("TemplateIn: " + TemplateIn.toSource());
+
+for(var i = 0 ; i < MachineIn.storages.length; i++) {
+  MachineIn.storages[i].uniqueId = MachineIn.machineName + "Disk" + i;
+}
+
+MachineOut = MachineIn;
+MachineOut.uniqueId = MachineIn.machineName;
+
+//set test agent for gugent
+MachineOut.addCustomProperty("VirtualMachine.Admin.AgentID", "Test Agent");
+
+System.log("MachineOut: " + MachineOut.toSource());]]></script>
+    <in-binding>
+      <bind name="MachineIn" type="Any" export-name="MachineIn"/>
+      <bind name="EndpointIn" type="Any" export-name="EndpointIn"/>
+      <bind name="TemplateIn" type="Any" export-name="TemplateIn"/>
+    </in-binding>
+    <out-binding>
+      <bind name="MachineOut" type="Any" export-name="MachineOut"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="EndpointIn">
+      <desc><![CDATA[endpoint]]></desc>
+    </p-param>
+    <p-param name="MachineIn">
+      <desc><![CDATA[requestVirtualMachine]]></desc>
+    </p-param>
+    <p-param name="TemplateIn">
+      <desc><![CDATA[CloneFromTemplateIn]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

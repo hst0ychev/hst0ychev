@@ -1,0 +1,884 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="2c58832c-ad54-4afd-b8c6-386a4d13ce0b" version="0.0.3" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Register For AutoScale]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="deployment" type="vCACCAFE:CatalogResource"/>
+    <param name="maxMemoryThreshold" type="string"/>
+    <param name="minMemoryThreshold" type="string"/>
+    <param name="minCPUThreshold" type="string"/>
+    <param name="autoScaleOption" type="string"/>
+    <param name="virtualMachineName" type="Array/string"/>
+    <param name="waitCycle" type="number"/>
+    <param name="LBServerName" type="string"/>
+    <param name="LBPort" type="string"/>
+    <param name="maxCPUThreshold" type="string"/>
+    <param name="lbBoolean" type="boolean"/>
+  </input>
+  <attrib name="outboundName" type="string" read-only="false" conf-id="bde4442d-7171-4809-8d64-09388187aafb" conf-key="outboundName">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="vROHostName" type="string" read-only="false" conf-id="bde4442d-7171-4809-8d64-09388187aafb" conf-key="vROHostName">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="portNumber" type="string" read-only="false" conf-id="bde4442d-7171-4809-8d64-09388187aafb" conf-key="portNumber">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="community" type="string" read-only="false" conf-id="bde4442d-7171-4809-8d64-09388187aafb" conf-key="community">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="powerOn" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+  </attrib>
+  <attrib name="thinProvisioned" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+  </attrib>
+  <attrib name="template" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[true]]></value>
+  </attrib>
+  <attrib name="verticalUpMem" type="string" read-only="false" conf-id="22264574-7d03-46e4-bb79-3cf8abc4828a" conf-key="memoryName">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="verticalUpCpu" type="string" read-only="false" conf-id="22264574-7d03-46e4-bb79-3cf8abc4828a" conf-key="cpuName">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="verticalUpAlert" type="string" read-only="false" conf-id="592dc74f-a4ad-4975-8afa-a83b975194de" conf-key="name">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="horizontalOutMem" type="string" read-only="false" conf-id="16a9181f-6271-4671-982c-97f65b4ffd84" conf-key="memoryName">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="horizontalOutCpu" type="string" read-only="false" conf-id="16a9181f-6271-4671-982c-97f65b4ffd84" conf-key="cpuName">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="horizontalInMem" type="string" read-only="false" conf-id="828e147f-80da-483b-a4a5-5cdd3862a768" conf-key="memoryName">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="horizontalInCpu" type="string" read-only="false" conf-id="828e147f-80da-483b-a4a5-5cdd3862a768" conf-key="cpuName">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="horizontalOutAlert" type="string" read-only="false" conf-id="7518b759-c042-47b7-bf1a-8644d6501e20" conf-key="name">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="horizontalInAlert" type="string" read-only="false" conf-id="5de731d0-ff74-4fe8-9373-d08f28908185" conf-key="name">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Scriptable task]]></display-name>
+    <script encoded="false"><![CDATA[waitCycle = waitCycle/5;
+//get category
+var category = Server.getConfigurationElementCategoryWithPath("Helper");
+//die in a fire if non-existent
+if (category == null) {
+    throw "Configuration element category not found or empty!";
+}
+//get _all_ the elements
+var elements = category.configurationElements;
+var elementName = "vROPSAuth";
+var attributeName = "username";
+var attributeName1 = "password";
+var attributeName2 = "vROPSRest"
+var vropsRestHost
+var username;
+var password;
+//retrieve names
+for (i = 0; i < elements.length; i++) {
+    if (elements[i].name == elementName) {
+        //found required element
+        username = elements[i].getAttributeWithKey(attributeName).value;
+		password = elements[i].getAttributeWithKey(attributeName1).value;
+		vropsRestHost = elements[i].getAttributeWithKey(attributeName2).value;
+        if (username != null && password !=null) {
+            System.log("Found attribute '" + attributeName + "' in '" + elementName + "' with value '" +username + "'");
+          
+        }
+    }
+}
+//Creating Object
+var vropsObject = System.getModule("com.vmware.indcoe.library.vropsoperation").AutoScalevROPsOperations(vropsRestHost);
+//Authentication Json content
+jsonContent = '{"username":"none","password":"none"}'
+json = JSON.parse(jsonContent)
+json.username = username
+json.password = password
+authContent = JSON.stringify(json);
+//Process the token
+var token = vropsObject.getAuthenticationToken(authContent);
+System.debug("Token "+token);
+var header = new Properties();
+header.put("Authorization","vRealizeOpsToken "+token);
+
+//Prepare Naming convention for every object going to be created in vROPS
+var deploymentName = deployment.getName()
+var scaleOutMemSymName ;
+var scaleOutCPUSymName;
+var scaleInMemSymName; 
+var scaleInCPUSymName ;
+var scaleOutAlertDefName ;
+var scaleInAlertDefName ;
+var scaleUpMemSymName;
+var scaleUpCPUSymName;
+var scaleUpAlertDefName;
+var cpuSymDefId = null;
+var memSymDefId= null;
+var alertDefId
+//Create symptoms,alert,notification rule,custom groups based on condition
+if(autoScaleOption == "Vertical"){
+	scaleUpMemSymName = deploymentName+verticalUpMem;
+	scaleUpCPUSymName = deploymentName+verticalUpCpu;
+	scaleUpAlertDefName = deploymentName+verticalUpAlert;	
+	//Getting all the symptom defintions;
+	var symDefResult = vropsObject.getSymDefinition(null,header);
+	if(symDefResult["statusCode"]==200 ||symDefResult["statusCode"] ==201 ||symDefResult["statusCode"] ==204 ){
+		System.debug("Rest operation complete "+symDefResult["contentAsString"])
+	}else{
+		throw "Rest operation incomplete :"+symDefResult["contentAsString"];
+	}
+	var symptomStringContent = JSON.parse(symDefResult["contentAsString"]);
+	var arraySymDefs = symptomStringContent.symptomDefinitions;
+	for(var i =0;i<arraySymDefs.length;i++){
+		if(arraySymDefs[i].name == scaleUpCPUSymName){
+			cpuSymDefId = arraySymDefs[i].id
+			System.debug("Existing sym id "+cpuSymDefId);
+		}
+		if(arraySymDefs[i].name == scaleUpMemSymName){
+			memSymDefId = arraySymDefs[i].id
+			System.debug("Existing sym id "+memSymDefId)
+		}
+	}
+	//Verifying whether sym exist or not
+	var maxCpuSymContent;
+	var maxMemSymContent;
+	if(cpuSymDefId == null && memSymDefId == null){
+		maxCpuSymContent = '{"name":"none","adapterKindKey":"none","resourceKindKey":"none","waitCycles":"none","cancelCycles":"none","state":"none"}'
+		var json = JSON.parse(maxCpuSymContent)		
+		json.name = scaleUpCPUSymName
+		json.adapterKindKey = "VMWARE"
+		json.resourceKindKey = "VirtualMachine";
+		json.waitCycles  = waitCycle;
+		json.cancelCycles = 1;
+		json.state = {"severity":"CRITICAL","condition":{"type":"CONDITION_HT","key":"cpu|usage_average","operator":"GT","value":""+maxCPUThreshold+"","valueType":"NUMERIC","instanced":false,"thresholdType":"STATIC"}};		
+		maxCpuContent = JSON.stringify(json);
+		
+		maxMemSymContent = '{"name":"none","adapterKindKey":"none","resourceKindKey":"none","waitCycles":"none","cancelCycles":"none","state":"none"}'
+		var json = JSON.parse(maxMemSymContent)		
+		json.name = scaleUpMemSymName
+		json.adapterKindKey = "VMWARE"
+		json.resourceKindKey = "VirtualMachine";
+		json.waitCycles  = waitCycle;
+		json.cancelCycles = 1;
+		json.state = {"severity":"CRITICAL","condition":{"type":"CONDITION_HT","key":"mem|usage_average","operator":"GT","value":""+maxMemoryThreshold+"","valueType":"NUMERIC","instanced":false,"thresholdType":"STATIC"}};		
+		maxMemSymContent = JSON.stringify(json);
+		//Create mem Symtom definition
+		var cpuSymResult = vropsObject.createSymDefinition(maxCpuContent,header);
+		if(cpuSymResult["statusCode"]==200 ||cpuSymResult["statusCode"] ==201 ||cpuSymResult["statusCode"] ==204 ){
+			System.debug("Rest operation complete "+cpuSymResult["contentAsString"])
+		}else{
+			throw "Rest operation incomplete :"+cpuSymResult["contentAsString"];
+		}
+		//newly created symptom id
+		cpuSymDefId = cpuSymResult["contentAsObject"].id
+		System.debug("CPU Sym id :"+cpuSymDefId);
+		//Create cpu symptom definition	
+		var memSymResult = vropsObject.createSymDefinition(maxMemSymContent,header);
+		if(memSymResult["statusCode"]==200 ||memSymResult["statusCode"] ==201 ||memSymResult["statusCode"] ==204 ){
+			System.debug("Rest operation complete "+memSymResult["contentAsString"])
+		}else{
+			throw "Rest operation incomplete :"+memSymResult["contentAsString"];
+		}
+		//newly created symptom id
+		memSymDefId = memSymResult["contentAsObject"].id
+		System.debug("MEM Sym id "+memSymDefId);
+	}else{ System.debug("Symptom already exist skipping");}
+		//Getting all the alert definition
+		var getAlertResult = vropsObject.getAlertDefinition(null,header)
+		if(getAlertResult["statusCode"]==200 ||getAlertResult["statusCode"] ==201 ||getAlertResult["statusCode"] ==204 ){
+			System.debug("Rest operation complete "+getAlertResult["contentAsString"])
+		}else{
+			throw "Rest operation incomplete :"+getAlertResult["contentAsString"];
+		}
+		var alertDefId = null;
+		var alertStringContent = JSON.parse(getAlertResult["contentAsString"]);
+		var arrayAlertDefs = alertStringContent.alertDefinitions;
+		for(var i =0;i<arrayAlertDefs.length;i++){
+			if(arrayAlertDefs[i].name == scaleUpAlertDefName){
+				alertDefId = arrayAlertDefs[i].id
+				System.debug("Existing Alert def id :"+alertDefId);
+			}			
+		}
+		var alertStrContent;
+		var alertDefId
+		//Create Alert definition
+		if(alertDefId == null){
+			var alertDefContent = '{"name":"none","description":"none","adapterKindKey":"none","resourceKindKey":"none","waitCycles":"none","cancelCycles":"none","type":"none","subType":"none","states":"none"}'
+			var json = JSON.parse(alertDefContent)			
+			json.name = scaleUpAlertDefName;
+			json.description = scaleUpAlertDefName
+			json.adapterKindKey = "VMWARE"
+			json.resourceKindKey = "VirtualMachine";
+			json.waitCycles  = waitCycle;
+			json.cancelCycles = 1;
+			json.type = 15;
+			json.subType = 19;
+			json.states = [{"severity":"AUTO","base-symptom-set":{"type":"SYMPTOM_SET","relation":"SELF","symptomSetOperator":"OR","symptomDefinitionIds":[""+cpuSymDefId+"",""+memSymDefId+""]},"impact":{"impactType":"BADGE","detail":"health"}}]			
+			alertStrContent = JSON.stringify(json);
+			//calling create alert def
+			var alertResult = vropsObject.createAlertDefinition(alertStrContent,header);
+			if(alertResult["statusCode"]==200 ||alertResult["statusCode"] ==201 ||alertResult["statusCode"] ==204 ){
+				System.debug("Rest operation complete "+alertResult["contentAsString"])
+			}else{
+				throw "Rest operation incomplete :"+alertResult["contentAsString"];
+			}
+			alertDefId = alertResult["contentAsObject"].id
+		}		
+		//Get all adapter resources 
+		var adapterContent = vropsObject.getAdapterResource(null,header,"VMWARE");
+		if(adapterContent["statusCode"]==200 ||adapterContent["statusCode"] ==201 ||adapterContent["statusCode"] ==204 ){
+			System.debug("Rest operation complete "+adapterContent["contentAsString"])
+		}else{
+			throw "Rest operation incomplete :"+adapterContent["contentAsString"];
+		}
+		var vmIdentifier = new Array()
+		var content = JSON.parse(adapterContent["contentAsString"])
+		for(var i=0;i<content.resourceList.length;i++){
+			for(var j=0;j<virtualMachineName.length;j++){
+				if(content.resourceList[i].resourceKey.name == virtualMachineName[j]){
+					vmIdentifier.push(content.resourceList[i].identifier);
+					System.log("vROPS object VM ID "+ vmIdentifier);
+				}
+			}
+		}
+		//Get all the custom groups
+		var getCustomGrp = vropsObject.getCustomGroups(null,header);
+		if(getCustomGrp["statusCode"]==200 ||getCustomGrp["statusCode"] ==201 ||getCustomGrp["statusCode"] ==204 ){
+			System.debug("Rest operation complete "+getCustomGrp["contentAsString"])
+		}else{
+			throw "Rest operation incomplete :"+getCustomGrp["contentAsString"];
+		}
+		var deploymentName = autoScaleOption+"-"+deploymentName+"-CG";
+		System.debug("Checking custom group exist");
+		var customGroupFlag = false;
+		var customGrpId;	
+		for(var i =0;i<getCustomGrp["contentAsObject"].groups.length;i++){
+			if(getCustomGrp["contentAsObject"].groups[i].resourceKey.name == deploymentName){
+				customGrpId = getCustomGrp["contentAsObject"].groups[i].id;
+				System.debug("Custom group exists ");
+				customGroupFlag = true;
+			}
+		}
+		var customGroupContent
+		if(customGroupFlag == false){
+			var customGrpContent = '{"resourceKey":"none","description":"none","membershipDefinition":"none","identifier" : "none"}'
+			var json = JSON.parse(customGrpContent)
+			json.description = "Custom Group for CPU and Memory Alert"
+			json.resourceKey = {"name":""+deploymentName+"","adapterKindKey":"Container","resourceKindKey":"Function","resourceIdentifiers":[]}
+			json.membershipDefinition = {"includedResources":vmIdentifier,"excludedResources":[],"rules":[]}			
+			json.identifier = null
+			customGroupContent = JSON.stringify(json);
+			var customGrpResult = vropsObject.createCustomGroups(customGroupContent,header);
+			if(customGrpResult["statusCode"]==200 ||customGrpResult["statusCode"] ==201 ||customGrpResult["statusCode"] ==204 ){
+				System.debug("Rest operation complete "+customGrpResult["contentAsString"])
+			}else{
+				throw "Rest operation incomplete :"+customGrpResult["contentAsString"];
+			}
+			customGrpId = customGrpResult["contentAsObject"].id;
+			System.debug("Custom grp identifier "+customGrpId);
+		}
+		
+		//Get all outbound plugins
+		var outBoundFlag = false
+		var outBoundId;
+		var getOutBoundContent = vropsObject.getOutBound(null,header);
+		if(getOutBoundContent["statusCode"]==200 ||getOutBoundContent["statusCode"] ==201 ||getOutBoundContent["statusCode"] ==204 ){
+			System.debug("Rest operation complete "+getOutBoundContent["contentAsString"])
+		}else{
+			throw "Rest operation incomplete :"+getOutBoundContent["contentAsString"];
+		}
+		for(var i=0;i<getOutBoundContent["contentAsObject"].notificationPluginInstances.length;i++){
+			if(getOutBoundContent["contentAsObject"].notificationPluginInstances[i].name == outboundName){
+				outBoundId = getOutBoundContent["contentAsObject"].notificationPluginInstances[i].pluginId
+				outBoundFlag = true;
+			}
+		}
+		
+		if(outBoundFlag == false){
+			var outBoundJson = {"pluginTypeId":"SNMP Trap","pluginId":null,"name":""+outboundName+"","description":"vRO SNMP outbound","version":0,"configValues":[{"name":"destination_host","value":""+vROHostName+""},{"name":"port","value":""+portNumber+""},{"name":"community","value":""+community+""}]}
+			var outboundSettingContent = JSON.stringify(outBoundJson)
+			var outBoundResult = vropsObject.createOutBound(outboundSettingContent,header)
+			if(outBoundResult["statusCode"]==200 ||outBoundResult["statusCode"] ==201 ||outBoundResult["statusCode"] ==204 ){
+				System.debug("Rest operation complete "+outBoundResult["contentAsString"])
+			}else{
+				throw "Rest operation incomplete :"+outBoundResult["contentAsString"];
+			}
+			outBoundId = outBoundResult["contentAsObject"].pluginId
+			System.debug("Outbound id "+outBoundId)
+		}
+		//Enable the outbound plugin
+		var enableResult = vropsObject.enableOutBound(null,header,outBoundId,true);
+		if(enableResult["statusCode"]==200 || enableResult["statusCode"]==201 || enableResult["statusCode"]==204){
+			System.debug("Rest Operation complete :"+enableResult["contentAsString"])
+		}else{
+			throw "Rest operation in complete :"+enableResult["contentAsString"];
+		}
+		//Get All notification rule plugin
+		var notificationRuleFlag = false;
+		var getNotifyContent = vropsObject.getNotificationRule(null,header);
+		if(getNotifyContent["statusCode"]==200 ||getNotifyContent["statusCode"] ==201 ||getNotifyContent["statusCode"] ==204 ){
+			System.debug("Rest operation complete "+getNotifyContent["contentAsString"])
+		}else{
+			throw "Rest operation incomplete :"+getNotifyContent["contentAsString"];
+		}
+		for(var i=0;i<getNotifyContent["contentAsObject"].rules.length;i++){
+			if(getNotifyContent["contentAsObject"].rules[i].name == scaleUpAlertDefName){
+				notificationRuleFlag = true
+			}
+		}
+		if(notificationRuleFlag == false){
+			var json = {
+			  "id" : null,
+			  "name" : ""+scaleUpAlertDefName+"",
+			  "pluginId" : ""+outBoundId+"",
+			  "alertControlStates" : ["OPEN"],
+			  "alertStatuses" : ["NEW"],
+			  "criticalities" : ["CRITICAL"],
+			   "resourceFilter" :{"resourceId":""+customGrpId+"","matchResourceIdOnly":"","childrenResourceKindFilters":["VirtualMachine"],"relationship":"DESCENDANT"},
+			  "alertTypeFilters" : [ ],
+			  "alertDefinitionIdFilters" : {
+			    "values" : [ ""+alertDefId+"" ]
+			  },
+			  "alertImpactFilters" : null,
+			  "properties" : [ ],
+			  "collectorUUId" : null,
+			  "collectorGroupId" : null,
+			  "others" : [ ],
+			  "otherAttributes" : { }
+			}
+			notificationContent = JSON.stringify(json);
+			//creating new notification rule
+			var notifyResult = vropsObject.createNotificationRule(notificationContent,header);
+			if(notifyResult["statusCode"]==200 ||notifyResult["statusCode"] ==201 ||notifyResult["statusCode"] ==204 ){
+				System.debug("Rest operation complete "+notifyResult["contentAsString"])
+			}else{
+				throw "Rest operation incomplete :"+notifyResult["contentAsString"];
+			}
+		}
+}
+
+else if(autoScaleOption == "Horizontal"){
+	scaleOutMemSymName = deploymentName+horizontalOutMem;
+	scaleOutCPUSymName = deploymentName+horizontalOutCpu;
+	scaleInMemSymName = deploymentName+horizontalInMem;
+	scaleInCPUSymName = deploymentName+horizontalInCpu;
+	scaleOutAlertDefName = deploymentName+horizontalOutAlert;
+	scaleInAlertDefName = deploymentName+horizontalInAlert;
+	var outcpuSymDefId;
+	var outmemSymDefId;
+	var incpuSymDefId;
+	var inmemSymDefId;
+		//Getting all the symptom defintions;
+	var symDefResult = vropsObject.getSymDefinition(null,header);
+	if(symDefResult["statusCode"]==200 ||symDefResult["statusCode"] ==201 ||symDefResult["statusCode"] ==204 ){
+		//System.debug("Rest operation complete "+symDefResult["contentAsString"])
+	}else{
+		throw "Rest operation incomplete :"+symDefResult["contentAsString"];
+	}
+	var symptomStringContent = JSON.parse(symDefResult["contentAsString"]);
+	var arraySymDefs = symptomStringContent.symptomDefinitions;
+	for(var i =0;i<arraySymDefs.length;i++){
+		if(arraySymDefs[i].name == scaleOutCPUSymName){
+			outcpuSymDefId = arraySymDefs[i].id
+			System.log("Existing out cpu sym id "+outcpuSymDefId);
+		}
+		if(arraySymDefs[i].name == scaleOutMemSymName){
+			outmemSymDefId = arraySymDefs[i].id
+			System.log("Existing out mem sym id "+outmemSymDefId)
+		}
+		if(arraySymDefs[i].name == scaleInCPUSymName){
+			incpuSymDefId = arraySymDefs[i].id
+			System.log("Existing in cpu sym id "+incpuSymDefId);
+		}
+		if(arraySymDefs[i].name == scaleInMemSymName){
+			inmemSymDefId = arraySymDefs[i].id
+			System.log("Existing in mem sym id "+inmemSymDefId)
+		}
+	}
+	//Verifying whether sym exist or not
+	var outmaxCpuSymContent;
+	var outmaxMemSymContent;
+	var inmaxCpuSymContent;
+	var inmaxMemSymContent;
+	if(outcpuSymDefId == null || outmemSymDefId == null){
+		outmaxCpuSymContent = '{"name":"none","adapterKindKey":"none","resourceKindKey":"none","waitCycles":"none","cancelCycles":"none","state":"none"}'
+		var json = JSON.parse(outmaxCpuSymContent)		
+		json.name = scaleOutCPUSymName
+		json.adapterKindKey = "VMWARE"
+		json.resourceKindKey = "VirtualMachine";
+		json.waitCycles  = waitCycle;
+		json.cancelCycles = 1;
+		json.state = {"severity":"CRITICAL","condition":{"type":"CONDITION_HT","key":"cpu|usage_average","operator":"GT","value":""+maxCPUThreshold+"","valueType":"NUMERIC","instanced":false,"thresholdType":"STATIC"}};		
+		outmaxCpuContent = JSON.stringify(json);
+		
+		outmaxMemSymContent = '{"name":"none","adapterKindKey":"none","resourceKindKey":"none","waitCycles":"none","cancelCycles":"none","state":"none"}'
+		var json = JSON.parse(outmaxMemSymContent)		
+		json.name = scaleOutMemSymName
+		json.adapterKindKey = "VMWARE"
+		json.resourceKindKey = "VirtualMachine";
+		json.waitCycles  = waitCycle;
+		json.cancelCycles = 1;
+		json.state = {"severity":"CRITICAL","condition":{"type":"CONDITION_HT","key":"mem|usage_average","operator":"GT","value":""+maxMemoryThreshold+"","valueType":"NUMERIC","instanced":false,"thresholdType":"STATIC"}};		
+		outmaxMemSymContent = JSON.stringify(json);
+		//Create mem Symtom definition
+		var cpuSymResult = vropsObject.createSymDefinition(outmaxCpuContent,header);
+		if(cpuSymResult["statusCode"]==200 ||cpuSymResult["statusCode"] ==201 ||cpuSymResult["statusCode"] ==204 ){
+			System.debug("Rest operation complete "+cpuSymResult["contentAsString"])
+		}else{
+			throw "Rest operation incomplete :"+cpuSymResult["contentAsString"];
+		}
+		//newly created symptom id
+		outcpuSymDefId = cpuSymResult["contentAsObject"].id
+		System.debug("Out CPU Sym id "+outcpuSymDefId)
+		//Create cpu symptom definition	
+		var memSymResult = vropsObject.createSymDefinition(outmaxMemSymContent,header);
+		if(memSymResult["statusCode"]==200 ||memSymResult["statusCode"] ==201 ||memSymResult["statusCode"] ==204 ){
+			//System.debug("Rest operation complete "+memSymResult["contentAsString"])
+		}else{
+			throw "Rest operation incomplete :"+memSymResult["contentAsString"];
+		}
+		//newly created symptom id
+		outmemSymDefId = memSymResult["contentAsObject"].id
+		System.debug("Out Mem Sym id "+outmemSymDefId)
+	}if(incpuSymDefId == null || inmemSymDefId == null ){
+		//Scale In Symptom definition
+		inmaxCpuSymContent = '{"name":"none","adapterKindKey":"none","resourceKindKey":"none","waitCycles":"none","cancelCycles":"none","state":"none"}'
+		var json = JSON.parse(inmaxCpuSymContent)		
+		json.name = scaleInCPUSymName
+		json.adapterKindKey = "VMWARE"
+		json.resourceKindKey = "VirtualMachine";
+		json.waitCycles  = waitCycle;
+		json.cancelCycles = 1;
+		json.state = {"severity":"WARNING","condition":{"type":"CONDITION_HT","key":"cpu|usage_average","operator":"LT","value":""+minCPUThreshold+"","valueType":"NUMERIC","instanced":false,"thresholdType":"STATIC"}};		
+		inmaxCpuContent = JSON.stringify(json);
+		
+		inmaxMemSymContent = '{"name":"none","adapterKindKey":"none","resourceKindKey":"none","waitCycles":"none","cancelCycles":"none","state":"none"}'
+		var json = JSON.parse(inmaxMemSymContent)		
+		json.name = scaleInMemSymName
+		json.adapterKindKey = "VMWARE"
+		json.resourceKindKey = "VirtualMachine";
+		json.waitCycles  = waitCycle;
+		json.cancelCycles = 1;
+		json.state = {"severity":"WARNING","condition":{"type":"CONDITION_HT","key":"mem|usage_average","operator":"LT","value":""+minMemoryThreshold+"","valueType":"NUMERIC","instanced":false,"thresholdType":"STATIC"}};		
+		inmaxMemSymContent = JSON.stringify(json);
+		//Create mem Symtom definition
+		var cpuSymResult = vropsObject.createSymDefinition(inmaxCpuContent,header);
+		if(cpuSymResult["statusCode"]==200 ||cpuSymResult["statusCode"] ==201 ||cpuSymResult["statusCode"] ==204 ){
+			//System.debug("Rest operation complete "+cpuSymResult["contentAsString"])
+		}else{
+			throw "Rest operation incomplete :"+cpuSymResult["contentAsString"];
+		}
+		//newly created symptom id
+		incpuSymDefId = cpuSymResult["contentAsObject"].id
+		System.debug("In cpu sym id "+incpuSymDefId)
+		//Create cpu symptom definition	
+		var memSymResult = vropsObject.createSymDefinition(inmaxMemSymContent,header);
+		if(memSymResult["statusCode"]==200 ||memSymResult["statusCode"] ==201 ||memSymResult["statusCode"] ==204 ){
+			//System.debug("Rest operation complete "+memSymResult["contentAsString"])
+		}else{
+			throw "Rest operation incomplete :"+memSymResult["contentAsString"];
+		}
+		//newly created symptom id
+		inmemSymDefId = memSymResult["contentAsObject"].id
+		System.debug("In Mem sym id "+inmemSymDefId);
+		
+	}else{ System.debug("Symptom already exist skipping");}
+	
+		//Alert Definition
+		//Getting all the alert definition
+		var getAlertResult = vropsObject.getAlertDefinition(null,header)
+		if(getAlertResult["statusCode"]==200 ||getAlertResult["statusCode"] ==201 ||getAlertResult["statusCode"] ==204 ){
+			//System.debug("Rest operation complete "+getAlertResult["contentAsString"])
+		}else{
+			throw "Rest operation incomplete :"+getAlertResult["contentAsString"];
+		}
+		var outalertDefId = null;
+		var inalertDefId = null;
+		var alertStringContent = JSON.parse(getAlertResult["contentAsString"]);
+		var arrayAlertDefs = alertStringContent.alertDefinitions;
+		for(var i =0;i<arrayAlertDefs.length;i++){
+			if(arrayAlertDefs[i].name == scaleOutAlertDefName){
+				outalertDefId = arrayAlertDefs[i].id
+				System.log("Existing out Alert id "+outalertDefId);
+			}
+			if(arrayAlertDefs[i].name == scaleInAlertDefName){
+				inalertDefId = arrayAlertDefs[i].id
+				System.log("Existing In Alert id "+inalertDefId);
+			}		
+		}
+		var outalertStrContent;
+		var inalertStrContent;
+		//Create Alert definition
+		if(outalertDefId == null ){
+			var alertDefContent = '{"name":"none","description":"none","adapterKindKey":"none","resourceKindKey":"none","waitCycles":"none","cancelCycles":"none","type":"none","subType":"none","states":"none"}'
+			var json = JSON.parse(alertDefContent)			
+			json.name = scaleOutAlertDefName;
+			json.description = scaleOutAlertDefName
+			json.adapterKindKey = "VMWARE"
+			json.resourceKindKey = "VirtualMachine";
+			json.waitCycles  = waitCycle;
+			json.cancelCycles = 1;
+			json.type = 15;
+			json.subType = 19;
+			json.states = [{"severity":"AUTO","base-symptom-set":{"type":"SYMPTOM_SET","relation":"SELF","symptomSetOperator":"OR","symptomDefinitionIds":[""+outcpuSymDefId+"",""+outmemSymDefId+""]},"impact":{"impactType":"BADGE","detail":"health"}}]			
+			outalertStrContent = JSON.stringify(json);
+			System.debug("Out alert content "+outalertStrContent)
+			//calling create alert def
+			var outalertResult = vropsObject.createAlertDefinition(outalertStrContent,header)
+			if(outalertResult["statusCode"]==200 ||outalertResult["statusCode"] ==201 ||outalertResult["statusCode"] ==204 ){
+				//System.debug("Rest operation complete "+outalertResult["contentAsString"])
+			}else{
+				throw "Rest operation incomplete :"+outalertResult["contentAsString"];
+			}
+			outalertDefId = outalertResult["contentAsObject"].id
+		}
+		if(inalertDefId == null){
+			var alertDefContent = '{"name":"none","description":"none","adapterKindKey":"none","resourceKindKey":"none","waitCycles":"none","cancelCycles":"none","type":"none","subType":"none","states":"none"}'
+			var json = JSON.parse(alertDefContent)			
+			json.name = scaleInAlertDefName;
+			json.description = scaleInAlertDefName
+			json.adapterKindKey = "VMWARE"
+			json.resourceKindKey = "VirtualMachine";
+			json.waitCycles  = waitCycle;
+			json.cancelCycles = 1;
+			json.type = 15;
+			json.subType = 19;
+			json.states = [{"severity":"AUTO","base-symptom-set":{"type":"SYMPTOM_SET","relation":"SELF","symptomSetOperator":"OR","symptomDefinitionIds":[""+incpuSymDefId+"",""+inmemSymDefId+""]},"impact":{"impactType":"BADGE","detail":"health"}}]			
+			inalertStrContent = JSON.stringify(json);
+			System.debug("In alert content "+inalertStrContent)
+			var inalertResult = vropsObject.createAlertDefinition(inalertStrContent,header)
+			if(inalertResult["statusCode"]==200 ||inalertResult["statusCode"] ==201 ||inalertResult["statusCode"] ==204 ){
+				//System.debug("Rest operation complete "+inalertResult["contentAsString"])
+			}else{
+				throw "Rest operation incomplete :"+inalertResult["contentAsString"];
+			}
+			//Getting newly created alert definition id			
+			inalertDefId = inalertResult["contentAsObject"].id
+		}
+		//Get all adapter resources 
+		var adapterContent = vropsObject.getAdapterResource(null,header,"VMWARE");
+		if(adapterContent["statusCode"]==200 ||adapterContent["statusCode"] ==201 ||adapterContent["statusCode"] ==204 ){
+			//System.debug("Rest operation complete "+adapterContent["contentAsString"])
+		}else{
+			throw "Rest operation incomplete :"+adapterContent["contentAsString"];
+		}
+		var vmIdentifier = new Array()
+		var content = JSON.parse(adapterContent["contentAsString"])
+		for(var i=0;i<content.resourceList.length;i++){
+			for(var j=0;j<virtualMachineName.length;j++){
+				if(content.resourceList[i].resourceKey.name == virtualMachineName[j]){
+					vmIdentifier.push(content.resourceList[i].identifier);
+					System.log("vROPS VM object id "+ vmIdentifier);
+				}
+			}
+		}
+		//Get all the custom groups
+		var getCustomGrp = vropsObject.getCustomGroups(null,header);
+		if(getCustomGrp["statusCode"]==200 ||getCustomGrp["statusCode"] ==201 ||getCustomGrp["statusCode"] ==204 ){
+			//System.debug("Rest operation complete "+getCustomGrp["contentAsString"])
+		}else{
+			throw "Rest operation incomplete :"+getCustomGrp["contentAsString"];
+		}
+		var defaultDeploymentName = deploymentName;
+		var deploymentName = autoScaleOption+"-"+deploymentName+"-CG";
+		System.debug("Checking custom group exist");
+		var customGroupFlag = false;
+		var customGrpId;
+		for(var i =0;i<getCustomGrp["contentAsObject"].groups.length;i++){
+			if(getCustomGrp["contentAsObject"].groups[i].resourceKey.name == deploymentName){
+				customGrpId = getCustomGrp["contentAsObject"].groups[i].id;
+				System.debug("Custom group exists "+customGrpId);
+				customGroupFlag = true;
+			}
+		}
+		var customGroupContent
+		if(customGroupFlag == false){
+			customGrpContent = '{"resourceKey":"none","description":"none","membershipDefinition":"none","identifier" : "none"}'
+			var json = JSON.parse(customGrpContent)
+			json.description = "Custom Group for CPU and Memory Alert"
+			json.resourceKey = {"name":""+deploymentName+"","adapterKindKey":"Container","resourceKindKey":"Function","resourceIdentifiers":[]}
+			json.membershipDefinition = {"includedResources":vmIdentifier,"excludedResources":[],"rules":[]}			
+			json.identifier = null
+			customGroupContent = JSON.stringify(json);
+			System.debug("Custom grp content "+customGroupContent)
+			var customGrpResult = vropsObject.createCustomGroups(customGroupContent,header);
+			if(customGrpResult["statusCode"]==200 ||customGrpResult["statusCode"] ==201 ||customGrpResult["statusCode"] ==204 ){
+				//System.debug("Rest operation complete "+customGrpResult["contentAsString"])
+			}else{
+				throw "Rest operation incomplete :"+customGrpResult["contentAsString"];
+			}
+			customGrpId = customGrpResult["contentAsObject"].id;
+			System.debug("Custom grp identifier "+customGrpId);
+		}		
+		//Get all outbound plugins
+		var outBoundFlag = false
+		var getOutBoundContent = vropsObject.getOutBound(null,header);
+		if(getOutBoundContent["statusCode"]==200 ||getOutBoundContent["statusCode"] ==201 ||getOutBoundContent["statusCode"] ==204 ){
+			//System.debug("Rest operation complete "+getOutBoundContent["contentAsString"])
+		}else{
+			throw "Rest operation incomplete :"+getOutBoundContent["contentAsString"];
+		}
+		for(var i=0;i<getOutBoundContent["contentAsObject"].notificationPluginInstances.length;i++){
+			if(getOutBoundContent["contentAsObject"].notificationPluginInstances[i].name == outboundName){
+				outBoundId = getOutBoundContent["contentAsObject"].notificationPluginInstances[i].pluginId
+				outBoundFlag = true;
+			}
+		}
+		var outBoundId;
+		if(outBoundFlag == false){
+			var outBoundJson = {"pluginTypeId":"SNMP Trap","pluginId":null,"name":""+outboundName+"","description":"vRO SNMP outbound","version":0,"configValues":[{"name":"destination_host","value":""+vROHostName+""},{"name":"port","value":""+portNumber+""},{"name":"community","value":""+community+""}]}
+			var outboundSettingContent = JSON.stringify(outBoundJson)
+			System.debug("Out bound content "+outboundSettingContent)
+			var outBoundResult = vropsObject.createOutBound(outboundSettingContent,header);
+			if(outBoundResult["statusCode"]==200 ||outBoundResult["statusCode"] ==201 ||outBoundResult["statusCode"] ==204 ){
+				//System.debug("Rest operation complete "+outBoundResult["contentAsString"])
+			}else{
+				throw "Rest operation incomplete :"+outBoundResult["contentAsString"];
+			}
+			outBoundId = outBoundResult["contentAsObject"].pluginId
+		}
+		//Enable the outbound plugin
+		var enableResult = vropsObject.enableOutBound(null,header,outBoundId,true);
+		if(enableResult["statusCode"]==200 || enableResult["statusCode"]==201 || enableResult["statusCode"]==204){
+			//System.debug("Rest Operation complete :"+enableResult["contentAsString"])
+		}else{
+			throw "Rest operation in complete :"+enableResult["contentAsString"];
+		}
+		//Get All notification rule plugin 
+		var outnotificationRuleFlag = false;
+		var innotificationRuleFlag= false;
+		var getNotifyContent = vropsObject.getNotificationRule(null,header);
+		if(getNotifyContent["statusCode"]==200 ||getNotifyContent["statusCode"] ==201 ||getNotifyContent["statusCode"] ==204 ){
+			//System.debug("Rest operation complete "+getNotifyContent["contentAsString"])
+		}else{
+			throw "Rest operation incomplete :"+getNotifyContent["contentAsString"];
+		}
+		for(var i=0;i<getNotifyContent["contentAsObject"].rules.length;i++){
+			if(getNotifyContent["contentAsObject"].rules[i].name == scaleOutAlertDefName){
+				outnotificationRuleFlag = true
+			}
+			if(getNotifyContent["contentAsObject"].rules[i].name == scaleInAlertDefName){
+				innotificationRuleFlag = true
+			}
+		}
+		if(outnotificationRuleFlag == false){
+			var json = {
+			  "id" : null,
+			  "name" : ""+scaleOutAlertDefName+"",
+			  "pluginId" : ""+outBoundId+"",
+			  "alertControlStates" : ["OPEN"],
+			  "alertStatuses" : ["NEW"],
+			  "criticalities" : ["CRITICAL"],
+			   "resourceFilter" :{"resourceId":""+customGrpId+"","matchResourceIdOnly":"","childrenResourceKindFilters":["VirtualMachine"],"relationship":"DESCENDANT"},
+			  "alertTypeFilters" : [ ],
+			  "alertDefinitionIdFilters" : {
+			    "values" : [ ""+outalertDefId+"" ]
+			  },
+			  "alertImpactFilters" : null,
+			  "properties" : [ ],
+			  "collectorUUId" : null,
+			  "collectorGroupId" : null,
+			  "others" : [ ],
+			  "otherAttributes" : { }
+			}
+			outnotificationContent = JSON.stringify(json);
+			System.debug("Out notification content "+outnotificationContent)
+			//creating new notification rule
+			var outNotifyRule = vropsObject.createNotificationRule(outnotificationContent,header);
+			if(outNotifyRule["statusCode"]==200 ||outNotifyRule["statusCode"] ==201 ||outNotifyRule["statusCode"] ==204 ){
+				//System.debug("Rest operation complete "+outNotifyRule["contentAsString"])
+			}else{
+				throw "Rest operation incomplete :"+outNotifyRule["contentAsString"];
+			}
+		}
+		if(innotificationRuleFlag == false){
+			var json = {
+			  "id" : null,
+			  "name" : ""+scaleInAlertDefName+"",
+			  "pluginId" : ""+outBoundId+"",
+			  "alertControlStates" : ["OPEN"],
+			  "alertStatuses" : ["NEW"],
+			  "criticalities" : ["CRITICAL"],
+			   "resourceFilter" :{"resourceId":""+customGrpId+"","matchResourceIdOnly":"","childrenResourceKindFilters":["VirtualMachine"],"relationship":"DESCENDANT"},
+			  "alertTypeFilters" : [ ],
+			  "alertDefinitionIdFilters" : {
+			    "values" : [ ""+inalertDefId+"" ]
+			  },
+			  "alertImpactFilters" : null,
+			  "properties" : [ ],
+			  "collectorUUId" : null,
+			  "collectorGroupId" : null,
+			  "others" : [ ],
+			  "otherAttributes" : { }
+			}
+			innotificationContent = JSON.stringify(json);
+			System.debug("In notification content "+innotificationContent)
+			//creating new notification rule
+			var inNotifyRule  = vropsObject.createNotificationRule(innotificationContent,header);
+			if(inNotifyRule["statusCode"]==200 ||inNotifyRule["statusCode"] ==201 ||inNotifyRule["statusCode"] ==204 ){
+				//System.debug("Rest operation complete "+inNotifyRule["contentAsString"])
+			}else{
+				throw "Rest operation incomplete :"+inNotifyRule["contentAsString"];
+			}
+		}
+		//Cloning selected Virtual Machine
+		var basicClone = System.getModule("com.vmware.indcoe.library.vrautil").BasicClone()
+		var cloneResult = basicClone.cloneVM(virtualMachineName[0],powerOn,thinProvisioned,template);
+		
+		/** Check and call the funtion accordingly
+		**/
+		var createIfMissingFlag = false
+		var lbElementMissing = true;
+		var tempElementmissing = true;
+        var existingResourceElement;
+		var existingTemResourceElement;
+        var category = Server.getResourceElementCategoryWithPath("Autoscale/Service");
+        if(category == null || category == undefined)
+            createIfMissingFlag = true
+        else{
+            System.log("Entered into else loop")
+            var resourceElements = category.resourceElements
+            if(resourceElements == null || resourceElements == undefined)
+                createIfMissingFlag = true
+            else{
+                for(var x in resourceElements){
+                    System.log("Entered into for loop");
+                    if(resourceElements[x].name == "LBDetails"){
+                        createIfMissingFlag = false;
+						lbElementMissing = false;
+                        existingResourceElement = resourceElements[x]                        
+                    }
+			    }
+            }
+        }
+		//Creating or updating resource element for LB details
+		var resourceElem = System.getModule("com.vmware.indcoe.library.nsxlbgeneric").CreateUpdateResourceElement("Autoscale/Service","LBDetails")
+		if(createIfMissingFlag == true && lbElementMissing == true){
+			System.debug("LB If loop")
+			var jsonContent = {"LBDetails":[{"deploymentName":""+defaultDeploymentName+"","lbName":""+LBServerName+"","lbPort":""+LBPort+""}]}
+			//var strJson = JSON.stringify(jsonContent)
+			var mimeType = "text/json";
+			resourceElem.createResElement(jsonContent,mimeType)
+		}else{
+			System.debug("LB else loop")
+			var existingContent = resourceElem.getResElementContent(existingResourceElement);
+			var newContent = {"deploymentName":""+defaultDeploymentName+"","lbName":""+LBServerName+"","lbPort":""+LBPort+""}
+			existingContent.LBDetails.push(newContent)
+			resourceElem.updateResElement(existingResourceElement,existingContent,"text/json")
+		}
+		var category = Server.getResourceElementCategoryWithPath("Autoscale/Service");
+        if(category == null || category == undefined)
+            createIfMissingFlag = true
+        else{
+            System.log("Entered into else loop")
+            var resourceElements = category.resourceElements
+            if(resourceElements == null || resourceElements == undefined)
+                createIfMissingFlag = true
+            else{
+                for(var x in resourceElements){
+                    System.log("Entered into for loop");
+                    if(resourceElements[x].name == "TemplateDetails"){
+                        createIfMissingFlag = false;
+						tempElementmissing = false;
+                        existingTemResourceElement = resourceElements[x]                        
+                    }
+			    }
+            }
+        }
+		//Create or update Template details
+		var temRes = System.getModule("com.vmware.indcoe.library.nsxlbgeneric").CreateUpdateResourceElement("Autoscale/Service", "TemplateDetails")
+		if(createIfMissingFlag == true && tempElementmissing == true){	
+			System.debug("Template if loop ")		
+			var tempContent = {"templateDetails":[{"deploymentName":""+defaultDeploymentName+"","lbBoolean":""+lbBoolean+"","templateName":""+cloneResult+""}]}
+			//var upContent = JSON.stringify(tempContent)
+			temRes.createResElement(tempContent,"text/json")
+		}else{
+			System.debug("Template else loop")
+			var existingTempContent = resourceElem.getResElementContent(existingTemResourceElement);
+			var tempNewContent = {"deploymentName":""+defaultDeploymentName+"","lbBoolean":""+lbBoolean+"","templateName":""+cloneResult+""}
+			existingTempContent.templateDetails.push(tempNewContent);
+			temRes.updateResElement(existingTemResourceElement,existingTempContent,"text/json");
+		}
+		
+		
+}
+
+]]></script>
+    <in-binding>
+      <bind name="autoScaleOption" type="string" export-name="autoScaleOption"/>
+      <bind name="community" type="string" export-name="community"/>
+      <bind name="deployment" type="vCACCAFE:CatalogResource" export-name="deployment"/>
+      <bind name="LBServerName" type="string" export-name="LBServerName"/>
+      <bind name="maxMemoryThreshold" type="string" export-name="maxMemoryThreshold"/>
+      <bind name="minCPUThreshold" type="string" export-name="minCPUThreshold"/>
+      <bind name="minMemoryThreshold" type="string" export-name="minMemoryThreshold"/>
+      <bind name="outboundName" type="string" export-name="outboundName"/>
+      <bind name="portNumber" type="string" export-name="portNumber"/>
+      <bind name="virtualMachineName" type="Array/string" export-name="virtualMachineName"/>
+      <bind name="vROHostName" type="string" export-name="vROHostName"/>
+      <bind name="waitCycle" type="number" export-name="waitCycle"/>
+      <bind name="powerOn" type="boolean" export-name="powerOn"/>
+      <bind name="thinProvisioned" type="boolean" export-name="thinProvisioned"/>
+      <bind name="template" type="boolean" export-name="template"/>
+      <bind name="LBPort" type="string" export-name="LBPort"/>
+      <bind name="verticalUpMem" type="string" export-name="verticalUpMem"/>
+      <bind name="verticalUpCpu" type="string" export-name="verticalUpCpu"/>
+      <bind name="verticalUpAlert" type="string" export-name="verticalUpAlert"/>
+      <bind name="horizontalOutMem" type="string" export-name="horizontalOutMem"/>
+      <bind name="horizontalOutCpu" type="string" export-name="horizontalOutCpu"/>
+      <bind name="horizontalInMem" type="string" export-name="horizontalInMem"/>
+      <bind name="horizontalInCpu" type="string" export-name="horizontalInCpu"/>
+      <bind name="horizontalOutAlert" type="string" export-name="horizontalOutAlert"/>
+      <bind name="horizontalInAlert" type="string" export-name="horizontalInAlert"/>
+      <bind name="maxCPUThreshold" type="string" export-name="maxCPUThreshold"/>
+      <bind name="lbBoolean" type="boolean" export-name="lbBoolean"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="deployment">
+      <desc><![CDATA[deployment]]></desc>
+    </p-param>
+    <p-param name="maxMemoryThreshold">
+      <desc><![CDATA[maxMemoryThreshold]]></desc>
+    </p-param>
+    <p-param name="minMemoryThreshold">
+      <desc><![CDATA[minMemoryThreshold]]></desc>
+    </p-param>
+    <p-param name="minCPUThreshold">
+      <desc><![CDATA[minCPUThreshold]]></desc>
+    </p-param>
+    <p-param name="autoScaleOption">
+      <desc><![CDATA[autoScaleOption]]></desc>
+    </p-param>
+    <p-param name="virtualMachineName">
+      <desc><![CDATA[virtualMachineName]]></desc>
+    </p-param>
+    <p-param name="waitCycle">
+      <desc><![CDATA[waitCycle]]></desc>
+    </p-param>
+    <p-param name="LBServerName">
+      <desc><![CDATA[LBServerName]]></desc>
+    </p-param>
+    <p-param name="LBPort">
+      <desc><![CDATA[LBPort]]></desc>
+    </p-param>
+    <p-param name="maxCPUThreshold">
+      <desc><![CDATA[maxCPUThreshold]]></desc>
+    </p-param>
+    <p-param name="lbBoolean">
+      <desc><![CDATA[lbBoolean]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

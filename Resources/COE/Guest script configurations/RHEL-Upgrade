@@ -1,0 +1,6 @@
+#[#scriptContent#=#string##!/bin/bash
+sudo subscription-manager unregister
+sudo subscription-manager clean
+sudo subscription-manager register --org="CRIS_Cloud" --activationkey="rhel7-tnd-activation-key"
+sudo yum update -y
+#+#scriptTimeOut#=#number#120.0#+#scriptWorkingDirectory#=#string##+#scriptRefreshTime#=#Any#Any#__NULL__#+#deleteResourceAfterRun#=#boolean#true#+#scriptType#=#string#bash#+#resourceSearchReplace#=#boolean#false#+#scriptInteractiveSession#=#boolean#false#+#resourceToCopy#=#Any#Any#__NULL__#+#copyResource#=#boolean#false#]#

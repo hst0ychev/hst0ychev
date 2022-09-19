@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="deleteServiceBlueprint" result-type="void" api-version="6.0.0" id="fd9c66ea-b0d1-4f7c-a1a1-395ea6b24c7e" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.asd.blueprint">
+  <param n="blueprint" t="vCACCAFE:ServiceBlueprint"><![CDATA[Service blueprint to be deleted]]></param>
+  <script encoded="false"><![CDATA[System.getModule("com.vmware.library.vcaccafe.util").validateObject(blueprint, "Service blueprint");
+var host = vCACCAFEEntitiesFinder.getHostForEntity(blueprint);
+var blueprintService = host.createAdvancedDesignerClient().getAdvancedDesignerServiceBlueprintService();
+
+System.log("Deleting service blueprint " + blueprint.getName() + "...");
+blueprintService.deleteServiceBlueprint(host.tenant , blueprint.getId());
+System.log("Deleted service blueprint " + blueprint.getName() + ".");]]></script>
+</dunes-script-module>

@@ -1,0 +1,298 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="c382ef6f-3b51-4c05-a32f-aec6433b41f7" version="0.0.3" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Print Rules]]></display-name>
+  <position y="18.636363636363633" x="125.0"/>
+  <input>
+    <param name="businesGroup" type="string"/>
+    <param name="rules" type="string"/>
+    <param name="text" type="String">
+      <description><![CDATA[The text to log]]></description>
+    </param>
+    <param name="object" type="Any">
+      <description><![CDATA[The text to log and additional info]]></description>
+    </param>
+  </input>
+  <attrib name="username" type="string" read-only="false" conf-id="b076846e-b485-4746-92c6-455f2f4b048d" conf-key="username">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="password" type="SecureString" read-only="false" conf-id="b076846e-b485-4746-92c6-455f2f4b048d" conf-key="password">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="errorCode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="actionResult1" type="Array/string" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="18.136363636363633" x="904.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" catch-name="item4" throw-bind-name="errorCode" type="task">
+    <display-name><![CDATA[Scriptable task]]></display-name>
+    <script encoded="false"><![CDATA[//Getting Authentication token
+var authenticationToken = System.getModule("com.vmware.indcoe.util").base64encode(username + ":" + password)
+
+//Preparting header prop for rest api
+var header = new Properties()
+header.put("Authorization", "Basic " +authenticationToken);
+/**
+	Get the NSX T REST host from configuration element
+**/
+var restHost;
+var category = Server.getConfigurationElementCategoryWithPath("Helper")
+//die in a fire if non-existent
+if (category == null) {
+    throw "Configuration element category '" + categoryPath + "' not found or empty!";
+}
+//get _all_ the elements
+var elements = category.configurationElements;
+var elementName = "NSXTHost";
+var attributeName = "nsxtHost"
+//retrieve names
+for (i = 0; i < elements.length; i++) {
+     if (elements[i].name == elementName) {
+         //found required element
+         restHost = elements[i].getAttributeWithKey(attributeName).value;
+         if (restHost != null) {
+             System.debug("Found attribute '" + attributeName + "' in '" + elementName + "' with value '" +restHost + "'");
+         }
+     }
+}
+
+
+
+
+var sectionId = getSectionID(restHost,businesGroup,header);
+System.log("sectionId:"+sectionId);
+System.log(sectionId);
+ruleSpilt = rules.split("-");
+ruleElem = ruleSpilt[0];
+rule = ruleElem.trim();
+System.log("rule"+rule)
+var ruleID = getRuleID(restHost,sectionId,rule,header);
+System.log("ruleID:"+ruleID);
+System.log(ruleID);
+var print = PrintRule(restHost,sectionId,rule,header);
+System.log("print rules"+print);
+
+
+var actionResult2 = System.getModule("com.vmware.indcoe.nsx_t_fw_delete").getRules(username,password,businesGroup) ;
+
+for(i = 0; i < actionResult2.length; i++){
+	
+	System.debug("RuleName:" +actionResult2[i]);
+	}
+	
+System.log("welcome mann");
+
+
+
+
+
+
+function getSectionID(restHost,section,header){
+var apiUrl = "/api/v1/firewall/sections/";
+var requestMethod = "GET"
+var typeContent = "json"
+var sectionResult = System.getModule("com.vmware.indcoe.library.nsxlbgeneric").ExecuteRest(restHost,apiUrl,requestMethod,null,typeContent,header)
+if(sectionResult["statusCode"]==200 ||sectionResult["statusCode"]==201 || sectionResult["statusCode"]==204){
+	System.debug("Getting section rest operation completed ")
+}else throw "Getting section failed"
+System.debug("rules:"+sectionResult["contentAsString"]);
+var secContent = sectionResult["contentAsString"];
+var secJson = JSON.parse(secContent);
+var sectionId;
+for(var i in secJson.results){
+var secDisplayName = secJson.results[i].display_name;
+	if(secJson.results[i].display_name == section){
+		sectionId = secJson.results[i].id;
+		System.debug("sectionId:"+sectionId);
+		}
+	}
+	return sectionId;
+}
+function getRuleID(restHost,sectionId,ruleName, header){
+var apiUrl = "/api/v1/firewall/sections/"+sectionId+"/rules";
+var requestMethod = "GET"
+var typeContent = "json"
+var sectionRuleIDResult = System.getModule("com.vmware.indcoe.library.nsxlbgeneric").ExecuteRest(restHost,apiUrl,requestMethod,null,typeContent,header)
+if(sectionRuleIDResult["statusCode"]==200 ||sectionRuleIDResult["statusCode"]==201 || sectionRuleIDResult["statusCode"]==204){
+	System.debug("Getting section rule rest operation completed ")
+}else throw "Getting section rule failed"
+System.debug("rules:"+sectionRuleIDResult["contentAsString"]);
+var secRuleIDContent = sectionRuleIDResult["contentAsString"];
+var secRuleIDJson = JSON.parse(secRuleIDContent);
+var ruleId =[];
+for(var j in secRuleIDJson.results){
+	if(secRuleIDJson.results[j].display_name == ruleName){
+	ruleId = secRuleIDJson.results[j].id;
+	}
+	System.debug("ruleId:" +ruleId);
+	}
+return ruleId;
+}
+function PrintRule(restHost,sectionId,ruleName, header){
+var apiUrl = "/api/v1/firewall/sections/"+sectionId+"/rules";
+var requestMethod = "GET"
+var typeContent = "json"
+var sectionRuleIDResult = System.getModule("com.vmware.indcoe.library.nsxlbgeneric").ExecuteRest(restHost,apiUrl,requestMethod,null,typeContent,header)
+
+if(sectionRuleIDResult["statusCode"]==200 ||sectionRuleIDResult["statusCode"]==201 || sectionRuleIDResult["statusCode"]==204){
+	//System.debug("Getting section rule rest operation completed ")
+}else throw "Getting section rule failed"
+
+System.debug("rules:"+sectionRuleIDResult["contentAsString"]);
+var secRuleIDContent = sectionRuleIDResult["contentAsString"];
+var secRuleIDJson = JSON.parse(secRuleIDContent);
+var src_ip=[];
+var des_ip=[];
+var port=[];
+rule="";
+for(var j in secRuleIDJson.results){
+	if(secRuleIDJson.results[j].display_name == ruleName){
+	for (i in secRuleIDJson.results[j].sources) {
+  src_ip.push(secRuleIDJson.results[j].sources[i].target_id);
+  for (k in secRuleIDJson.results[j].sources[i].target_id) {
+    src_ip.push(secRuleIDJson.results[j].sources[i].target_id[k]);
+  }
+	}
+	}
+	System.debug("source_ip "+src_ip);
+	}
+	 System.log("source_ip "+ src_ip);
+
+
+
+	for(var q in secRuleIDJson.results){
+	if(secRuleIDJson.results[q].display_name == ruleName){
+	for (i in secRuleIDJson.results[q].destinations) {
+   des_ip.push(secRuleIDJson.results[q].destinations[i].target_id);
+  for (k in secRuleIDJson.results[q].destinations[i].target_id) {
+    des_ip.push(secRuleIDJson.results[q].destinations[i].target_id[k]);
+  }
+	}
+	}
+	System.debug("destination_ip "+des_ip);
+	}
+
+ System.log("destination ip "+ des_ip);
+for(var q in secRuleIDJson.results){
+	if(secRuleIDJson.results[q].display_name == ruleName){	
+	for (i in secRuleIDJson.results[q].services) {
+   port.push(secRuleIDJson.results[q].services[i].target_display_name);
+  for (k in secRuleIDJson.results[q].services[i].target_display_name) {
+    port.push(secRuleIDJson.results[q].services[i].target_display_name[k]);
+  }
+	}
+	}
+    
+	System.debug("services "+ port);
+	}
+
+ System.log("services "+ port);
+  var act;
+var ruleId =[];
+var status;
+for(var j in secRuleIDJson.results){
+	if(secRuleIDJson.results[j].display_name == ruleName){
+	act = secRuleIDJson.results[j].disabled;
+	}
+	System.debug("Rule_status:" +act);
+
+	if(act == true)
+	{
+	status="Drop";
+	System.log("status bm1"+status);
+	System.debug("status bm2"+status);
+	}
+	
+	}
+	
+rule="\nSOURCE IP ADDRESS\n"+ src_ip + " \nDESTINATION IP ADDRESS\n" + des_ip + "\n service \n"+ port + "\nRule_Status\n" + act;
+return rule;
+}
+
+function getRuleAction(restHost,sectionId,ruleID, header){
+var apiUrl = "/api/v1/firewall/sections/"+sectionId+"/rules";
+var requestMethod = "GET"
+var typeContent = "json"
+var sectionRuleIDResult = System.getModule("com.vmware.indcoe.library.nsxlbgeneric").ExecuteRest(restHost,apiUrl,requestMethod,null,typeContent,header)
+if(sectionRuleIDResult["statusCode"]==200 ||sectionRuleIDResult["statusCode"]==201 || sectionRuleIDResult["statusCode"]==204){
+	System.debug("Getting section rule rest operation completed ")
+}else throw "Getting section rule failed"
+System.debug("rules:"+sectionRuleIDResult["contentAsString"]);
+var secRuleIDContent = sectionRuleIDResult["contentAsString"];
+var secRuleIDJson = JSON.parse(secRuleIDContent);
+var status;
+for(var j in secRuleIDJson.results){
+	if(secRuleIDJson.results[j].display_name == ruleName){
+	action= secRuleIDJson.results[j].disabled;
+	}
+	System.debug("action" +action);
+	}
+
+if(action ==true)
+{
+status="Drop";
+System.log("status"+status);
+System.debug("status"+status);
+}else{
+status="Allow";
+System.log("status"+status);
+System.debug("status"+status);
+}return status;
+}
+
+
+
+
+
+
+]]></script>
+    <in-binding>
+      <bind name="businesGroup" type="string" export-name="businesGroup"/>
+      <bind name="rules" type="string" export-name="rules"/>
+      <bind name="username" type="string" export-name="username"/>
+      <bind name="password" type="SecureString" export-name="password"/>
+      <bind name="actionResult1" type="Array/string" export-name="actionResult1"/>
+    </in-binding>
+    <out-binding/>
+    <position y="19.045454545454543" x="504.5"/>
+  </workflow-item>
+  <workflow-item name="item3" type="end" end-mode="0">
+    <position y="172.68181818181816" x="245.0"/>
+  </workflow-item>
+  <workflow-item name="item4" prototype-id="server-log" out-name="item3" type="task" interaction="l">
+    <display-name><![CDATA[Server log]]></display-name>
+    <script encoded="false"><![CDATA[//Auto-generated script
+Server.log(text, object);
+]]></script>
+    <in-binding>
+      <bind name="text" type="String" export-name="text">
+        <description><![CDATA[The text to log]]></description>
+      </bind>
+      <bind name="object" type="Any" export-name="object">
+        <description><![CDATA[The text to log and additional info]]></description>
+      </bind>
+      <bind name="errorCode" type="string" export-name="errorCode"/>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Log the input text to the server log with level 'log']]></description>
+    <position y="128.13636363636363" x="344.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="businesGroup">
+      <desc><![CDATA[businesGroup]]></desc>
+    </p-param>
+    <p-param name="rules">
+      <desc><![CDATA[List of Rules]]></desc>
+      <p-qual kind="ognl" name="linkedEnumeration" type="Array/string"><![CDATA[GetAction("com.vmware.indcoe.nsx_t_fw_delete","getRules").call( #username , #password , #businesGroup )]]></p-qual>
+    </p-param>
+    <p-param name="text">
+      <desc><![CDATA[The text to log]]></desc>
+    </p-param>
+    <p-param name="object">
+      <desc><![CDATA[The text to log and additional info]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

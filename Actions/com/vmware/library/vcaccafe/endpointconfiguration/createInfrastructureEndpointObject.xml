@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="createInfrastructureEndpointObject" result-type="vCACCAFE:Endpoint" api-version="6.0.0" id="15fee35f-766e-44ca-bc53-4e2ddbf827a4" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.endpointconfiguration">
+  <param n="endpointType" t="string"><![CDATA[The type of the endpoint. Accepted Values: AmazonEC2, Kvm, NetAppOnTapp, Openstack, Scvmm, vCloud, vCO, vSphere, vCloudAir]]></param>
+  <param n="name" t="string"><![CDATA[The name of the endpoint]]></param>
+  <param n="description" t="string"><![CDATA[The description of the endpoint]]></param>
+  <param n="address" t="string"><![CDATA[The address of the endpoint]]></param>
+  <param n="username" t="string"><![CDATA[The credential username for the endpoint]]></param>
+  <param n="password" t="SecureString"><![CDATA[The credential password for the endpoint]]></param>
+  <param n="integratedAuth" t="boolean"><![CDATA[If the endpoint type is 'vSphere' and endpoint needs to be configured with integrated auth]]></param>
+  <param n="vcoPriority" t="number"><![CDATA[If the endpoint is of 'vCO' type then priority of the endpoint]]></param>
+  <param n="organization" t="string"><![CDATA[If the endpoint is of 'vCloud' type then organization of the endpoint]]></param>
+  <param n="openstackProject" t="string"><![CDATA[If the endpoint is of 'Openstack' type then project name]]></param>
+  <param n="certificateThumbprint" t="string"><![CDATA[Certificate thumbprint, if the endpoint is of 'vSphere' type]]></param>
+  <param n="trustAllCertificates" t="boolean"><![CDATA[Trust all certificates, if the endpoint is of 'vSphere' type]]></param>
+  <script encoded="false"><![CDATA[var endpointObj = vCACCAFEEndpointConfigurationHelper.createInfrastructureEndpointObject(name , description , address , username , password , integratedAuth , endpointType , vcoPriority , organization , openstackProject , certificateThumbprint , trustAllCertificates)
+
+if(endpointObj == null)
+{
+	throw "Failed to create endpoint object";
+}
+
+return endpointObj;]]></script>
+</dunes-script-module>

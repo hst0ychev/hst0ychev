@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getvCOMachineMenuWorkflowNames" result-type="Array/string" api-version="6.0.0" id="b2fb0d9f-142e-4412-a90b-1cac02fd66e3" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcac">
+  <param n="host" t="vCAC:VCACHost"><![CDATA[vCloud Automation Center host]]></param>
+  <script encoded="false"><![CDATA[if (host == null) return null;
+var entitySetName = "WorkflowDefinitions";
+var modelName = "Metamodel.svc";
+
+//Get all  definitions
+var properties = new Properties();
+var entities = vCACEntityManager.readModelEntitiesByCustomFilter(host.id, modelName, entitySetName, properties, null);
+
+var names = new Array();
+for each (var entity in entities) {
+	var name = entity.getProperty("Name");
+	if (name.indexOf("WFvCOMachineMenu") > -1) names.push(name);
+}
+return names;]]></script>
+</dunes-script-module>

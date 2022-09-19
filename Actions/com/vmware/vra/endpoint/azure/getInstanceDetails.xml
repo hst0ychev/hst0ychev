@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getInstanceDetails" result-type="string" api-version="6.0.0" id="06ddc8ad-47df-46e8-af7e-3dafac593643" version="7.6.0" allowed-operations="vf" category-name="com.vmware.vra.endpoint.azure">
+  <param n="series" t="string"><![CDATA[]]></param>
+  <param n="size" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[// Reading from Configuraiton Element
+
+var attributeResults = System.getModule("com.vmware.vra.endpoint.azure.configuration").getAzureConfigurations({'InstanceDetails': [series + "_" + size]});
+
+return attributeResults['InstanceDetails'][series+"_"+size];
+
+]]></script>
+</dunes-script-module>

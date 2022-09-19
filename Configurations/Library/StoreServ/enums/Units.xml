@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="acdc5561-7cf6-4bdf-80b7-8ad04f7a77a4" version="1.0.0">
+  <display-name><![CDATA[Units]]></display-name>
+  <atts>
+    <att name="MiB" type="string" read-only="false">
+      <value encoded="n"><![CDATA[MiB]]></value>
+    </att>
+    <att name="GiB" type="string" read-only="false">
+      <value encoded="n"><![CDATA[GiB]]></value>
+    </att>
+    <att name="TiB" type="string" read-only="false">
+      <value encoded="n"><![CDATA[TiB]]></value>
+    </att>
+  </atts>
+</config-element>

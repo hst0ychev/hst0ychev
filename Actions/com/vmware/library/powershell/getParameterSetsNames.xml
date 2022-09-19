@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getParameterSetsNames" result-type="Array/string" api-version="6.0.0" id="F5858080808080808080808080808080F18080800126658240472157fdafc0fce" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.powershell">
+  <param n="cmdlet" t="PowerShell:PowerShellCmdlet"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var result = new Array();
+if(cmdlet){
+	var paramSets = cmdlet.getInfo().getParameters();
+	var i = 0;
+	for (i = 0; i < paramSets.length; i++) {
+	  result[i] = paramSets[i].getName();
+	}
+}
+
+return result;]]></script>
+</dunes-script-module>

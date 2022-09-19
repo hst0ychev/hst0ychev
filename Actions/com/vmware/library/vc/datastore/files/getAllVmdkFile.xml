@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getAllVmdkFile" result-type="Array/string" api-version="6.0.0" id="bcd2d22e-b722-47ac-ab12-70b3203bd57e" version="0.4.0" allowed-operations="vf" category-name="com.vmware.library.vc.datastore.files">
+  <description><![CDATA[
+		Get all VMDK files on a datastore (using API to browse the datastore directly)]]></description>
+  <param n="datastore" t="VC:Datastore"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var result = new Array();
+var fileQuery = new Array(new VcVmDiskFileQuery());
+var querySpec = new VcHostDatastoreBrowserSearchSpec();
+querySpec.query = fileQuery;
+
+var task = datastore.browser.searchDatastoreSubFolders_Task("[" + datastore.name + "]", querySpec);
+var searchResults = System.getModule("com.vmware.library.vc.basic").vim3WaitTaskEnd(task,false,5);
+
+var folderPath;
+for (var i in searchResults) {
+	for (var j in searchResults[i].file) {
+        folderPath = searchResults[i].folderPath;
+        folderPath = folderPath.charAt(folderPath.length - 1) === '/' ? folderPath : folderPath + '/';
+        result.push(folderPath + searchResults[i].file[j].path);
+    }
+}
+
+return result;]]></script>
+</dunes-script-module>

@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getStoragePlanId" result-type="void" api-version="6.0.0" id="904e7572-15d2-421b-adb7-3c9865408ca3" version="0.0.0" allowed-operations="evf" category-name="com.commvault.utils">
+  <description><![CDATA[Action to find planId for the given storage plan name]]></description>
+  <param n="token" t="string"><![CDATA[]]></param>
+  <param n="planName" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[/*
+	Action to find planId for the given storage plan name
+	
+	Inputs:
+	token - CV token for REST API
+	planName - storage plan name
+
+	API used:
+	/Plan
+	
+	Output:
+	string - planId
+*/
+
+var listStoragePlanURL = "/Plan";
+System.log(listStoragePlanURL);
+var response = System.getModule("com.commvault.utils").processRESTRequest(listStoragePlanURL,"GET",null,token, null, null);
+if(response.statusCode != 200)
+{
+	throw("Error: Failed to execute REST request to get storage plans. Recieved status:  "+ response.contentAsString);
+}
+
+var document = XMLManager.fromString(response.contentAsString);
+var list = document.getElementsByTagName("plans");
+var total = list.length;
+
+for(var i=0; i<total; i++){
+	
+	var name = list.item(i).getAttribute("description");
+	if(name == planName){
+		var planEntity = list.item(i).getElementsByTagName("plan");
+		var Id = planEntity.item(0).getAttribute("planId");
+		return Id;
+	}
+}]]></script>
+</dunes-script-module>

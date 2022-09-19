@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="createEventDefinition" result-type="vCAC:Entity" api-version="6.0.0" id="6b359d5f-7460-424b-b311-bb9a3c9c6aba" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcac">
+  <param n="host" t="vCAC:VCACHost"><![CDATA[vCloud Automation Center host]]></param>
+  <param n="create" t="boolean"><![CDATA[Create entity event definition]]></param>
+  <param n="update" t="boolean"><![CDATA[Update entity event definition]]></param>
+  <param n="del" t="boolean"><![CDATA[Delete entity event definition]]></param>
+  <param n="links" t="Properties"><![CDATA[Link properties]]></param>
+  <script encoded="false"><![CDATA[var entitySetName = "EntityEventDefinitions";
+var modelName = "Metamodel.svc";
+
+//Get all workflow definitions
+var properties = new Properties();
+var entities = vCACEntityManager.readModelEntitiesByCustomFilter(host.id, modelName, entitySetName, properties, null);
+
+
+//Get the last id
+var lastId = 0;
+for each (var entity in entities){
+	var id = parseInt(entity.getProperty("Id"));
+	if (id >= lastId) {
+		lastId = id;
+	}									
+}	
+
+// Ugly work around for having an entity created with a CreatedDateTime of type org.joda.time.LocalDateTime (bug 1033984)
+var properties = entity.getProperties();											
+id++;
+System.log(id);
+
+//var properties = new Properties();
+properties.put("Id", String(id));
+properties.put("Create", create);
+properties.put("Update", update);
+properties.put("Delete", del);
+return vCACEntityManager.createModelEntity(host.id , modelName , entitySetName , properties , links , null);]]></script>
+</dunes-script-module>

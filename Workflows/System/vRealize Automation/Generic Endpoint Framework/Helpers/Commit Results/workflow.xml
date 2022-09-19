@@ -1,0 +1,102 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item5" object-name="workflow:name=generic" id="9ab18602-0389-430e-a78b-2bd9a24c4593" version="0.0.14" api-version="6.0.0" allowed-operations="vf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Commit Results]]></display-name>
+  <description><![CDATA[To WorkflowOperations table.]]></description>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="operationContextArgument" type="string">
+      <description><![CDATA[Operation Context passed in from vRA, as-is]]></description>
+    </param>
+    <param name="executionStatusArgument" type="Any">
+      <description><![CDATA[Execution Status, of type GEFExecutionStatus]]></description>
+    </param>
+    <param name="additionalArguments" type="Properties">
+      <description><![CDATA[Each key-value will be a separate argument.  Keys must be strings; values must be strings, numbers, or Properties]]></description>
+    </param>
+    <param name="endpointName" type="string">
+      <description><![CDATA[Endpoint name - used to help identify the temporary WorkflowOperation entry]]></description>
+    </param>
+    <param name="callbackOperationName" type="string">
+      <description><![CDATA[Workflow callback name]]></description>
+    </param>
+    <param name="repositoryDetails" type="Any">
+      <description><![CDATA[vRA Repository Details provided as an Endpoint of type GEFEndpoint]]></description>
+    </param>
+    <param name="module" type="Module">
+      <description><![CDATA[Module to run many of the other actions]]></description>
+    </param>
+  </input>
+  <attrib name="host" type="vCAC:VCACHost" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[vRA IaaS server]]></description>
+  </attrib>
+  <workflow-item name="item5" out-name="item0" type="link" linked-workflow-id="af45a6da-c80f-4e41-8723-c6dda6c4cfaf">
+    <display-name><![CDATA[Get Repository Host]]></display-name>
+    <in-binding>
+      <bind name="endpoint" type="Any" export-name="repositoryDetails">
+        <description><![CDATA[Endpoint representing a GEFEndpoint scriptable object]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="vCACHost" type="vCAC:VCACHost" export-name="host"/>
+    </out-binding>
+    <description><![CDATA[Finds an vCACHost (IaaS server) based on the hostname provided.  If none can be found, it adds it.  If the username has changed, the IaaS server is updated.]]></description>
+    <position y="55.90909090909091" x="205.0"/>
+  </workflow-item>
+  <workflow-item name="item1" type="end" end-mode="0">
+    <position y="45.40909090909091" x="525.0"/>
+  </workflow-item>
+  <workflow-item name="item0" out-name="item1" type="task" script-module="com.vmware.vra.gef/commitResults">
+    <display-name><![CDATA[commitResults]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+System.getModule("com.vmware.vra.gef").commitResults(host,module,operationContextArgument,executionStatusArgument,additionalArguments,endpointName,workflowOperationName) ;]]></script>
+    <in-binding>
+      <bind name="host" type="vCAC:VCACHost" export-name="host">
+        <description><![CDATA[vRA IaaS repository host]]></description>
+      </bind>
+      <bind name="module" type="Module" export-name="module">
+        <description><![CDATA[Module to run many of the other actions]]></description>
+      </bind>
+      <bind name="operationContextArgument" type="string" export-name="operationContextArgument">
+        <description><![CDATA[Operation Context passed in from vRA, as-is]]></description>
+      </bind>
+      <bind name="executionStatusArgument" type="Any" export-name="executionStatusArgument">
+        <description><![CDATA[Execution Status - indicates any error/warn/info messages (instance of GEFExecutionStatus scriptable object)]]></description>
+      </bind>
+      <bind name="additionalArguments" type="Properties" export-name="additionalArguments">
+        <description><![CDATA[Each key-value will be a separate argument.  Keys must be strings; values must be strings, numbers, or Properties (which will gets serialized as JSON objects)]]></description>
+      </bind>
+      <bind name="endpointName" type="string" export-name="endpointName">
+        <description><![CDATA[Endpoint name - used to help identify the temporary WorkflowOperation entry]]></description>
+      </bind>
+      <bind name="workflowOperationName" type="string" export-name="callbackOperationName">
+        <description><![CDATA[final WorkflowOperation name, the Workflow callback name]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <position y="55.90909090909091" x="345.0"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="operationContextArgument">
+      <desc><![CDATA[Operation Context passed in from vRA, as-is]]></desc>
+    </p-param>
+    <p-param name="executionStatusArgument">
+      <desc><![CDATA[Result]]></desc>
+    </p-param>
+    <p-param name="callbackOperationName">
+      <desc><![CDATA[Workflow callback name]]></desc>
+    </p-param>
+    <p-param name="additionalArguments">
+      <desc><![CDATA[arguments]]></desc>
+    </p-param>
+    <p-param name="repositoryDetails">
+      <desc><![CDATA[vRA Repository Details provided as an Endpoint of type GEFEndpoint]]></desc>
+    </p-param>
+    <p-param name="endpointName">
+      <desc><![CDATA[Endpoint name - used to help identify the temporary WorkflowOperation entry]]></desc>
+    </p-param>
+    <p-param name="module">
+      <desc><![CDATA[Module to run many of the other actions]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

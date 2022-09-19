@@ -1,0 +1,803 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="182a5a38-fcbb-41ad-8c63-e9f84f006b61" version="0.0.17" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Create a new Radware LB]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="usersEmailId" type="string">
+      <description><![CDATA[Requester's Email ID]]></description>
+    </param>
+    <param name="vsPort" type="string">
+      <description><![CDATA[Virtual Server Port]]></description>
+    </param>
+    <param name="vsProtocol" type="string">
+      <description><![CDATA[Virtual Server Protocol]]></description>
+    </param>
+    <param name="rlPort" type="string"/>
+    <param name="serverName" type="string"/>
+    <param name="serverIP" type="string"/>
+    <param name="serverName2" type="string"/>
+    <param name="serverIP2" type="string"/>
+    <param name="serverName3" type="string"/>
+    <param name="serverIP3" type="string"/>
+    <param name="networkProfName" type="string"/>
+    <param name="healthCheckType" type="string"/>
+    <param name="lbAlgorithm" type="string"/>
+    <param name="persisBool" type="boolean"/>
+    <param name="persisTimeout" type="number"/>
+    <param name="cookieDomainBool" type="string"/>
+    <param name="cookieName" type="string"/>
+    <param name="cRebind" type="string"/>
+    <param name="cookieSecure" type="string"/>
+    <param name="cookiePath" type="string"/>
+    <param name="cResponse" type="number"/>
+    <param name="persisOption" type="string"/>
+    <param name="cookieMode" type="string"/>
+    <param name="uriBoolean" type="string"/>
+    <param name="cOffset" type="number"/>
+    <param name="cLength" type="number"/>
+    <param name="PbindRport" type="string"/>
+  </input>
+  <attrib name="username" type="string" read-only="false" conf-id="a4e58f50-5da8-475b-b6d6-a13f9419eab5" conf-key="username">
+    <value encoded="n"><![CDATA[admin]]></value>
+  </attrib>
+  <attrib name="password" type="SecureString" read-only="false" conf-id="a4e58f50-5da8-475b-b6d6-a13f9419eab5" conf-key="password">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="restHost" type="REST:RESTHost" read-only="false" conf-id="a4e58f50-5da8-475b-b6d6-a13f9419eab5" conf-key="restHost">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="smtp_host" type="string" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_host">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="smtp_port" type="number" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_port">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="smtp_username" type="string" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_username">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="smtp_password" type="SecureString" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_password">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="smtp_from_id" type="string" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_from_id">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="smtp_from_name" type="string" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_from_name">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="use_ssl" type="boolean" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="use_ssl">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="use_start_tls" type="boolean" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="use_start_tls">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="smtp_to_address" type="Array/string" read-only="false" conf-id="0afdf55e-f4c5-4b91-93da-c7f809643af2" conf-key="smtp_to_address_LBaaS">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="vcacCafeHost" type="vCACCAFE:VCACHost" read-only="false" conf-id="66a86a5d-df46-4200-9c90-046802868f44" conf-key="vcacCafeHost">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="vCACHost" type="vCAC:VCACHost" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='7678fd07-7e94-41fb-b504-826e693933a5'&dunesName='vCAC:VCACHost']]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Process Request]]></display-name>
+    <script encoded="false"><![CDATA[//To ensure only one workflow runs at a time!
+System.getModule("com.vmware.indcoe.util").waitForOtherWorkflowRunsToFinish(workflow);
+
+
+function SendEmail(subject, body)
+{
+
+	//Add the user's email to the list of email IDs to send email to.
+	if (usersEmailId && usersEmailId != "")
+	{
+		smtp_to_address.push(usersEmailId);
+	}
+
+	var commaSeparatedEmails = '';
+	for (var i in smtp_to_address)
+	{
+		commaSeparatedEmails += smtp_to_address[i] + ',';
+	}
+
+	//workflow ID of Library -> Mail -> 'Send notification'
+	var workflowId = '8D80808080808080808080808080808089808080012318760241416446ce5b52f';
+
+	//ready the workflow params
+	var workflowParameters = new Properties();
+	workflowParameters.put("smtpHost", smtp_host);
+	workflowParameters.put("smtpPort", smtp_port);
+	workflowParameters.put("username", smtp_username);
+	workflowParameters.put("password", smtp_password);
+	workflowParameters.put("fromName", smtp_from_name);
+	workflowParameters.put("fromAddress", smtp_from_id);
+	workflowParameters.put("toAddress", commaSeparatedEmails);
+	workflowParameters.put("subject", subject);
+	workflowParameters.put("content", body);
+	workflowParameters.put("useSsl", use_ssl);
+	workflowParameters.put("UseStartTls", use_start_tls);
+
+	//Run this workflow.
+	var workflowToLaunch = Server.getWorkflowWithId(workflowId);
+
+	//Fetch a token.
+	var workflow_token = workflowToLaunch.execute(workflowParameters);
+	while (workflow_token.state === "running")
+	{
+		System.sleep(3000);
+	}
+	System.log("Email sent");
+	//return after workflow finished 'running'
+	return true;
+}
+
+try
+{
+	//Try to fetch catalog request ID
+	catalogRequestId = System.getContext().getParameter("__asd_catalogRequestId");
+}
+catch (e)
+{
+	//If we did not get catalog request ID, we use boolean false
+	catalogRequestId = false;
+}
+
+if (catalogRequestId)
+{
+	//We got catalogRequest ID from the inputs, now we try to get request number from that.
+	System.log("Request Id by vRA:" + catalogRequestId);
+	try
+	{
+		var request = vCACCAFEEntitiesFinder.getCatalogItemRequest(vcacCafeHost, catalogRequestId);
+		requestNumber = request.getRequestNumber();
+	}
+	catch (error)
+	{
+		//If unable to fetch the request number from vcaccafehost
+		var date = new Date();
+		requestNumber = date.getFullYear() + "_" + (date.getMonth() + 1) + "_" + date.getDate() + "_" + date.getHours() + "_" + date.getMinutes();
+	}
+}
+else
+{
+	var date = new Date();
+	requestNumber = date.getFullYear() + "_" + (date.getMonth() + 1) + "_" + date.getDate() + "_" + date.getHours() + "_" + date.getMinutes();
+	System.log("Using request number as current date-time since __asd_catalogRequestId was not found");
+}
+
+System.log("Request Number for this request:  " + requestNumber);
+
+if (!username || !password)
+{
+	var errorMsg = "Credentials not supplied, request can't proceed";
+	var subject = "Load Balancer creation request failed.";
+	var body = "Hello, <br/>The DFW Request with request number: " + requestNumber + " has failed. ";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if (SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+if (!restHost)
+{
+	var errorMsg = "REST Host Invalid, request can't proceed";
+	var subject = "Load Balancer creation request failed.";
+	var body = "Hello, <br/>The DFW Request with request number: " + requestNumber + " has failed. ";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if (SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+System.debug("Operation to be performed on " + restHost.name + ": Using username: " + username + " and password is supplied");
+
+
+// All Validation here.
+
+if (!networkProfName)
+{
+	var errorMsg = "Network not selected";
+	var subject = "New Load Balancer request failed.";
+	var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed. ";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if (SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+
+if (networkProfName !== "production" && networkProfName !== "tnd")
+{
+	var errorMsg = "Network Type is invalid.";
+	var subject = "New Load Balancer request failed.";
+	var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed. ";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if (SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+
+if(networkProfName === "tnd")
+{
+	var requestCategory = "tnd";
+	var networkProfileToUse = "TnD_SLB_VIP_VLAN_Radware_LB";
+}
+else
+{
+	var requestCategory = "production";
+	var networkProfileToUse = "Production_SLB_VIP_VLAN_Radware";
+}
+
+if (!rlPort)
+{
+	var errorMsg = "Real Port Not specified";
+	var subject = "New Load Balancer request failed.";
+	var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed. ";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if (SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+//(rlPort !== parseInt(rlPort, 10)) -> Checks if the input is INTEGER or not.
+if(rlPort != parseInt(rlPort, 10))
+{
+	System.log("Real Port: "+rlPort);
+	System.log("Real Port in INT: "+parseInt(rlPort, 10));
+	var errorMsg = "Invalid Real Port specified, Not an Integer";
+	var subject = "New Load Balancer request failed.";
+	var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed. ";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if (SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+	
+var realPort = parseInt(rlPort, 10);
+
+if (!vsProtocol || (vsProtocol !== "tcp" && vsProtocol !== "udp"))
+{
+	var errorMsg = "Blank or Invalid protocol specified";
+	var subject = "New Load Balancer request failed.";
+	var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed. ";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if (SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+var protocol = vsProtocol;
+
+
+if (!vsPort)
+{
+	var errorMsg = "Virtual Port Not specified";
+	var subject = "New Load Balancer request failed.";
+	var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed. ";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if (SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+//(rlPort !== parseInt(rlPort, 10)) -> Checks if the input is INTEGER or not.
+if(vsPort != parseInt(vsPort, 10))
+{
+	System.log("Virtual Port: "+vsPort);
+	System.log("Virtual Port in INT: "+parseInt(vsPort, 10));
+	var errorMsg = "Invalid Virtual Port specified, Not an Integer";
+	var subject = "New Load Balancer request failed.";
+	var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed. ";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if (SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+var virtualPort = vsPort;
+
+var RealServerIPs = [];
+var RealServerIPIndexes = [];
+
+if (!serverIP)
+{
+	var errorMsg = "Real Server IP (Server 1) not specified";
+	var subject = "New Load Balancer request failed.";
+	var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed. ";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if (SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+var isServer1IPValid = System.getModule("com.vmware.indcoe.util").isValidIPv4Address(serverIP);
+if(!isServer1IPValid)
+{
+	var errorMsg = "Real Server IP (Server 1) is invalid / not a real IP";
+	var subject = "New Load Balancer request failed.";
+	var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed. ";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if (SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+//Since Server IP 1 is provided an valid, push to RealServerIPs array
+RealServerIPs.push(serverIP);
+
+/*
+if (!serverIP2)
+{
+	var errorMsg = "Real Server IP (Server 2) not specified";
+	var subject = "New Load Balancer request failed.";
+	var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed. ";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if (SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+var isServer2IPValid = System.getModule("com.vmware.indcoe.util").isValidIPv4Address(serverIP2);
+if(!isServer2IPValid)
+{
+	var errorMsg = "Real Server IP (Server 2) is invalid / not a real IP";
+	var subject = "New Load Balancer request failed.";
+	var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed. ";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if (SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+//Since Server IP 2 is provided an valid, push to RealServerIPs array
+RealServerIPs.push(serverIP2);
+
+*/
+
+if (serverIP2)
+{
+	var isServer2IPValid = System.getModule("com.vmware.indcoe.util").isValidIPv4Address(serverIP2);
+	if(!isServer2IPValid)
+	{
+		var errorMsg = "Real Server IP (Server 2) is invalid / not a real IP";
+		var subject = "New Load Balancer request failed.";
+		var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed. ";
+		body += errorMsg;
+		body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+		if (SendEmail(subject, body))
+		{
+			throw errorMsg;
+		}
+	}
+//Since Server IP 2 is provided an valid, push to RealServerIPs array
+RealServerIPs.push(serverIP2);
+}
+
+
+if (serverIP3)
+{
+	var isServer3IPValid = System.getModule("com.vmware.indcoe.util").isValidIPv4Address(serverIP3);
+	if(!isServer3IPValid)
+	{
+		var errorMsg = "Real Server IP (Server 3) is invalid / not a real IP";
+		var subject = "New Load Balancer request failed.";
+		var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed. ";
+		body += errorMsg;
+		body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+		if (SendEmail(subject, body))
+		{
+			throw errorMsg;
+		}
+	}
+//Since Server IP 3 is provided an valid, push to RealServerIPs array
+RealServerIPs.push(serverIP3);
+}
+
+if(!lbAlgorithm || (lbAlgorithm !== "roundrobin" && lbAlgorithm !== "leastconnections" && lbAlgorithm !== "minmisses" && lbAlgorithm !== "leastresponsetime" && lbAlgorithm !== "hash" && lbAlgorithm !== "serverbandwith" && lbAlgorithm !== "persistenthash"))
+{
+	var errorMsg = "Load Balancing algorithm selection is invalid / not provided";
+	var subject = "New Load Balancer request failed.";
+	var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed. ";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if (SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+if(!healthCheckType|| (healthCheckType !== "icmp" && healthCheckType !== "tcp" && healthCheckType !== "http" && healthCheckType !== "https" && healthCheckType !== "httphead"))
+{
+	var errorMsg = "Server Health Check selection is invalid / not provided";
+	var subject = "New Load Balancer request failed.";
+	var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed. ";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if (SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+
+try{
+	System.log("Load Balancer Type: "+networkProfName);
+	System.log("Network Profile Name: "+networkProfileToUse);
+	var actionResult = System.getModule("com.vmware.indcoe.library.vrautil").GetIPFromNetworkProfile(networkProfileToUse,vCACHost);
+
+	var propResult = actionResult.getIpAndUpdate();
+	var virtualIP = propResult.get("ipAddress");
+	if(!virtualIP)
+	{
+		var errorMsg = "Error fetching new IP, variable virtualIP is empty";
+		var subject = "New Load Balancer request failed.";
+		var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed. ";
+		body += errorMsg;
+		body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+		if (SendEmail(subject, body))
+		{
+			throw errorMsg;
+		}
+	}
+}
+catch(error)
+{
+	System.log("Error: "+error);
+	throw "Unable to allocate new IP Address. Please contact the admin team";
+}
+
+// End of validation.
+
+System.log("Requirement is to create a LB");
+
+var radwareObject = System.getModule("com.vmware.indcoe.radware_lbaas").class(username, password, restHost);
+
+if (!radwareObject)
+{
+	var errorMsg = "Error creating Radware Object, please check with admin team";
+	var subject = "New Load Balancer request failed.";
+	var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed. ";
+	body += errorMsg;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if (SendEmail(subject, body))
+	{
+		throw errorMsg;
+	}
+}
+
+System.log("Using Radware Object: " + radwareObject.PrintAuthenticationToken());
+
+try
+{
+	//Encapsulating everything in a giant try catch so that it can revert the configuration in case we face an error.
+
+	var usedIpFlag = propResult.get("usedIP");
+	System.debug("Used IP Flag: "+usedIpFlag);
+	System.debug("Trying to reserve IP: "+virtualIP);
+	if (usedIpFlag == true)
+	{
+		System.debug("Update Existing IP Range called ...");
+		System.getModule("com.vmware.indcoe.library.vrautil").UpdateExistingIPRangeNw(virtualIP, vCACHost);
+	}
+	else
+	{
+		System.debug("Reserve IP From NW called ...");
+		System.getModule("com.vmware.indcoe.library.vrautil").ReserveIPFromNw(virtualIP, networkProfileToUse, vCACHost);
+	}
+	
+	System.log("IP Allocated in vRA: "+virtualIP);
+	
+	for (var i in RealServerIPs)
+	{
+
+		var nameofRealServer = RealServerIPs[i];
+
+		if(i == 0)
+		{
+			System.debug("Server 1 Entry");
+			if(serverName)
+			{
+				nameofRealServer = serverName;
+				System.debug("Server name for Server 1 : "+nameofRealServer);
+			}
+		}
+
+		if(i == 1)
+		{
+			System.debug("Server 2 Entry");
+			if(serverName2)
+			{
+				nameofRealServer = serverName2;
+				System.debug("Server name for Server 2 : "+nameofRealServer);
+			}
+		}
+
+		if(i == 2)
+		{
+			System.debug("Server 3 Entry");
+			if(serverName3)
+			{
+				nameofRealServer = serverName3;
+				System.debug("Server name for Server 3 : "+nameofRealServer);
+			}
+		}
+
+		var IndexOfServer = radwareObject.AddNewRealServer(RealServerIPs[i], nameofRealServer);
+
+		System.debug("Output of adding Real Server " + RealServerIPs[i] + " is " + IndexOfServer);
+		if (IndexOfServer == false)
+		{
+			throw "Error adding server " + RealServerIPs[i] + " to the LB";
+		}
+		else
+		{
+			System.log("Server: " + RealServerIPs[i] + " added, Index: " + IndexOfServer);
+			RealServerIPIndexes.push(IndexOfServer);
+		}
+	}
+	
+	System.log("Indexes of added real servers: "+RealServerIPIndexes);
+
+	System.log("Real Servers added, now creating server groups");
+	
+	var IndexOfServerGroup = radwareObject.CreateNewServerGroup(RealServerIPIndexes, requestNumber, lbAlgorithm, healthCheckType);
+
+	if (IndexOfServerGroup == false)
+	{
+		throw "Error creating server group";
+	}
+	else
+	{
+		System.log("Server group created, ID: " + IndexOfServerGroup);
+	}
+
+	var IndexOfVirtualServer = radwareObject.CreateNewVirtualServer(virtualIP, requestNumber);
+
+	if (IndexOfVirtualServer == false)
+	{
+		throw "Error creating Virtual Server";
+	}
+	else
+	{
+		System.log("Virtual Server created, ID: " + IndexOfVirtualServer);
+	}
+	
+
+	var IndexOfVirtualService  = radwareObject.AddServiceToVirtualServer(IndexOfVirtualServer, virtualPort, realPort, protocol);
+
+	if (IndexOfVirtualService == false)
+	{
+		throw "Error creating new virtual service";
+	}
+	else
+	{
+		System.log("Virtual service created successfully");
+	}
+	
+	var statusOfProxyAddition  = radwareObject.AddProxyToVirtualServer(persisBool,persisTimeout,IndexOfServerGroup, IndexOfVirtualServer, IndexOfVirtualService, requestCategory);
+
+	if (IndexOfVirtualService == false)
+	{
+		throw "Error creating new virtual service";
+	}
+	else
+	{
+		System.log("Virtual service created successfully");
+	}
+	//radwareObject.clientCookiePersis(cookieDomainBool,cookieName,cRebind,cookieSecure,cookiePath,PbindRport,cResponse,persisOption,cookieMode,uriBoolean,cOffset,cLength,IndexOfVirtualServer,IndexOfVirtualService)
+	//After everything is done, Apply and save.
+	var resultOfApplyConfig = radwareObject.ApplyConfig();
+
+	if (resultOfApplyConfig == false)
+	{
+		throw "Error applying config on radware";
+	}
+	else
+	{
+		System.log("Configuration applied successfully");
+	}
+
+	var resultOfSaveConfig = radwareObject.SaveConfig();
+
+	if (resultOfSaveConfig == false)
+	{
+		throw "Error saving config on radware";
+	}
+	else
+	{
+		System.log("Configuration saved successfully");
+	}
+
+
+	var subject = "New Load Balancer request completed successfully.";
+	var body = "Hello, <br/>The Request with request number: " + requestNumber + " has completed successfully.  <br/>";
+	body += "Virtual IP: "+virtualIP+" <br/>";
+	body += "Virtual Port: "+virtualPort+" <br/>";
+	body += "Real Port: "+rlPort+" <br/>";
+	body += "Real Servers: <br/>"
+	body += serverIP+" <br/>";
+	body += serverIP2+" <br/>";
+	body += serverIP3+" <br/>";
+	
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	SendEmail(subject, body);
+}
+catch (error)
+{
+
+	System.debug("Unallocating IP since request failed....");
+	System.getModule("com.vmware.indcoe.library.vrautil").UnallocateIP(virtualIP, vCACHost);
+	
+	System.log("Error: "+error);
+	//Some error occurred, reverting configuration
+	radwareObject.RevertConfig();
+
+	var subject = "New Load Balancer request failed.";
+	var body = "Hello, <br/>The Request with request number: " + requestNumber + " has failed. ";
+	body += error;
+	body += "<br /><br /> This is a system generated email, do not reply to this email<br />";
+	if (SendEmail(subject, body))
+	{
+		throw error;
+	}
+}]]></script>
+    <in-binding>
+      <bind name="username" type="string" export-name="username"/>
+      <bind name="password" type="SecureString" export-name="password"/>
+      <bind name="restHost" type="REST:RESTHost" export-name="restHost"/>
+      <bind name="smtp_host" type="string" export-name="smtp_host"/>
+      <bind name="smtp_port" type="number" export-name="smtp_port"/>
+      <bind name="smtp_username" type="string" export-name="smtp_username"/>
+      <bind name="smtp_password" type="SecureString" export-name="smtp_password"/>
+      <bind name="smtp_from_id" type="string" export-name="smtp_from_id"/>
+      <bind name="smtp_from_name" type="string" export-name="smtp_from_name"/>
+      <bind name="use_ssl" type="boolean" export-name="use_ssl"/>
+      <bind name="use_start_tls" type="boolean" export-name="use_start_tls"/>
+      <bind name="smtp_to_address" type="Array/string" export-name="smtp_to_address"/>
+      <bind name="usersEmailId" type="string" export-name="usersEmailId"/>
+      <bind name="vcacCafeHost" type="vCACCAFE:VCACHost" export-name="vcacCafeHost"/>
+      <bind name="vsPort" type="string" export-name="vsPort"/>
+      <bind name="vsProtocol" type="string" export-name="vsProtocol"/>
+      <bind name="serverName" type="string" export-name="serverName"/>
+      <bind name="serverIP" type="string" export-name="serverIP"/>
+      <bind name="serverName2" type="string" export-name="serverName2"/>
+      <bind name="serverIP2" type="string" export-name="serverIP2"/>
+      <bind name="serverName3" type="string" export-name="serverName3"/>
+      <bind name="serverIP3" type="string" export-name="serverIP3"/>
+      <bind name="networkProfName" type="string" export-name="networkProfName"/>
+      <bind name="vCACHost" type="vCAC:VCACHost" export-name="vCACHost"/>
+      <bind name="rlPort" type="string" export-name="rlPort"/>
+      <bind name="healthCheckType" type="string" export-name="healthCheckType"/>
+      <bind name="lbAlgorithm" type="string" export-name="lbAlgorithm"/>
+      <bind name="persisBool" type="boolean" export-name="persisBool"/>
+      <bind name="persisTimeout" type="number" export-name="persisTimeout"/>
+      <bind name="cookieDomainBool" type="string" export-name="cookieDomainBool"/>
+      <bind name="cookieName" type="string" export-name="cookieName"/>
+      <bind name="cRebind" type="string" export-name="cRebind"/>
+      <bind name="cookieSecure" type="string" export-name="cookieSecure"/>
+      <bind name="cookiePath" type="string" export-name="cookiePath"/>
+      <bind name="cResponse" type="number" export-name="cResponse"/>
+      <bind name="persisOption" type="string" export-name="persisOption"/>
+      <bind name="cookieMode" type="string" export-name="cookieMode"/>
+      <bind name="uriBoolean" type="string" export-name="uriBoolean"/>
+      <bind name="cOffset" type="number" export-name="cOffset"/>
+      <bind name="PbindRport" type="string" export-name="PbindRport"/>
+      <bind name="cLength" type="number" export-name="cLength"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="usersEmailId">
+      <desc><![CDATA[Requester's Email ID]]></desc>
+    </p-param>
+    <p-param name="vsPort">
+      <desc><![CDATA[Virtual Server Port]]></desc>
+    </p-param>
+    <p-param name="vsProtocol">
+      <desc><![CDATA[Virtual Server Protocol]]></desc>
+    </p-param>
+    <p-param name="serverName">
+      <desc><![CDATA[serverName]]></desc>
+    </p-param>
+    <p-param name="serverIP">
+      <desc><![CDATA[serverIP]]></desc>
+    </p-param>
+    <p-param name="serverName2">
+      <desc><![CDATA[serverName2]]></desc>
+    </p-param>
+    <p-param name="serverIP2">
+      <desc><![CDATA[serverIP2]]></desc>
+    </p-param>
+    <p-param name="serverName3">
+      <desc><![CDATA[serverName3]]></desc>
+    </p-param>
+    <p-param name="serverIP3">
+      <desc><![CDATA[serverIP3]]></desc>
+    </p-param>
+    <p-param name="networkProfName">
+      <desc><![CDATA[networkProfName]]></desc>
+    </p-param>
+    <p-param name="rlPort">
+      <desc><![CDATA[rlPort]]></desc>
+    </p-param>
+    <p-param name="healthCheckType">
+      <desc><![CDATA[healthCheckType]]></desc>
+    </p-param>
+    <p-param name="lbAlgorithm">
+      <desc><![CDATA[lbAlgorithm]]></desc>
+    </p-param>
+    <p-param name="persisBool">
+      <desc><![CDATA[persisBool]]></desc>
+    </p-param>
+    <p-param name="persisTimeout">
+      <desc><![CDATA[persisTimeout]]></desc>
+    </p-param>
+    <p-param name="cookieDomainBool">
+      <desc><![CDATA[cookieDomainBool]]></desc>
+    </p-param>
+    <p-param name="cookieName">
+      <desc><![CDATA[cookieName]]></desc>
+    </p-param>
+    <p-param name="cRebind">
+      <desc><![CDATA[cRebind]]></desc>
+    </p-param>
+    <p-param name="cookieSecure">
+      <desc><![CDATA[cookieSecure]]></desc>
+    </p-param>
+    <p-param name="cookiePath">
+      <desc><![CDATA[cookiePath]]></desc>
+    </p-param>
+    <p-param name="cResponse">
+      <desc><![CDATA[cResponse]]></desc>
+    </p-param>
+    <p-param name="persisOption">
+      <desc><![CDATA[persisOption]]></desc>
+    </p-param>
+    <p-param name="cookieMode">
+      <desc><![CDATA[cookieMode]]></desc>
+    </p-param>
+    <p-param name="uriBoolean">
+      <desc><![CDATA[uriBoolean]]></desc>
+    </p-param>
+    <p-param name="cOffset">
+      <desc><![CDATA[cOffset]]></desc>
+    </p-param>
+    <p-param name="cLength">
+      <desc><![CDATA[cLenght]]></desc>
+    </p-param>
+    <p-param name="PbindRport">
+      <desc><![CDATA[PbindRport]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

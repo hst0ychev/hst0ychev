@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="ExecuteRest" result-type="Any" api-version="6.0.0" id="4ebb6083-c59a-36a9-ac71-3cbc57768471" version="1.0.0" allowed-operations="evf" category-name="com.vmware.indcoe.library.nsxlbgeneric">
+  <param n="restHost" t="REST:RESTHost"><![CDATA[The REST Host on which the operation needs to be performed]]></param>
+  <param n="requestURL" t="string"><![CDATA[API URL ]]></param>
+  <param n="requestMethod" t="string"><![CDATA[Whether POST/PUT/PATCH/GET/DELETE]]></param>
+  <param n="content" t="string"><![CDATA[Either JSON content or XML content]]></param>
+  <param n="typeContent" t="string"><![CDATA[Based on API accepts the content either JSON or XML]]></param>
+  <param n="header" t="Properties"><![CDATA[Key : value]]></param>
+  <script encoded="false"><![CDATA[System.debug("Creating REST Request: "+requestMethod+" URL: "+requestURL+" Content: "+content);
+
+var request = restHost.createRequest(requestMethod, requestURL, content);
+//Set the contentType and header based on condition
+
+System.debug("COntent Type: "+typeContent);
+
+if(typeContent == "json"){
+    //request.contentType = "application/json";
+    request.setHeader("Accept","application/json");
+    request.setHeader("Content-Type", "application/json");
+}else if(typeContent == "xml"){
+    //request.contentType = "application/xml";
+    request.setHeader("Accept","application/xml");
+    request.setHeader("Content-Type", "application/xml");
+}
+//Set the additional header if that required
+if(header!=null || header !=undefined){
+	System.debug("Header prop "+header.keys[0] +" :value: "+header.get(header.keys[0]))
+   	request.setHeader(header.keys[0],header.get(header.keys[0]))
+}    
+var response = request.execute();
+var result = new Properties();
+result.put("statusCode", response.statusCode);
+result.put("contentLength", response.contentLength);
+result.put("headers", response.getAllHeaders());
+result.put("contentAsString", response.contentAsString);
+try{
+	result.put("contentAsObject",JSON.parse(response.contentAsString));
+}catch(e){
+}
+return result;
+]]></script>
+</dunes-script-module>

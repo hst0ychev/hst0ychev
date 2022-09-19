@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="findiSCSIDevice" result-type="string" api-version="6.0.0" id="4092dd0e-7c23-4c20-94b8-5187761aa835" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.storage">
+  <param n="host" t="VC:HostSystem"><![CDATA[The Virtual Center Host]]></param>
+  <script encoded="false"><![CDATA[var hostStorageSystem = VcPlugin.toManagedObject( host, host.configManager.storageSystem );
+
+// Display available storage adapters
+var hostBusAdapters = hostStorageSystem.storageDeviceInfo.hostBusAdapter;
+
+for each (var busAdapter in hostBusAdapters){
+	if(busAdapter.driver == 'iscsi_vmk'){
+		return busAdapter.device;
+	}
+}
+
+throw "The iSCSI adapter is not enabled.";]]></script>
+</dunes-script-module>

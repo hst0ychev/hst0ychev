@@ -1,0 +1,119 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="CatalogResource" result-type="Any" api-version="6.0.0" id="bdccdf65-64b9-34e2-98c0-cfd68ca9acb0" version="1.0.0" allowed-operations="evf" category-name="com.vmware.indcoe.library.vrautil">
+  <param n="host" t="vCACCAFE:VCACHost"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var CatalogItem = System.getModule("com.vmware.indcoe.library.vrautil").CatalogItem(host);
+var CafeRestClient = System.getModule("com.vmware.indcoe.library.vrautil").CafeRestClient(host,
+    vCACCAFEServicesEnum.CATALOG_SERVICE);
+var consumerRestClient = new CafeRestClient("consumer/resources");
+
+var CatalogResource = function (cr) {
+    for (var key in cr) {
+        this[key] = cr[key];
+    }
+
+    this.getChildren = function () {
+        var catResources = consumerRestClient.getByFilter({
+            "parentResource": this.id
+        });
+        var arr = [];
+        for (var i = 0; i < catResources.length; i++) {
+            arr.push(new CatalogResource(catResources[i]));
+        }
+        return arr;
+    };
+
+    this.getResourceDataByKey = function (key) {
+        var entries = this.resourceData.entries.filter(function (entry) {
+            return entry.key == key;
+        });
+        if (entries.length > 1) {
+            throw new Error("More then one resourceData entry found with key " + key);
+        } else if (entries.length == 0) {
+            throw new Error("No resourceData entries with key " + key);
+        } else {
+            return entries[0].value;
+        }
+    }
+
+    this.getParent = function () {
+        if (this.parentResourceRef) {
+            return CatalogResource.get(this.parentResourceRef.id);
+        }
+        return null;
+    };
+
+    this.getCatalogItem = function () {
+        if (this.catalogItem) {
+            return CatalogItem.get(this.catalogItem.id);
+        }
+        return null;
+    };
+
+    this.save = function () {
+        var id = consumerRestClient.createOrUpdate(this);
+        this.id = id;
+    };
+};
+
+CatalogResource.get = function (id) {
+    var cr = consumerRestClient.get(id);
+    return new CatalogResource(cr);
+};
+
+CatalogResource.getAll = function () {
+    return consumerRestClient
+        .getAll()
+        .content
+        .map(function (resource) {
+            return new CatalogResource(resource);
+        });
+}
+
+CatalogResource.getByName = function (name) {
+    var cr = consumerRestClient.getByName(name);
+    return new CatalogResource(cr);
+};
+
+CatalogResource.getByRequestId = function (id) {
+    var catResources = consumerRestClient.getByFilter({
+        "request/id": id
+    });
+
+    var arr = [];
+    for (var i = 0; i < catResources.length; i++) {
+        var cr = catResources[i];
+        arr.push(new CatalogResource(cr));
+    }
+
+    return arr;
+};
+
+CatalogResource.getDeploymentByRequestId = function (id) {
+    var catResources = consumerRestClient.getByFilter({
+        "request/id": id,
+        "resourceType/id": "composition.resource.type.deployment"
+    });
+
+    if (catResources.length == 0) {
+        return null;
+    }
+    return new CatalogResource(catResources[0]);
+};
+
+CatalogResource.getDeploymentByBindingId = function (bindingId) {
+    var resources = consumerRestClient.getByFilter({
+        "resourceType/id": "composition.resource.type.deployment",
+        "providerBinding/bindingId": bindingId
+    });
+    if (resources.length == 1) {
+        return resources[0];
+    } else if (resources.length == 0) {
+        return null;
+    } else {
+        throw new Error("Found more then 1 deployment for bindingId " + bindingId);
+    }
+}
+
+return CatalogResource;
+]]></script>
+</dunes-script-module>

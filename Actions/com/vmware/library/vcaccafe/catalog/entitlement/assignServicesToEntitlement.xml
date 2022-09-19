@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="assignServicesToEntitlement" result-type="void" api-version="6.0.0" id="bcd11287-dc21-4580-9c85-7ce9c9193a60" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.catalog.entitlement">
+  <param n="entitlement" t="vCACCAFE:Entitlement"><![CDATA[Entitlement to assign services to]]></param>
+  <param n="services" t="Array/vCACCAFE:Service"><![CDATA[Services to assign to the entitlement]]></param>
+  <param n="approvalPolicy" t="vCACCAFE:ApprovalPolicy"><![CDATA[Approval policy to apply to the services]]></param>
+  <script encoded="false"><![CDATA[if(approvalPolicy != null) {
+	System.getModule("com.vmware.library.vcaccafe.util").checkHosts(entitlement, approvalPolicy, "entitlement", "approval policy");
+}
+var host = vCACCAFEEntitiesFinder.getHostForEntity(entitlement);
+var client = host.createCatalogClient().getCatalogEntitlementService();
+
+var entitledServices = entitlement.getEntitledServices();
+var entitledService;
+for(var i = 0 ; i < services.length ; i++ ) {
+	System.getModule("com.vmware.library.vcaccafe.util").checkHosts(entitlement, services[i], "entitlement", "service");
+	//Check if the service already exists in the entitlement
+	var alreadyExists = false;
+	for(var j = 0 ; j < entitledServices.length ; j++ ) {
+		if(entitledServices[j].getServiceRef().getId() == services[i].getId()) {
+			System.warn("Service " + services[i].getName() + " is already entitled. The service will be skipped.");
+			alreadyExists = true;
+		}
+	}
+	if(!alreadyExists) {
+		entitledService = new vCACCAFEEntitledService();
+		var reference = new vCACCAFELabelledReference();
+		reference.setId(services[i].getId());
+		reference.setLabel(services[i].getName());
+	
+		entitledService.setServiceRef(reference);
+		if(approvalPolicy != null) {
+			entitledService.setApprovalPolicyId(approvalPolicy.getId());
+		}
+		System.getModule("com.vmware.library.vcaccafe.util").addElementToList(entitlement, "getEntitledServices", entitledService);
+	}
+}
+
+System.log("Assigning services to entitlement " + entitlement.getName() + "...");
+client.update(entitlement);
+System.log("Services assigned to entitlement " + entitlement.getName());]]></script>
+</dunes-script-module>

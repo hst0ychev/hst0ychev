@@ -1,0 +1,59 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getVMSubclient" result-type="void" api-version="6.0.0" id="8d03d367-1734-446c-ace8-76e7cafb5dcc" version="0.0.0" allowed-operations="evf" category-name="com.commvault.utils">
+  <description><![CDATA[subclient details for the given VM GUID]]></description>
+  <param n="token" t="string"><![CDATA[CV token for REST API]]></param>
+  <param n="uuId" t="string"><![CDATA[VM GUID]]></param>
+  <param n="host" t="REST:RESTHost"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[/*
+	Inputs:
+	token - CV token for REST API
+	uuId - virtual machine GUID
+	
+	API used:
+	VMSubclientId/{uuId}
+	
+	Output:
+	subclientId
+*/
+System.log("executing getVMSubclient module");
+var  getVMSubclientURL = "VMSubclientId" + "/" + uuId;
+var subclientId = "";
+//running the REST request to fetch the subclient id for VM guid
+var response = System.getModule("com.commvault.utils").processRESTRequest(getVMSubclientURL,"GET", null, token, null, host);
+
+if(response.contentAsString != null && response.contentAsString != "")
+{
+	if(response.statusCode != 200)
+	{
+		System.log("Response status was not 200: "+response);
+		throw("Error: Failed to execute REST request getVMSubclient");
+	}
+	var document = XMLManager.fromString(response.contentAsString);
+	//SP16
+	//var list = document.getElementsByTagName("App_IdName");
+	//SP17
+	var list = document.getElementsByTagName("CvEntities_SubClientEntity");
+	var total = list.length;
+	
+	if(total ==0)
+	{
+		throw("Error: Could not find IDA details in the response. Check the VM subclient.");
+	}
+	
+	
+	for(var i = 0; i < total ; i++)
+	{	
+		//SP16
+		//subclientId = list.item(i).getAttribute("id");
+		//SP17
+		subclientId = list.item(i).getAttribute("subclientId");
+		break;
+	}
+	System.log("VM Subclient id is " + subclientId);
+	return subclientId;
+	
+}
+else{
+	return subclientId;
+}]]></script>
+</dunes-script-module>

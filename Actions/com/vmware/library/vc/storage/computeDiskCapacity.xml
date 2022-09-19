@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="computeDiskCapacity" result-type="number" api-version="6.0.0" id="aef157a3-e27e-433a-a6e6-ee5b75b48723" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.storage">
+  <param n="host" t="VC:HostSystem"><![CDATA[The vCenter host system]]></param>
+  <param n="diskName" t="string"><![CDATA[The disk name]]></param>
+  <script encoded="false"><![CDATA[if (host != null && diskName != null) {
+	var hostDatastoreSystem = VcPlugin.toManagedObject( host, host.configManager.datastoreSystem );
+	var hostScsiDisks = hostDatastoreSystem.queryAvailableDisksForVmfs(null);
+
+	for each (var disk in hostScsiDisks){
+		if (diskName == disk.displayName){
+			var capacity = disk.capacity;
+			return capacity.block * capacity.blockSize / 1073741824;
+			break;
+		}
+	}
+}
+return 0;]]></script>
+</dunes-script-module>

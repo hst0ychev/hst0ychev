@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="validateDatabase" result-type="void" api-version="6.0.0" id="0700f081-74d4-4420-854f-be4d6617e9a3" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.sql.configuration">
+  <param n="database" t="SQL:Database"><![CDATA[A database object]]></param>
+  <script encoded="false"><![CDATA[try  {
+ 	SQLDatabaseManager.validateDatabase(database);
+	System.log( "Connection to database successful" );
+}
+catch( ex )  {
+	throw "Validation failure (Reason: " + ex + ")";
+}]]></script>
+</dunes-script-module>

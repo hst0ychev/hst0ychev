@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getMachineOperationByName" result-type="vCAC:Entity" api-version="6.0.0" id="4296129b-c02a-48c9-be19-f899b7100f75" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcac">
+  <param n="vcacHost" t="vCAC:VCACHost"><![CDATA[vCloud Automation Center host]]></param>
+  <param n="name" t="string"><![CDATA[Machine operation name]]></param>
+  <script encoded="false"><![CDATA[if (vcacHost == null) return null;
+var model = "ManagementModelEntities.svc";
+var entitySetName = "MachineOperations";
+
+var property = new Properties();
+property.put("Name",name);
+
+var entities = vCACEntityManager.readModelEntitiesByCustomFilter(vcacHost.id, model, entitySetName, property, null);
+if (entities != null){
+	if (entities.length >1) System.warn("Found more than one machine operation with name " + name);
+	return entities[0];
+}else{
+	System.warn("No machine operation found with name: "+name);
+	return null;
+}]]></script>
+</dunes-script-module>

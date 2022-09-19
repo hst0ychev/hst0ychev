@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:workflow xmlns:ns2="http://vmware.com/vco/workflow" root-name="item1" object-name="workflow:name=generic" id="2c2f796b-9c8b-4847-b1fe-26907412ebfa" editor-version="2.0" version="0.0.0" api-version="6.0.0" restartMode="1" resumeFromFailedMode="0">
+    <display-name>delete vRO folders</display-name>
+    <position y="50.0" x="100.0"/>
+    <input/>
+    <output/>
+    <attrib name="host" type="VRA:Host">
+        <value encoded="n">dunes://service.dunes.ch/CustomSDKObject?id='nsqsW7dEQuCn9G0XHVMRpg'&amp;dunesName='VRA:Host'</value>
+    </attrib>
+    <workflow-item name="item0" type="end" end-mode="0" comparator="0">
+        <in-binding/>
+        <out-binding/>
+        <position y="50.0" x="300.0"/>
+    </workflow-item>
+    <workflow-item name="item1" out-name="item0" type="task" comparator="0">
+        <display-name>Scriptable task</display-name>
+        <script encoded="false">folderList = [
+    "/vco/api/categories/8a7480d48211911c01823567b37b003f",
+    "/vco/api/categories/8a7480d48211911c01823567d8dc0342",
+    "/vco/api/categories/8a7480d48211911c01823567b6e700a1",
+    "/vco/api/categories/8a7480d48211911c0182356800680565",
+    "/vco/api/categories/8a7480038248b9b601824a3ae1990513",
+    "/vco/api/categories/8a7480d48211911c01823567dd550394",
+    "/vco/api/categories/8a7480d48211911c01823567ef08049a",
+    "/vco/api/categories/8a7480038248b9b601824a3b237f06e3",
+    "/vco/api/categories/8a7480d48211911c01823567c03b0195",
+    "/vco/api/categories/8a7480d48211911c01823567eb130470",
+    "/vco/api/categories/8a7480d48211911c01823567b65b0090",
+    "/vco/api/categories/8a7480038248b9b601824a3aeacb055c",
+    "/vco/api/categories/8a7480038248b9b601824a3af55005b7",
+    "/vco/api/categories/8a7480d48211911c01823567f18904b7",
+    "/vco/api/categories/8a7480038248b9b601824a3b0895064e",
+    "/vco/api/categories/8a7480038248b9b601824a3b06440641",
+    "/vco/api/categories/8a7480038248b9b601824a3b206906d3",
+    "/vco/api/categories/8a7480038248b9b601824a3b2eb30735",
+    "/vco/api/categories/8a7480038248b9b601824a3b052e063a",
+    "/vco/api/categories/8a7480038248b9b601824a3b056a063c",
+    "/vco/api/categories/8a7480038248b9b601824a3b0853064c",
+    "/vco/api/categories/8a7480d48211911c01823567ee5b0491",
+    "/vco/api/categories/8a7480d48211911c01823567eccb047e",
+    "/vco/api/categories/8a7480d48211911c01823567ec55047a",
+    "/vco/api/categories/8a7480038248b9b601824a3b39a1077e",
+    "/vco/api/categories/8a7480d48211911c01823567c82b0231",
+    "/vco/api/categories/8a7480038248b9b601824a3ad3e704b2",
+    "/vco/api/categories/8a7480d48211911c01823567ee07048d",
+    "/vco/api/categories/8a7480038248b9b601824a3b458607d5",
+    "/vco/api/categories/8a7480d48211911c01823567bea4016f",
+    "/vco/api/categories/8a7480038248b9b601824a3b491207eb",
+    "/vco/api/categories/8a7480038248b9b601824a3add7804ef",
+    "/vco/api/categories/8a7480038248b9b601824a3b0a860659",
+    "/vco/api/categories/8a7480038248b9b601824a3b1a2706a2",
+    "/vco/api/categories/8a7480038248b9b601824a3ad36e04af",
+    "/vco/api/categories/8a7480d48211911c01823567ff94055a",
+    "/vco/api/categories/8a7480d48211911c01823568017d0574",
+    "/vco/api/categories/8a7480038248b9b601824a3ad2a704ac",
+    "/vco/api/categories/8a7480038248b9b601824a3b13970683",
+    "/vco/api/categories/8a7480038248b9b601824a3b17940694",
+    "/vco/api/categories/8a7480038248b9b601824a3b09a90654",
+    "/vco/api/categories/8a7480038248b9b601824a3b1a6106a4",
+    "/vco/api/categories/8a7480038248b9b601824a3b0bf70661",
+    "/vco/api/categories/8a7480038248b9b601824a3b17d60696",
+    "/vco/api/categories/8a7480038248b9b601824a3b09640652",
+    "/vco/api/categories/8a7480038248b9b601824a3b17470692",
+    "/vco/api/categories/8a7480038248b9b601824a3b0e5c066e",
+    "/vco/api/categories/8a7480038248b9b601824a3b19b3069f",
+    "/vco/api/categories/8a7480d48211911c01823567d0c802c7",
+    "/vco/api/categories/8a7480d48211911c01823567d38902f5",
+    "/vco/api/categories/8a7480d48211911c01823567fedd0551",
+    "/vco/api/categories/8a7480038248b9b601824a3b06f30645",
+    "/vco/api/categories/8a7480d48211911c01823567c43101e8",
+    "/vco/api/categories/8a7480d48211911c01823567be230162",
+    "/vco/api/categories/8a7480038248b9b601824a3af1ca059a",
+    "/vco/api/categories/8a7480d48211911c01823567bc18012b",
+    "/vco/api/categories/8a7480d48211911c01823567cd59029c",
+    "/vco/api/categories/8a7480d48211911c01823567be4d0166",
+    "/vco/api/categories/8a7480d48211911c01823567f28a04c5",
+    "/vco/api/categories/8a7480d48211911c01823567ccdb0291",
+    "/vco/api/categories/8a7480d48211911c01823567b9aa00ee",
+    "/vco/api/categories/8a7480d48211911c01823567f00804a8",
+    "/vco/api/categories/8a7480d48211911c01823567b3460039",
+    "/vco/api/categories/8a7480d48211911c01823567fca90535",
+    "/vco/api/categories/8a7480d48211911c01823567b7a700bc",
+    "/vco/api/categories/8a7480d48211911c01823567b6950098",
+    "/vco/api/categories/8a7480d48211911c01823567c63e020f",
+    "/vco/api/categories/8a7480d48211911c01823567b361003c",
+    "/vco/api/categories/8a7480d48211911c01823567b3190034",
+    "/vco/api/categories/8a7480038248b9b601824a3af18e0597",
+    "/vco/api/categories/8a7480d48211911c01823567b527006d",
+    "/vco/api/categories/8a7480d48211911c01823567e7dc0440",
+    "/vco/api/categories/8a7480038248b9b601824a3afbb405eb",
+    "/vco/api/categories/8a7480d48211911c01823567b3b20044",
+    "/vco/api/categories/8a7480d48211911c01823567b6240089",
+    "/vco/api/categories/8a7480d48211911c01823567ba9f0106",
+    "/vco/api/categories/8a7480d48211911c01823567d91d0348",
+    "/vco/api/categories/8a7480d48211911c01823567beba0171",
+    "/vco/api/categories/8a7480d48211911c01823567f79c04fe",
+    "/vco/api/categories/8a7480d48211911c01823567bf55017e",
+    "/vco/api/categories/8a7480038248b9b601824a3add0004ea",
+    "/vco/api/categories/8a7480d48211911c01823567b2c3002f",
+    "/vco/api/categories/8a7480d48211911c0182356801550571",
+    "/vco/api/categories/8a7480d48211911c01823567bd170144",
+    "/vco/api/categories/8a7480d48211911c01823567b81000c9",
+    "/vco/api/categories/8a7480d48211911c01823567b71900a7",
+    "/vco/api/categories/8a7480d48211911c01823567b72b00aa",
+    "/vco/api/categories/8a7480d48211911c01823567c6d80219",
+    "/vco/api/categories/8a7480d48211911c01823567bcba013b",
+    "/vco/api/categories/8a748065825dc9b801829155d2730284",
+    "/vco/api/categories/8a748065825dc9b801829155d7d202b9",
+    "/vco/api/categories/8a748065825dc9b801829155d85d02be",
+    "/vco/api/categories/8a748065825dc9b801829155dca102ec",
+    "/vco/api/categories/8a7480038248b9b601824a3b32e0074c",
+    "/vco/api/categories/8a7480d48211911c01823567c98f024a",
+    "/vco/api/categories/8a7480d48211911c01823567c0550197",
+    "/vco/api/categories/8a7480d48211911c01823567b5ae007b",
+    "/vco/api/categories/8a7480d48211911c01823567cf9e02c2",
+    "/vco/api/categories/8a7480d48211911c01823567cf0c02b9",
+    "/vco/api/categories/8a7480d48211911c01823567df9d03bb",
+    "/vco/api/categories/8a7480d48211911c01823567b82900cc",
+    "/vco/api/categories/8a7480d48211911c01823567b4390050",
+    "/vco/api/categories/8a7480038248b9b601824a3b701208cd",
+    "/vco/api/categories/8a7480d48211911c01823567ff4e0555",
+    "/vco/api/categories/8a7480d48211911c01823567b6110086",
+    "/vco/api/categories/8a7480d48211911c01823567b6800095",
+    "/vco/api/categories/8a7480d48211911c01823567dada0369",
+    "/vco/api/categories/8a7480038248b9b601824a3b1bc206af",
+    "/vco/api/categories/8a7480038248b9b601824a3afede0602",
+    "/vco/api/categories/8a7480d48211911c01823567b73e00ad",
+    "/vco/api/categories/8a7480d48211911c01823567bae8010e",
+    "/vco/api/categories/8a7480d48211911c01823567ca320255",
+    "/vco/api/categories/8a7480d48211911c01823567ca68025b",
+    "/vco/api/categories/8a748065825dc9b801829155efc30355",
+    "/vco/api/categories/8a748065825dc9b801829155f42d0377",
+    "/vco/api/categories/8a748065825dc9b801829155f50c037c",
+    "/vco/api/categories/8a748065825dc9b8018291560e89044e"
+];
+
+//folderList = ["/vco/api/categories/8a7480d48211911c01823567b37b003f"]
+
+var restClient = host.createRestClient();
+
+folderList.forEach(function(folderUrl){
+    pathUri = folderUrl + "?deleteNonEmptyContent=true";
+    System.log(pathUri);
+    var request = restClient.createRequest("DELETE", pathUri, null);
+    var response = restClient.execute(request);
+    System.log("Res: "+ response.contentAsString);
+});
+
+
+
+// var keys = inputHeaders.keys;
+// for(var key in keys){
+//     request.setHeader(keys[key], inputHeaders.get(keys[key]));
+//     System.log("Value for key: "+keys[key] +" is: "+inputHeaders.get(keys[key]));
+// }
+// var response = restClient.execute(request);
+
+// System.log("Rest Response is "+ response);
+// System.log("****Status Code****");
+
+// statusCode = response.statusCode;
+// System.log("Status code: " + statusCode);
+// statusCodeAttribute = statusCode;
+// statusMessage = response.statusMessage;
+// System.log("****Status Message****");
+// System.log("Status Message: " + statusMessage);
+// contentAsString = response.contentAsString;
+// System.log("****Content  String****");
+// System.log("Content as string: " + contentAsString);
+// headers = response.getHeaderValues("Access-Control-Allow-Headers");
+// System.log("****Headers****");
+// for each (var header in headers){
+// 	System.log(header.toString());
+// }
+
+// System.log("****All Headers****");
+// for each (var header in response.allHeaders){
+// 	System.log(header.toString());
+// }
+</script>
+        <in-binding>
+            <bind name="host" type="VRA:Host" export-name="host"/>
+        </in-binding>
+        <out-binding/>
+        <description>Simple task with custom script capability.</description>
+        <position y="50.0" x="140.0"/>
+    </workflow-item>
+</ns2:workflow>

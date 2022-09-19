@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="cloneVM" result-type="VC:Task" api-version="6.0.0" id="b3dbd680-b951-4cbc-be93-395c8c05b1ed" version="0.2.1" allowed-operations="vf" category-name="com.vmware.library.vc.basic">
+  <description><![CDATA[Creates a clone of this virtual machine. If the virtual machine is used as a template, this method corresponds to the deploy command. 
+Any % (percent) character used in this name parameter must be escaped, unless it is used to start an escape sequence. Clients may also escape any other characters in this name parameter. 
+The privilege required on the source virtual machine depends on the source and destination types: 
+	- source is virtual machine, destination is virtual machine - VirtualMachine.Provisioning.Clone 
+	- source is virtual machine, destination is template - VirtualMachine.Provisioning.CreateTemplateFromVM
+	- source is template, destination is virtual machine - VirtualMachine.Provisioning.DeployTemplate 
+	- source is template, destination is template - VirtualMachine.Provisioning.CloneTemplate 
+If customization is requested in the CloneSpec, then the VirtualMachine.Provisioning.Customize privilege must also be held on the source virtual machine.]]></description>
+  <param n="vm" t="VC:VirtualMachine"><![CDATA[The Source Virtual Machine or Template for the Clone Operation]]></param>
+  <param n="vmFolder" t="VC:VmFolder"><![CDATA[The location of the new virtual machine.]]></param>
+  <param n="name" t="string"><![CDATA[The name of the new virtual machine.]]></param>
+  <param n="powerOn" t="boolean"><![CDATA[Specifies whether or not the new VirtualMachine should be powered on after creation.]]></param>
+  <param n="template" t="boolean"><![CDATA[Specifies whether or not the new virtual machine should be marked as a template.]]></param>
+  <param n="datastore" t="VC:Datastore"><![CDATA[The datastore where the virtual machine should be located. If not specified, the current datastore is used. ]]></param>
+  <param n="host" t="VC:HostSystem"><![CDATA[The datastore where the virtual machine should be located. If not specified, the current datastore is used.]]></param>
+  <param n="pool" t="VC:ResourcePool"><![CDATA[The resource pool to which this virtual machine should be attached.]]></param>
+  <param n="thinProvisioned" t="boolean"><![CDATA[If true, the VM disk size unused are not reserved on the datastore]]></param>
+  <script encoded="false"><![CDATA[var transform = null;
+if (thinProvisioned == true) {
+	transform = VcVirtualMachineRelocateTransformation.sparse;
+} else if (thinProvisioned == false) {
+	transform = VcVirtualMachineRelocateTransformation.flat;
+}
+
+if (datastore == null) {
+	datastore = vm.datastore[0];
+}
+relocateSpec = System.getModule("com.vmware.library.vc.vm.spec").getRelocateSpec(datastore,null,host,pool,transform);
+cloneSpec = System.getModule("com.vmware.library.vc.vm.spec").getCloneSpec(null,null,relocateSpec,powerOn,template);
+
+
+
+
+
+return vm.cloneVM_Task(vmFolder, name, cloneSpec);]]></script>
+</dunes-script-module>

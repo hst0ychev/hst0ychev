@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getOrInitITAMCSV" result-type="ResourceElement" api-version="6.0.0" id="56c7c173-7eb9-490b-a45d-55190809acf0" version="1.0.0" allowed-operations="vfe" category-name="com.HealthConnect.actions">
+  <script encoded="false"><![CDATA[categoryName = 'Health Connect';
+elementName = 'itam.txt';
+
+var category = Server.getResourceElementCategoryWithPath(categoryName);
+var deployments = null;
+
+if (category) {
+   for each (var resourceElement in category.resourceElements) {
+		if (resourceElement.name == elementName) {
+			deployments = resourceElement;
+			break;
+		}
+	}
+} 
+
+//Init the file
+if (!deployments) { 
+   deployments = Server.createResourceElement(category, elementName, null);
+   addCSVHeaders(deployments)
+} else if (deployments.getContentAsMimeAttachment().content.trim() == '') {
+   addCSVHeaders(deployments)
+}
+
+return deployments;
+
+function addCSVHeaders(resourceElement) {
+  var headers = 'Requester Name,Virtual or Physical,Server Name, NEW Serial number (Physical) or "UUID"(virtual),Name of Owning Application,ATLAS APP ID,VMware Cluster OR AIX frame serial number,Supported by,IP domain name (format: xxx.xxxx.kp.org),IP Address,Asset Tag,KP Building,Floor #,Room #,Model,Brand,Purchase Order Number,Date Deployed,Server Build Request #'
+
+   var mimeAttachment = new MimeAttachment();
+   mimeAttachment.content = headers;
+   mimeAttachment.mimeType = "text/plain";
+   mimeAttachment.name = resourceElement.name;
+   resourceElement.setContentFromMimeAttachment(mimeAttachment);
+}]]></script>
+</dunes-script-module>

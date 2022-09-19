@@ -1,0 +1,97 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item2" object-name="Workflow:name=generic" id="9880808080808080808080808080808087808080013049260427240aee8dc5c71" version="1.0.0" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Declare an exchange]]></display-name>
+  <description><![CDATA[Adds an exchange in a specified broker.]]></description>
+  <ref-types><![CDATA[(AMQP:Broker)]]></ref-types>
+  <position y="20.0" x="160.0"/>
+  <input>
+    <param name="broker" type="AMQP:Broker">
+      <description><![CDATA[Broker to declare an exchange in]]></description>
+    </param>
+    <param name="name" type="string">
+      <description><![CDATA[Exchange's name]]></description>
+    </param>
+    <param name="type" type="string">
+      <description><![CDATA[Type of the new exchange]]></description>
+    </param>
+    <param name="durable" type="boolean">
+      <description><![CDATA[Defines if the new exchange is durable.]]></description>
+    </param>
+    <param name="autoDelete" type="boolean">
+      <description><![CDATA[Defines if the new exchange is automatically deleted.]]></description>
+    </param>
+  </input>
+  <attrib name="errorCode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <workflow-item name="item0" throw-bind-name="errorCode" type="end" end-mode="1">
+    <position y="90.0" x="280.0"/>
+  </workflow-item>
+  <workflow-item name="item1" type="end" end-mode="0">
+    <position y="150.0" x="160.0"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item1" catch-name="item0" throw-bind-name="errorCode" type="task">
+    <display-name><![CDATA[Declare an exchange]]></display-name>
+    <script encoded="false"><![CDATA[broker.declareExchange(name, {
+ type: type,
+ durable: durable,
+ autoDelete: autoDelete
+});]]></script>
+    <in-binding>
+      <bind name="broker" type="AMQP:Broker" export-name="broker"/>
+      <bind name="name" type="string" export-name="name"/>
+      <bind name="type" type="string" export-name="type"/>
+      <bind name="durable" type="boolean" export-name="durable"/>
+      <bind name="autoDelete" type="boolean" export-name="autoDelete"/>
+    </in-binding>
+    <out-binding/>
+    <position y="100.0" x="120.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Declare an exchange]]></title>
+      <p-group>
+        <title><![CDATA[AMQP Broker]]></title>
+        <desc><![CDATA[Select a broker to declare an exchange.]]></desc>
+        <p-param name="broker">
+          <desc><![CDATA[Broker]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual name="contextualParameter" type="void"><![CDATA[]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Exchange Properties]]></title>
+        <desc><![CDATA[Define the exchange properties.
+
+<b>Type</b>
+<i>direct</i> - direct match between the routing key provided in the message and the routing criteria used when a queue is bound to this exchange.
+<i>fanout</i> - any message sent to this exchange is forwarded to all queues bound to it. Queues that are bound to this exchange contain no arguments.
+<i>headers</i> - queues are bound to this exchange with a table of arguments that can contain headers and values. A special argument named “x-match” determines the matching algorithm.
+<i>topic</i> - does a wildcard match between the routing key and the routing pattern specified in the binding.
+
+<b>Durable</b>
+The exchange remains after a broker restart.
+
+<b>Auto delete</b>
+The exchange is deleted as soon as there are no more queues bound to it. Only exchanges connected with queues can be automatically deleted.
+]]></desc>
+        <p-param name="name">
+          <desc><![CDATA[Name]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+        <p-param name="type">
+          <desc><![CDATA[Type]]></desc>
+          <p-qual kind="static" name="genericEnumeration" type="Array/string"><![CDATA[#{#string#direct#;#string#fanout#;#string#headers#;#string#topic#}#]]></p-qual>
+        </p-param>
+        <p-param name="durable">
+          <desc><![CDATA[Durable]]></desc>
+          <p-qual kind="static" name="defaultValue" type="boolean"><![CDATA[__NULL__]]></p-qual>
+        </p-param>
+        <p-param name="autoDelete">
+          <desc><![CDATA[Auto delete]]></desc>
+          <p-qual kind="static" name="defaultValue" type="boolean"><![CDATA[__NULL__]]></p-qual>
+        </p-param>
+      </p-group>
+    </p-step>
+  </presentation>
+</workflow>

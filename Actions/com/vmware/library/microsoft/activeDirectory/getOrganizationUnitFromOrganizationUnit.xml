@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getOrganizationUnitFromOrganizationUnit" result-type="AD:OrganizationalUnit" api-version="6.0.0" id="36818080808080808080808080808080B680808001270557368849c62c352aa82" version="1.1.1" allowed-operations="vfe" category-name="com.vmware.library.microsoft.activeDirectory">
+  <description><![CDATA[Gets a computer by his name in the given OU or Group (container)]]></description>
+  <param n="container" t="AD:OrganizationalUnit"><![CDATA[Organizationl Unit / Group]]></param>
+  <param n="ouName" t="string"><![CDATA[Name of the computer]]></param>
+  <script encoded="false"><![CDATA[ous = container.organizationalUnits;
+for (var index in ous) {
+	if (ous[index].name.toLowerCase() == ouName.toLowerCase()) {
+		return ous[index];
+	}
+}
+return null;]]></script>
+</dunes-script-module>

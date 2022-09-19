@@ -1,0 +1,61 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="ReserveIPFromNw" result-type="void" api-version="6.0.0" id="1a721612-33bd-3a79-b563-883caa97bb30" version="1.0.0" allowed-operations="evf" category-name="com.vmware.indcoe.library.vrautil">
+  <param n="ip" t="string"><![CDATA[]]></param>
+  <param n="networkProfileName" t="string"><![CDATA[]]></param>
+  <param n="vcacHost" t="vCAC:VCACHost"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[//Set values
+var modelName = 'ManagementModelEntities.svc';
+var entitySetName = 'StaticIPv4NetworkProfiles';
+// find NP entity by name
+var filter = new Properties();
+filter.put("StaticIPv4NetworkProfileName",networkProfileName);
+System.debug("Looking for NP entity " + networkProfileName);
+var networkProfile = vCACEntityManager.readModelEntitiesByCustomFilter(vcacHost.id, modelName, entitySetName, filter, null);
+System.debug("Creating a new IP address Entity......");
+var networkRangeEntities = networkProfile[0].getLink(vcacHost, "StaticIPv4Ranges");
+
+//creating properties...
+var properties = new Properties(); 
+var date = new Date();
+properties.put("Hostname", "");
+properties.put("IPv4Address", ip);
+properties.put("CreatedDate", date);
+properties.put("LastModifiedDate", date);
+properties.put("StaticIPv4AddressState", 0);
+properties.put("IPSortValue", convertIpToDecimal(ip));
+//setting links...
+var links = new Properties();
+links.put("StaticIPv4NetworkProfile", networkProfile[0]);
+links.put("StaticIPv4Range", networkRangeEntities[0]);
+links.put("VirtualMachine", null);
+System.debug("Create model entity");
+vCACEntityManager.createModelEntity(vcacHost.id, modelName, "StaticIPv4Addresses", properties, links, null);
+
+function convertIpToDecimal(ip) {
+    // a not-perfect regex for checking a valid ip address
+    // It checks for (1) 4 numbers between 0 and 3 digits each separated by dots (IPv4)
+    // or (2) 6 numbers between 0 and 3 digits each separated by dots (IPv6)
+    var ipAddressRegEx = /^(\d{0,3}\.){3}.(\d{0,3})$|^(\d{0,3}\.){5}.(\d{0,3})$/;
+    var valid = ipAddressRegEx.test(ip);
+    if (!valid) {
+        return false;
+    }
+    var dots = ip.split('.');
+    // make sure each value is between 0 and 255
+    for (var i = 0; i < dots.length; i++) {
+        var dot = dots[i];
+        if (dot > 255 || dot < 0) {
+            return false;
+        }
+    }
+    if (dots.length == 4) {
+        // IPv4
+        return ((((((+dots[0])*256)+(+dots[1]))*256)+(+dots[2]))*256)+(+dots[3]);
+    } else if (dots.length == 6) {
+        // IPv6
+        return ((((((((+dots[0])*256)+(+dots[1]))*256)+(+dots[2]))*256)+(+dots[3])*256)+(+dots[4])*256)+(+dots[5]);
+    }
+    return false;
+}
+]]></script>
+</dunes-script-module>

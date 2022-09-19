@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="createUser" result-type="void" api-version="6.0.0" id="36818080808080808080808080808080AA80808001270557368849c62c352aa82" version="1.1.2" allowed-operations="vfe" category-name="com.vmware.library.microsoft.activeDirectory">
+  <description><![CDATA[Create a user]]></description>
+  <param n="accountName" t="string"><![CDATA[The account name for the user (without domain information)]]></param>
+  <param n="domainName" t="string"><![CDATA[The domain name in Win2000 form (john@sample.com : value must be sample.com)]]></param>
+  <param n="displayName" t="string"><![CDATA[The display name of the user]]></param>
+  <param n="container" t="Any"><![CDATA[Container for the new user (either a Organizational Unit or a Group)]]></param>
+  <script encoded="false"><![CDATA[try {
+	container.createUser(accountName , domainName , displayName);
+}
+catch (ex) {
+	throw "Unable to create a new user: " + ex;
+}]]></script>
+</dunes-script-module>

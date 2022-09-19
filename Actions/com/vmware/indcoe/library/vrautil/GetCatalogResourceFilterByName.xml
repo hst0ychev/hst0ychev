@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="GetCatalogResourceFilterByName" result-type="vCACCAFE:CatalogResource" api-version="6.0.0" id="1e967460-cfe1-4387-953e-8cfd23eafdee" version="0.0.0" allowed-operations="evf" category-name="com.vmware.indcoe.library.vrautil">
+  <param n="vCACCAFEHost" t="vCACCAFE:VCACHost"><![CDATA[]]></param>
+  <param n="virtualMachineName" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[//Get an array of catalog resources
+var catalogResourceArray = [];
+catalogResourceArray = vCACCAFEEntitiesFinder.findCatalogResources(vCACCAFEHost, virtualMachineName);
+//Check the results
+if (catalogResourceArray.length == 0) {
+	throw "Could not find vCACVM with name: " + virtualMachineName;
+}
+if (catalogResourceArray.length > 1) {
+	throw "More than one result returned";
+}
+return catalogResourceArray[0]
+]]></script>
+</dunes-script-module>

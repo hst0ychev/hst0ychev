@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getVirtualPCNet32" result-type="Any" api-version="6.0.0" id="cfb4d537-5a6d-46b8-ad94-9113f6ed6712" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.vm.spec.config.device">
+  <param n="backing" t="Any"><![CDATA[[Optional] Any valid VirtualDeviceBackingInfo, depend on the device itself.]]></param>
+  <param n="connectable" t="Any"><![CDATA[[Optional] VimVirtualDeviceConnectInfo: Information about restrictions on removing this device while a virtual machine is running. If the device is not removable, then this property is null.]]></param>
+  <param n="controllerKey" t="number"><![CDATA[[Optional] Object key that denotes the controller object for this device. This property contains the key property value of the controller device object.]]></param>
+  <param n="deviceInfo" t="Any"><![CDATA[[Optional] VimDescription: This property provides a label and summary information for the device.]]></param>
+  <param n="key" t="number"><![CDATA[[Optional] This property is a unique key that distinguishes this device from other devices in the same virtual machine. This must be unique. Can only be setted by users at create time]]></param>
+  <param n="unitNumber" t="number"><![CDATA[[Optional] Unit number of this device on its controller. This property is null if the controller property is null (for example, when the device is not attached to a specific controller object).  Normally, two devices on the same controller may not be assigned the same unit number.]]></param>
+  <param n="addressType" t="string"><![CDATA[[Optional] MAC address type.  Valid values for address type are: Manual  Statically assigned MAC address.  Generated  Automatically generated MAC address.  Assigned  MAC address assigned by VirtualCenter.]]></param>
+  <param n="macAddress" t="string"><![CDATA[[Optional] MAC address assigned to the virtual network adapter. Clients can set this property to any of the allowed address types. The server might override the specified value for "Generated" or "Assigned" if it does not fall in the right ranges or is determined to be a duplicate.]]></param>
+  <param n="wakeOnLanEnabled" t="boolean"><![CDATA[[Optional] Indicates whether wake-on-LAN is enabled on this virtual network adapter. Clients can set this property to selectively enable or disable wake-on-LAN.]]></param>
+  <script encoded="false"><![CDATA[var device = new VcVirtualPCNet32();
+device = System.getModule("com.vmware.library.vc.vm.spec.config.device").getVirtualEthernetCard(device,backing,connectable,controllerKey,deviceInfo,key,unitNumber,addressType,macAddress,wakeOnLanEnabled);
+return device;]]></script>
+</dunes-script-module>

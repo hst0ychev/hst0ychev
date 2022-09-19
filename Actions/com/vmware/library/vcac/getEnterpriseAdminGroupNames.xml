@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getEnterpriseAdminGroupNames" result-type="Array/string" api-version="6.0.0" id="57d33293-ece8-4a06-8c26-a14b099ea204" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcac">
+  <param n="vcacHost" t="vCAC:VCACHost"><![CDATA[vCAC Host to retrieve values from]]></param>
+  <script encoded="false"><![CDATA[if (vcacHost == null) return null;
+var entities = vCACEntityManager.readModelEntitiesByCustomFilter(vcacHost.id, "ManagementModelEntities.svc", "EnterpriseAdminGroups", null, null);
+System.log("Enterprise Admin Groups found: "+entities.length);
+var prop = new Properties();
+for each (var entity in entities) {
+	prop.put(entity.getProperty("AdminName"));
+}
+return prop.keys.sort();]]></script>
+</dunes-script-module>

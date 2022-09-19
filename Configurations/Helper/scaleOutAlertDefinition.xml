@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="7518b759-c042-47b7-bf1a-8644d6501e20" version="0.0.1">
+  <display-name><![CDATA[scaleOutAlertDefinition]]></display-name>
+  <atts>
+    <att name="name" type="string" read-only="false">
+      <value encoded="n"><![CDATA[_HorizontalOut_MemCPUAlert]]></value>
+    </att>
+    <att name="description" type="string" read-only="false">
+      <value encoded="n"><![CDATA[Horizontal Out Memory CPU Alert Definition]]></value>
+    </att>
+    <att name="waitCycle" type="number" read-only="false">
+      <value encoded="n"><![CDATA[1.0]]></value>
+    </att>
+    <att name="cancelCycle" type="number" read-only="false">
+      <value encoded="n"><![CDATA[1.0]]></value>
+    </att>
+  </atts>
+</config-element>

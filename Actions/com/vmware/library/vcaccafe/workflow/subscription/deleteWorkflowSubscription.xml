@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="deleteWorkflowSubscription" result-type="void" api-version="6.0.0" id="49aea173-9d76-439b-a2b7-39fe2ca86291" version="1.0.0" allowed-operations="vf" category-name="com.vmware.library.vcaccafe.workflow.subscription">
+  <description><![CDATA[Deletes a workflow subscription.]]></description>
+  <param n="workflowSubscription" t="vCACCAFE:WorkflowSubscription"><![CDATA[Workflow subscription to delete]]></param>
+  <script encoded="false"><![CDATA[System.getModule("com.vmware.library.vcaccafe.util").validateObject(workflowSubscription, "System workflow subscription");
+var host = vCACCAFEEntitiesFinder.getHostForEntity(workflowSubscription);
+var service;
+System.log("Deleting workflow subscription...");
+if(workflowSubscription.getTenantId()) {
+	service = host.createEventClient().getEventTenantWorkflowSubscriptionService();
+	service.deleteTenantSubscription(host.tenant, workflowSubscription.getId());
+} else {
+	service = host.createEventClient().getEventSystemWorkflowSubscriptionService();
+	service.deleteSystemSubscription(workflowSubscription.getId());
+}
+System.log("Workflow subscription " + workflowSubscription.getName() + " deleted.");]]></script>
+</dunes-script-module>

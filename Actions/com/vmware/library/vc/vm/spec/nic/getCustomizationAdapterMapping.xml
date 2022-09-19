@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getCustomizationAdapterMapping" result-type="Any" api-version="6.0.0" id="b5903cad-dc8e-48d8-84b5-6201199525bb" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.vm.spec.nic">
+  <param n="adapter" t="Any"><![CDATA[VimCustomizationIPSettings: The IP settings for the associated virtual network adapter.]]></param>
+  <param n="macAddress" t="string"><![CDATA[[Optional] The MAC address of a network adapter being customized. If it is not included, the customization process maps the settings from the virtual machine's network adapters, in PCI slot order.]]></param>
+  <script encoded="false"><![CDATA[try {
+	checkParams();
+	var mapping = new VcCustomizationAdapterMapping();
+	mapping.adapter = adapter;
+	if (macAddress != null && macAddress != "")
+		mapping.macAddress = macAddress;
+	return mapping;
+}
+catch (ex) {
+	throw "Unable to create VcCustomizationAdapterMapping: " + ex;
+}
+
+function checkParams() {
+	if (adapter == null) throw "adapter cannot be null";
+	if ((adapter instanceof VcCustomizationIPSettings) == false) throw "adapter must be of type VcCustomizationIPSettings";
+}]]></script>
+</dunes-script-module>

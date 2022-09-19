@@ -1,0 +1,88 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="Workflow:name=generic" id="E38080808080808080808080808080806A80808001304933636362ce882292c2a" version="4.0.1" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Generate an action from a PowerShell script]]></display-name>
+  <description><![CDATA[Generates an action from a user-provided PowerShell script.
+{#ParamName#} can be used as a placeholder for user input.]]></description>
+  <position y="20.0" x="180.0"/>
+  <input>
+    <param name="psscript" type="string">
+      <description><![CDATA[PowerShell script]]></description>
+    </param>
+    <param name="module" type="Module">
+      <description><![CDATA[Module for generated action]]></description>
+    </param>
+    <param name="actionName" type="string">
+      <description><![CDATA[Name of generated action]]></description>
+    </param>
+    <param name="generateWorkflow" type="boolean">
+      <description><![CDATA[If true, a sample workflow will be generated]]></description>
+    </param>
+    <param name="library" type="WorkflowCategory">
+      <description><![CDATA[Folder where a sample workflow should be created]]></description>
+    </param>
+  </input>
+  <workflow-item name="item0" out-name="item1" type="task">
+    <display-name><![CDATA[Generate action]]></display-name>
+    <script encoded="false"><![CDATA[if (!module || module == "notfound" ) {
+	throw "Invalid module.";
+}
+
+PowerShellActionGenerator.createActionForScript(actionName, script, module.name, generateWorkflow,library);
+System.log("Action " + module.name +'.' + actionName + " successfully created.")
+]]></script>
+    <in-binding>
+      <bind name="script" type="string" export-name="psscript"/>
+      <bind name="module" type="Module" export-name="module"/>
+      <bind name="actionName" type="string" export-name="actionName"/>
+      <bind name="generateWorkflow" type="boolean" export-name="generateWorkflow"/>
+      <bind name="library" type="WorkflowCategory" export-name="library"/>
+    </in-binding>
+    <out-binding/>
+    <position y="100.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item1" type="end" end-mode="0">
+    <position y="170.0" x="180.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Generate an action from a PowerShell script]]]></title>
+      <p-group>
+        <title><![CDATA[Script]]></title>
+        <desc><![CDATA[PowerShell script
+
+<b>{#ParamName#}</b> can be used as a placeholder for user input.]]></desc>
+        <p-param name="psscript">
+          <desc><![CDATA[Script]]></desc>
+          <p-qual name="textInput" type="void"><![CDATA[]]></p-qual>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Action]]></title>
+        <desc><![CDATA[Name and folder for the newly generated action]]></desc>
+        <p-param name="actionName">
+          <desc><![CDATA[Name]]></desc>
+          <p-qual kind="static" name="regexp" type="Regexp"><![CDATA[[\w]*]]></p-qual>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+        <p-param name="module">
+          <desc><![CDATA[Module]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Workflow]]></title>
+        <desc><![CDATA[Sample workflow for running the generated action]]></desc>
+        <p-param name="generateWorkflow">
+          <desc><![CDATA[Generate a workflow?]]></desc>
+          <p-qual kind="static" name="defaultValue" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+        <p-param name="library">
+          <desc><![CDATA[Folder]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#generateWorkflow]]></p-qual>
+          <p-qual kind="ognl" name="mandatory" type="boolean"><![CDATA[#generateWorkflow]]></p-qual>
+        </p-param>
+      </p-group>
+    </p-step>
+  </presentation>
+</workflow>

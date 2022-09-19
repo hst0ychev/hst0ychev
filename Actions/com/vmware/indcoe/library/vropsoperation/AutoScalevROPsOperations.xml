@@ -1,0 +1,143 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="AutoScalevROPsOperations" result-type="Any" api-version="6.0.0" id="2cfd5b78-b554-344a-8748-877f67f564a6" version="1.0.0" allowed-operations="evf" category-name="com.vmware.indcoe.library.vropsoperation">
+  <param n="restHost" t="REST:RESTHost"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var VropsRest ={
+    restHost:restHost,
+    getAuthenticationToken : function(content){
+        this.apiUrl = "/api/auth/token/acquire";
+        this.requestMethod = "POST";
+        this.typeContent = "json";
+        var actionResult = System.getModule("com.vmware.indcoe.library.RestFactory").RestExecute(this.restHost,this.apiUrl,this.requestMethod,content,this.typeContent,null);
+        var authToken = actionResult["contentAsObject"].token;
+        return authToken;            
+    },
+    createAlertDefinition : function(content,header){
+        this.apiUrl = "/api/alertdefinitions";
+        this.requestMethod = "POST";
+        this.typeContent = "json";
+        var actionResult = System.getModule("com.vmware.indcoe.library.RestFactory").RestExecute(this.restHost,this.apiUrl,this.requestMethod,content,this.typeContent,header);
+        return actionResult;                
+    },
+    getAlertDefinition : function(content,header){
+        this.apiUrl = "/api/alertdefinitions";
+        this.requestMethod = "GET";
+        this.typeContent = "json";
+        var actionResult = System.getModule("com.vmware.indcoe.library.RestFactory").RestExecute(this.restHost,this.apiUrl,this.requestMethod,content,this.typeContent,header);
+        return actionResult;                
+    },
+    deleteAlertDefinition : function(content,header,alertId){
+        this.apiUrl = "/api/alertdefinitions/"+alertId;
+        this.requestMethod = "DELETE";
+        this.typeContent = "json";
+        var actionResult = System.getModule("com.vmware.indcoe.library.RestFactory").RestExecute(this.restHost,this.apiUrl,this.requestMethod,content,this.typeContent,header);
+        return actionResult;                
+    },
+    getAdapterResource : function(content,header,adapterKindKey){
+        this.apiUrl = "/api/adapterkinds/"+adapterKindKey+"/resources";
+        this.requestMethod = "GET";
+        this.typeContent = "json";
+        var actionResult = System.getModule("com.vmware.indcoe.library.RestFactory").RestExecute(this.restHost,this.apiUrl,this.requestMethod,content,this.typeContent,header);
+        return actionResult;                
+    },
+    getCustomGroups : function(content,header){
+        this.apiUrl = "/api/resources/groups";
+        this.requestMethod = "GET";
+        this.typeContent = "json";
+        var actionResult = System.getModule("com.vmware.indcoe.library.RestFactory").RestExecute(this.restHost,this.apiUrl,this.requestMethod,content,this.typeContent,header);
+        return actionResult;                
+    },
+    createCustomGroups : function(content,header){
+        this.apiUrl = "/api/resources/groups";
+        this.requestMethod = "POST";
+        this.typeContent = "json";
+        var actionResult = System.getModule("com.vmware.indcoe.library.RestFactory").RestExecute(this.restHost,this.apiUrl,this.requestMethod,content,this.typeContent,header);
+        return actionResult;                
+    },
+    deleteCustomGroups : function(content,header,groupId){
+        this.apiUrl = "/api/resources/groups/"+groupId;
+        this.requestMethod = "DELETE";
+        this.typeContent = "json";
+        var actionResult = System.getModule("com.vmware.indcoe.library.RestFactory").RestExecute(this.restHost,this.apiUrl,this.requestMethod,content,this.typeContent,header);
+        return actionResult;                
+    },
+    createOutBound : function(content,header){
+        this.apiUrl = "/api/alertplugins";
+        this.requestMethod = "POST";
+        this.typeContent = "json";
+        var actionResult = System.getModule("com.vmware.indcoe.library.RestFactory").RestExecute(this.restHost,this.apiUrl,this.requestMethod,content,this.typeContent,header);
+        return actionResult;                
+    },
+    getOutBound : function(content,header){
+        this.apiUrl = "/api/alertplugins";
+        this.requestMethod = "GET";
+        this.typeContent = "json";
+        var actionResult = System.getModule("com.vmware.indcoe.library.RestFactory").RestExecute(this.restHost,this.apiUrl,this.requestMethod,content,this.typeContent,header);
+        return actionResult;                
+    },
+    deleteOutBound : function(content,header,pluginId){
+        this.apiUrl = "/api/alertplugins/"+pluginId;
+        this.requestMethod = "DELETE";
+        this.typeContent = "json";
+        var actionResult = System.getModule("com.vmware.indcoe.library.RestFactory").RestExecute(this.restHost,this.apiUrl,this.requestMethod,content,this.typeContent,header);
+        return actionResult;                
+    },
+    createSymDefinition : function(content,header){
+        this.apiUrl = "/api/symptomdefinitions";
+        this.requestMethod = "POST";
+        this.typeContent = "json";
+        var actionResult = System.getModule("com.vmware.indcoe.library.RestFactory").RestExecute(this.restHost,this.apiUrl,this.requestMethod,content,this.typeContent,header);
+        return actionResult;                
+    },
+    getSymDefinition : function(content,header){
+        this.apiUrl = "/api/symptomdefinitions";
+        this.requestMethod = "GET";
+        this.typeContent = "json";
+        var actionResult = System.getModule("com.vmware.indcoe.library.RestFactory").RestExecute(this.restHost,this.apiUrl,this.requestMethod,content,this.typeContent,header);
+        return actionResult;                
+    },
+    deleteSymDefinition : function(content,header,symDefId){
+        this.apiUrl = "/api/symptomdefinitions/"+symDefId;
+        this.requestMethod = "DELETE";
+        this.typeContent = "json";
+        var actionResult = System.getModule("com.vmware.indcoe.library.RestFactory").RestExecute(this.restHost,this.apiUrl,this.requestMethod,content,this.typeContent,header);
+        return actionResult;                
+    },
+    createNotificationRule : function(content,header){
+        this.apiUrl = "/api/notifications/rules";
+        this.requestMethod = "POST";
+        this.typeContent = "json";
+        var actionResult = System.getModule("com.vmware.indcoe.library.RestFactory").RestExecute(this.restHost,this.apiUrl,this.requestMethod,content,this.typeContent,header);
+        return actionResult;                
+    },
+    getNotificationRule : function(content,header){
+        this.apiUrl = "/api/notifications/rules";
+        this.requestMethod = "GET";
+        this.typeContent = "json";
+        var actionResult = System.getModule("com.vmware.indcoe.library.RestFactory").RestExecute(this.restHost,this.apiUrl,this.requestMethod,content,this.typeContent,header);
+        return actionResult;                
+    },
+    deleteNotificationRule : function(content,header,nRuleId){
+        this.apiUrl = "/api/notifications/rules/"+nRuleId;
+        this.requestMethod = "DELETE";
+        this.typeContent = "json";
+        var actionResult = System.getModule("com.vmware.indcoe.library.RestFactory").RestExecute(this.restHost,this.apiUrl,this.requestMethod,content,this.typeContent,header);
+        return actionResult;                
+    },
+    acknowledgeAlert : function(content,header){
+        this.apiUrl = "/api/alerts?action=cancel";
+        this.requestMethod = "POST";
+        this.typeContent = "json";
+        var actionResult = System.getModule("com.vmware.indcoe.library.RestFactory").RestExecute(this.restHost,this.apiUrl,this.requestMethod,content,this.typeContent,header);
+        return actionResult;                
+    },
+	enableOutBound : function(content,header,pluginId,enabledBoolean){
+        this.apiUrl = "/api/alertplugins/"+pluginId+"/enable/"+enabledBoolean;
+        this.requestMethod = "PUT";
+        this.typeContent = "json";
+        var actionResult = System.getModule("com.vmware.indcoe.library.RestFactory").RestExecute(this.restHost,this.apiUrl,this.requestMethod,content,this.typeContent,header);
+        return actionResult;                
+    }
+}
+return VropsRest
+]]></script>
+</dunes-script-module>

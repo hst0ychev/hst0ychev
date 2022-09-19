@@ -1,0 +1,937 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="class" result-type="Any" api-version="6.0.0" id="b2f4bc6c-9c9f-33e2-9f59-756a5dde730a" version="1.0.10" allowed-operations="evf" category-name="com.vmware.indcoe.radware_lbaas">
+  <param n="username" t="string"><![CDATA[: The user to be used for authenticating with NSX-T]]></param>
+  <param n="password" t="string"><![CDATA[: The password of above user to authenticate with NSX-T]]></param>
+  <param n="restHost" t="REST:RESTHost"><![CDATA[: The REST Host on which the operation needs to be performed.]]></param>
+  <script encoded="false"><![CDATA[var radwareClass = {
+    username: username,
+    password: password,
+    //All the object attributes are here.
+    authenticationToken: System.getModule("com.vmware.indcoe.util").base64encode(username + ":" + password),
+    restHost: restHost,
+    //all the object methods here.
+    PrintAuthenticationToken: function ()
+    {
+        return 'The authentication token in use is: ' + this.authenticationToken;
+    },
+    Do: function (requestMethod, requestURI, requestBody)
+    {
+        //Basic request method validation.
+        if (requestMethod !== "GET" && requestMethod !== "POST" && requestMethod !== "PUT")
+        {
+            throw "Invalid REST method specified";
+        }
+
+        //Basic request URI validation.
+        if (!requestURI)
+        {
+            throw "Invalid REST URI Method specified";
+        }
+
+        //Create REST Request
+        var request = this.restHost.createRequest(requestMethod, requestURI, requestBody);
+
+        //Set the required params
+        request.setHeader("Accept", "application/json");
+        request.setHeader("Authorization", "Basic " + this.authenticationToken);
+        request.setHeader("Content-Type", "application/json");
+
+        System.debug("Rest request ready to be executed: ");
+        System.debug(requestMethod + " " + this.restHost.url + requestURI);
+        System.debug("Request Body:");
+        System.debug(requestBody);
+        System.debug("---");
+
+        //Execute the REST Request.
+        this.response = request.execute();
+
+        //Extracting data to be logged in debugging.
+        System.debug("Rest request executed: ");
+
+        //Log the Response Code.
+        System.debug("Response code: " + this.response.statusCode);
+
+        //Log the Response output
+        System.debug("Response body: ");
+        System.debug(this.response.contentAsString);
+        System.debug("---");
+
+        //Return the entire output.
+        return this.response;
+    },
+    isApplyRequired: function ()
+    {
+        //From Radware documentation: 
+        //  Value “2” means the apply is required.
+        //  Value “3” means no apply is required.
+
+        var response = this.Do("GET", "monitor?prop=agApplyPending", "");
+        if (200 === response.statusCode)
+        {
+            var output = JSON.parse(response.contentAsString);
+            if (output.agApplyPending === 2)
+            {
+                System.debug("Configuration Apply required.");
+                return true;
+            }
+            else if (output.agApplyPending === 3)
+            {
+                System.debug("Configuration Apply not required.");
+                return false;
+            }
+        }
+
+        System.debug("Some Error Occurred while fetching, method: isApplyRequired.");
+        //By default, return false.
+        return false;
+    },
+    ApplyConfig: function ()
+    {
+        if (this.EnsureNoOtherConfigChangeIsBeingDone())
+        {
+            var response = this.Do("POST", "config?action=apply", "");
+            if (200 === response.statusCode)
+            {
+                var output = JSON.parse(response.contentAsString);
+                if (output.status === "ok")
+                {
+                    System.debug("Configuration Applied, checking if apply config was successful");
+                    //Apply done, now monitor the status of apply operation.
+                    System.sleep(5000);
+                    var response = this.Do("GET", "config?prop=agApplyConfig", "");
+                    if (200 === response.statusCode)
+                    {
+                        var output = JSON.parse(response.contentAsString);
+
+                        System.debug("Apply Config Status: " + output.agApplyConfig);
+                        if (output.agApplyConfig === 5)
+                        {
+                            System.debug("Configuration apply failed. Please check with admin team");
+                            return false;
+                        }
+                        System.debug("Apply seems to be succesful.");
+                        return true;
+                    }
+                    System.debug("Some Error Occurred while fetching current apply status");
+                    //By default, return false.
+                    return false;
+                    
+                }
+            }
+            System.debug("Some Error Occurred while applying the configuration");
+            return false;
+        }
+        System.debug("Timeout occurred in waiting for other apply operations to finish.");
+        //By default, return false.
+        return false;
+    },
+    EnsureNoOtherConfigChangeIsBeingDone: function (counter)
+    {
+        if (!counter)
+        {
+            //This is recursion counter.
+            counter = 1;
+        }
+
+        if (counter > 10)
+        {
+            System.debug("The configuration apply operation is in progress or failed. Please check with radware admin team");
+            throw "Some issues with configuration changes. Please contact admin team";
+        }
+
+        counter++;
+
+        // From Radware documentation: 
+        //  Value “1” means no apply is in process, idle status.
+        //  Value "2" is not defined in documentation for some reason.
+        //  Value “3” means the apply is in progress.
+        //  Value “4” means the apply is completed successfully.
+        //  Value “5” means the apply process failed.
+
+        System.debug("Checking if no other config changes are being done right now");
+
+        var response = this.Do("GET", "config?prop=agApplyConfig", "");
+        if (200 === response.statusCode)
+        {
+            var output = JSON.parse(response.contentAsString);
+
+            System.debug("Apply Config Status: " + output.agApplyConfig);
+            if (output.agApplyConfig === 3)
+            {
+                System.debug("Configuration apply is in progress. Waiting for 2 seconds and checking again...");
+                return this.EnsureNoOtherConfigChangeIsBeingDone(counter);
+            }
+            else if (output.agApplyConfig === 4)
+            {
+                System.sleep(2000);
+                System.debug("No apply in progress, But LB is not idle, waiting for 2 seconds.");
+                return true;
+            }
+            System.debug("Config Status: "+output.agApplyConfig);
+            return true;
+        }
+        System.debug("Some Error Occurred while fetching current apply status");
+        //By default, return false.
+        return false;
+    },
+    RevertConfig: function ()
+    {
+        var response = this.Do("POST", "config?action=revert", "");
+        if (200 === response.statusCode)
+        {
+            var output = JSON.parse(response.contentAsString);
+            if (output.status === "ok")
+            {
+                System.debug("Configuration Reverted");
+                return true;
+            }
+        }
+        System.debug("Some Error Occurred while reverting the configuration");
+        //By default, return false.
+        return false;
+    },
+    SaveConfig: function ()
+    {
+        var response = this.Do("POST", "config?action=save", "");
+        if (200 === response.statusCode)
+        {
+            var output = JSON.parse(response.contentAsString);
+            if (output.status === "ok")
+            {
+                System.debug("Configuration Saved");
+                return true;
+            }
+        }
+        System.debug("Some Error Occurred while saving the configuration");
+        //By default, return false.
+        return false;
+    },
+    GetFreeVirtualIP: function ()
+    {
+
+    },
+    GetNextIndex: function (arrayWithData)
+    {
+
+            if (!arrayWithData || arrayWithData.length == 0)
+            {
+                //no entries, return 1 because this is the first entry.
+                return 1;
+            }
+
+            //All the entries in radware have an 'index'. It is set in incrementing order. 
+            var arrayWithIndexOnly = new Array();
+            for (var i in arrayWithData)
+            {
+				System.debug("Entered into for loop ")
+				if(arrayWithData[i].Index !="" || arrayWithData[i].Index !=undefined){
+                	arrayWithIndexOnly.push(arrayWithData[i].Index);
+					System.debug("Array with index only "+arrayWithIndexOnly);
+				}
+            }
+             if(arrayWithIndexOnly.length == 0 || arrayWithData[i].Index != ""){   
+				System.debug("Entered into if loop")          
+				for (var i in arrayWithData){ 
+					arrayWithIndexOnly.push(arrayWithData[i].VirtServerIndex);
+					System.debug("second for loop "+arrayWithIndexOnly)
+				}
+			} 
+           
+			arrayWithIndexOnly = arrayWithIndexOnly.filter(function (el) {
+  				return el != null;
+			});
+			var sortValue = arrayWithIndexOnly.sort(function(a,b){return a-b});
+			var toString = sortValue.toString();
+			var splitValue = toString.split(",")
+			var length = splitValue.length
+			System.debug("Length "+length);
+            var currentHighestIndex = parseInt(splitValue[length-1]);
+            System.debug("Current highest index is: " + currentHighestIndex);
+
+            if (isNaN(currentHighestIndex))
+            {
+                System.debug("Current Highest Index is Not a Number");
+                var lengthOfArray = arrayWithData.length;
+                System.debug("Length of Array: " + lengthOfArray);
+                lengthOfArray++;
+                System.debug("Returning new Index: " + lengthOfArray);
+                return lengthOfArray;
+            }
+            currentHighestIndex++;
+            System.debug("Returning new Index: " + currentHighestIndex);
+            return currentHighestIndex;
+/*
+            if (!arrayWithData || arrayWithData.length == 0)
+            {
+                //no entries, return 1 because this is the first entry.
+                return 1;
+            }
+
+            //All the entries in radware have an 'index'. It is set in incrementing order. 
+            var arrayWithIndexOnly = [];
+            for (var i in arrayWithData)
+            {
+                if(arrayWithData[i].Index)
+                {
+                    arrayWithIndexOnly.push(arrayWithData[i].Index);
+                }
+            }
+            
+            if (!arrayWithIndexOnly || arrayWithIndexOnly.length == 0)
+            {
+                //no entries,  check if entries have "VirtServerIndex"
+                for (var i in arrayWithData)
+                {
+                    if(arrayWithData[i].VirtServerIndex)
+                    {
+                        arrayWithIndexOnly.push(arrayWithData[i].VirtServerIndex);
+                    }
+                }
+            }
+
+            if (!arrayWithIndexOnly || arrayWithIndexOnly.length == 0)
+            {
+                return 1;
+            }
+            
+            arrayWithIndexOnly.sort();
+
+            var currentHighestIndex = parseInt(arrayWithIndexOnly[arrayWithIndexOnly.length - 1]);
+            return ++currentHighestIndex;
+*/
+    },
+    GetAllRealServers: function ()
+    {
+        System.debug("Getting all real servers ...");
+        var response = this.Do("GET", "config/SlbNewCfgEnhRealServerTable", "");
+        if (response.statusCode === 200)
+        {
+            System.debug("Servers fetched");
+            try
+            {
+                var output = JSON.parse(response.contentAsString);
+                return output.SlbNewCfgEnhRealServerTable;
+            }
+            catch (error)
+            {
+                System.debug("Error fetching real servers");
+                throw "Some Error Occurred fetching data";
+            }
+        }
+        return false;
+    },
+    DoesRealServerExist: function (ipOfRealServer, allRealServers)
+    {
+        //Gets all Servers, iterates over each, if any of the IP matches ipOfRealServer, returns true.
+
+        //Step 1: Get all servers.
+        //Step 2: Iterate over all server entries.
+        //Step 3: If the IP matches the IP in question, return true.
+        //Step 4: Return false by default.
+
+        System.debug("Checking for existence of " + ipOfRealServer);
+        for (var i in allRealServers)
+        {
+            if (ipOfRealServer === allRealServers[i].IpAddr)
+            {
+                System.debug("Server " + ipOfRealServer + " found at entry " + (i + 1));
+                return allRealServers[i].Index;
+            }
+        }
+        System.debug("Server " + ipOfRealServer + " doesn't exist already");
+        //By default, we return false.
+        return false;
+    },
+        AddNewRealServer: function (ipAddressOfServer, nameOfTheServer)
+        {
+            // Ensure the server doesn't exist
+            // Then add the server
+            // Return the Index of the server [if already existing]
+            // else add the new entry and return new server index.
+            var allRealServers = this.GetAllRealServers();
+
+            if (!allRealServers)
+            {
+                throw "Error fetching real servers";
+            }
+
+            var IndexOfNewRealServer = this.DoesRealServerExist(ipAddressOfServer, allRealServers);
+            if (IndexOfNewRealServer)
+            {
+                System.debug("Real Server already exists, ID: " + IndexOfNewRealServer);
+                return IndexOfNewRealServer;
+            }
+            var nextIndex = this.GetNextIndex(allRealServers);
+
+            var requestBody = "{\n";
+            requestBody += "\"Name\": \"" + nameOfTheServer + "\",\n";
+            requestBody += "\"IpAddr\": \"" + ipAddressOfServer + "\",\n";
+            requestBody += "\"Weight\": \"1\",\n";
+            requestBody += "\"Cookie\": \"1\",\n";
+            requestBody += "\"State\": \"2\",\n";
+            requestBody += "\"IpVer\": \"1\",\n";
+            requestBody += "\"LLBType\": \"0\"\n";
+            requestBody += "}";
+
+            var response = this.Do("POST", "config/SlbNewCfgEnhRealServerTable/" + nextIndex, requestBody);
+            if (response.statusCode === 200)
+            {
+
+                var output = JSON.parse(response.contentAsString);
+                if (output.status === "ok")
+                {
+                    System.debug("Real Server Added");
+                    //returning IndexOfNewRealServer instead of true because this indexes will be used to add servers in a server group
+                    return nextIndex;
+                }
+                else if (output.status === "err")
+                {
+                    System.debug("Error Occurred while adding new server: " + output.message);
+                    return false;
+                }
+
+                //
+                System.debug("Some problems applying and saving config, reverting ...");
+                return false;
+            }
+            System.debug("Real Server addition was unsuccessful");
+            return false;
+    },
+    GetAllServerGroups: function ()
+    {
+        System.debug("Getting all real server groups ...");
+        var response = this.Do("GET", "config/SlbNewCfgEnhGroupTable", "");
+        if (response.statusCode === 200)
+        {
+            System.debug("Server Groups fetched");
+            try
+            {
+                var output = JSON.parse(response.contentAsString);
+                return output.SlbNewCfgEnhGroupTable;
+            }
+            catch (error)
+            {
+                System.debug("Error fetching server groups");
+                throw "Some Error Occurred fetching data";
+            }
+        }
+        return false;
+    },
+        CreateNewServerGroup: function (serverArray, vRARequestNumber, lbAlgorithm, healthCheckType)
+        {
+            // The server array should only have indexes entries.
+            // Expectation is serverArray to be [1,2,3,4,5]
+            // So a group will be created with real servers whose Index is 1 to 5.
+
+            var allServerGroups = this.GetAllServerGroups();
+
+            if (!allServerGroups)
+            {
+                throw "Error fetching server groups";
+            }
+
+            var nextIndexForServerGroup = this.GetNextIndex(allServerGroups);
+
+            var requestBody = "{\n";
+
+            for (var i in serverArray)
+            {
+                requestBody += "\"AddServer\": \"" + serverArray[i] + "\",\n";
+            }
+
+            //From Radware documentation: 
+            //"Metric" : "< Integer >" // {1=roundRobin 2=leastConnections 3=minMisses 4=hash 5=response 6=bandwidth 7=phash 8=svcLeast}
+            
+            System.debug("Checking for appropriate LB Algorithm: "+lbAlgorithm);
+            if(lbAlgorithm === "roundrobin")
+            {
+                requestBody += "\"Metric\": \"1\",\n";
+            }
+            else if(lbAlgorithm === "leastconnections")
+            {
+                //"Slowstart" : "< Integer 32 bit >"
+                requestBody += "\"Metric\": \"2\",\n";
+                requestBody += "\"Slowstart\": 2,\n";
+            }
+            else if(lbAlgorithm === "minmisses")
+            {
+                //"MinmissHash" : "< Integer >" // {1=minmiss-24 2=minmiss-32 }
+                requestBody += "\"Metric\": \"3\",\n";
+                requestBody += "\"MinmissHash\": 1,\n";
+            }
+            else if(lbAlgorithm === "hash")
+            {
+                requestBody += "\"Metric\": \"4\",\n";
+            }
+            else if(lbAlgorithm === "leastresponsetime")
+            {
+                requestBody += "\"Metric\": \"5\",\n";
+            }
+            else if(lbAlgorithm === "serverbandwith")
+            {
+                requestBody += "\"Metric\": \"6\",\n";
+            }
+            else if(lbAlgorithm === "persistenthash")
+            {
+                //"PhashMask" : "< IpAddress >"
+                requestBody += "\"Metric\": \"7\",\n";
+                requestBody += "\"PhashMask\": \"255.255.255.255\",\n";
+            }
+            else
+            {
+                throw "Server Health Check selection is invalid / not provided";
+            }
+
+            
+            //From Radware documentation: 
+            //"HealthCheckLayer" : "< Integer >" // {1=icmp 2=tcp 3=http 44=httphead}
+            
+            System.debug("Checking for appropriate health check code: "+healthCheckType);
+            if(healthCheckType === "icmp")
+            {
+                requestBody += "\"HealthCheckLayer\": \"1\",\n";
+            }
+            else if(healthCheckType === "tcp")
+            {
+                requestBody += "\"HealthCheckLayer\": \"2\",\n";
+            }
+            else if(healthCheckType === "http")
+            {
+                requestBody += "\"HealthCheckLayer\": \"3\",\n";
+            }
+            else if(healthCheckType === "httphead")
+            {
+                requestBody += "\"HealthCheckLayer\": \"44\",\n";
+            }
+            else
+            {
+                throw "Server Health Check selection is invalid / not provided";
+            }
+
+            requestBody += "\"Name\": \"Created from vRA, #" + vRARequestNumber + "\",\n";
+            requestBody += "\"Type\": \"0\",\n";
+            requestBody += "}";
+
+            var response = this.Do("POST", "config/SlbNewCfgEnhGroupTable/" + nextIndexForServerGroup, requestBody);
+            if (response.statusCode === 200)
+            {
+
+                var output = JSON.parse(response.contentAsString);
+                if (output.status === "ok") 
+                {
+                    System.debug("Server Group Added");
+                    System.sleep(2000);
+                    //returning nextIndexForServerGroup instead of true because this indexes will be used to add to virtual service.
+                    return nextIndexForServerGroup;
+                }
+                else if (output.status === "err")
+                {
+                    System.debug("Error Occurred while adding new server group: " + output.message);
+                    return false;
+                }
+            }
+            System.debug("New Server Group addition was unsuccessful");
+            return false;
+    },
+    GetAllVirtualServers: function ()
+    {
+        System.debug("Getting all virtual servers ...");
+        var response = this.Do("GET", "config/SlbNewCfgEnhVirtServerTable", "");
+        if (response.statusCode === 200)
+        {
+            System.debug("Virtual Servers fetched");
+            try
+            {
+                var output = JSON.parse(response.contentAsString);
+                return output.SlbNewCfgEnhVirtServerTable;
+            }
+            catch (error)
+            {
+                System.debug("Error fetching virtual servers");
+                return false;
+            }
+        }
+        System.debug("Error fetching virtual servers");
+        return false;
+    },
+    CreateNewVirtualServer: function (virtualIP, vRARequestNumber)
+    {
+
+        var allVirtualServers = this.GetAllVirtualServers();
+
+        if (!allVirtualServers)
+        {
+            throw "Error fetching virtual Servers";
+        }
+
+        var nextIndexForVirtualServer = this.GetNextIndex(allVirtualServers);
+
+        System.debug("Next Index for Virtual Server : "+nextIndexForVirtualServer);
+
+        var requestBody = "{\n";
+        requestBody += "\"VirtServerIpAddress\" : \"" + virtualIP + "\",\n";
+        requestBody += "\"VirtServerLayer3Only\" : \"2\",\n";
+        requestBody += "\"VirtServerState\" : \"2\",\n";
+        requestBody += "\"VirtServerVname\" : \"Created from vRA, #" + vRARequestNumber + "\",\n";
+        requestBody += "\"VirtServerIpVer\" : \"1\",\n";
+        requestBody += "\"VirtServerCreationType\" : \"0\"\n";
+        requestBody += "}";
+
+        var response = this.Do("POST", "config/SlbNewCfgEnhVirtServerTable/" + nextIndexForVirtualServer, requestBody);
+        if (response.statusCode === 200)
+        {
+
+            var output = JSON.parse(response.contentAsString);
+            if (output.status === "ok") 
+            {
+                System.debug("Virtual Server Created.");
+                System.sleep(2000);
+                //returning nextIndexForVirtualServer instead of true because this indexes will be used to add to virtual service.
+                return nextIndexForVirtualServer;
+            }
+            else if (output.status === "err")
+            {
+                System.debug("Error Occurred while adding new server group: " + output.message);
+                return false;
+            }
+        }
+        System.debug("Virtual Server creation was unsuccessful");
+        return false;
+    },
+    GetAllServicesInAVirtualServer: function (virtualServerIndex)
+    {
+        // Step 1: Get all virtual server services.
+        // Step 2: Filter out and send only services with "ServIndex" as virtualServerIndex
+        // Step 3: Push all the services belonging to virtual server and return it.
+        System.debug("Getting all Services in a Virtual Server ...");
+        var response = this.Do("GET", "config/SlbNewCfgEnhVirtServicesTable", "");
+        if (response.statusCode === 200)
+        {
+            System.debug("Virtual Services fetched");
+            try
+            {
+                var virtualServerIndex = virtualServerIndex.toString(10);
+                var servicesOfVirtualServer = [];
+                var output = JSON.parse(response.contentAsString);
+                var allServices = output.SlbNewCfgEnhVirtServicesTable;
+                System.debug("Services retrieved.");
+                for (var i in allServices)
+                {
+                    
+                    if (allServices[i].ServIndex == virtualServerIndex)
+                    {
+                        System.debug("Found an existing service for virtual server.");
+                        servicesOfVirtualServer.push(allServices[i]);
+                    }
+                }
+                return servicesOfVirtualServer;
+            }
+            catch (error)
+            {
+                System.debug("Error Occurred: "+error);
+                System.debug("Error fetching virtual servers");
+                return false;
+            }
+        }
+        System.debug("Error fetching virtual servers");
+        return false;
+    },
+    AddServiceToVirtualServer: function (virtualServerIndex, virtualPort, realPort, protocol)
+    {
+        // 1. Check if the service exists.
+        // 2. Create the service in the virtual server
+
+
+        //As per radware documentation:
+        //2=udp 3=tcp 4=stateless 5=tcpAndUdp
+        var protocolInNumericForm = 3; //Default, assume it is tcp
+        if(protocol === "tcp")
+        {
+            protocolInNumericForm = 3;
+        }
+        else if(protocol === "udp")
+        {
+            protocolInNumericForm = 2;
+        }
+        else if(protocol === "stateless")
+        {
+            protocolInNumericForm = 4;
+        }
+        else if(protocol === "tcpAndUdp")
+        {
+            protocolInNumericForm = 5;
+        }
+
+        var allServicesOfVirtualServer = this.GetAllServicesInAVirtualServer(virtualServerIndex);
+        
+
+        System.debug("Services retrieved: ");
+        System.debug(allServicesOfVirtualServer);
+
+        if(allServicesOfVirtualServer && allServicesOfVirtualServer.length > 0)
+        {
+            for(var i in allServicesOfVirtualServer)
+            {
+                if( allServicesOfVirtualServer[i].VirtPort === virtualPort &&
+                    allServicesOfVirtualServer[i].RealPort === realPort && 
+                    allServicesOfVirtualServer[i].UDPBalance == protocolInNumericForm.toString(10)
+                    )
+                    {
+                        System.debug("Service already exists in the virtual server");
+                        throw "Service already exists in the virtual server";
+                    }
+            }
+            System.debug("The service does not exist, adding it.")
+        }
+        
+        var nextIndexForVirtualService = this.GetNextIndex(allServicesOfVirtualServer);
+        
+        System.debug("Next Index for Virtual Service : "+nextIndexForVirtualService);
+
+        var requestBody = "{\n";
+        requestBody += "\"VirtPort\" : \"" + virtualPort + "\",\n";
+        requestBody += "\"RealPort\" : \"" + realPort + "\",\n";
+        requestBody += "\"UDPBalance\" : \"" + protocolInNumericForm + "\"\n";
+        requestBody += "}";
+
+        var response = this.Do("POST", "config/SlbNewCfgEnhVirtServicesTable/" +virtualServerIndex+"/"+ nextIndexForVirtualService, requestBody);
+        if (response.statusCode === 200)
+        {
+
+            var output = JSON.parse(response.contentAsString);
+            if (output.status === "ok") 
+            {
+                System.debug("Virtual Service Created.");
+                //returning nextIndexForVirtualService instead of true because this indexes will be used to add to proxy.
+                return nextIndexForVirtualService;
+            }
+            else if (output.status === "err")
+            {
+                System.debug("Error Occurred while creating new virtual service: " + output.message);
+                return false;
+            }
+        }
+        System.debug("Virtual Server creation was unsuccessful");
+        return false;
+    },
+	clientCookiePersis : function (cookieDomainBool,cookieName,cRebind,cookieSecure,cookiePath,PbindRport,cResponse,persisOption,cookieMode,uriBoolean,cOffset,cLength,virtualServerIndex,virtualServiceIndex){
+		var persisDigit;
+		var cookieDigit;
+		var uriCookie;
+		var response;
+		var response1;
+		var response2;
+		var requestBody = "{\n";
+		if(persisOption == "clientip"){
+			persisDigit = 2;
+			var rPortbindDigit;
+			if(PbindRport == "enable"){
+				rPortbindDigit =1;
+			}else if(PbindRport == "disable"){
+				rPortbindDigit =2;
+			}
+			requestBody += "\"PBind\" :\""+persisDigit+"\",\n";		
+			requestBody += "}";				
+			response = this.Do("PUT", "config/SlbNewCfgEnhVirtServicesTable/" +virtualServerIndex+"/"+ virtualServiceIndex, requestBody);
+			var requestBody1 = "{\n";
+			requestBody1 += "\"PbindRport\" :\""+rPortbindDigit+"\"\n";
+			requestBody1 += "}";
+			response1 = this.Do("PUT", "config/SlbNewCfgEnhVirtServicesSixthPartTable/" +virtualServerIndex+"/"+ virtualServiceIndex, requestBody1);	
+			System.debug("Client Ip response "+response1)
+			System.debug("Client ip response bind port "+response1)
+		}else if(persisOption == "cookie"){
+			//Persistence cookie has been chosen.
+			persisDigit =5;
+			//Create REST API content
+			requestBody += "\"PBind\" :\""+persisDigit+"\",\n";
+			//Find out cookieMode
+			if(cookieMode == "rewrite"){
+				cookieDigit = 1;
+				var uriCookie ;
+				if(uriBoolean == "enable"){
+					uriCookie =1
+				}else if(uriBoolean == "disable"){
+					uriCookie =2;
+				}
+				var cRebindDigit;
+				if(cRebind == "enable"){
+					cRebindDigit =1;
+				}else if(cRebind == "disable"){
+					cRebindDigit =2
+				}
+				requestBody +="\"CookieMode\":\""+cookieDigit+"\",\n";
+				requestBody +="\"UriCookie\":\""+uriCookie+"\",\n"; 
+				requestBody +="\"ResponseCount\":\""+cResponse+"\"\n";
+				requestBody += "}";
+				response = this.Do("PUT", "config/SlbNewCfgEnhVirtServicesTable/" +virtualServerIndex+"/"+ virtualServiceIndex, requestBody);
+				System.debug("Rewrite response "+response)
+				var requestBody1 = "{\n";
+				requestBody1 +="\"CkRebind\":\""+cRebindDigit+"\"\n"; 
+				requestBody1 += "}";
+				response1 = this.Do("PUT", "config/SlbNewCfgEnhVirtServicesFifthPartTable/" +virtualServerIndex+"/"+ virtualServiceIndex, requestBody1);
+				System.debug("Rewrite followed API ckRebind response "+response)
+				var requestBody2 = "{\n";
+				requestBody2 += "\"Cname\":\""+cookieName+"\"\n";	
+				requestBody2 += "}";
+				response2 = this.Do("PUT", "config/SlbNewCfgEnhVirtServicesSixthPartTable/" +virtualServerIndex+"/"+ virtualServiceIndex, requestBody2);
+				System.debug("Rewrite cookiename response "+response)
+			}else if(cookieMode == "passive"){
+				cookieDigit = 2;
+				var uriCookie ;
+				if(uriBoolean == "enable"){
+					uriCookie =1
+				}else if(uriBoolean == "disable"){
+					uriCookie =2;
+				}
+				requestBody +="\"CookieMode\":\""+cookieDigit+"\",\n";
+				requestBody +="\"UriCookie\":\""+uriCookie+"\",\n";
+				requestBody +="\"Coffset\":\""+cOffset+"\",\n"; 
+				requestBody +="\"Clength\":\""+cLength+"\",\n"; 
+				requestBody +="\"ResponseCount\" :\""+cResponse+"\"\n";
+				requestBody += "}";
+				response = this.Do("PUT", "config/SlbNewCfgEnhVirtServicesTable/" +virtualServerIndex+"/"+ virtualServiceIndex, requestBody);
+				System.debug("Passive response "+response)
+				var requestBody1 = "{\n";
+				requestBody1 += "\"Cname\":\""+cookieName+"\"\n";	
+				requestBody1 += "}";
+				response1 = this.Do("PUT", "config/SlbNewCfgEnhVirtServicesSixthPartTable/" +virtualServerIndex+"/"+ virtualServiceIndex, requestBody1);
+				System.debug("passive cookie name response "+response1)
+			}else if(cookieMode == "insert"){
+				cookieDigit =3;
+				var secureDigit;
+				var cRebindDigit;
+				if(cRebind == "enable"){
+					cRebindDigit =1;
+				}else if(cRebind == "disable"){
+					cRebindDigit =2
+				}
+				if(cookieSecure == "enable"){
+					secureDigit =2;
+				}else if(cookieSecure == "disable"){
+					secureDigit =1;
+				}
+				requestBody +="\"CookieMode\":\""+cookieDigit+"\",\n";
+				requestBody +="\"CookiePath\":\""+cookiePath+"\",\n";
+				requestBody +="\"CookieSecure\":\""+secureDigit+"\",\n";
+				requestBody +="\"CkRebind\":\""+cRebindDigit+"\"\n";
+				requestBody += "}"
+				response = this.Do("PUT", "config/SlbNewCfgEnhVirtServicesFifthPartTable/" +virtualServerIndex+"/"+ virtualServiceIndex, requestBody);
+				var cookieDomDigit;
+				if(cookieDomainBool == "enable"){
+					cookieDomDigit =1;
+				}else if(cookieDomainBool == "disable"){
+					cookieDomDigit =2;
+				}
+				var requestBody1 = "{\n";
+				requestBody1 += "\"Cname\":\""+cookieName+"\",\n";		
+				requestBody1 += "\"CookieDname\":\""+cookieDomDigit+"\"\n";
+				requestBody1 += "}"
+				response1 = this.Do("PUT", "config/SlbNewCfgEnhVirtServicesSixthPartTable/" +virtualServerIndex+"/"+ virtualServiceIndex, requestBody1);
+				System.debug("Insert response "+response1);
+			}	
+			
+		}else if(persisOption == "disable"){
+			persisDigit = 3;
+			requestBody += "\"PBind\" :\""+persisDigit+"\"\n";
+			requestBody += "}"
+			response = this.Do("PUT", "config/SlbNewCfgEnhVirtServicesTable/" +virtualServerIndex+"/"+ virtualServiceIndex, requestBody);
+			System.debug("Disable response "+response)
+		}
+		if (response.statusCode == 200){	
+
+           var output = JSON.parse(response.contentAsString);
+			System.debug("REST API Response "+output)
+           if (output.status === "ok") 
+           {
+                System.debug("Persistence addition successful.");
+                return true;
+           }
+           else if (output.status === "err")
+           {
+               System.debug("Error Occurred while adding Persistence on virtual service: " + output.message);
+               return false;
+           }
+       }
+		if (response1.statusCode == 200){	
+
+           var output = JSON.parse(response.contentAsString);
+			System.debug("REST API Response "+output)
+           if (output.status === "ok") 
+           {
+                System.debug("Persistence addition successful.");
+                return true;
+           }
+           else if (output.status === "err")
+           {
+               System.debug("Error Occurred while adding Persistence on virtual service: " + output.message);
+               return false;
+           }
+       }
+		if (response2.statusCode == 200){	
+
+           var output = JSON.parse(response.contentAsString);
+			System.debug("REST API Response "+output)
+           if (output.status === "ok") 
+           {
+                System.debug("Persistence addition successful.");
+                return true;
+           }
+           else if (output.status === "err")
+           {
+               System.debug("Error Occurred while adding Persistence on virtual service: " + output.message);
+               return false;
+           }
+       }
+      
+	},
+    AddProxyToVirtualServer: function (persisBoolean, persisTimeout,realServerGroupIndex, virtualServerIndex, virtualServiceIndex, proxyIPClass)
+    {
+        //From Radware's Documentation: 
+        //  "ProxyIpMode" : {0=ingress 1=egress 2=address 3=nwclss 4=disable }
+        //  "ProxyIpNWclass" : "< Display String >"
+        //  "ProxyIpNWclassPersistency" : {0=disable 1=client }
+
+        //1. 
+        //2. 
+
+       var proxyIpNWClass = "2";
+       if(proxyIPClass === "tnd")
+       {
+           proxyIpNWClass = "1";
+       }
+
+       var requestBody = "{\n";
+       requestBody += "\"RealGroup\" : \"" + realServerGroupIndex + "\",\n";
+       requestBody += "\"ProxyIpMode\" : \"3\",\n";
+       requestBody += "\"ProxyIpNWclass\" : \"" + proxyIpNWClass + "\",\n";
+       requestBody += "\"ProxyIpNWclassPersistency\" : \"0\",\n";
+		if(persisBoolean){
+			requestBody += "\"PersistentTimeOut\":\""+persisTimeout+"\"\n";
+		}
+       requestBody += "}";
+
+       System.debug("Adding proxy to virtual service on virtual server.");
+
+       var response = this.Do("PUT", "config/SlbNewCfgEnhVirtServicesSeventhPartTable/" +virtualServerIndex+"/"+ virtualServiceIndex, requestBody);
+       if (response.statusCode === 200)
+       {
+
+           var output = JSON.parse(response.contentAsString);
+           if (output.status === "ok") 
+           {
+                System.debug("Proxy addition successful.");
+                return true;
+           }
+           else if (output.status === "err")
+           {
+               System.debug("Error Occurred while creating adding proxy on virtual service: " + output.message);
+               return false;
+           }
+       }
+       System.debug("Proxy addition on virtual service was unsuccessful");
+       return false;
+    }
+};
+return radwareClass;
+]]></script>
+</dunes-script-module>

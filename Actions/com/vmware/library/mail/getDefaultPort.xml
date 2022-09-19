@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getDefaultPort" result-type="number" api-version="6.0.0" id="58b4b4e8-8f7e-454c-8944-70e6505dee3a" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.mail">
+  <param n="protocol" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[if (protocol == "imap") {
+	return 143;
+} else if (protocol == "pop3") {
+	return 110;
+} else {
+	System.log("ssssssss " + protocol);
+	throw "Unsuppord protocol";
+}
+]]></script>
+</dunes-script-module>

@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="hasVnicAssociatedTo" result-type="boolean" api-version="6.0.0" id="bcc59115-0e0a-4608-9543-8fab3617e166" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.networking">
+  <param n="host" t="VC:HostSystem"><![CDATA[Host system]]></param>
+  <param n="portgroupName" t="string"><![CDATA[Portgroup name]]></param>
+  <script encoded="false"><![CDATA[if ( host != null && host.configManager.networkSystem.networkInfo.vnic != null ) {
+	for each (vnic in host.configManager.networkSystem.networkInfo.vnic) {
+		System.log("Checking vnic [key: " + vnic.key + "; device: " + vnic.device + "]");
+		if ( vnic.portgroup == portgroupName ) {
+			return true;
+		}
+	}
+}
+return false;]]></script>
+</dunes-script-module>

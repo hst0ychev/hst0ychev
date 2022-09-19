@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="bde4442d-7171-4809-8d64-09388187aafb" version="0.0.0">
+  <display-name><![CDATA[outboundSettings]]></display-name>
+  <atts>
+    <att name="outboundName" type="string" read-only="false">
+      <value encoded="n"><![CDATA[vRO Outbound Details]]></value>
+      <description><![CDATA[vRO Outbound Setting Name]]></description>
+    </att>
+    <att name="vROHostName" type="string" read-only="false">
+      <value encoded="n"><![CDATA[10.77.16.83]]></value>
+      <description><![CDATA[Provide respective vRO Name where SNMP trap should hit]]></description>
+    </att>
+    <att name="portNumber" type="string" read-only="false">
+      <value encoded="n"><![CDATA[4000]]></value>
+      <description><![CDATA[Port Number of SNMP]]></description>
+    </att>
+    <att name="community" type="string" read-only="false">
+      <value encoded="n"><![CDATA[public]]></value>
+      <description><![CDATA[Community of SNMP]]></description>
+    </att>
+  </atts>
+</config-element>

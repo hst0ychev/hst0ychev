@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getAllVMsOfComputeResource" result-type="Array/VC:VirtualMachine" api-version="6.0.0" id="39007767-b668-4757-8690-c48665d28e47" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.cluster">
+  <param n="cluster" t="VC:ComputeResource"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var vms = new Array();
+getVMsOfPool(cluster.resourcePool);
+return vms;
+
+
+function getVMsOfPool(pool) {
+	vms = vms.concat(pool.vm);
+	var pools = pool.resourcePool;
+	if (pools != null) {
+		for (var index in pools) {
+			if (pools[index] != null)
+				getVMsOfPool(pools[index]);
+		}
+	}
+}]]></script>
+</dunes-script-module>

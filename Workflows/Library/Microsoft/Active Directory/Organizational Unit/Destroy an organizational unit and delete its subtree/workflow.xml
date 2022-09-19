@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="Workflow:name=generic" id="33c036d7-1573-48e2-92a1-3c97594ffa07" version="1.1.0" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Destroy an organizational unit and delete its subtree]]></display-name>
+  <description><![CDATA[Deletes an organizational unit from an Active Directory instance and all objects within the organizational unit subtree.]]></description>
+  <ref-types><![CDATA[(AD:OrganizationalUnit)]]></ref-types>
+  <position y="20.0" x="180.0"/>
+  <input>
+    <param name="organizationalUnit" type="AD:OrganizationalUnit">
+      <description><![CDATA[Organizational unit to destroy]]></description>
+    </param>
+  </input>
+  <attrib name="deleteSubtree" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[true]]></value>
+  </attrib>
+  <workflow-item name="item2" type="end" end-mode="0">
+    <position y="170.0" x="180.0"/>
+  </workflow-item>
+  <workflow-item name="item0" out-name="item2" type="task" script-module="com.vmware.library.microsoft.activeDirectory/destroyElementRecursive">
+    <display-name><![CDATA[destroyElementRecursive]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+System.getModule("com.vmware.library.microsoft.activeDirectory").destroyElementRecursive(element,deleteSubtree) ;]]></script>
+    <in-binding>
+      <bind name="element" type="Any" export-name="organizationalUnit">
+        <description><![CDATA[Any valid element from Active Directoy to destroy]]></description>
+      </bind>
+      <bind name="deleteSubtree" type="boolean" export-name="deleteSubtree"/>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Detroy an element of the Active Directory.]]></description>
+    <position y="119.54545454545453" x="145.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Destroy]]></title>
+      <p-group>
+        <title><![CDATA[Select an organizational unit]]></title>
+        <desc><![CDATA[Select an empty organizational unit to destroy it]]></desc>
+        <p-param name="organizationalUnit">
+          <desc><![CDATA[Organizational unit to destroy]]></desc>
+          <p-qual name="mandatory"><![CDATA[true]]></p-qual>
+          <p-qual kind="static" name="show-select-as" type="string"><![CDATA[drop-down]]></p-qual>
+          <p-qual name="contextualParameter"><![CDATA[]]></p-qual>
+        </p-param>
+      </p-group>
+    </p-step>
+  </presentation>
+</workflow>

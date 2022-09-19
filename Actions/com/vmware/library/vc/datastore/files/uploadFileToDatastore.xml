@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="uploadFileToDatastore" result-type="void" api-version="6.0.0" id="ce242ee9-5436-4e9a-b52d-f0353c0ae98e" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.datastore.files">
+  <description><![CDATA[Uploads a file to an existing folder on specific datastore .]]></description>
+  <param n="datacenter" t="VC:Datacenter"><![CDATA[Datacenter to use when uploading file.]]></param>
+  <param n="datastore" t="VC:Datastore"><![CDATA[Datastore to use when uploading file.]]></param>
+  <param n="srcFilePath" t="string"><![CDATA[Source file path]]></param>
+  <param n="destFilePath" t="string"><![CDATA[Destination file path]]></param>
+  <script encoded="false"><![CDATA[System.log("Uploading file: " + srcFilePath + " to datastore: " + datastore.name);
+
+var vcHost = datastore.sdkConnection;
+var fileManager = vcHost.fileManager;
+try {
+	var isUploaded = fileManager.uploadFileToDatastore(datacenter, datastore, srcFilePath, destFilePath);
+	if (isUploaded) {
+		System.log("Uploading finished successfully.");
+	} else {
+		System.log("Uploading failed.");
+		throw "Failed to upload the file: " + srcFilePath;
+	}
+} catch (err) {
+	System.log("Uploading failed. Reason: " + err);
+	throw "Failed to upload the file: " + srcFilePath + " Reason: " + err;
+}
+
+
+]]></script>
+</dunes-script-module>

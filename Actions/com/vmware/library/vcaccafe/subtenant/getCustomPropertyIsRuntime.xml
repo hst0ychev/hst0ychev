@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getCustomPropertyIsRuntime" result-type="boolean" api-version="6.0.0" id="adf6b365-b1f3-4065-be80-d0f3985ac001" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.subtenant">
+  <param n="group" t="vCACCAFE:Subtenant"><![CDATA[Business group]]></param>
+  <param n="name" t="string"><![CDATA[Property name]]></param>
+  <script encoded="false"><![CDATA[return vCACCAFESubtenantHelper.isCustomPropertyPromptUser(group, name);]]></script>
+</dunes-script-module>

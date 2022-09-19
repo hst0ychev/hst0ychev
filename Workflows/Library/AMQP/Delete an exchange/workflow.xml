@@ -1,0 +1,56 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item2" object-name="Workflow:name=generic" id="9C8080808080808080808080808080808A808080013049260427240aee8dc5c71" version="1.0.0" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Delete an exchange]]></display-name>
+  <description><![CDATA[Deletes an exchange from a specified broker.]]></description>
+  <ref-types><![CDATA[(AMQP:Broker)]]></ref-types>
+  <position y="20.0" x="160.0"/>
+  <input>
+    <param name="broker" type="AMQP:Broker">
+      <description><![CDATA[Broker to delete an exchange in]]></description>
+    </param>
+    <param name="name" type="string">
+      <description><![CDATA[Name of the exchange to delete]]></description>
+    </param>
+  </input>
+  <attrib name="errorCode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <workflow-item name="item0" throw-bind-name="errorCode" type="end" end-mode="1">
+    <position y="90.0" x="280.0"/>
+  </workflow-item>
+  <workflow-item name="item1" type="end" end-mode="0">
+    <position y="150.0" x="160.0"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item1" catch-name="item0" throw-bind-name="errorCode" type="task">
+    <display-name><![CDATA[Delete an exchange]]></display-name>
+    <script encoded="false"><![CDATA[broker.deleteExchange(name);]]></script>
+    <in-binding>
+      <bind name="broker" type="AMQP:Broker" export-name="broker"/>
+      <bind name="name" type="string" export-name="name"/>
+    </in-binding>
+    <out-binding/>
+    <position y="100.0" x="120.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Delete an exchange]]></title>
+      <p-group>
+        <title><![CDATA[AMQP Broker]]></title>
+        <desc><![CDATA[Select a broker to delete an exchange in.]]></desc>
+        <p-param name="broker">
+          <desc><![CDATA[Broker]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual name="contextualParameter" type="void"><![CDATA[]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Exchange Properties]]></title>
+        <desc><![CDATA[Specify the properties of the exchange to delete.]]></desc>
+        <p-param name="name">
+          <desc><![CDATA[Name]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+      </p-group>
+    </p-step>
+  </presentation>
+</workflow>

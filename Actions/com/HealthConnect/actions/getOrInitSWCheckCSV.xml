@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getOrInitSWCheckCSV" result-type="ResourceElement" api-version="6.0.0" id="384663f5-a791-465e-b87d-065d0c2adb73" version="1.0.0" allowed-operations="vfe" category-name="com.HealthConnect.actions">
+  <script encoded="false"><![CDATA[categoryName = 'Health Connect';
+elementName = 'swcheck.txt';
+
+var category = Server.getResourceElementCategoryWithPath(categoryName);
+var deployments = null;
+
+if (category) {
+   for each (var resourceElement in category.resourceElements) {
+		if (resourceElement.name == elementName) {
+			deployments = resourceElement;
+			break;
+		}
+	}
+} 
+
+//Init the file
+if (!deployments) { 
+   deployments = Server.createResourceElement(category, elementName, null);
+   addCSVHeaders(deployments)
+} else if (deployments.getContentAsMimeAttachment().content.trim() == '') {
+   addCSVHeaders(deployments)
+}
+
+return deployments;
+
+function addCSVHeaders(resourceElement) {
+   var headers = 'Server Name,Location,Software Vendor,Product,Type of Software Install,Cluster,Implementation Date,Environment,Serial #,Server Manufacturer,MODEL,# of Processors,# of Cores per Server,VIRTUAL'
+
+   var mimeAttachment = new MimeAttachment();
+   mimeAttachment.content = headers;
+   mimeAttachment.mimeType = "text/plain";
+   mimeAttachment.name = resourceElement.name;
+   resourceElement.setContentFromMimeAttachment(mimeAttachment);
+}]]></script>
+</dunes-script-module>

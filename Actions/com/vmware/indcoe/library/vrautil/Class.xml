@@ -1,0 +1,156 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="Class" result-type="Any" api-version="6.0.0" id="2f20decc-8653-34ee-8910-fe4dc4643617" version="1.0.0" allowed-operations="evf" category-name="com.vmware.indcoe.library.vrautil">
+  <script encoded="false"><![CDATA[var global = (function() {
+    return this;
+}).call(null);
+
+var loadStack = [];
+
+var defineClass = function() {
+    function Class() {
+        throw "private constructor";
+    }
+
+    /**
+     * Defines a new concrete Class with specified name and inheritance from a single class
+     * @param name - the name of the class to define
+     * @param constructorFunc - a function which will be assigned as constructor for the class
+     * @param classPrototypeObj - a JS object which properties will be set on the Class prototype
+     * @param extendClass - the class object (loaded from Class#load method) to extend
+     * @return a new Class  type
+     */
+    Class.define = function (name, constructorFunc, classPrototypeObj, extendClass) {
+        var originalConstructor = null;
+
+        if (typeof(name) != "string") {
+            extendClass = classPrototypeObj;
+            classPrototypeObj = constructorFunc;
+            constructorFunc = name;
+        } else {
+            // wrap constructor annonymous function in a named function
+            // so that constructionFunc.constructor.name returns name correctly.
+            originalConstructor = constructorFunc;
+            constructorFunc = eval(
+                "(function() {\n" +
+                "   function " + name + "() {\n" +
+                "       originalConstructor.apply(this,arguments);\n" +
+                "   }\n" +
+                "   return " + name + ";\n" +
+                "})();"
+            );
+        }
+
+        if (classPrototypeObj) {
+            for (var prop in classPrototypeObj) {
+                constructorFunc.prototype[prop] = classPrototypeObj[prop];
+            }
+
+            if (!classPrototypeObj.hasOwnProperty("toString")) {
+                constructorFunc.prototype.toString = function toString() {
+                    return "[object " + this.constructor.name + "]";
+                };
+            }
+        }
+        classPrototypeObj = constructorFunc.prototype;
+
+        var propsObj = {};
+
+        /* convert class prototype to property object */
+        if (classPrototypeObj) {
+            for (var propName in classPrototypeObj) {
+                propsObj[propName] = {
+                    value: classPrototypeObj[propName],
+                    enumerable: true,
+                    configurable: true,
+                    writable: true
+                };
+            }
+        }
+
+        /* setup inheritance */
+        constructorFunc.prototype = Object.create(extendClass ? extendClass.prototype : classPrototypeObj, propsObj);
+        constructorFunc.prototype.constructor = constructorFunc;
+
+        // transfer the static members of the input constructor function to the result constructor
+        // if they are different functions (the case where the `name` parameter is a string)
+        if (originalConstructor && constructorFunc !== originalConstructor) {
+            for (var memberName in originalConstructor) {
+                constructorFunc[memberName] = originalConstructor[memberName];
+            }
+        }
+
+        /* copy static functions */
+        if (extendClass) {
+            for (var memName in extendClass) {
+                // add the static member only if it's not already defined in the subclass
+                if (!constructorFunc.hasOwnProperty(memName)) {
+                    constructorFunc[memName] = extendClass[memName];
+                }
+            }
+        }
+
+        return constructorFunc;
+    };
+
+    /**
+     * Loads a class and ensures there is a single version of this class access child scripting contexts
+     * created by vRO. This is important in the cases you want to compare instances with "instancceof" operator.
+     * @return the loaded Class or the shared version of it previously loaded.
+     */
+    Class.load = function(module, name) {
+        if (!global.__classes__) {
+            global.__classes__ = {};
+        }
+
+        var classFqdn = module + "/" + name;
+
+        var cls = global.__classes__[classFqdn];
+        if (!cls) {
+            var clsIndex = loadStack.indexOf(classFqdn);
+
+            if (clsIndex > -1) {
+                var circPath = loadStack.slice(clsIndex);
+                circPath.push(classFqdn);
+
+                /* clean up loading stack to not leave "dirty" global state. */
+                loadStack = [];
+                throw "Detected circular dependency in Class loading. Path: " +
+                    JSON.stringify(circPath) +
+                    " You can resolve by moving the Class.load() right before " +
+                    "you refer to the class being loaded (in class constructor/prototype methos).";
+            }
+
+            loadStack.push(classFqdn);
+            cls = System.getModule(module)[name]();
+            loadStack.pop();
+            global.__classes__[classFqdn] = cls;
+        }
+        return cls;
+    };
+    
+    /**
+     * This function allows for overriding of a class by it's modul/name reference with
+     * an extended class.
+     */
+    Class.mock = function(module, name, constructorFunc, classPrototypeObj) {
+        var ActualClass = Class.load(module, name);
+        var MockClass = Class.define(constructorFunc, classPrototypeObj, ActualClass);
+    
+        var actualClassFqdn = module + "/" + name;
+        global.__classes__[actualClassFqdn] = MockClass;
+    
+        return MockClass;
+    };
+
+    return Class;
+};
+
+/* don't redeclare class global var, if already set */
+global.__classes__ = global.__classes__ || {};
+
+if (!global.__classes__["com.vmware.pscoe.library.class/Class"]) {
+    global.__classes__["com.vmware.pscoe.library.class/Class"] = defineClass();
+}
+return global.__classes__["com.vmware.pscoe.library.class/Class"];
+]]></script>
+</dunes-script-module>

@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="unassignUsersAndGroupsFromEntitlement" result-type="void" api-version="6.0.0" id="ff289c34-920f-4c6a-8960-72920e23d15c" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.catalog.entitlement">
+  <param n="entitlement" t="vCACCAFE:Entitlement"><![CDATA[Entitlement that the users and groups will be unassigned from]]></param>
+  <param n="users" t="Array/string"><![CDATA[Users to be unassigned from the entitlement]]></param>
+  <param n="groups" t="Array/string"><![CDATA[Groups to be unassigned from the entitlement]]></param>
+  <script encoded="false"><![CDATA[System.getModule("com.vmware.library.vcaccafe.util").validateObject(entitlement, "Entitlement");
+var host = vCACCAFEEntitiesFinder.getHostForEntity(entitlement);
+var client = host.createCatalogClient().getCatalogEntitlementService();
+
+var assigned;
+for (var i = 0 ; users != null && i < users.length ; i++ ) {
+	assigned = false;
+	for (var j = 0 ; j < entitlement.getPrincipals().length ; j++ ) {
+		var principal = entitlement.getPrincipals()[j];
+		if (users[i] == principal.getRef()) {
+			assigned = true;
+			vCACCAFEEntityHelper.removeElementFromList(entitlement, "getPrincipals", principal);
+			break;
+		}
+	}
+	if (!assigned) {
+		System.warn("User " + users[i] + " is not assigned to the entitlement. The user will be skipped.");
+	}
+}
+
+for (var i = 0 ; groups != null && i < groups.length ; i++ ) {
+	assigned = false;
+	for (var j = 0 ; j < entitlement.getPrincipals().length ; j++ ) {
+		var principal = entitlement.getPrincipals()[j];
+		if (groups[i] == entitlement.getPrincipals()[j].getRef()) {
+			assigned = true;
+			vCACCAFEEntityHelper.removeElementFromList(entitlement, "getPrincipals", principal);
+			break;
+		}
+	}
+	if (!assigned) {
+		System.warn("Group " + groups[i] + " is not assigned to the entitlement. The group will be skipped.");
+	}
+}
+
+System.log("Unassigning groups and users from entitlement " + entitlement.getName() + "...");
+client.update(entitlement);
+System.log("Groups and users unassigned from entitlement " + entitlement.getName());]]></script>
+</dunes-script-module>

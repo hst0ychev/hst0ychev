@@ -1,0 +1,129 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="50ae216a-ee57-4179-9ce3-22f0645d8bdb" version="0.0.0" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Day 1 - Create FQDN Entry]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="payload" type="Properties">
+      <description><![CDATA[Request Details]]></description>
+    </param>
+  </input>
+  <attrib name="machine_name" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="machine_ip" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="vCACHost" type="vCAC:VCACHost" read-only="false">
+    <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='7678fd07-7e94-41fb-b504-826e693933a5'&dunesName='vCAC:VCACHost']]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="524.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item2" type="task">
+    <display-name><![CDATA[Scriptable task]]></display-name>
+    <script encoded="false"><![CDATA[function displayVar(variable){
+  if(!variable){
+    return "Not defined";
+  }
+  return variable;
+}
+
+function getProperty(field,from_var){
+  if(from_var && from_var.get(field))
+  {
+    return from_var.get(field);
+  }
+  return false;
+}
+
+function getPropertyFromJSONObject(field,from_var){
+  if(from_var && typeof from_var[field] !== 'undefined')
+  {
+    return from_var.get(field);
+  }
+  return false;
+}
+
+
+//Request id(STRING)
+var request_id = getProperty("requestId",payload);
+
+//Machine(Infrastructure.EBS.MachineDetail)
+var machine = getProperty("machine",payload);
+
+//Virtual Machine Event(STRING)
+var virtual_machine_event = getProperty("virtualMachineEvent",payload);
+
+//Lifecycle state(Infrastructure.EBS.LifecycleStateInfo.Provision)
+var lifecycle_object = getProperty("lifecycleState",payload);
+
+//Lifecycle State phase(STRING)
+var lifecycle_phase = getProperty("phase",lifecycle_object);
+
+//Lifecycle state name(STRING)
+var lifecycle_state = getProperty("state",lifecycle_object);
+
+//properties - Properties(Array Of Infrastructure.Machine.Properties)
+var machine_properties = getProperty("properties",machine);
+
+//virtualMachineAddOrUpdateProperties - Properties of the virtual machine to be added or updated(Array Of Infrastructure.CustomProperty)
+var virtual_machine_add_or_update_properties = getProperty("virtualMachineAddOrUpdateProperties",payload);
+
+//virtualMachineDeleteProperties - Properties of the virtual machine to be deleted(Array Of Infrastructure.CustomProperty)
+var virtual_machine_delete_properties = getProperty("virtualMachineDeleteProperties",payload);
+
+//id - Machine id(STRING)
+var machine_id = getProperty("id",machine);
+
+//name - Machine name(STRING)
+var machine_name = getProperty("name",machine);
+
+var machine_ip = getProperty("VirtualMachine.Network0.Address", machine_properties);
+
+if(!machine_ip)
+{
+    throw "Unable to fetch Machine's IP Address";
+}
+
+if(!machine_name)
+{
+    throw "Unable to fetch Machine's Name";
+}
+
+System.log("Machine name: "+displayVar(machine_name));
+System.log("Machine IP Address: "+displayVar(machine_ip));
+]]></script>
+    <in-binding>
+      <bind name="payload" type="Properties" export-name="payload"/>
+      <bind name="machine_name" type="string" export-name="machine_name"/>
+      <bind name="machine_ip" type="string" export-name="machine_ip"/>
+      <bind name="vCACHost" type="vCAC:VCACHost" export-name="vCACHost"/>
+    </in-binding>
+    <out-binding>
+      <bind name="machine_name" type="string" export-name="machine_name"/>
+      <bind name="machine_ip" type="string" export-name="machine_ip"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item0" type="link" linked-workflow-id="80b79af6-5ee6-4e6f-be7b-465685a00740">
+    <display-name><![CDATA[Create FQDN Entry]]></display-name>
+    <in-binding>
+      <bind name="usersEmailId" type="string" explicitly-not-bound="true" export-name="NULL">
+        <description><![CDATA[The requesting User's Email Address.]]></description>
+      </bind>
+      <bind name="vm_name" type="string" export-name="machine_name">
+        <description><![CDATA[FQDN]]></description>
+      </bind>
+      <bind name="ip_address" type="string" export-name="machine_ip">
+        <description><![CDATA[IP]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="344.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="payload">
+      <desc><![CDATA[Request Details]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

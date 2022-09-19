@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="88825a22-b6e8-4e79-b998-49b19784fc34" version="0.1.0" api-version="6.0.0" allowed-operations="vf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Get Compute Resource Performance]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="EndpointIn" type="Any"/>
+    <param name="ComputeResourceIn" type="Any"/>
+  </input>
+  <output>
+    <param name="PerformancesOut" type="Array/Any"/>
+  </output>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Create Performance Data]]></display-name>
+    <script encoded="false"><![CDATA[System.log("EndpointIn: " + EndpointIn.toSource());
+System.log("ComputeResourceIn: " + ComputeResourceIn.toSource());
+
+var PerformanceOut = [];
+
+var machineId = ComputeResourceIn.uniqueId + "-001";
+
+var machineName = ComputeResourceIn.name + "-vm-001";
+System.log("Machine: " + machineName);
+
+var perf = GEFMachinePerformance.build(machineId);
+perf.cpuUsageAverage = 35;
+perf.diskUsageAverage = 45;
+perf.memoryUsageAverage = 55;
+perf.netUsageAverage = 65;
+perf.timeStamp = new Date(2015,4,4);
+
+PerformanceOut.push(perf);
+
+System.log("PerformanceOut: " + PerformanceOut.toSource());]]></script>
+    <in-binding>
+      <bind name="EndpointIn" type="Any" export-name="EndpointIn"/>
+      <bind name="ComputeResourceIn" type="Any" export-name="ComputeResourceIn"/>
+    </in-binding>
+    <out-binding>
+      <bind name="PerformanceOut" type="Array/Any" export-name="PerformancesOut"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="EndpointIn">
+      <desc><![CDATA[EndpointIn]]></desc>
+    </p-param>
+    <p-param name="ComputeResourceIn">
+      <desc><![CDATA[MachineIn]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="createVirtualEthernetCardNetworkConfigSpec" result-type="Any" api-version="6.0.0" id="ba09ce6c-9e20-4512-aa6a-2535be7c5282" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.vm.spec.config.device">
+  <param n="network" t="VC:Network"><![CDATA[]]></param>
+  <param n="macAddress" t="string"><![CDATA[]]></param>
+  <param n="nicType" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[// Create connectable info for network
+var connectInfo = new VcVirtualDeviceConnectInfo();
+connectInfo.allowGuestControl = false;
+connectInfo.connected = false;
+connectInfo.startConnected = true;
+// Create Network BackingInfo
+var netBackingInfo = new VcVirtualEthernetCardNetworkBackingInfo();
+netBackingInfo.deviceName = network.name;
+// Create VirtualNetwork
+var vNetwork = null;
+if (!nicType || nicType == "pcnet32") {
+    vNetwork = new VcVirtualPCNet32();
+} else if (nicType == "e1000") {
+    vNetwork = new VcVirtualE1000();
+} else if (nicType == "e1000e") {
+    vNetwork = new VcVirtualE1000e();
+} else if (nicType == "vmxnet2") {
+    vNetwork = new VcVirtualVmxnet2();
+}else if (nicType == "vmxnet3") {
+    vNetwork = new VcVirtualVmxnet3();
+}else if (nicType == "sriov") {
+    vNetwork = new VcVirtualSriovEthernetCard();
+} else {
+    throw "Unknown nic type " + nicType;
+}
+vNetwork.backing = netBackingInfo;
+vNetwork.key = 0;
+vNetwork.unitNumber = 0;
+if ( macAddress != null  &&  macAddress != "" )  {
+	vNetwork.addressType = "Manual";
+	vNetwork.macAddress = macAddress;
+}
+else  {
+	vNetwork.addressType = "Generated";
+}
+vNetwork.connectable = connectInfo;
+// Create Network ConfigSpec
+var deviceConfigSpec = new VcVirtualDeviceConfigSpec();
+deviceConfigSpec.device = vNetwork;
+deviceConfigSpec.operation = VcVirtualDeviceConfigSpecOperation.add;
+
+return deviceConfigSpec;]]></script>
+</dunes-script-module>

@@ -1,0 +1,77 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getClientId" result-type="void" api-version="6.0.0" id="afe54464-cf57-4ef6-b64d-5b927c580d16" version="0.0.0" allowed-operations="evf" category-name="com.commvault.utils">
+  <description><![CDATA[Action to get the client id for a given client name]]></description>
+  <param n="token" t="string"><![CDATA[]]></param>
+  <param n="clientName" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[/*
+	Inputs:
+	token - CV Token
+	clientName - name of virtualization client
+	
+	API used:
+	/Client
+	
+	Output:
+	virtualization client id for the given client name
+	if not found returns -1
+
+*/
+
+System.log("executing getClientID module");
+var  getClientIdUrl = "Client";
+var bFound = false;
+
+	var response = System.getModule("com.commvault.utils").processRESTRequest(getClientIdUrl,"GET", null, token, null, null);
+	if(response.contentAsString != null)
+	{
+		if(response.statusCode != 200)
+		{
+			System.log("Response status was not 200: "+response);
+			throw("Error: Failed to execute REST request getclientid");
+		}
+		var document = XMLManager.fromString(response.contentAsString);
+		var list = document.getElementsByTagName("clientProperties");
+		var total = list.length;
+		
+		for(var i = 0; i < total ; i++)
+		{
+			var client = list.item(i).getChildNodes();
+			for(var j = 0; j < client.length;j++)
+			{
+				if(client.item(j).nodeName == "client")
+				{
+					var clientEntity = client.item(j).getChildNodes();
+					for(var k = 0; k < clientEntity.length; k++)
+					{
+						if(clientEntity.item(k).nodeName == "clientEntity")
+						{
+							//System.log("HighVerbose: clientName "+ clientEntity.item(k).getAttribute("clientName").toUpperCase() +" client name "+ clientName.toUpperCase());
+							//This checks if vCenter and simpana client name matching. If vCenter name is FQDN and simpana client is short it checks substring as below
+							if(clientEntity.item(k).getAttribute("clientName").toUpperCase() == clientName.toUpperCase() )
+							{
+								vcClientID = clientEntity.item(k).getAttribute("clientId");
+								System.log("Found matching client ID: "+ vcClientID);
+								bFound = true;
+								break;
+							}
+						}
+					}
+				} 
+			}
+		}
+		if (bFound)
+		{
+			return vcClientID;
+		}
+		else
+		{
+			return -1;
+		}
+	
+	} 
+	else{
+	return -1;
+	}	
+
+	]]></script>
+</dunes-script-module>

@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="importContent" result-type="void" api-version="6.0.0" id="45994656-a6cf-4269-a8fc-f01c7d04e511" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.content">
+  <param n="host" t="vCACCAFE:VCACHost"><![CDATA[vRA host]]></param>
+  <param n="contentFile" t="MimeAttachment"><![CDATA[Content file]]></param>
+  <script encoded="false"><![CDATA[System.log("Target host: " + host.url);
+System.log("Target tenant: " + host.tenant);
+System.log("Content file: " + contentFile.name);
+
+var contentClientImport = host.createContentManagementClient();
+System.log("Importing...");
+contentClientImport.postFile("content/bundles", contentFile);
+System.log("Import successful");]]></script>
+</dunes-script-module>

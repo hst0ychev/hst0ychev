@@ -1,0 +1,595 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="class" result-type="Any" api-version="6.0.0" id="21eeee94-2f5b-344f-9e86-b10aff66e3fc" version="0.0.1" allowed-operations="evf" category-name="com.vmware.indcoe.active_directory">
+  <param n="username" t="string"><![CDATA[The user to be used for authenticating with AD.]]></param>
+  <param n="password" t="SecureString"><![CDATA[The password of above user to authenticate with AD.]]></param>
+  <param n="adServer" t="string"><![CDATA[The IP / FQDN of AD Server on which operations will be done.]]></param>
+  <param n="psHost" t="PowerShell:PowerShellHost"><![CDATA[The PowerShellHost via which we will communicate to AD.]]></param>
+  <script encoded="false"><![CDATA[var ADClass = {
+    username: username,
+    password: password,
+    adServer: adServer,
+    basePath: null,
+    psHost: psHost,
+    CheckIfPowershellHostIsReachable: function () {
+        //Returns sessionID if host is reachable, false if host is not reachable.
+        try {
+            var psSession = this.psHost.openSession();
+            if (psSession) {
+                System.debug("PS Session Found: " + psSession.getSessionId());
+                return psSession.getSessionId();
+            }
+            //psSession is falsy, so returning false.
+            return false;
+        }
+        catch (error) {
+            //Some error occured while opening the session to PSHost. Returning false.
+            return false;
+        }
+    },
+    SetBasePath: function (basePath) {
+        this.basePath = basePath;
+        return true;
+    },
+    SetPSAdminCredentials: function () {
+        return "$AdminCredentials = New-Object -typename System.Management.Automation.PSCredential -argumentlist '" + this.username + "',( '" + this.password + "' | ConvertTo-SecureString -AsPlainText -Force);";
+    },
+    CreatePowerShellScript: function (partOfScript) {
+        //Create an entire script to be run i.e. with All the credentials and 'partOfScript' added and returns a merged script.
+        var mergedScript = "\n$ADServer = '" + this.adServer + "'\n";
+        mergedScript += this.SetPSAdminCredentials() + "\n";
+        mergedScript += partOfScript;
+        return mergedScript;
+    },
+    RunPowerShellScript: function (script) {
+        //This method will run the 'script' on the powershell host 'psHost' and return the output.
+        System.debug("Script to run: ");
+        System.debug(script);
+        System.debug("--");
+        var isPSHostReachable = this.CheckIfPowershellHostIsReachable();
+        if (!isPSHostReachable) {
+            System.debug("The Remote PS Host is not reachable. Return value: " + isPSHostReachable);
+            return false;
+        }
+        //If this executes, it means the remote PS Host is reachable.
+        var psSession = this.psHost.getSession(isPSHostReachable);
+        if (!psSession) {
+            System.debug("Invalid session ID specified: " + isPSHostReachable);
+            return false;
+        }
+
+        //Session found, lets execute the 'script'
+        System.debug("The session is valid, running");
+
+        var resultOfRunningScript = psSession.invokeScript(script);
+        var resultInText = resultOfRunningScript.getInvocationState();
+        resultInText = String(resultInText);
+
+        System.debug("Script execution result: " + resultInText);
+
+        var scriptOutput = resultOfRunningScript.getHostOutput();
+
+        if (psSession){
+            this.psHost.closeSession(isPSHostReachable);
+            System.debug("Closing Session: "+isPSHostReachable);
+        }
+
+        if ("completed" !== resultInText.toLowerCase()) {
+            throw "Remote PS Host was not able to execute the script successfully."
+        }
+
+
+        System.debug("The output of the script: ");
+        //Remove spaces (\t,\n,\r,<space>) from output.
+        System.debug(scriptOutput.replace(/\s+/g, ''));
+        System.debug("---");
+
+        return scriptOutput;
+    },
+    GetADRootDomain: function () {
+        //Ref: https://docs.microsoft.com/en-us/powershell/module/addsadministration/get-adforest
+        //Fetches the root domain name from AD.
+        var cmdletToSearchOU = "Get-ADForest -Current LocalComputer -credential $AdminCredentials -Server $ADServer | ConvertTo-Json;";
+        var completeScript = this.CreatePowerShellScript(cmdletToSearchOU);
+        var scriptOutput = this.RunPowerShellScript(completeScript);
+        var tempscriptOutput = scriptOutput.replace(/\s+/g, '');
+        
+        if (tempscriptOutput) {
+            scriptOutput = JSON.parse(scriptOutput);
+            if (scriptOutput.RootDomain) {
+                return scriptOutput.RootDomain;
+            }
+        }
+        //Else if script was blank, return false i.e. the OU doesnt exist.
+        return false;
+    },
+    GetAllOUs: function () {
+        //Ref: https://docs.microsoft.com/en-us/powershell/module/addsadministration/get-adorganizationalunit
+        //Fetches all OUs from a given base path in AD.
+        System.debug("Fetching all current OUs from Base: " + this.basePath);
+
+        if(!this.basePath)
+        {
+            System.debug("Base Path Empty or not provided: "+this.basePath);
+            var cmdletToSearchOU = "Get-ADOrganizationalUnit -credential $AdminCredentials -Server $ADServer -Filter 'Name -like \"*\"' | Sort-Object Name | ConvertTo-Json;";
+        }
+        else
+        {
+            System.debug("Base Path : "+this.basePath);
+             var cmdletToSearchOU = "Get-ADOrganizationalUnit -credential $AdminCredentials -Server $ADServer -Filter 'Name -like \"*\"'  -SearchBase '"+this.basePath+"' -SearchScope 'OneLevel' | Sort-Object Name | ConvertTo-Json;";
+        }
+
+        var completeScript = this.CreatePowerShellScript(cmdletToSearchOU);
+        var scriptOutput = this.RunPowerShellScript(completeScript);
+        
+        var temp_scriptOutput = scriptOutput.replace(/\s+/g, '');
+
+        if (temp_scriptOutput) {
+            //If script output is not blank, that means the script found at least one OU.
+            return JSON.parse(scriptOutput);
+        }
+        //Else if script was blank, return false i.e. the OU doesnt exist.
+        return false;
+    },
+    CheckIfOUExists: function (ouName) {
+        //Checks and returns boolean depending on whether the OU Exists or not in the provided basePath
+        if (!ouName) {
+            System.debug("OU Name: " + ouName);
+            return false;
+        }
+        //cmdlet will search for *ouName* in SearchBase basePath with SearchScope 1 i.e. one level from BasePath and then convert it to JSON and return
+        var cmdletToSearchOU = "Get-ADOrganizationalUnit -credential $AdminCredentials -Server $ADServer -Filter 'Name -eq \"" + ouName + "\"' -SearchBase '" + this.basePath + "' -SearchScope 1 | ConvertTo-Json;";
+        var completeScript = this.CreatePowerShellScript(cmdletToSearchOU);
+        var scriptOutput = this.RunPowerShellScript(completeScript);
+        var temp_scriptOutput = scriptOutput.replace(/\s+/g, '');
+
+        if (temp_scriptOutput) {
+            //If script output is not blank, that means the OU was found, return that output.
+            return scriptOutput;
+        }
+        //Else if script was blank, return false i.e. the OU doesnt exist.
+        return false;
+    },
+    CreateOU: function (ouName) {
+        //Ref: https://docs.microsoft.com/en-us/powershell/module/addsadministration/new-adorganizationalunit
+        //All validation checks have to be done in customer use-case workflow.
+        //This method will blindly try to create a OU.
+
+        System.log("OU does not exist, creating it in AD...");
+
+        //cmdlet will create an OU passed in 'ouName' in path 'this.basePath' and 
+        var cmdletToSearchOU = "New-ADOrganizationalUnit -Name '" + ouName + "' -Path '" + this.basePath + "' -Credential $AdminCredentials";
+        var completeScript = this.CreatePowerShellScript(cmdletToSearchOU);
+        var scriptOutput = this.RunPowerShellScript(completeScript);
+        scriptOutput = scriptOutput.replace(/\s+/g, '');
+
+        if (scriptOutput) {
+            //If the scriptOutput is not blank, it means that the script got some error while creating the OU.
+            System.log("Encountered error while creating OU...");
+            //If script output is not blank, that means the OU was found, return that output.
+            return false;
+        }
+        //Else if script was blank, return true i.e. the OU was created successfully.
+        System.log("OU Created successfully. OU Name: " + ouName);
+        return true;
+    },
+    DisableOU: function (ouName) {
+        //Ref: https://docs.microsoft.com/en-us/powershell/module/addsadministration/remove-adorganizationalunit
+        //Checks if the OU exists or not in the provided basePath, if it does we disable it and returns TRUE. If not, we return false.
+        if (!ouName) {
+            System.debug("OU Name: " + ouName);
+            return false;
+        }
+        if (!this.CheckIfOUExists(ouName)) {
+            System.log("OU does not exist, exiting...");
+            return false;
+        }
+        //todo: Clarification pending from Design
+    },
+    GetAllGroups: function (baseOU) {
+        //Ref: https://docs.microsoft.com/en-us/powershell/module/addsadministration/get-adgroup
+        //Fetches all Groups from AD (Both security and distribution groups).
+        System.debug("Fetching all Groups from AD");
+
+        if(baseOU)
+        {
+            var cmdletToSearchOU = "Get-ADGroup -credential $AdminCredentials -Server $ADServer -Filter 'Name -like \"*\"' -SearchBase 'OU="+baseOU+","+this.basePath+"' -SearchScope 'OneLevel' | Sort-Object Name| ConvertTo-Json;";
+        }
+        else
+        {
+            var cmdletToSearchOU = "Get-ADGroup -credential $AdminCredentials -Server $ADServer -Filter 'Name -like \"*\"'  | Sort-Object Name| ConvertTo-Json;";
+        }
+            
+       
+        var completeScript = this.CreatePowerShellScript(cmdletToSearchOU);
+        var scriptOutput = this.RunPowerShellScript(completeScript);
+        var temp_scriptOutput = scriptOutput.replace(/\s+/g, '');
+        if (temp_scriptOutput) {
+            //If script output is not blank, that means the script found at least one Group.
+            return JSON.parse(scriptOutput);
+        }
+        //Else if script was blank, return false
+        return false;
+    },
+    CheckIfGroupExists: function (groupName,baseOU) {
+        //Checks and returns boolean depending on whether the Group Exists or not in the specified type.
+        //Checks Both security and distribution groups from AD.
+
+        var AllGroups = this.GetAllGroups(baseOU);
+        if (!AllGroups) {
+            //That means no groups exist in the specified OU
+            return false;
+        }
+        
+            if(AllGroups.Name)
+            {
+                //That means only one group was returned.
+                    System.debug("---");
+                    System.debug("Checking if Group exists. Current Group: " + AllGroups.Name);
+    
+                    if (groupName.toLowerCase() === (AllGroups.Name).toLowerCase()) {
+                        System.log("An Existing Group with matching name found...");
+                        System.debug("An Existing Group with matching name found...");
+                        System.debug("Name of Group: " + AllGroups.Name);
+                        System.debug("Group Category: " + AllGroups.GroupCategory);
+                        System.debug("ID of Group: " + AllGroups.ObjectGuid);
+                        System.debug("---");
+                        return true;
+                    }
+            }
+            else
+            {
+                for (var i in AllGroups) {
+                    System.debug("---");
+                    System.debug("Checking if Group exists. Current Group: " + AllGroups[i].Name);
+    
+                    if (groupName.toLowerCase() === (AllGroups[i].Name).toLowerCase()) {
+                        System.log("An Existing Group with matching name found...");
+                        System.debug("An Existing Group with matching name found...");
+                        System.debug("Name of Group: " + AllGroups[i].Name);
+                        System.debug("Group Category: " + AllGroups[i].GroupCategory);
+                        System.debug("ID of Group: " + AllGroups[i].ObjectGuid);
+                        System.debug("---");
+                        return true;
+                    }
+                }
+            }
+        System.debug("---");
+        //By default, we return false.
+        return false;
+    },
+    CreateGroup: function (groupName, groupType, groupScope, baseOU) {
+        //Ref: https://docs.microsoft.com/en-us/powershell/module/addsadministration/new-adgroup
+        //All validation checks have to be done in customer use-case workflow.
+        //This method will blindly try to create a new group with specified type and scope.
+
+        if(!this.basePath)
+        {
+            var cmdletToSearchOU = "New-ADGroup -Name '" + groupName + "' -Path '" + this.basePath + "' -GroupCategory '" + groupType + "' -GroupScope '" + groupScope + "' -Credential $AdminCredentials";
+        }
+        else
+        {
+            var cmdletToSearchOU = "New-ADGroup -Name '" + groupName + "' -Path 'OU="+baseOU+","+this.basePath+"'  -GroupCategory '" + groupType + "' -GroupScope '" + groupScope + "' -Credential $AdminCredentials";
+        }
+
+        var completeScript = this.CreatePowerShellScript(cmdletToSearchOU);
+        var scriptOutput = this.RunPowerShellScript(completeScript);
+        scriptOutput = scriptOutput.replace(/\s+/g, '');
+
+        if (scriptOutput) {
+            //If the scriptOutput is not blank, it means that the script got some error while creating the OU.
+            System.log("Encountered error while creating the Group...");
+            //If script output is not blank, that means the OU was found, return that output.
+            return false;
+        }
+        //Else if script was blank, return true i.e. the OU was created successfully.
+        return true;
+    },
+    GetAllUsers: function () {
+        //Ref: https://docs.microsoft.com/en-us/powershell/module/addsadministration/get-aduser
+        //Fetches all users from AD.
+        System.debug("Fetching all users from AD");
+
+        if(!this.basePath)
+        {
+           var cmdletToSearchOU = "Get-ADUser -credential $AdminCredentials -Server $ADServer -Filter 'Name -like \"*\"'  | Sort-Object Name | ConvertTo-Json;";
+        }
+        else
+        {
+           var cmdletToSearchOU = "Get-ADUser -credential $AdminCredentials -Server $ADServer -Filter 'Name -like \"*\"' -SearchBase '" + this.basePath + "' | Sort-Object Name | ConvertTo-Json;";
+        }
+        // Here -SearchScope is 2 because it is better to get ALL Users.
+        //var cmdletToSearchOU = "Get-ADUser -credential $AdminCredentials -Server $ADServer -Filter 'Name -like \"*\"'  | Sort-Object Name | ConvertTo-Json;";
+        var completeScript = this.CreatePowerShellScript(cmdletToSearchOU);
+        var scriptOutput = this.RunPowerShellScript(completeScript);
+        var temp_scriptOutput = scriptOutput.replace(/\s+/g, '');
+        if (temp_scriptOutput) {
+            //If script output is not blank, that means the script found at least one OU.
+            return JSON.parse(scriptOutput);
+        }
+        //Else if script was blank, return false i.e. the OU doesnt exist.
+        return false;
+    },
+    CheckIfUserExists: function (username) {
+        //Checks and returns boolean depending on whether the User or not
+
+        //Best to compare in lower case to avoid ambiguities.
+        username = username.toLowerCase();
+
+        System.debug("Trying to get users from AD");
+        var AllUsers = this.GetAllUsers();
+
+        if (!AllUsers) {
+            throw "Error fetching Users from AD";
+        }
+
+            System.debug("Users retrieved from AD, iterating and searching for: " + username);
+            System.debug("---");
+            if(AllUsers.SamAccountName)
+            {
+                //Only one user retrived.
+                    System.debug("Checking if User exists. Current User in check: " + AllUsers.SamAccountName);
+    
+                    if (username === (AllUsers.SamAccountName).toLowerCase()) {
+                        System.log("User " + username + " found in AD");
+                        System.debug("User " + username + " found in AD");
+                        System.debug("Name of User: " + AllUsers.Name);
+                        System.debug("User Enabled?: " + AllUsers.Enabled);
+                        System.debug("ID of User: " + AllUsers.ObjectGuid);
+                        System.debug("---");
+                        return true;
+                    }
+            }
+            else
+            {
+
+                for (var i in AllUsers) {
+
+                    System.debug("Checking if User exists. Current User in check: " + AllUsers[i].SamAccountName);
+    
+                    if (username === (AllUsers[i].SamAccountName).toLowerCase()) {
+                        System.log("User " + username + " found in AD");
+                        System.debug("User " + username + " found in AD");
+                        System.debug("Name of User: " + AllUsers[i].Name);
+                        System.debug("User Enabled?: " + AllUsers[i].Enabled);
+                        System.debug("ID of User: " + AllUsers[i].ObjectGuid);
+                        System.debug("---");
+                        return true;
+                    }
+                }
+            }
+        System.debug("---");
+        //By default, we return false.
+        return false;
+    },
+    CreateUser: function (firstName, lastName, loginName, domainName, emailAddress, password, baseOU, description, contactNumber, empType, empID, location, designation) {
+        //Ref: https://docs.microsoft.com/en-us/powershell/module/addsadministration/new-aduser
+        //Checks about the User exists or not has to be done in customer use-case
+        //This method will just attempt to create the user.
+
+        if(!description)
+        {
+            description = ' ';
+        }
+
+        var cmdletToSearchOU = "New-ADUser -Path 'OU="+baseOU+","+this.basePath+"' -Description '"+description+"' -credential $AdminCredentials -Server $ADServer -Enabled:$True -GivenName '" + firstName + "' -Surname '" + lastName + "' -Name '" + loginName + "' -SamAccountName '" + loginName + "' -UserPrincipalName '" + loginName + "@" + domainName + "' -AccountPassword (ConvertTo-SecureString -AsPlainText '" + password + "' -Force) -EmailAddress '" + emailAddress + "' -MobilePhone '" + contactNumber + "' -Company '" + empType + "' -EmployeeID '" + empID + "' -City '" + location + "' -Title '" + designation + "';";
+        var completeScript = this.CreatePowerShellScript(cmdletToSearchOU);
+        var scriptOutput = this.RunPowerShellScript(completeScript);
+        scriptOutput = scriptOutput.replace(/\s+/g, '');
+        if (scriptOutput) {
+            //If anything is returned in output that indicates the script encountered a error so, return false.
+            return false;
+        }
+        //Else if script was blank, i.e. the script executed successfully.
+        //New user created, now enable the account and return.
+        System.debug("Account created, enabling account now");
+        return this.EnableUser(username);
+    },
+    UnlockUser: function (username) {
+        //Ref:https://docs.microsoft.com/en-us/powershell/module/addsadministration/unlock-adaccount
+
+        var cmdletToSearchOU = "Unlock-ADAccount -credential $AdminCredentials -Server $ADServer -Identity '" + username + "';";
+        var completeScript = this.CreatePowerShellScript(cmdletToSearchOU);
+        var scriptOutput = this.RunPowerShellScript(completeScript);
+        scriptOutput = scriptOutput.replace(/\s+/g, '');
+        if (scriptOutput) {
+            //If anything is returned in output that indicates the script encountered a error so, return false.
+            return false;
+        }
+        //Else if script was blank, i.e. the script executed successfully.
+        return true;
+    },
+    DisableUser: function (username) {
+        //Ref: https://docs.microsoft.com/en-us/powershell/module/addsadministration/set-aduser
+        //Checks if the user exits or not, if the user exists, disable the user. Else, return false, indicating that the user does not exist.
+
+        var cmdletToSearchOU = "Set-ADUser -credential $AdminCredentials -Server $ADServer -Enabled:$false -Identity '" + username + "';";
+        var completeScript = this.CreatePowerShellScript(cmdletToSearchOU);
+        var scriptOutput = this.RunPowerShellScript(completeScript);
+        scriptOutput = scriptOutput.replace(/\s+/g, '');
+        if (scriptOutput) {
+            //If anything is returned in output that indicates the script encountered a error so, return false.
+            return false;
+        }
+        //Else if script was blank, i.e. the script executed successfully.
+        return true;
+    },
+        DeleteUser: function (username) {
+            
+            var cmdletForThisMethod = " Remove-ADUser -credential $AdminCredentials -Server $ADServer -Confirm:$False -Identity '" + username + "';";
+            var completeScript = this.CreatePowerShellScript(cmdletForThisMethod);
+            var scriptOutput = this.RunPowerShellScript(completeScript);
+            scriptOutput = scriptOutput.replace(/\s+/g, '');
+            if (scriptOutput) {
+                //If anything is returned in output that indicates the script encountered a error so, return false.
+                return false;
+            }
+            //Else if script was blank, i.e. the script executed successfully.
+            return true;
+        },
+    EnableUser: function (username) {
+        //Ref: https://docs.microsoft.com/en-us/powershell/module/addsadministration/set-aduser
+
+        System.debug("Trying to enable user: "+username);
+        var cmdletToSearchOU = "Set-ADUser -credential $AdminCredentials -Server $ADServer -Enabled:$true -Identity '" + username + "';";
+        var completeScript = this.CreatePowerShellScript(cmdletToSearchOU);
+        var scriptOutput = this.RunPowerShellScript(completeScript);
+        scriptOutput = scriptOutput.replace(/\s+/g, '');
+        if (scriptOutput) {
+            //If anything is returned in output that indicates the script encountered a error so, return false.
+            return false;
+        }
+        System.debug("User enabled successfully");
+        //Else if script was blank, i.e. the script executed successfully.
+        return true;
+    },
+    GetUsersOfAGroup: function (groupName) {
+        //Ref: https://docs.microsoft.com/en-us/powershell/module/addsadministration/get-adgroupmember?view=win10-ps
+        
+        var cmdletToSearchOU = "Get-ADGroupMember -Identity '" + groupName + "' -credential $AdminCredentials -Server $ADServer | Sort-Object Name | ConvertTo-Json;";
+        var completeScript = this.CreatePowerShellScript(cmdletToSearchOU);
+        var scriptOutput = this.RunPowerShellScript(completeScript);
+        var temp_scriptOutput = scriptOutput.replace(/\s+/g, '');
+
+        if (!temp_scriptOutput) {
+            System.debug("No Group Members found...");
+            System.log("No Group Members found in the group...");
+            //If the scriptOutput is blank, the group does not have any member - so return false;
+            return false;
+        }
+        //The output isnt blank, indicating there is at least one user, send that in JSON
+        return JSON.parse(scriptOutput);
+    },
+	GetGroupsUserIsAMemberOf: function (username) {		
+		var cmdletToSearchOU = "Get-ADPrincipalGroupMembership '" + username + "' -credential $AdminCredentials -Server $ADServer | select Name  | Sort-Object Name | ConvertTo-Json;";
+		var completeScript = this.CreatePowerShellScript(cmdletToSearchOU);
+		var scriptOutput = this.RunPowerShellScript(completeScript);
+		var temp_scriptOutput = scriptOutput.replace(/\s+/g, '');
+
+		if (!temp_scriptOutput) {
+			System.log("No Groups found where user is a member of");
+			//If the scriptOutput is blank, the group does not have any member - so return false;
+			return false;
+		}
+		//The output isnt blank, indicating there is at least one user, send that in JSON
+		return JSON.parse(scriptOutput);
+	},
+    IsUserAPartOfGroup: function (username, groupName) {
+        //This method will not check whether it is a valid user OR a valid group. That has to be done in customer use case workflow.
+        //This method will blindly check if the user is a part of group or NOT.
+
+        System.debug("Checking if User '" + username + "' is a part of group '" + groupName + "'");
+        
+        var usersOfAGroups = this.GetUsersOfAGroup(groupName);
+        
+        if(usersOfAGroups)
+        {
+            System.debug("Members fetched, iterating to check if user is a part of the group...");
+            var groupMembers = JSON.parse(scriptOutput);
+            for (var iterations in groupMembers) {
+                System.debug("Current user in check: " + groupMembers[iterations].SamAccountName);
+                if (groupMembers[iterations].SamAccountName === username) {
+                    System.debug("Found user in the group. Username from ID");
+                    System.log("User " + username + " Found in the group.");
+                    System.log("Name of User: " + groupMembers[iterations].Name);
+                    System.log("ID of User: " + groupMembers[iterations].ObjectGuid);
+                    return true;
+                }
+            }
+        }
+        //By default we return false.
+        return false;
+    },
+    RemoveUserFromAGroup: function (username, groupName) {
+        //Ref: https://docs.microsoft.com/en-us/powershell/module/addsadministration/remove-adgroupmember
+        //All validation checks have to be done in customer use-case workflow.
+        //This method will blindly try to remove a user from the group.
+        var cmdletToSearchOU = "Remove-ADGroupMember -Identity '" + groupName + "' -Members '" + username + "' -credential $AdminCredentials -Server $ADServer -Confirm:$False | ConvertTo-Json;";
+        var completeScript = this.CreatePowerShellScript(cmdletToSearchOU);
+        var scriptOutput = this.RunPowerShellScript(completeScript);
+        scriptOutput = scriptOutput.replace(/\s+/g, '');
+        
+        if (scriptOutput) {
+            //If anything is returned in output that indicates the script encountered a error so, return false.
+            return false;
+        }
+        //Else if script was blank, i.e. the script executed successfully.
+        return true;
+    },
+    AddUserToAGroup: function (username, groupName) {
+        //Ref: https://docs.microsoft.com/en-us/powershell/module/addsadministration/remove-adgroupmember
+        //All validation checks have to be done in customer use-case workflow.
+        //This method will blindly try to add a user from the group.
+        var cmdletToSearchOU = "Add-ADGroupMember -Identity '" + groupName + "' -Members '" + username + "' -credential $AdminCredentials -Server $ADServer -Confirm:$false | ConvertTo-Json;";
+        var completeScript = this.CreatePowerShellScript(cmdletToSearchOU);
+        var scriptOutput = this.RunPowerShellScript(completeScript);
+        scriptOutput = scriptOutput.replace(/\s+/g, '');
+        if (scriptOutput) {
+            //If anything is returned in output that indicates the script encountered a error so, return false.
+            return false;
+        }
+        //Else if script was blank, i.e. the script executed successfully.
+        return true;
+    },
+    ChangeUserPassword: function (username, password) {
+        //Ref: https://docs.microsoft.com/en-us/powershell/module/addsadministration/set-adaccountpassword
+        //Whether the user exists or not has to be checked in customer use-case workflow.
+        //This method will blindly try to change user's password.
+
+        var cmdletToSearchOU = "Set-ADAccountPassword -Identity '" + username + "' -Reset -NewPassword (ConvertTo-SecureString -AsPlainText '" + password + "' -Force) -credential $AdminCredentials -Server $ADServer";
+        var completeScript = this.CreatePowerShellScript(cmdletToSearchOU);
+        var scriptOutput = this.RunPowerShellScript(completeScript);
+        scriptOutput = scriptOutput.replace(/\s+/g, '');
+        if (scriptOutput) {
+            //If anything is returned in output that indicates the script encountered a error so, return false.
+            return false;
+        }
+        //Else if script was blank, i.e. the script executed successfully.
+        return true;
+    },
+    AddComputerToAGroup: function (computerName, groupName) {
+        //Ref: https://docs.microsoft.com/en-us/powershell/module/addsadministration/remove-adgroupmember
+        //All validation checks have to be done in customer use-case workflow.
+        //This method will blindly try to add a user from the group.
+        var cmdletToSearchOU = "Add-ADGroupMember -Identity '" + groupName + "' -Members '" + computerName + "$' -credential $AdminCredentials -Server $ADServer -Confirm:$false | ConvertTo-Json;";
+        var completeScript = this.CreatePowerShellScript(cmdletToSearchOU);
+        var scriptOutput = this.RunPowerShellScript(completeScript);
+        scriptOutput = scriptOutput.replace(/\s+/g, '');
+        if (scriptOutput) {
+            //If anything is returned in output that indicates the script encountered a error so, return false.
+            return false;
+        }
+        //Else if script was blank, i.e. the script executed successfully.
+        return true;
+    },
+    GetComputers: function (osType, environment, businessGroup) {
+        //Ref: https://docs.microsoft.com/en-us/powershell/module/addsadministration/get-adcomputer
+        //Fetches all users from AD.
+        System.debug("Fetching computers from AD...");
+
+        if(!this.basePath || !osType || !environment || !businessGroup)
+        {
+            System.debug("Fetching All Computers since basepath || OS Type || environment || businessGroup was missing");
+            var cmdletToSearchOU = "Get-ADComputer  -credential $AdminCredentials -Server $ADServer -Filter * | Sort-Object Name| ConvertTo-Json;";
+        }
+        else
+        {
+            System.debug("Fetching All Computers since basepath || OS Type || environment was missing");
+            
+            var cmdletToSearchOU = "Get-ADComputer -credential $AdminCredentials -Server $ADServer -Filter 'SamAccountName -like \"*" +businessGroup+ "*\"' -SearchBase 'OU=" + environment + ", OU=" + osType + ","+this.basePath+"' | Sort-Object Name | ConvertTo-Json;";
+        }
+        // Here -SearchScope is 2 because it is better to get ALL Users.
+        //var cmdletToSearchOU = "Get-ADUser -credential $AdminCredentials -Server $ADServer -Filter 'Name -like \"*\"'  | Sort-Object Name | ConvertTo-Json;";
+        var completeScript = this.CreatePowerShellScript(cmdletToSearchOU);
+        var scriptOutput = this.RunPowerShellScript(completeScript);
+        var temp_scriptOutput = scriptOutput.replace(/\s+/g, '');
+        if (temp_scriptOutput) {
+            //If script output is not blank, that means the script found at least one OU.
+            return JSON.parse(scriptOutput);
+        }
+        //Else if script was blank, return false i.e. the OU doesnt exist.
+        return false;
+    }
+};
+return ADClass;
+]]></script>
+</dunes-script-module>

@@ -1,0 +1,164 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="SNMPTrapProcess" result-type="void" api-version="6.0.0" id="4361cb00-003a-325e-a144-b5ec5b139670" version="1.0.1" allowed-operations="evf" category-name="com.vmware.indcoe.library.vropsoperation">
+  <param n="trapData" t="Array/Properties"><![CDATA[Trap Data from the SNMP Policy]]></param>
+  <param n="verticalScaleUpWfid" t="string"><![CDATA[Vertical Scale up workflow id ]]></param>
+  <param n="horizontalOutInWfid" t="string"><![CDATA[Horizontal Scale out workflow id]]></param>
+  <script encoded="false"><![CDATA[//Processing SNMP Trap to get the VM Name
+var vmName;
+var hostOId = "1.3.6.1.4.1.6876.4.50.1.2.2.0";
+for (var x = 0; x < trapData.length; x++) {
+    var prop = trapData[x];
+    if (prop.get("oid") == hostOId) {
+        vmName = prop.get("value");
+        System.debug("VM Name :"+vmName);
+        break;
+    }
+}   
+// We search for the OID in the Message to get the Alert Id
+var SNMPTrap;
+var alertId;
+var messageOID = "1.3.6.1.4.1.6876.4.50.1.2.6.0";
+for (var y = 0; y < trapData.length; y++) {
+    var prop = trapData[y];
+    if (prop.get("oid") == messageOID) {
+        SNMPTrap = prop.get("value");
+        alertSplit = SNMPTrap.split(" ");
+        alertId = alertSplit[4]
+        System.debug("Alert ID :"+alertId);
+        break;
+    }
+}
+// Our search values in the Value Field of the Message
+// When the Field contains the search string we beome the position. Otherwise be become a -1 value back.
+
+// We check if the SNMP Trap has "New Alert" in the value field. Is so, we have a new alert.
+if ( SNMPTrap.indexOf("New alert") != -1) {
+    newAlert = true
+}
+else {
+    newAlert = false
+}
+
+//Now let's get the Symptom details to check whether its of CPU or Memory
+symptomOID = "1.3.6.1.4.1.6876.4.50.1.2.15.0";
+var cpuOrMem;
+for (var y = 0; y < trapData.length; y++) {
+    var prop = trapData[y];
+    if (prop.get("oid") == symptomOID) {
+        values  = prop.get("value")
+        System.log("SymptomValue "+values)
+        cpuOrMem = values.toLowerCase();
+        
+    }
+}
+//Get the Alert Name
+var alertOID = "1.3.6.1.4.1.6876.4.50.1.2.17.0"
+var alertName;
+for (var y = 0; y < trapData.length; y++) {
+    var prop = trapData[y];
+    if (prop.get("oid") == alertOID) {
+        alertName  = prop.get("value")
+        System.log("Alert Name "+alertName);		
+    }
+}
+//Getting symptom name details from the configuration element
+//get category
+var category = Server.getConfigurationElementCategoryWithPath("Helper");
+
+//die in a fire if non-existent
+if (category == null) {
+    throw "Configuration element category  not found or empty!";
+}
+//get _all_ the elements
+var elements = category.configurationElements;
+var scaleInElementName = "scaleInAlertDefinition";
+var scaleOutElementName = "scaleOutAlertDefinition";
+var scaleUpElementName = "scaleUpAlertDefinition";
+
+var attribute = "name";
+var scaleOutAlertName;
+var scaleInAlertName;
+var scaleUpAlertName;
+
+//retrieve names
+for (var i = 0; i < elements.length; i++) {
+    if (elements[i].name == scaleOutElementName) {
+        //found required element
+        scaleOutAlertName = elements[i].getAttributeWithKey(attribute).value;
+        if (scaleOutAlertName != null) {
+            System.log("Found attributes '" + attribute +"' in '" + scaleOutElementName + "' with value '" +scaleOutAlertName);
+        
+        }
+    }else if (elements[i].name == scaleInElementName) {
+        //found required element
+        scaleInAlertName = elements[i].getAttributeWithKey(attribute).value;
+        if (scaleInAlertName != null) {
+            System.log("Found attributes '" + attribute +"' in '" + scaleInElementName + "' with value '" +scaleInAlertName);
+        
+        }
+    }else if (elements[i].name == scaleUpElementName) {
+        //found required element
+        scaleUpAlertName = elements[i].getAttributeWithKey(attribute).value;
+        if (scaleUpAlertName != null) {
+            System.log("Found attributes '" + attribute +"' in '" + scaleUpElementName + "' with value '" +scaleUpAlertName);
+        
+        }
+    }
+}
+//Kepping flag to identify whether its scale out or scale in request.
+var scaleOutFlag = false
+var scaleInFlag = false
+var scaleUpFlag = false
+var scaleUpOption;
+var scaleOption;
+
+if(alertName.indexOf(scaleOutAlertName)!=-1){
+    scaleOutFlag = true
+	scaleOption ="out"
+}
+else if(alertName.indexOf(scaleInAlertName)!=-1){
+    scaleInFlag = true;
+	scaleOption ="in"        
+}
+else if(alertName.indexOf(scaleUpAlertName)!=-1 &&  cpuOrMem.indexOf("mem")!=-1 || cpuOrMem.indexOf("MEM")!=-1){
+    scaleUpFlag = true
+    scaleUpOption = "memory"
+}else if(alertName.indexOf(scaleUpAlertName)!=-1 &&  cpuOrMem.indexOf("cpu")!=-1 ||cpuOrMem.indexOf("CPU")!=-1){
+    scaleUpFlag = true
+    scaleUpOption = "cpu"
+}
+
+//Lets create workflow parameters for scale out
+var scaleOutInParameters = new Properties();
+scaleOutInParameters.put("vmName",vmName);
+scaleOutInParameters.put("alertId",alertId);
+scaleOutInParameters.put("scaleOption",scaleOption);
+
+// Lets Create workflow parameters for scale Up
+var scaleUpParameters = new Properties();
+scaleUpParameters.put("vmName",vmName);
+scaleUpParameters.put("scaleUpOption",scaleUpOption);
+scaleUpParameters.put("alertId",alertId);
+
+// function to launch WF
+function runWF(wfId,workflowParameters) {
+    var workflowToLaunch = Server.getWorkflowWithId(wfId);
+    if (workflowToLaunch == null) {
+        throw "Workflow not found";
+    }
+    var workflowField = new Properties();
+    workflowField.put("trapData",workflowParameters);
+    System.log("Launching the workflow after recieved trap : " + wfId);
+    var wfToken = workflowToLaunch.execute(workflowField);
+}
+
+if(newAlert == true && scaleOutFlag == true || scaleInFlag == true){
+	System.debug("Triggering scale out/in")
+    runWF(horizontalOutInWfid,scaleOutInParameters);
+}else if(newAlert == true && scaleUpFlag == true){
+	System.debug("Triggering vertical")
+    runWF(verticalScaleUpWfid,scaleUpParameters);
+}
+
+]]></script>
+</dunes-script-module>

@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="findVcObjectsByMoRefId" result-type="Array/Any" api-version="6.0.0" id="d9952cae-4ca0-4889-815a-10a8d0b2a0f7" version="0.0.1" allowed-operations="vf" category-name="com.vmware.vcac.asd">
+  <description><![CDATA[Looks up through all VC intances and returns all objects with the given MoRefId.]]></description>
+  <param n="type" t="string"><![CDATA[]]></param>
+  <param n="moRefId" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var foundObjects = [];
+
+if (moRefId) {
+	var sdkConnections = VcPlugin.allSdkConnections;
+	for (var i in sdkConnections) {
+		var host = sdkConnections[i];
+		var id = System.getObjectId(host) + '/' + moRefId;
+		var object = Server.findForType(type, id);
+		if (object) {
+			foundObjects.push(object);
+		}
+	}
+}
+
+return foundObjects;]]></script>
+</dunes-script-module>

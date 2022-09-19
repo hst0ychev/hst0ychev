@@ -1,0 +1,126 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="c27e3022-9279-4786-bf60-26946702372e" version="0.0.4" api-version="6.0.0" allowed-operations="vf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Execute Workflow]]></display-name>
+  <description><![CDATA[Executes a specific workflow and returns the results]]></description>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="workflowToExecute" type="Workflow">
+      <description><![CDATA[Workflow that needs to be executed.]]></description>
+    </param>
+    <param name="operationType" type="string">
+      <description><![CDATA[Type of the workflow to execute.]]></description>
+    </param>
+    <param name="operationData" type="string">
+      <description><![CDATA[Input parameters to the workflow]]></description>
+    </param>
+    <param name="endpoint" type="Any">
+      <description><![CDATA[Endpoint information.]]></description>
+    </param>
+    <param name="priorWorkflowExecutionResults" type="Properties">
+      <description><![CDATA[Any prior workflow excution results.]]></description>
+    </param>
+  </input>
+  <output>
+    <param name="workflowResults" type="Properties">
+      <description><![CDATA[Workflow execution output.]]></description>
+    </param>
+    <param name="workflowError" type="string">
+      <description><![CDATA[Any error returned  by the workflow.]]></description>
+    </param>
+  </output>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task" interaction="io">
+    <display-name><![CDATA[Execute Workflow Get Results]]></display-name>
+    <script encoded="false"><![CDATA[workflowResults = new Properties();
+if (priorWorkflowExecutionResults != null)
+{
+    workflowResults = priorWorkflowExecutionResults;
+}
+else
+{
+    workflowResults = new Properties();
+}
+
+var inputProperties = getInputParameters(endpoint, operationType, operationData);
+
+System.log("Executing workflow '" + workflowToExecute.name + "' of the endpoint '" + endpoint.name + "'...");
+var wfToken = executeAndWait(workflowToExecute, inputProperties);
+	
+System.debug("Processing results from the execution of '" + workflowToExecute.name + "'...");
+
+if (!extractException(wfToken, endpoint.name)) 
+{
+    extractOutputs(wfToken, workflowResults);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+function getInputParameters(endpoint, operationType, operationDataString) {
+    
+	// Each top-level object in the OperationData will map to an Input in the endpoint-specific workflows
+	var inputProperties = GEFJsonHelper.parseOperationData(operationType, operationDataString);
+	inputProperties.put("EndpointIn", endpoint);
+	return inputProperties;	
+}
+
+function executeAndWait(wf, inputParameters) {
+	var wfToken = wf.execute(inputProperties);
+	System.getModule("com.vmware.library.workflow").waitForCompletion([wfToken]);
+	return wfToken;
+}
+
+// Returns true if an exception is present from the workflow run.  Otherwise, returns false
+function extractException(wfToken) {
+	var exception = wfToken.exception;
+	if (exception != null && exception != "") {
+		var message = "Endpoint operation execution failed when trying to perform the operation '" + operationType + "' for the endpoint named '" 
+			+ endpoint.name + "' (of type '" + endpoint.vendor + "'). vCO workflow '" + wfToken.name + "' failed with an exception: '" + exception + "'";
+		System.error(message);
+		workflowError = message;
+		return true;
+	}
+	return false;
+}
+
+function extractOutputs(wfToken, executedWorkflowsOutParameters) {
+	System.debug("No exception was thrown by the execution of '" + workflowToExecute.name + "'. Retrieving output parameters...");
+	
+	var outParameters = wfToken.getOutputParameters();
+	for (var key in outParameters) {
+		var value = outParameters[key];
+		executedWorkflowsOutParameters.put(key, value);
+	}
+}]]></script>
+    <in-binding>
+      <bind name="operationType" type="string" export-name="operationType"/>
+      <bind name="operationData" type="string" export-name="operationData"/>
+      <bind name="endpoint" type="Any" export-name="endpoint"/>
+      <bind name="workflowToExecute" type="Workflow" export-name="workflowToExecute"/>
+      <bind name="priorWorkflowExecutionResults" type="Properties" export-name="priorWorkflowExecutionResults"/>
+    </in-binding>
+    <out-binding>
+      <bind name="workflowResults" type="Properties" export-name="workflowResults"/>
+      <bind name="workflowError" type="string" export-name="workflowError"/>
+    </out-binding>
+    <description><![CDATA[Executes a workflow and returns results]]></description>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="workflowToExecute">
+      <desc><![CDATA[Workflow that needs to be executed.]]></desc>
+    </p-param>
+    <p-param name="operationType">
+      <desc><![CDATA[Type of the workflow to execute.]]></desc>
+    </p-param>
+    <p-param name="operationData">
+      <desc><![CDATA[Input parameters to the workflow]]></desc>
+    </p-param>
+    <p-param name="endpoint">
+      <desc><![CDATA[Endpoint information.]]></desc>
+    </p-param>
+    <p-param name="priorWorkflowExecutionResults">
+      <desc><![CDATA[Any prior workflow excution results.]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

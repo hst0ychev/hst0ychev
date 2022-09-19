@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getStoragePolicyFromPlan" result-type="void" api-version="6.0.0" id="66a11916-57c0-4ea3-a21e-e9d6162e5883" version="0.0.0" allowed-operations="evf" category-name="com.commvault.utils">
+  <description><![CDATA[Action to find storage policy name for the given storage plan id]]></description>
+  <param n="token" t="string"><![CDATA[]]></param>
+  <param n="planId" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[/*
+	Action to find storage policy name for the given storage plan id
+	
+	Inputs:
+	token - CV token for REST API
+	planId - storage plan id
+	
+	API used:
+	/v2/plan/{planId}?PropertyLevel=30
+	
+	Output:
+	storagepolicyName
+*/
+
+
+var storagePlanDetailsURL = "/v2/plan/"+planId+"?PropertyLevel=30";
+System.log(storagePlanDetailsURL);
+var response = System.getModule("com.commvault.utils").processRESTRequest(storagePlanDetailsURL,"GET",null,token, null, null);
+if(response.statusCode != 200)
+{
+	throw("Error: Failed to execute REST request to get storage plans details. Recieved status:  "+ response.contentAsString);
+}
+//System.log(response.contentAsString);
+var document = XMLManager.fromString(response.contentAsString);
+
+var list = document.getElementsByTagName("storage");
+var total = list.length;
+
+var storageChild = list.item(0).getChildNodes();
+
+var totalchildNodes = storageChild.length;
+for(var i=0; i< totalchildNodes; i++){
+	var name = storageChild.item(i).nodeName;
+	if(name == "storagePolicy"){
+	
+		var storagePolicyName = storageChild.item(i).getAttribute("storagePolicyName");
+		var storagePolicyId = storageChild.item(i).getAttribute("storagePolicyId");
+		return storagePolicyName + ";" + storagePolicyId;
+	}
+}]]></script>
+</dunes-script-module>

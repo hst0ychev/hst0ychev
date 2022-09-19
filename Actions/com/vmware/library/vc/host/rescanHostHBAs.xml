@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="rescanHostHBAs" result-type="void" api-version="6.0.0" id="c67e6213-cbfd-4e40-8775-0911d08c5f5b" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.host">
+  <param n="host" t="VC:HostSystem"><![CDATA[The host to rescan]]></param>
+  <script encoded="false"><![CDATA[System.log("rescanning HBAs on host '" + host.name + "'... please wait...");
+try {
+	var myStorageSystem = VcPlugin.convertToVimManagedObject(host,host.configManager.storageSystem);
+	task = myStorageSystem.rescanAllHba();
+	task = myStorageSystem.rescanVmfs();
+	task = myStorageSystem.refreshStorageSystem();
+}
+catch (ex) {
+	System.error("Error when rescanning VMFS. Reason: " + ex);
+	throw("Error when rescanning VMFS. Reason: " + ex);
+}]]></script>
+</dunes-script-module>

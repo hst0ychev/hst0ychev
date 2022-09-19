@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<endpoint nativeId="2f549bd0-7b02-477a-a774-602b9d71255b" pluginVersion="6.5.0">
+    <properties>
+        <property type="string" name="pbmUrl">https://pcpctchvcen01.cloud.cris.in:443/pbm</property>
+        <property type="string" name="smsUrl">https://pcpctchvcen01.cloud.cris.in:443/sms/sdk</property>
+        <property type="password" name="administratorPassword">vcoencrypted:{riv}xUHwJ45NZpZ0JQ+EU8hBRuI0a96U3LU5k0RzO2t9EFw=</property>
+        <property type="password" name="pattern">vcoencrypted:{riv}Wyw/yRo2mpb1t9p9w8SndLCfq87l07bFgHxjaz7nb44=</property>
+        <property type="bool" name="sharedLoginMode">true</property>
+        <property type="string" name="administratorUsername">administrator@vsphere.local</property>
+        <property type="bool" name="enabled">true</property>
+        <property type="string" name="url">https://pcpctchvcen01.cloud.cris.in:443/sdk</property>
+    </properties>
+</endpoint>

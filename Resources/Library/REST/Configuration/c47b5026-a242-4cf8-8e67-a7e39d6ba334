@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<endpoint nativeId="98b8018a-8247-4636-ae71-eed3a526d0a6" pluginVersion="2.3.2">
+    <properties>
+        <property type="string" name="schema">&lt;com.vmware.o11n.plugin.rest.schema.SchemaRespository&gt;
+  &lt;sources/&gt;
+&lt;/com.vmware.o11n.plugin.rest.schema.SchemaRespository&gt;</property>
+        <property type="string" name="proxyAuthenticationType">NONE</property>
+        <property type="integer" name="operationTimeout">60</property>
+        <property type="string" name="proxySessionMode">Shared Session</property>
+        <property type="bool" name="useProxy">false</property>
+        <property type="string" name="url">https://portal.cloud.cris.in</property>
+        <property type="bool" name="automaticUrlRedirection">false</property>
+        <property type="password" name="password">vcoencrypted:{riv}hiLs6KChj8S0UPOZPrBnIeW8dK2oT2MTu+UV8kbWKFE=</property>
+        <property type="string" name="operations">&lt;list/&gt;</property>
+        <property type="bool" name="hostVerification">false</property>
+        <property type="string" name="name">vRA Host</property>
+        <property type="string" name="authenticationType">NONE</property>
+        <property type="string" name="sessionMode">Shared Session</property>
+        <property type="integer" name="connectionTimeout">30</property>
+        <property type="string" name="username">vraadmin@vsphere.local</property>
+    </properties>
+</endpoint>

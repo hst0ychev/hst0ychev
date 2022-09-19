@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="createEntitlement" result-type="vCACCAFE:Entitlement" api-version="6.0.0" id="c7746a0e-76f2-4b1e-a9f5-369e76aa0954" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.catalog.entitlement">
+  <param n="host" t="vCACCAFE:VCACHost"><![CDATA[vRA CAFE host]]></param>
+  <param n="name" t="string"><![CDATA[Name of the entitlement]]></param>
+  <param n="description" t="string"><![CDATA[Description of the entitlement]]></param>
+  <param n="businessGroup" t="vCACCAFE:BusinessGroup"><![CDATA[Business group to assign to the entitlement]]></param>
+  <param n="expirationDate" t="Date"><![CDATA[Expiration date]]></param>
+  <param n="isActive" t="boolean"><![CDATA[Activate the entitlement]]></param>
+  <script encoded="false"><![CDATA[System.getModule("com.vmware.library.vcaccafe.util").checkHosts(host, businessGroup, "host", "business group");
+var client = host.createCatalogClient().getCatalogEntitlementService();
+
+var entitlement = new vCACCAFEEntitlement() ;
+entitlement.setName(name);
+entitlement.setDescription(description);
+
+var organization = new vCACCAFECatalogOrganizationReference() ;
+organization.setTenantRef(businessGroup.getTenantId());
+organization.setSubtenantRef(businessGroup.getId());
+if (expirationDate != null) {
+	entitlement.setExpiryDate(expirationDate);
+}
+if (isActive) {
+	entitlement.setStatus(vCACCAFEEntitlementStatus.ACTIVE);
+} else {
+	entitlement.setStatus(vCACCAFEEntitlementStatus.DRAFT);
+}
+
+entitlement.setOrganization(organization);
+System.log("Creating entitlement: " + entitlement.getName() + "...");
+var uri = client.create(entitlement);
+System.log("Entitlement: " + entitlement.getName() + " created.");
+var uriString = uri.toString();
+var uriParts = uriString.split("/");
+var entitlementId = uriParts[uriParts.length - 1];
+return vCACCAFEEntitiesFinder.getEntitlement(host, entitlementId);]]></script>
+</dunes-script-module>

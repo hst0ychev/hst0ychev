@@ -1,0 +1,91 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="removeVMFromSubclient" result-type="void" api-version="6.0.0" id="352b79dd-64d3-48d4-acdd-56aa646f672d" version="0.0.0" allowed-operations="evf" category-name="com.commvault.utils">
+  <description><![CDATA[Action to remove VM from the given subclient]]></description>
+  <param n="vmName" t="string"><![CDATA[Virtual Machine Name]]></param>
+  <param n="vmGUID" t="string"><![CDATA[VM GUID]]></param>
+  <param n="subclientId" t="string"><![CDATA[subclient id]]></param>
+  <param n="token" t="string"><![CDATA[CV token for REST API]]></param>
+  <param n="host" t="REST:RESTHost"><![CDATA[CommServe Host]]></param>
+  <script encoded="false"><![CDATA[/*
+	Inputs:
+	vmName - Virtual Machine Name
+	vmGUID - Virtual Machine GUID
+	subclientId - subclient Id to remove content 
+	token- CV token for REST API
+	
+	
+	API used:
+	/Subclient/subclientId  POST
+	
+	Output:
+	response
+	
+	
+*/
+
+var removeVMFromSubclientURL = "/Subclient/" + subclientId;
+
+var responseCurrent = System.getModule("com.commvault.utils").processRESTRequest(removeVMFromSubclientURL,"GET",null,token,null,host);
+if(responseCurrent.statusCode != 200)
+{
+	throw("Error: Failed to execute REST request to remove VM from Subclient. Recieved status:  "+ responseCurrent.contentAsString);
+}
+var document = XMLManager.fromString(responseCurrent.contentAsString);
+		
+var list = document.getElementsByTagName("vmContent");
+
+var totalvmContent =  list.length;
+
+var childrenList = new Properties();
+for( var i =0; i<totalvmContent; i++){
+	var vmContent = list.item(i);
+	var children = vmContent.getElementsByTagName("children");
+	for(var j=0; j<children.length ; j++){
+		var vmname = children.item(j).getAttribute("displayName");
+		var vmguid = children.item(j).getAttribute("name");
+    	
+		childrenList.put(vmguid,vmname);
+	}
+}
+
+var removeVMXML = new XML('<App_UpdateSubClientPropertiesRequest/>');
+var subClientProperties = new XML('<subClientProperties/>');
+subClientProperties.@vmContentOperationType="1";
+subClientProperties.@vmDiskFilterOperationType="1";
+subClientProperties.@vmFilterOperationType="1";
+
+var vmContent = new XML('<vmContent/>');
+
+for each(vmguid in childrenList.keys){
+	var vmname = childrenList.get(vmguid);
+	if(vmname != vmName && vmguid != vmGUID){
+	
+		var children = new XML('<children/>');
+	    children.@allOrAnyChildren="1";
+	    children.@displayName=vmname;
+	    children.@equalsOrNotEquals="1";
+	    children.@name=vmguid;
+	    children.@path="";
+	    children.@type="9";
+	    vmContent.appendChild(children);
+	}
+}
+
+subClientProperties.appendChild(vmContent);
+
+var vmFilter = new XML('<vmFilter/>');
+subClientProperties.appendChild(vmFilter);
+
+var vmDiskFilter = new XML('<vmDiskFilter/>');
+subClientProperties.appendChild(vmDiskFilter);
+
+removeVMXML.appendChild(subClientProperties);
+
+var response = System.getModule("com.commvault.utils").processRESTRequest(removeVMFromSubclientURL,"POST",removeVMXML,token, null, host);
+if(response.statusCode != 200)
+{
+	throw("Error: Failed to execute REST request to remove VM from Subclient. Recieved status:  "+ response.contentAsString);
+}
+
+return response;]]></script>
+</dunes-script-module>

@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getPropertyDefinitionForVCACHost" result-type="Array/vCACCAFE:PropertyDefinition" api-version="6.0.0" id="102df847-43a8-4af3-8f5b-39d807ead031" version="0.0.0" allowed-operations="evf" category-name="com.commvault.utils">
+  <param n="VRAHost" t="vCACCAFE:VCACHost"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var propertyDefinitions = Server.findAllForType("vCACCAFE:PropertyDefinition" , null);
+var propertyDefinitionArray = [];
+for each(var pd in propertyDefinitions)
+{   
+    var tenantId = String(pd.vcoId).split("/")[0];
+	if(tenantId == VRAHost.id)
+	{
+		propertyDefinitionArray.push(pd);
+	}
+}
+
+return propertyDefinitionArray;]]></script>
+</dunes-script-module>

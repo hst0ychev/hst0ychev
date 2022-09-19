@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="cancelWorkItem" result-type="void" api-version="6.0.0" id="8ff77d11-3f6f-44c0-8144-f50304f79cb5" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.request">
+  <param n="item" t="vCACCAFE:WorkItem"><![CDATA[Work item]]></param>
+  <script encoded="false"><![CDATA[System.log("Cancelling work item '" + item.getWorkItemNumber() + "'...");
+vCACCAFERequestsHelper.cancelWorkItem(item);
+System.log("Work item '" + item.getWorkItemNumber() + "' cancelled.");]]></script>
+</dunes-script-module>

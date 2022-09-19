@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="70eb8ab5-223e-44df-8583-3bf060923e42" version="1.0.0">
+  <display-name><![CDATA[SnapShotAccessPermissions]]></display-name>
+  <atts>
+    <att name="Read_And_Write" type="boolean" read-only="false">
+      <value encoded="n"><![CDATA[__NULL__]]></value>
+    </att>
+    <att name="Read_Only" type="boolean" read-only="false">
+      <value encoded="n"><![CDATA[true]]></value>
+    </att>
+  </atts>
+</config-element>

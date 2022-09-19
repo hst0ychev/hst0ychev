@@ -1,0 +1,226 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item3" object-name="workflow:name=generic" id="353047b7-cb32-4810-a79a-96b553983012" version="1.1.10" api-version="6.0.0" allowed-operations="vf" restartMode="0" resumeFromFailedMode="0">
+  <display-name><![CDATA[Update a vCenter Server instance]]></display-name>
+  <description><![CDATA[Updates the connection to a vCenter Server instance. For example, if the IP address of your vCenter Server system changes, you will need to update the connection to the vCenter Server so that you can still manage your vSphere inventory with Orchestrator.]]></description>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="instanceToUpdate" type="string">
+      <description><![CDATA[vCenter Server instance to update]]></description>
+    </param>
+    <param name="enabled" type="boolean">
+      <description><![CDATA[Set whether this host will be available for orchestration]]></description>
+    </param>
+    <param name="hostName" type="string">
+      <description><![CDATA[Update the IP or host name of the vCenter Server instance]]></description>
+    </param>
+    <param name="port" type="number">
+      <description><![CDATA[Update the port of the vCenter Server instance]]></description>
+    </param>
+    <param name="path" type="string">
+      <description><![CDATA[Update the location of the SDK]]></description>
+    </param>
+    <param name="sessionPerUser" type="boolean">
+      <description><![CDATA[Update the method to manage user access to the vCenter Server system. If this is set to false, Orchestrator will create only one connection to vCenter Server (the method is share a unique session).]]></description>
+    </param>
+    <param name="userName" type="string">
+      <description><![CDATA[Update the user name of the user that Orchestrator will use to connect to the vCenter Server instance]]></description>
+    </param>
+    <param name="password" type="SecureString">
+      <description><![CDATA[Update the password]]></description>
+    </param>
+    <param name="domain" type="string">
+      <description><![CDATA[Update domain name]]></description>
+    </param>
+    <param name="ignoreServerCertificateWarnings" type="boolean">
+      <description><![CDATA[If set to true,the vCenter Server instance certificate is accepted silently and the certificate is added to the trusted store]]></description>
+    </param>
+    <param name="httpPort" type="number">
+      <description><![CDATA[Deprecated. Not used]]></description>
+    </param>
+    <param name="pbmUrl" type="string"/>
+    <param name="smsUrl" type="string"/>
+  </input>
+  <attrib name="hostAndPort" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="errorCode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="serviceUrls" type="Array/string" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="certificateImportException" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="944.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Update vCenter Server instance]]></display-name>
+    <script encoded="false"><![CDATA[VcPlugin.updateVCenterServerInstance(hostToUpdate, enabled, hostName, port, path, sessionPerUser, userName, password, domain, pbmUrl, smsUrl);]]></script>
+    <in-binding>
+      <bind name="hostToUpdate" type="string" export-name="instanceToUpdate"/>
+      <bind name="enabled" type="boolean" export-name="enabled"/>
+      <bind name="hostName" type="string" export-name="hostName"/>
+      <bind name="port" type="number" export-name="port"/>
+      <bind name="path" type="string" export-name="path"/>
+      <bind name="sessionPerUser" type="boolean" export-name="sessionPerUser"/>
+      <bind name="userName" type="string" export-name="userName"/>
+      <bind name="password" type="SecureString" export-name="password"/>
+      <bind name="domain" type="string" export-name="domain"/>
+      <bind name="pbmUrl" type="string" export-name="pbmUrl"/>
+      <bind name="smsUrl" type="string" export-name="smsUrl"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="764.5"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item6" type="task">
+    <display-name><![CDATA[combine host and port and generate vSphere services list]]></display-name>
+    <script encoded="false"><![CDATA[var servicesUrlsArray = [];
+var u = new URL();
+
+hostAndPort = u.escapeHost(hostName) + ":" + port;
+
+servicesUrlsArray.push(hostAndPort);
+
+if (pbmUrl && pbmUrl.trim()) {
+    servicesUrlsArray.push(pbmUrl.trim());
+}
+
+if (smsUrl && smsUrl.trim()) {
+    servicesUrlsArray.push(smsUrl.trim());
+}
+
+serviceUrls = servicesUrlsArray;]]></script>
+    <in-binding>
+      <bind name="hostName" type="string" export-name="hostName"/>
+      <bind name="port" type="number" export-name="port"/>
+      <bind name="pbmUrl" type="string" export-name="pbmUrl"/>
+      <bind name="smsUrl" type="string" export-name="smsUrl"/>
+    </in-binding>
+    <out-binding>
+      <bind name="hostAndPort" type="string" export-name="hostAndPort"/>
+      <bind name="serviceUrls" type="Array/string" export-name="serviceUrls"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item1" catch-name="item4" throw-bind-name="errorCode" type="task">
+    <display-name><![CDATA[Validate]]></display-name>
+    <script encoded="false"><![CDATA[if (enabled) {
+    VcPlugin.validateConnection(hostName , port , path , userName , password);
+
+    if (pbmUrl && pbmUrl.trim()) {
+       VcPlugin.validatePbmServiceAvailability(pbmUrl);
+    }
+ 
+    if (smsUrl && smsUrl.trim()) {
+        VcPlugin.validateSmsServiceAvailability(smsUrl);
+    }
+}
+]]></script>
+    <in-binding>
+      <bind name="hostName" type="string" export-name="hostName"/>
+      <bind name="port" type="number" export-name="port"/>
+      <bind name="path" type="string" export-name="path"/>
+      <bind name="userName" type="string" export-name="userName"/>
+      <bind name="password" type="SecureString" export-name="password"/>
+      <bind name="enabled" type="boolean" export-name="enabled"/>
+      <bind name="pbmUrl" type="string" export-name="pbmUrl"/>
+      <bind name="smsUrl" type="string" export-name="smsUrl"/>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Validate connection information.]]></description>
+    <position y="55.40909090909091" x="584.5"/>
+  </workflow-item>
+  <workflow-item name="item4" business-status="Connection validation failed" throw-bind-name="errorCode" type="end" end-mode="1">
+    <position y="109.04545454545453" x="624.5"/>
+  </workflow-item>
+  <workflow-item name="item6" out-name="item2" catch-name="item5" throw-bind-name="certificateImportException" type="foreach">
+    <display-name><![CDATA[Foreach (Import a certificate from URL)]]></display-name>
+    <in-binding>
+      <bind name="url" type="Array/string" export-name="*serviceUrls">
+        <description><![CDATA[URL or just host:port for non-HTTPS SSL services:]]></description>
+      </bind>
+      <bind name="ignoreWarnings" type="boolean" export-name="ignoreServerCertificateWarnings">
+        <description><![CDATA[If set to true, the certificate is accepted silently and the certificate is added to the trusted store]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <reference type="Workflow" id="c5a874a2-e8e7-480d-bdde-d1a80b8a3011"/>
+    <description><![CDATA[Imports an SSL certificate into the server trust store.]]></description>
+    <position y="55.40909090909091" x="404.5"/>
+  </workflow-item>
+  <workflow-item name="item5" business-status="Certificate Importing exception" throw-bind-name="certificateImportException" type="end" end-mode="1">
+    <position y="109.04545454545453" x="445.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Select a vCenter Server instance]]></title>
+      <p-param name="httpPort">
+        <desc><![CDATA[Deprecated. Not used]]></desc>
+        <p-qual kind="ognl" name="notVisible" type="boolean"><![CDATA[true]]></p-qual>
+      </p-param>
+      <p-param name="instanceToUpdate">
+        <desc><![CDATA[vCenter Server instance to update]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        <p-qual kind="ognl" name="linkedEnumeration" type="Array/string"><![CDATA[GetAction("com.vmware.library.vc.configuration","getAllRegisteredInstances").call()]]></p-qual>
+      </p-param>
+    </p-step>
+    <p-step>
+      <title><![CDATA[Update the connection properties]]></title>
+      <p-param name="enabled">
+        <desc><![CDATA[Will you orchestrate this host?]]></desc>
+        <p-qual kind="ognl" name="dataBinding" type="boolean"><![CDATA[GetAction("com.vmware.library.vc.configuration","getRegisteredInstanceProperties").call(#instanceToUpdate).enabled]]></p-qual>
+      </p-param>
+      <p-param name="hostName">
+        <desc><![CDATA[Update the IP or host name of the vCenter Server instance]]></desc>
+        <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[GetAction("com.vmware.library.vc.configuration","getRegisteredInstanceProperties").call(#instanceToUpdate).host]]></p-qual>
+      </p-param>
+      <p-param name="port">
+        <desc><![CDATA[Update the port of the vCenter Server instance]]></desc>
+        <p-qual kind="ognl" name="dataBinding" type="number"><![CDATA[GetAction("com.vmware.library.vc.configuration","getRegisteredInstanceProperties").call(#instanceToUpdate).port]]></p-qual>
+      </p-param>
+      <p-param name="path">
+        <desc><![CDATA[Update the location of the SDK]]></desc>
+        <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[GetAction("com.vmware.library.vc.configuration","getRegisteredInstanceProperties").call(#instanceToUpdate).path]]></p-qual>
+      </p-param>
+      <p-param name="ignoreServerCertificateWarnings">
+        <desc><![CDATA[Do you want to ignore certificate warnings? If you select Yes, the vCenter Server instance certificate is accepted silently and the certificate is added to the trusted store.]]></desc>
+      </p-param>
+    </p-step>
+    <p-step>
+      <title><![CDATA[Update the log-in properties]]></title>
+      <p-param name="sessionPerUser">
+        <desc><![CDATA[Update the method to manage user access to the vCenter Server system. If you select No, Orchestrator will create only one connection to vCenter Server (the method is share a unique session).]]></desc>
+        <p-qual kind="ognl" name="dataBinding" type="boolean"><![CDATA[GetAction("com.vmware.library.vc.configuration","getRegisteredInstanceProperties").call(#instanceToUpdate).sessionPerUser]]></p-qual>
+      </p-param>
+      <p-param name="userName">
+        <desc><![CDATA[Update the user name of the user that Orchestrator will use to connect to the vCenter Server instance]]></desc>
+        <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[GetAction("com.vmware.library.vc.configuration","getRegisteredInstanceProperties").call(#instanceToUpdate).user]]></p-qual>
+      </p-param>
+      <p-param name="password">
+        <desc><![CDATA[Update password of the user]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      </p-param>
+      <p-param name="domain">
+        <desc><![CDATA[Update domain name]]></desc>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#sessionPerUser]]></p-qual>
+        <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[GetAction("com.vmware.library.vc.configuration","getRegisteredInstanceProperties").call(#instanceToUpdate).domain]]></p-qual>
+      </p-param>
+    </p-step>
+    <p-step>
+      <title><![CDATA[Update Additional endpoints]]></title>
+      <desc><![CDATA[Update additional vSphere endpoints such as PBM and SMS endpoint URLs.
+In order to enable the vSphere storage management capabilities both SMS and PBM endpoint URLs must be specified.
+Endpoint need to be specified as URLs - https://hostname:port/service/path]]></desc>
+      <p-param name="pbmUrl">
+        <desc><![CDATA[URL of PBM endpoint (the default vSphere 6.5 PBM endpoint URL is https://vSphereHostName:443/pbm)]]></desc>
+        <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[GetAction("com.vmware.library.vc.configuration","getRegisteredInstanceProperties").call(#instanceToUpdate).pbmUrl]]></p-qual>
+      </p-param>
+      <p-param name="smsUrl">
+        <desc><![CDATA[URL of SMS endpoint (the default vSphere 6.5 SMS endpoint URL is https://vSphereHostName:443/sms/sdk)]]></desc>
+        <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[GetAction("com.vmware.library.vc.configuration","getRegisteredInstanceProperties").call(#instanceToUpdate).smsUrl]]></p-qual>
+      </p-param>
+    </p-step>
+  </presentation>
+</workflow>

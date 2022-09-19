@@ -1,0 +1,186 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item3" object-name="Workflow:name=generic" id="03ebbd30-fcba-4f55-ae76-13306ea2d1b1" version="1.0.0" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Update an Orchestrator server]]></display-name>
+  <description><![CDATA[Updates an Orchestrator server from the plug-in's inventory.]]></description>
+  <ref-types><![CDATA[(VCO:RemoteServer)]]></ref-types>
+  <position y="127.72727272727272" x="205.0"/>
+  <input>
+    <param name="server" type="VCO:RemoteServer">
+      <description><![CDATA[The Orchestrator server to update]]></description>
+    </param>
+    <param name="host" type="string">
+      <description><![CDATA[Orchestrator server's host address]]></description>
+    </param>
+    <param name="port" type="number">
+      <description><![CDATA[Orchestrator server's port]]></description>
+    </param>
+    <param name="user" type="string">
+      <description><![CDATA[The username for the Orchestrator server]]></description>
+    </param>
+    <param name="pass" type="SecureString">
+      <description><![CDATA[The password for the Orchestrator server]]></description>
+    </param>
+    <param name="isShared" type="boolean">
+      <description><![CDATA[The way to connect to the remote server.]]></description>
+    </param>
+    <param name="connectionTimeout" type="number">
+      <description><![CDATA[Connection timeout (seconds)]]></description>
+    </param>
+    <param name="socketTimeout" type="number">
+      <description><![CDATA[Socket timeout (seconds)]]></description>
+    </param>
+    <param name="ignoreWarnings" type="boolean">
+      <description><![CDATA[If set to true, the certificate is accepted silently and the certificate is added to the trusted store]]></description>
+    </param>
+    <param name="retryTimeout" type="number">
+      <description><![CDATA[Retry timeout (minutes). Specifies the time proxy workflows wait to receive a notification from the remote Orchestrator server in the event of no connectivity.]]></description>
+    </param>
+  </input>
+  <output>
+    <param name="result" type="VCO:RemoteServer"/>
+  </output>
+  <attrib name="url" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Remote Orchestrator server URL]]></description>
+  </attrib>
+  <workflow-item name="item0" out-name="item1" type="task">
+    <display-name><![CDATA[Scriptable task]]></display-name>
+    <script encoded="false"><![CDATA[var config = new VCOServerConfiguration();
+
+config.host = host;
+config.port = port;
+config.user = user;
+config.password = pass;
+config.shared = isShared;
+config.connectionTimeout = connectionTimeout;
+config.socketTimeout = socketTimeout;
+config.retryTimeout = retryTimeout;
+
+result = VCOServerManager.updateOrchestrator(server, config);]]></script>
+    <in-binding>
+      <bind name="server" type="VCO:RemoteServer" export-name="server"/>
+      <bind name="host" type="string" export-name="host"/>
+      <bind name="port" type="number" export-name="port"/>
+      <bind name="user" type="string" export-name="user"/>
+      <bind name="pass" type="SecureString" export-name="pass"/>
+      <bind name="isShared" type="boolean" export-name="isShared"/>
+      <bind name="connectionTimeout" type="number" export-name="connectionTimeout"/>
+      <bind name="socketTimeout" type="number" export-name="socketTimeout"/>
+      <bind name="retryTimeout" type="number" export-name="retryTimeout">
+        <description><![CDATA[Retry timeout (minutes). Specifies the time proxy workflows will wait to receive a notification from the remote vCO in the event of no connectivity.]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="result" type="VCO:RemoteServer" export-name="result"/>
+    </out-binding>
+    <position y="137.22727272727272" x="584.5"/>
+  </workflow-item>
+  <workflow-item name="item1" type="end" end-mode="0">
+    <position y="127.22727272727272" x="764.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item0" type="link" linked-workflow-id="c5a874a2-e8e7-480d-bdde-d1a80b8a3011">
+    <display-name><![CDATA[Import a certificate from URL]]></display-name>
+    <in-binding>
+      <bind name="url" type="string" export-name="url">
+        <description><![CDATA[URL or just host:port for non-HTTPS SSL services:]]></description>
+      </bind>
+      <bind name="ignoreWarnings" type="boolean" export-name="ignoreWarnings">
+        <description><![CDATA[If set to true, the certificate is accepted silently and the certificate is added to the trusted store]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Imports an SSL certificate into the server trust store.]]></description>
+    <position y="137.22727272727272" x="444.5"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item2" type="task">
+    <display-name><![CDATA[Create remote Orchestrator server URL]]></display-name>
+    <script encoded="false"><![CDATA[url = host + ":" + port;]]></script>
+    <in-binding>
+      <bind name="host" type="string" export-name="host">
+        <description><![CDATA[Orchestrator server's host address]]></description>
+      </bind>
+      <bind name="port" type="number" export-name="port">
+        <description><![CDATA[Orchestrator server's port]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="url" type="string" export-name="url">
+        <description><![CDATA[Remote Orchestrator server URL]]></description>
+      </bind>
+    </out-binding>
+    <position y="137.22727272727272" x="304.5"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Update an Orchestrator server]]></title>
+      <p-group>
+        <title><![CDATA[Server]]></title>
+        <desc><![CDATA[Select the remote Orchestrator server to update.]]></desc>
+        <p-param name="server">
+          <desc><![CDATA[Orchestrator server]]></desc>
+          <p-qual kind="static" name="contextualParameter" type="void"><![CDATA[]]></p-qual>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Server details]]></title>
+        <desc><![CDATA[Specify server's new details. Provide the host address and the port of the remote Orchestrator server.]]></desc>
+        <p-param name="host">
+          <desc><![CDATA[Host]]></desc>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[#server.host]]></p-qual>
+        </p-param>
+        <p-param name="port">
+          <desc><![CDATA[Port]]></desc>
+          <p-qual kind="ognl" name="dataBinding" type="number"><![CDATA[#server.port]]></p-qual>
+          <p-qual kind="static" name="maxNumberValue" type="Number"><![CDATA[65535.0]]></p-qual>
+          <p-qual kind="static" name="minNumberValue" type="Number"><![CDATA[1.0]]></p-qual>
+          <p-qual kind="static" name="numberFormat" type="String"><![CDATA[#####]]></p-qual>
+        </p-param>
+        <p-param name="ignoreWarnings">
+          <desc><![CDATA[If set to true, the certificate is accepted silently and added to the trusted store.]]></desc>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Connection settings]]></title>
+        <desc><![CDATA[Specify new values for the connection settings.]]></desc>
+        <p-param name="connectionTimeout">
+          <desc><![CDATA[Connection timeout (seconds)]]></desc>
+          <p-qual kind="ognl" name="dataBinding" type="number"><![CDATA[#server.connectionTimeout]]></p-qual>
+          <p-qual kind="static" name="minNumberValue" type="Number"><![CDATA[0.0]]></p-qual>
+        </p-param>
+        <p-param name="socketTimeout">
+          <desc><![CDATA[Socket timeout (seconds)]]></desc>
+          <p-qual kind="ognl" name="dataBinding" type="number"><![CDATA[#server.socketTimeout]]></p-qual>
+          <p-qual kind="static" name="minNumberValue" type="Number"><![CDATA[0.0]]></p-qual>
+        </p-param>
+        <p-param name="retryTimeout">
+          <desc><![CDATA[Retry timeout (minutes). Specifies the time proxy workflows wait to receive a notification from the remote Orchestrator server in the event of no connectivity.]]></desc>
+          <p-qual kind="static" name="minNumberValue" type="Number"><![CDATA[1.0]]></p-qual>
+          <p-qual kind="static" name="defaultValue" type="number"><![CDATA[60.0]]></p-qual>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Connection mode]]></title>
+        <desc><![CDATA[Select whether the connection is shared or not. Provide credentials if the connection is shared. If the connection is not shared, the current user's credentials are used.
+Note: When configuring user per session with SSO authentication both the local and remote Orchestrator servers must use the same SSO server for authentication.]]></desc>
+        <p-param name="isShared">
+          <desc><![CDATA[Shared?]]></desc>
+          <p-qual kind="ognl" name="dataBinding" type="boolean"><![CDATA[GetAction("com.vmware.library.vco.configuration","isSharedConnection").call( #server )]]></p-qual>
+        </p-param>
+        <p-param name="user">
+          <desc><![CDATA[Username:]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#isShared]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[GetAction("com.vmware.library.vco.configuration","getRemoteServerUser").call( #server )]]></p-qual>
+          <p-qual kind="ognl" name="mandatory" type="boolean"><![CDATA[#isShared]]></p-qual>
+        </p-param>
+        <p-param name="pass">
+          <desc><![CDATA[Password:]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#isShared]]></p-qual>
+          <p-qual kind="ognl" name="dataBinding" type="SecureString"><![CDATA[GetAction("com.vmware.library.vco.configuration","getRemoteServerPass").call( #server )]]></p-qual>
+          <p-qual kind="ognl" name="mandatory" type="boolean"><![CDATA[#isShared]]></p-qual>
+        </p-param>
+      </p-group>
+    </p-step>
+  </presentation>
+</workflow>

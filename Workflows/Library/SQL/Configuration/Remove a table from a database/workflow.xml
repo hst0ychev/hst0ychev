@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="Workflow:name=generic" id="9C8080808080808080808080808080809F80808001304924533492bf8ebee26f5" version="1.0.0" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Remove a table from a database]]></display-name>
+  <description><![CDATA[Removes a database table from a database in the plug-in's inventory.]]></description>
+  <ref-types><![CDATA[(SQL:Table)]]></ref-types>
+  <position y="10.0" x="180.0"/>
+  <input>
+    <param name="table" type="SQL:Table">
+      <description><![CDATA[A table to be removed]]></description>
+    </param>
+  </input>
+  <output>
+    <param name="result" type="SQL:Table">
+      <description><![CDATA[The removed table instance]]></description>
+    </param>
+  </output>
+  <attrib name="errorCode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[An error message or code]]></description>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="172.5" x="185.0"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" catch-name="item2" throw-bind-name="errorCode" type="task">
+    <display-name><![CDATA[Scriptable task]]></display-name>
+    <script encoded="false"><![CDATA[result = SQLDatabaseManager.removeTableFromDatabase(table);
+System.log("Removed table " + result.name + " from database " + result.database.name);
+
+]]></script>
+    <in-binding>
+      <bind name="table" type="SQL:Table" export-name="table"/>
+    </in-binding>
+    <out-binding>
+      <bind name="result" type="SQL:Table" export-name="result"/>
+    </out-binding>
+    <position y="102.5" x="145.0"/>
+  </workflow-item>
+  <workflow-item name="item2" throw-bind-name="errorCode" type="end" end-mode="1">
+    <position y="92.5" x="365.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Remove database tables]]></title>
+      <p-group>
+        <title><![CDATA[Select a table to remove]]></title>
+        <desc><![CDATA[Table to be removed]]></desc>
+        <p-param name="table">
+          <desc><![CDATA[Table]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual name="contextualParameter" type="void"><![CDATA[]]></p-qual>
+        </p-param>
+      </p-group>
+    </p-step>
+  </presentation>
+</workflow>

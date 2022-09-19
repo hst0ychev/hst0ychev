@@ -1,0 +1,125 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item5" object-name="workflow:name=generic" id="ba682ffe-f7b9-4b56-8a13-5fe4236c1cd8" version="0.0.0" api-version="6.0.0" allowed-operations="vf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[CustomCreateRecord]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="inputs" type="Properties"/>
+    <param name="ouDN" type="string"/>
+    <param name="machineName" type="string"/>
+    <param name="domainName" type="string"/>
+    <param name="host" type="AD:AdHost"/>
+  </input>
+  <output>
+    <param name="customProperties" type="Properties"/>
+  </output>
+  <attrib name="computerDN" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="organizationType" type="string" read-only="false">
+    <value encoded="n"><![CDATA[OrganizationalUnit]]></value>
+  </attrib>
+  <attrib name="ou" type="AD:OrganizationalUnit" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <attrib name="newName" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="944.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item2" type="task">
+    <display-name><![CDATA[Set DN]]></display-name>
+    <script encoded="false"><![CDATA[newName = machineName + "CUST"; //change the original machine name by adding CUST suffix
+computerDN = "CN=" + newName + "," + ouDN;]]></script>
+    <in-binding>
+      <bind name="ouDN" type="string" export-name="ouDN"/>
+      <bind name="machineName" type="string" export-name="machineName"/>
+    </in-binding>
+    <out-binding>
+      <bind name="computerDN" type="string" export-name="computerDN"/>
+      <bind name="newName" type="string" export-name="newName"/>
+    </out-binding>
+    <position y="55.40909090909091" x="344.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item3" type="task" script-module="com.vmware.vra.ad/getObjectByDN">
+    <display-name><![CDATA[getObjectByDN]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.vra.ad").getObjectByDN(host,objectDN,objectType) ;]]></script>
+    <in-binding>
+      <bind name="host" type="AD:AdHost" export-name="host"/>
+      <bind name="objectDN" type="string" export-name="ouDN"/>
+      <bind name="objectType" type="string" export-name="organizationType"/>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="Any" export-name="ou"/>
+    </out-binding>
+    <position y="55.40909090909091" x="484.5"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item4" type="task" script-module="com.vmware.library.microsoft.activeDirectory/createComputer">
+    <display-name><![CDATA[createComputer]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+System.getModule("com.vmware.library.microsoft.activeDirectory").createComputer(parent,computerName,domainName) ;]]></script>
+    <in-binding>
+      <bind name="parent" type="Any" export-name="ou">
+        <description><![CDATA[Parent for the new computer]]></description>
+      </bind>
+      <bind name="computerName" type="string" export-name="newName">
+        <description><![CDATA[Name for the new computer]]></description>
+      </bind>
+      <bind name="domainName" type="string" export-name="domainName">
+        <description><![CDATA[Domain name if provided]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Create a computer in the Active Directory]]></description>
+    <position y="55.40909090909091" x="624.5"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item0" type="task">
+    <display-name><![CDATA[Set Outputs]]></display-name>
+    <script encoded="false"><![CDATA[customProperties = new Properties();
+
+// store the computer DN on the machine as custom property so that we can find it during disposal
+// any property starting with 'ext.policy.activedirectory.' will be passed to the disposal workflow
+customProperties.put("ext.policy.activedirectory.custComputerDN", computerDN);
+
+// and the host id
+customProperties.put("ext.policy.activedirectory.custADHostId", host.hostConfiguration.id);]]></script>
+    <in-binding>
+      <bind name="computerDN" type="string" export-name="computerDN"/>
+      <bind name="host" type="AD:AdHost" export-name="host"/>
+    </in-binding>
+    <out-binding>
+      <bind name="customProperties" type="Properties" export-name="customProperties"/>
+    </out-binding>
+    <position y="55.40909090909091" x="764.5"/>
+  </workflow-item>
+  <workflow-item name="item5" out-name="item1" type="task">
+    <display-name><![CDATA[Dump Inputs]]></display-name>
+    <script encoded="false"><![CDATA[var props = inputs.machine.properties || new Properties();
+for (prop in props) {
+	System.log(prop + " = " + props.get(prop));
+}]]></script>
+    <in-binding>
+      <bind name="inputs" type="Properties" export-name="inputs"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="ouDN">
+      <desc><![CDATA[ouDN]]></desc>
+    </p-param>
+    <p-param name="machineName">
+      <desc><![CDATA[machineName]]></desc>
+    </p-param>
+    <p-param name="domainName">
+      <desc><![CDATA[domainName]]></desc>
+    </p-param>
+    <p-param name="host">
+      <desc><![CDATA[host]]></desc>
+    </p-param>
+    <p-param name="inputs">
+      <desc><![CDATA[inputs]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

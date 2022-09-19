@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="GetPropertyGroupForVRAHost" result-type="Array/vCACCAFE:PropertyGroup" api-version="6.0.0" id="5b02997b-a501-46b4-84ce-1350a17f64d0" version="0.0.0" allowed-operations="evf" category-name="com.commvault.utils">
+  <param n="VRAHost" t="vCACCAFE:VCACHost"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var propertyGroups = Server.findAllForType("vCACCAFE:PropertyGroup" , null);
+var propertyGroupArray = [];
+for each(var pg in propertyGroups)
+{   
+    var tenantId = String(pg.vcoId).split("/")[0];
+	if(tenantId == VRAHost.id)
+	{
+		propertyGroupArray.push(pg);
+	}
+}
+
+return propertyGroupArray;]]></script>
+</dunes-script-module>

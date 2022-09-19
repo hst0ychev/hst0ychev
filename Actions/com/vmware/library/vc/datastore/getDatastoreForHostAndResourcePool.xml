@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getDatastoreForHostAndResourcePool" result-type="Array/VC:Datastore" api-version="6.0.0" id="9ce7eba5-03cb-4440-ab3e-17e664529a51" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.datastore">
+  <param n="host" t="VC:HostSystem"><![CDATA[]]></param>
+  <param n="pool" t="VC:ResourcePool"><![CDATA[]]></param>
+  <param n="vm" t="VC:VirtualMachine"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var result = new Array();
+var keys = new Properties();
+if (host == null && pool == null) {
+	result = System.getModule("com.vmware.library.vc.datastore").getAllDatastoreOnVimHost(vm.sdkConnection);
+}
+else {
+	if (host != null) {
+		addDatastore(host.datastore);
+	}
+	if (pool != null) {
+		computeResource = pool.parent;
+		while ( ! ((computeResource instanceof VcClusterComputeResource) || (computeResource instanceof VcComputeResource))) {
+			computeResource = computeResource.parent;
+		}
+		addDatastore(computeResource.datastore);
+	}
+}
+return result;
+
+
+
+function addDatastore(datastores) {
+	for (var i in datastores) {
+		if (keys.get(datastores[i].sdkId) == null) {
+			keys.put(datastores[i].sdkId, datastores[i].sdkId);
+			result.push(datastores[i]);
+		}
+	}
+}]]></script>
+</dunes-script-module>

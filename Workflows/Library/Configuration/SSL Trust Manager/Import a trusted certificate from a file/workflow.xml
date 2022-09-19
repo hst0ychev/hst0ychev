@@ -1,0 +1,76 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="93a7bb21-0255-4750-9293-2437abe9d2e5" version="2.0.0" api-version="6.0.0" allowed-operations="vfe" icon-id="93015d83-b1ba-42d0-9b3c-bb3ebb862beb" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Import a trusted certificate from a file]]></display-name>
+  <description><![CDATA[Imports an SSL certificate into the server trust store.]]></description>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="cer" type="MimeAttachment">
+      <description><![CDATA[Input file (cer format)]]></description>
+    </param>
+  </input>
+  <attrib name="error" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Err]]></description>
+  </attrib>
+  <workflow-item name="item1" out-name="item2" type="task">
+    <display-name><![CDATA[Validate]]></display-name>
+    <script encoded="false"><![CDATA[auth = Config.getKeystores();
+ld = auth.getImportFromCerAction();
+model = ld.getModel();
+model.content = cer.content;
+error = ld.validate();]]></script>
+    <in-binding>
+      <bind name="cer" type="MimeAttachment" export-name="cer"/>
+    </in-binding>
+    <out-binding>
+      <bind name="error" type="string" export-name="error"/>
+    </out-binding>
+    <position y="55.40909090909091" x="204.5"/>
+  </workflow-item>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="824.5"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item4" type="custom-condition" alt-out-name="item3">
+    <display-name><![CDATA[Custom decision]]></display-name>
+    <script encoded="false"><![CDATA[return !error;]]></script>
+    <in-binding>
+      <bind name="error" type="string" export-name="error"/>
+    </in-binding>
+    <position y="45.40909090909091" x="364.5"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item5" type="task">
+    <display-name><![CDATA[Scriptable task]]></display-name>
+    <script encoded="false"><![CDATA[auth = Config.getKeystores();
+ld = auth.getImportFromCerAction();
+model = ld.getModel();
+model.content = cer.content;
+error = ld.execute();]]></script>
+    <in-binding>
+      <bind name="cer" type="MimeAttachment" export-name="cer"/>
+    </in-binding>
+    <out-binding>
+      <bind name="error" type="string" export-name="error"/>
+    </out-binding>
+    <position y="55.40909090909091" x="504.5"/>
+  </workflow-item>
+  <workflow-item name="item3" business-status="Error" throw-bind-name="error" type="end" end-mode="1">
+    <position y="99.95454545454544" x="405.0"/>
+  </workflow-item>
+  <workflow-item name="item5" out-name="item0" type="custom-condition" alt-out-name="item6">
+    <display-name><![CDATA[Custom decision]]></display-name>
+    <script encoded="false"><![CDATA[return !error;]]></script>
+    <in-binding>
+      <bind name="error" type="string" export-name="error"/>
+    </in-binding>
+    <position y="45.40909090909091" x="644.5"/>
+  </workflow-item>
+  <workflow-item name="item6" business-status="ExecutionError" throw-bind-name="error" type="end" end-mode="1">
+    <position y="99.95454545454544" x="684.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="cer">
+      <desc><![CDATA[Input file (der encoded binary)]]></desc>
+      <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+    </p-param>
+  </presentation>
+</workflow>

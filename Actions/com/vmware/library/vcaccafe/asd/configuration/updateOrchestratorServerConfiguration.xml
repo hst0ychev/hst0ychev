@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="updateOrchestratorServerConfiguration" result-type="void" api-version="6.0.0" id="17f45f28-3d7e-42ea-823e-c5dcf36019ea" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.asd.configuration">
+  <param n="host" t="vCACCAFE:VCACHost"><![CDATA[vRA CAFE host]]></param>
+  <param n="useDefault" t="boolean"><![CDATA[Use the default orchestrator server]]></param>
+  <param n="name" t="string"><![CDATA[Orchestrator server name]]></param>
+  <param n="description" t="string"><![CDATA[Orchestrator server description]]></param>
+  <param n="orchestratorHost" t="string"><![CDATA[Orchestrator host]]></param>
+  <param n="port" t="string"><![CDATA[Orchestrator port]]></param>
+  <param n="useSSO" t="boolean"><![CDATA[Single Sign-On authentication]]></param>
+  <param n="username" t="string"><![CDATA[User name]]></param>
+  <param n="password" t="SecureString"><![CDATA[Password]]></param>
+  <script encoded="false"><![CDATA[var configurationService = host.createAdvancedDesignerClient().getAdvancedDesignerConfigurationService();
+var configurations = configurationService.getConfigurations(host.tenant);
+var configuration = new vCACCAFEConfiguration();
+
+if(configurations[0].getId() != null) {
+	configuration.setId(configurations[0].getId());
+}
+
+if(useDefault == true) {
+	System.log("Updating XaaS server configuration...");
+	configurationService.useDefaultConfiguration(host.tenant);
+	System.log("XaaS server configuration updated.");
+} else {
+	configuration.setTenantId(host.tenant);
+	configuration.setSystemDefault(false);
+	configuration.setName(name);
+	configuration.setDescription(description);
+	configuration.setHost(orchestratorHost);
+	configuration.setPort(port);
+
+	if(useSSO == false) {
+		configuration.setSsoMode(false);
+		configuration.setUsername(username);
+		configuration.setPassword(password);
+	} else {
+		configuration.setSsoMode(true);
+	}
+	System.log("Updating XaaS server configuration...");
+	configurationService.createOrUpdateConfiguration(host.tenant, configuration);
+	System.log("XaaS server configuration updated.");
+}]]></script>
+</dunes-script-module>

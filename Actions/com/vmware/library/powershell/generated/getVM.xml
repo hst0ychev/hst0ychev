@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getVM" result-type="PowerShell:PowerShellRemotePSObject" api-version="6.0.0" id="F5858080808080808080808080808080B98080800126658240472157fdafc0fce" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.powershell.generated">
+  <description><![CDATA[Auto generated.]]></description>
+  <param n="host" t="PowerShell:PowerShellHost"><![CDATA[]]></param>
+  <param n="sessionId" t="string"><![CDATA[]]></param>
+  <param n="psName" t="Array/string"><![CDATA[]]></param>
+  <param n="psDatastore" t="PowerShell:PowerShellRemotePSObject"><![CDATA[]]></param>
+  <param n="psLocation" t="PowerShell:PowerShellRemotePSObject"><![CDATA[]]></param>
+  <param n="psId" t="Array/string"><![CDATA[]]></param>
+  <param n="psNoRecursion" t="boolean"><![CDATA[]]></param>
+  <param n="psServer" t="PowerShell:PowerShellRemotePSObject"><![CDATA[]]></param>
+  <param n="psVerbose" t="boolean"><![CDATA[]]></param>
+  <param n="psDebug" t="boolean"><![CDATA[]]></param>
+  <param n="psErrorAction" t="PowerShell:PowerShellRemotePSObject"><![CDATA[]]></param>
+  <param n="psErrorVariable" t="string"><![CDATA[]]></param>
+  <param n="psOutVariable" t="string"><![CDATA[]]></param>
+  <param n="psOutBuffer" t="number"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[ var oSession = host.getSession(sessionId);
+ var cmd = oSession.addCommandFromString('Get-VM');
+ if (psName)
+   cmd.addParameter('Name', psName)
+ if (psDatastore)
+   cmd.addParameter('Datastore', psDatastore)
+ if (psLocation)
+   cmd.addParameter('Location', psLocation)
+ if (psId)
+   cmd.addParameter('Id', psId)
+ if (psNoRecursion && psNoRecursion==true)
+    cmd.addParameter('NoRecursion', '')
+ if (psServer)
+   cmd.addParameter('Server', psServer)
+ if (psVerbose && psVerbose==true)
+    cmd.addParameter('Verbose', '')
+ if (psDebug && psDebug==true)
+    cmd.addParameter('Debug', '')
+ if (psErrorAction)
+   cmd.addParameter('ErrorAction', psErrorAction)
+ if (psErrorVariable)
+   cmd.addParameter('ErrorVariable', psErrorVariable)
+ if (psOutVariable)
+   cmd.addParameter('OutVariable', psOutVariable)
+ if (psOutBuffer)
+   cmd.addParameter('OutBuffer', psOutBuffer)
+var res; if ( host.inPipeline(sessionId) == false ){ 
+  res = System.getModule("com.vmware.library.powershell").invokeCommand(host,sessionId) ;
+}
+return res;
+]]></script>
+</dunes-script-module>

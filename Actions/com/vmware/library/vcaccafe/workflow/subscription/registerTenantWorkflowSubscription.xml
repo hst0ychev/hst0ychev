@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="registerTenantWorkflowSubscription" result-type="vCACCAFE:WorkflowSubscription" api-version="6.0.0" id="ca42d4ea-d813-4243-8dfa-70ecd7282b7c" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.workflow.subscription">
+  <param n="host" t="vCACCAFE:VCACHost"><![CDATA[vRA host]]></param>
+  <param n="name" t="string"><![CDATA[Name]]></param>
+  <param n="description" t="string"><![CDATA[Description]]></param>
+  <param n="eventTopic" t="vCACCAFE:EventTopic"><![CDATA[Event topic]]></param>
+  <param n="wf" t="Workflow"><![CDATA[Workflow]]></param>
+  <param n="status" t="string"><![CDATA[Status]]></param>
+  <param n="blocking" t="boolean"><![CDATA[Blocking]]></param>
+  <param n="priority" t="number"><![CDATA[Priority]]></param>
+  <param n="timeout" t="number"><![CDATA[Timeout in minutes]]></param>
+  <param n="version" t="string"><![CDATA[Version]]></param>
+  <param n="criteria" t="string"><![CDATA[Criteria as json string]]></param>
+  <script encoded="false"><![CDATA[var service = host.createEventClient().getEventTenantWorkflowSubscriptionService();
+
+var workflowSubscription = System.getModule("com.vmware.library.vcaccafe.workflow.subscription")
+							.createWorkflowSubscription(name, description, eventTopic.getId(), wf.id, 
+								status, blocking, eventTopic.isReplyable(), priority, timeout, criteria, version) ;
+System.log("Creating workflow subscription...");
+var createdSubscription = service.registerTenantSubscription(host.tenant, workflowSubscription);
+System.log("Workflow subscription " + workflowSubscription.getName() + " created.");
+return createdSubscription;]]></script>
+</dunes-script-module>

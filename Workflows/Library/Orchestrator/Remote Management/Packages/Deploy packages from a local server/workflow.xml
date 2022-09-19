@@ -1,0 +1,105 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="Workflow:name=generic" id="C78080808080808080808080808080808680808001297796784030ce882292c2a" version="1.1.4" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Deploy packages from a local server]]></display-name>
+  <description><![CDATA[Deploys packages from a local Orchestrator server to remote Orchestrator servers.]]></description>
+  <position y="10.0" x="180.0"/>
+  <input>
+    <param name="packages" type="Array/Package">
+      <description><![CDATA[Package to deploy]]></description>
+    </param>
+    <param name="servers" type="Array/VCO:RemoteServer">
+      <description><![CDATA[Target servers]]></description>
+    </param>
+    <param name="override" type="boolean">
+      <description><![CDATA[Overwrite ]]></description>
+    </param>
+  </input>
+  <output>
+    <param name="errors" type="Array/string"/>
+  </output>
+  <attrib name="pkgIdx" type="number" read-only="false">
+    <value encoded="n"><![CDATA[0]]></value>
+    <description><![CDATA[Currently processed package index]]></description>
+  </attrib>
+  <attrib name="currentPackage" type="Package" read-only="false">
+    <description><![CDATA[Currently processed package]]></description>
+  </attrib>
+  <workflow-item name="item1" type="end" end-mode="0">
+    <position y="70.0" x="420.0"/>
+  </workflow-item>
+  <workflow-item name="item0" out-name="item3" type="custom-condition" alt-out-name="item1">
+    <display-name><![CDATA[Decision]]></display-name>
+    <script encoded="false"><![CDATA[return pkgIdx < packages.length]]></script>
+    <in-binding>
+      <bind name="packages" type="Array/Package" export-name="packages"/>
+      <bind name="pkgIdx" type="number" export-name="pkgIdx"/>
+    </in-binding>
+    <position y="70.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item2" type="task">
+    <display-name><![CDATA[set current package]]></display-name>
+    <script encoded="false"><![CDATA[currentPackage = packages[pkgIdx]
+]]></script>
+    <in-binding>
+      <bind name="packages" type="Array/Package" export-name="packages"/>
+      <bind name="pkgIdx" type="number" export-name="pkgIdx"/>
+    </in-binding>
+    <out-binding>
+      <bind name="currentPackage" type="Package" export-name="currentPackage"/>
+    </out-binding>
+    <position y="140.0" x="60.0"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item0" type="task">
+    <display-name><![CDATA[Increase counter]]></display-name>
+    <script encoded="false"><![CDATA[pkgIdx++]]></script>
+    <in-binding>
+      <bind name="pkgIdx" type="number" export-name="pkgIdx"/>
+    </in-binding>
+    <out-binding>
+      <bind name="pkgIdx" type="number" export-name="pkgIdx"/>
+    </out-binding>
+    <position y="140.0" x="220.0"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item4" type="link" linked-workflow-id="AB8080808080808080808080808080808680808001297796784030ce882292c2a">
+    <display-name><![CDATA[Deploy package from a local server]]></display-name>
+    <in-binding>
+      <bind name="override" type="boolean" export-name="override">
+        <description><![CDATA[Overwrite ]]></description>
+      </bind>
+      <bind name="pkg" type="Package" export-name="currentPackage">
+        <description><![CDATA[Package to deploy]]></description>
+      </bind>
+      <bind name="servers" type="Array/VCO:RemoteServer" export-name="servers">
+        <description><![CDATA[Target servers]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="errors" type="Array/string" export-name="errors"/>
+    </out-binding>
+    <description><![CDATA[Deploys packages from a local Orchestrator server to remote Orchestrator servers.]]></description>
+    <position y="200.0" x="140.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Deploy packages from a local server]]></title>
+      <p-group>
+        <title><![CDATA[Packages]]></title>
+        <desc><![CDATA[Select a package to deploy and the servers to deploy the package to. 
+Select whether the content of the package on the remote server is replaced, discarding version of the packaged elements.]]></desc>
+        <p-param name="packages">
+          <desc><![CDATA[Packages]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+        <p-param name="servers">
+          <desc><![CDATA[Remote vCO servers]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual kind="ognl" name="ognlValidator" type="String"><![CDATA[#servers!=null && #servers.length>0]]></p-qual>
+        </p-param>
+        <p-param name="override">
+          <desc><![CDATA[Overwrite]]></desc>
+          <p-qual kind="static" name="defaultValue" type="boolean"><![CDATA[__NULL__]]></p-qual>
+        </p-param>
+      </p-group>
+    </p-step>
+  </presentation>
+</workflow>

@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getHostNamePrefixEntityByName" result-type="vCAC:Entity" api-version="6.0.0" id="ab4ff936-7ef5-444b-b55d-18de50d9b1f6" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcac">
+  <param n="vcacHost" t="vCAC:VCACHost"><![CDATA[vCAC Host to search]]></param>
+  <param n="prefixName" t="string"><![CDATA[HostName Prefix]]></param>
+  <script encoded="false"><![CDATA[if (vcacHost == null) return null;
+var model = "ManagementModelEntities.svc";
+var entitySetName = "HostNamePrefixes";
+
+var prefixProperty = new Properties();
+prefixProperty.put("MachinePrefix",prefixName);
+
+var entities = vCACEntityManager.readModelEntitiesByCustomFilter(vcacHost.id, model, entitySetName, prefixProperty, null);
+if (entities != null){
+	return entities[0];
+}else{
+	System.warn("No HostName Prefix found with name: "+prefixName);
+	return null;
+}]]></script>
+</dunes-script-module>

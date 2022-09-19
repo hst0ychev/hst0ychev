@@ -1,0 +1,52 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getSubclientProperties" result-type="void" api-version="6.0.0" id="963239af-071e-4859-8d3a-406daa4ffb76" version="0.0.0" allowed-operations="evf" category-name="com.commvault.utils">
+  <description><![CDATA[Subclient properties - Storage policy attached with a subclient]]></description>
+  <param n="token" t="string"><![CDATA[CV token for REST API]]></param>
+  <param n="subclientID" t="string"><![CDATA[subclient Id]]></param>
+  <script encoded="false"><![CDATA[/*
+	Inputs
+	token       	 string  CV token for REST API authentication
+	subclientID 	 string  subclient id
+	
+	API used
+	GET    /Subclient/subclientID
+	
+	Output
+	Gives the current storage policy id attached with the subclient
+	
+*/
+
+var SubclientPropertiesURL = "/Subclient/" + subclientID;
+var response = System.getModule("com.commvault.utils").processRESTRequest(SubclientPropertiesURL,"GET",null,token,null, null);
+if(response.statusCode != 200)
+{
+	throw("Error: Failed to execute REST request to get subclient properties. Recieved status:  "+ response.contentAsString);
+}
+
+var document = XMLManager.fromString(response.contentAsString);
+var list = document.getElementsByTagName("subClientProperties");
+
+var planId = "";
+
+var subClientPropertiesEntity = list.item(0);
+var propertyChildNodes = subClientPropertiesEntity.childNodes;
+
+for(var k = 0; k<propertyChildNodes.length ; k++){
+		
+		if(propertyChildNodes.item(k).nodeName == "commonProperties"){
+		
+			var commonPropsChildNodes = propertyChildNodes.item(k).childNodes;
+			for(var j = 0; j<commonPropsChildNodes.length ; j++){
+			
+				if(commonPropsChildNodes.item(j).nodeName == "planEntity"){
+					var planEntityNode = commonPropsChildNodes.item(j).childNodes;
+					planId = planEntityNode.getAttribute("planId");
+					return planId;
+				}
+			}
+				
+				
+		}
+}
+return planId;]]></script>
+</dunes-script-module>

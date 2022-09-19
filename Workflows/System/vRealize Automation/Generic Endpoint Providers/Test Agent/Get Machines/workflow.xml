@@ -1,0 +1,81 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item10" object-name="workflow:name=generic" id="147a2b70-83fc-4cb1-9da3-41ad358d1de0" version="0.1.1" api-version="6.0.0" allowed-operations="vf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Get Machines]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="EndpointIn" type="Any"/>
+    <param name="ComputeResourceIn" type="Any"/>
+  </input>
+  <output>
+    <param name="MachinesOut" type="Array/Any"/>
+  </output>
+  <workflow-item name="item4" type="end" end-mode="0">
+    <position y="45.40909090909091" x="484.5"/>
+  </workflow-item>
+  <workflow-item name="item10" out-name="item4" type="task">
+    <display-name><![CDATA[Assign Output]]></display-name>
+    <script encoded="false"><![CDATA[System.log("Getting machines for " + EndpointIn.name);
+System.log("EndpointIn: " + EndpointIn.toSource());
+System.log("ComputeResourceIn: " + ComputeResourceIn.toSource());
+
+MachinesOut = [];
+
+for(i = 0; i < 10; i ++)
+{
+	var dummyMachine = GEFMachine.build(ComputeResourceIn.uniqueId + "-00" + i);
+	var name = ComputeResourceIn.name + "-vm-00" + i;
+	dummyMachine.machineName = name;
+	dummyMachine.archiveDays = 1;
+	dummyMachine.blueprintType = 0;
+	dummyMachine.computeResource = ComputeResourceIn;
+
+	dummyMachine.cpuCount = 1;
+	dummyMachine.memoryBytes = 2147483648;
+
+	dummyMachine.externalReferenceId = 123456;
+	dummyMachine.guestOperatingSystem = "Windows 10";
+	dummyMachine.guestOperatingSystemFamily = "Win";
+	dummyMachine.isComponent = false;
+	dummyMachine.isTemplate = false;
+	dummyMachine.ownerUserName = "Elvis\Bigfoot";
+	dummyMachine.state = "ON";
+	
+	dummyMachine.connectAddress = "http://www.vmware.com"
+	
+	dummyMachine.totalStorageBytes = 2;// 2147483648;
+	var disk = GEFMachineStorage.build("disk123");
+	disk.deviceId = "0:0";
+	disk.index = 0;
+	disk.isFixed = false;
+	disk.name = "default";
+	disk.sizeBytes = 2147483648;
+	disk.storageName = "DefaultStorage";
+	disk.uniqueId = name + "Disk0";
+	
+	dummyMachine.addStorage(disk);
+	
+	var network = GEFMachineNetwork.build("network123");
+	network.networkName = "DefaultNetwork";
+	network.index = 0;
+	
+	dummyMachine.addNetwork(network);
+	MachinesOut.push(dummyMachine);
+}]]></script>
+    <in-binding>
+      <bind name="EndpointIn" type="Any" export-name="EndpointIn"/>
+      <bind name="ComputeResourceIn" type="Any" export-name="ComputeResourceIn"/>
+    </in-binding>
+    <out-binding>
+      <bind name="MachinesOut" type="Array/Any" export-name="MachinesOut"/>
+    </out-binding>
+    <position y="55.40909090909091" x="304.5"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="EndpointIn">
+      <desc><![CDATA[endpoint]]></desc>
+    </p-param>
+    <p-param name="ComputeResourceIn">
+      <desc><![CDATA[ComputeResourseIn]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

@@ -1,0 +1,130 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getSubclientsForVMClient" result-type="Array/string" api-version="6.0.0" id="8a15226c-899a-4c71-bb0c-34df48917896" version="0.0.0" allowed-operations="evf" category-name="com.commvault.utils">
+  <description><![CDATA[Action to get the subclients for the VM client.]]></description>
+  <param n="vCACVm" t="VC:VirtualMachine"><![CDATA[Virtual Machine]]></param>
+  <script encoded="false"><![CDATA[/*
+	Inputs:
+	vCACVm -  VC : Virtual machine
+	
+	Type:
+	API for UI input
+	
+	API used:
+	Subclient?clientId={clientId}
+	
+	Output:
+	Array/string subclient names
+*/
+
+var vCenterName =  vCACVm.vimHost.id;
+var uuId = vCACVm.config.instanceUuid;
+var vcClientName = vCenterName;
+var subclientNamesList = [];
+
+var restHost = System.getModule("com.commvault.utils").getHost();
+if(restHost == null)
+{
+    throw("Error: couldn't find the REST host, please add REST host on vRO with Commvault webservice URL. example: http://server1.company.com:81/SearchSvc/CVWebService.svc/");
+}
+
+//Prepare cvLogin
+var token = System.getModule("com.commvault.utils").getToken(restHost);
+if(token == -1)
+{
+    throw("Error: Failed to generate token. please check simpana's WebServer log for login request");
+}
+
+//Get Client ID
+var vcClientID = System.getModule("com.commvault.utils").getClientId(token,vcClientName);
+if (vcClientID == -1)
+{
+	throw("client Id not found, cannot continue.");
+}
+
+var subclientURL = "Subclient?clientId=" + vcClientID;
+System.log("executing REST request to get the subclients for the client of the VM " + subclientURL );
+var response = System.getModule("com.commvault.utils").processRESTRequest(subclientURL,"GET",null,token,null,null);
+if(response.statusCode != 200)
+{
+	throw("Error: Failed to execute REST request to get Failover group. Recieved status:  "+ response.contentAsString);
+}
+
+var objArray = Server.findAllForType("vCAC:VirtualMachine", "VMUniqueID eq '" + uuId + "'");
+if (objArray.length == 0)
+{
+	throw ("Error: couldn't find vCAC:VirtualMachine matching VC:VirtualMachine "+ vCACVM.name);
+}
+var vmEntity =  objArray[0].getEntity();
+
+//Get Blueprint name for the selected VM
+var bpName = vmEntity.getProperty("BlueprintName");
+if (bpName != null)
+{
+	System.log("Expected BluePrint Name :"+bpName);
+}
+else
+{
+	throw ("Error: couldn't find Blueprint name for the VM selected " + vCACVm.name);
+}
+
+var backupSetName = "";
+var bps = Server.findAllForType("VCACCAFE:CompositeBlueprint");
+if (bps.length > 0)
+{
+	for(var i = 0; i< bps.length; i++){
+		if(bps[i].name == bpName)
+		{
+			//System.log("Found Tentant name from Blueprint used :" + bps[i].tenantId);
+			backupSetName = bps[i].tenantId;
+			break;
+		}
+	}
+}
+else
+{
+	throw ("Error: Blueprint list is empty");
+}
+if (backupSetName == "")
+{
+	throw("Error: BackupSet name couldn't be resolved, tenant id null");
+}
+var backupSetId = "";
+var Ids = System.getModule("com.commvault.utils").getBackupSet(token, vcClientID, backupSetName) //This will get BackupSetId and instanceId
+if ( Ids != -1)
+{
+    //BackupSet exists, also check for Subclient
+    aID  = Ids.split(",")
+	instanceID = aID[1];
+	backupSetId = aID[0];
+		
+}
+var document = XMLManager.fromString(response.contentAsString);
+var list = document.getElementsByTagName("subClientProperties");
+var total = list.length;
+
+var subclientProp = new Properties();
+
+for(var i = 0; i < total ; i++)
+{	
+	
+	var subClientEntityList = list.item(i).getElementsByTagName("subClientEntity");
+	
+	var subClientEntity = subClientEntityList.item(0);
+	
+	if(subClientEntity.getAttribute("clientId") == vcClientID && subClientEntity.getAttribute("backupsetId") == backupSetId ){
+		var id = subClientEntity.getAttribute("subclientId");
+		var name = subClientEntity.getAttribute("subclientName");
+		if(name != "default"){
+			subclientProp.put(id,name);
+			subclientNamesList.push(name);
+		}
+	}
+
+	
+}
+//System.log("subclient for client returned list " + subclientNamesList);
+return subclientNamesList;
+
+
+]]></script>
+</dunes-script-module>

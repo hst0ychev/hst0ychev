@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="convertToPsObj" result-type="Array/PowerShell:PowerShellRemotePSObject" api-version="6.0.0" id="818280808080808080808080808080806780808001270557368849c62c352aa82" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.powershell.converter">
+  <param n="host" t="PowerShell:PowerShellHost"><![CDATA[The host from which to get the PowerCLI objects]]></param>
+  <param n="psSession" t="string"><![CDATA[Unique identifier of the remote PowerShell session to use.]]></param>
+  <param n="converterDefinitionsCSV" t="ResourceElement"><![CDATA[Where to look for converter]]></param>
+  <param n="obj" t="Any"><![CDATA[The object for which to search for converter object]]></param>
+  <script encoded="false"><![CDATA[var definitions =  System.getModule("com.vmware.library.powershell.converter").getConverterDefinitions(converterDefinitionsCSV);
+var converter = System.getModule("com.vmware.library.powershell.converter").getConverter(definitions, obj);
+
+//Find PowerShellRemotePSObject by running appropriate PowerCli Get-<Type> cmdlet
+var powerCliGetters = converter.convert();
+var result = new Array();
+for each(powerCliGetter in powerCliGetters){
+	System.debug("powerCliGetter->" + powerCliGetter);
+	result.push(System.getModule("com.vmware.library.powershell").invokeScript(host, powerCliGetter, psSession));
+}
+return result;]]></script>
+</dunes-script-module>

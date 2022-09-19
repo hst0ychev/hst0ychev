@@ -1,0 +1,121 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getSubclientsForRegisteredVCenterPlugin" result-type="Array/string" api-version="6.0.0" id="ca1a4cfc-1dc6-494d-a8d8-a9ad9da2c554" version="0.0.0" allowed-operations="evf" category-name="com.commvault.utils">
+  <description><![CDATA[Provides a list of subclients associated with a virtualization client named as FQDN of the registered VCenter]]></description>
+  <script encoded="false"><![CDATA[/*
+	this action queries the subclients associated with a virtualization client named as FQDN of the registered VCenter
+
+	Currently it considers the first vcenter plugin added in vrealize
+	
+	Inputs:
+	None
+	
+	Type:
+	API for UI input
+	
+	API used:
+	Subclient?clientId={clientId}
+	
+	Output:
+	Array/string subclient names
+*/
+var registeredVcenterInstance = System.getModule("com.vmware.library.vc.configuration").getAllRegisteredInstances()
+
+var str = JSON.stringify(registeredVcenterInstance[0]);
+var listVar = str.split("/");
+var vCenterName = listVar[2].split(":")[0];
+System.log( "Using vcenter name as " + vCenterName);
+
+var vcClientName = vCenterName;
+var subclientNamesList = [];
+
+var restHost = System.getModule("com.commvault.utils").getHost();
+if(restHost == null)
+{
+    throw("Error: couldn't find the REST host, please add REST host on vRO with Commvault webservice URL. example: http://server1.company.com:81/SearchSvc/CVWebService.svc/");
+}
+
+//Prepare cvLogin
+var token = System.getModule("com.commvault.utils").getTokenDataProtection(restHost);
+if(token == -1)
+{
+    throw("Error: Failed to generate token. please check simpana's WebServer log for login request");
+}
+
+//Get Client ID
+var vcClientID = System.getModule("com.commvault.utils").getClientId(token,vcClientName);
+if (vcClientID == -1)
+{
+	throw("client Id not found, cannot continue.");
+}
+
+System.log(vcClientID);
+
+var subclientURL = "Subclient?clientId=" + vcClientID;
+System.log("executing REST request to get the subclients for the clientId: " + subclientURL );
+
+var response = System.getModule("com.commvault.utils").processRESTRequest(subclientURL,"GET",null,token,null,null);
+if(response.statusCode != 200)
+{
+	throw("Error: Failed to execute REST request to get Failover group. Recieved status:  "+ response.contentAsString);
+}
+
+
+//Tenant info
+
+var tenantName = System.getContext().getParameter("__asd_tenantRef");
+var list = [];
+list.push(tenantName);
+System.log("tenant name is " +  tenantName);
+if (tenantName == "")
+{
+	throw("Error: BackupSet name couldn't be resolved, tenant id null");
+}
+
+//backupset Id calculation for the registered tenant coming from the runtime and the client named as vcenter
+var backupSetId = "";
+var Ids = System.getModule("com.commvault.utils").getBackupSet(token, vcClientID, tenantName) //This will get BackupSetId and instanceId
+if ( Ids != -1)
+{
+    aID  = Ids.split(",")
+	instanceID = aID[1];
+	backupSetId = aID[0];
+	//System.log("BackupSetId exists, backupsetId and Instance Id found: "+ Ids)	
+}
+
+var document = XMLManager.fromString(response.contentAsString);
+var list = document.getElementsByTagName("subClientProperties");
+var total = list.length;
+
+var subclientProp = new Properties();
+
+for(var i = 0; i < total ; i++)
+{	
+	
+	var subClientEntityList = list.item(i).getElementsByTagName("subClientEntity");
+	
+	var subClientEntity = subClientEntityList.item(0);
+	
+	if((subClientEntity.getAttribute("clientId") == vcClientID )&& (subClientEntity.getAttribute("backupsetId") == backupSetId )){
+		var id = subClientEntity.getAttribute("subclientId");
+		var name = subClientEntity.getAttribute("subclientName");
+		if(name != "default"){
+			subclientProp.put(id,name);
+			subclientNamesList.push(name);
+		}
+	}
+
+	
+}
+
+//Message to create new subclient in case there is no previous subclient added.
+if(subclientNamesList.length == 0){
+
+	subclientNamesList.push("No subclient found. Please enter a name to create new subclient.");
+
+}
+
+return subclientNamesList;
+
+
+]]></script>
+</dunes-script-module>

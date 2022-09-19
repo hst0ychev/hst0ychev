@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="RequestResourceAction" result-type="vCACCAFE:ResourceActionRequest" api-version="6.0.0" id="3c236d39-b2f8-332d-b3c8-b3e69ecc2037" version="1.0.0" allowed-operations="evf" category-name="com.vmware.indcoe.library.vrautil">
+  <param n="operation" t="vCACCAFE:ConsumerResourceOperation"><![CDATA[]]></param>
+  <param n="cpuMemOption" t="string"><![CDATA[]]></param>
+  <param n="cpuScale" t="number"><![CDATA[]]></param>
+  <param n="memScale" t="number"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var requestTemplate = vCACCAFERequestsHelper.getRequestForResourceAction(operation)
+var jsonData = vCACCAFERequestsHelper.getResourceActionRequestData(requestTemplate);
+var json = JSON.parse(jsonData);
+System.debug("Json template "+JSON.stringify(json))
+//Changing based on cpu or memory option given in input
+if(cpuMemOption == "cpu"){
+    json.cpu = cpuScale;
+} else if(cpuMemOption == "memory"){
+    json.memory = memScale
+}
+////This is a property needed for the Reconfigure IaaS operation:
+json["Cafe.Shim.VirtualMachine.Reconfigure.Requestor"] = 1;
+System.debug("After updation "+ JSON.stringify(json))
+vCACCAFERequestsHelper.setResourceActionRequestData(requestTemplate, JSON.stringify(json));
+request = System.getModule("com.vmware.library.vcaccafe.request").requestResourceActionWithRequestTemplate(operation, requestTemplate);
+return request]]></script>
+</dunes-script-module>

@@ -1,0 +1,599 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="a814e85a-90ff-4ce2-b963-0059c4b53f4a" version="0.0.12" api-version="6.0.0" allowed-operations="evf" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[InstallCVworkflows]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <input>
+    <param name="host" type="vCACCAFE:VCACHost">
+      <description><![CDATA[vRA CAFE host]]></description>
+    </param>
+    <param name="Array_of_Entitlements" type="Array/vCACCAFE:Entitlement"/>
+    <param name="CVRESTHostUrl" type="string">
+      <description><![CDATA[http://server1.company.com:81/SearchSvc/CVWebService.svc/]]></description>
+    </param>
+    <param name="cvUser" type="string"/>
+    <param name="cvPwd" type="SecureString"/>
+  </input>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Install and Configure CV workflows]]></display-name>
+    <script encoded="false"><![CDATA[//Install Backup workflow
+var backupString = "Backup VM Group";
+var bckupwfName = "PerformBackup";
+var backupDescription = "Commvault DataProtection";
+var parameterName = "vCACVm";
+
+// Install Restore
+var restoreString = "Restore Full VM – In place";
+var restorewfName = "PerformRestore";
+var restoreDescription = "Restore from Commvault backup";
+
+var filelevelrestoreString = "File Level Restore";
+var filelevelrestorewfName = "FileLevelBrowse";
+var filelevelrestoreDescription = "File level restore from Commvault backup";
+
+var onDemandBackupString = "Backup VM";
+var onDemandBackupwfName = "OnDemandBackup";
+var onDemandBackupDescription = "On demand backup from Commvault backup";
+
+var sendLogsString = "Send Logs";
+var sendLogswfName = "SendLogs";
+var sendLogsDescription = "Send logs";
+
+var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",encode:function(e){var t="";var n,r,i,s,o,u,a;var f=0;e=Base64._utf8_encode(e);while(f<e.length){n=e.charCodeAt(f++);r=e.charCodeAt(f++);i=e.charCodeAt(f++);s=n>>2;o=(n&3)<<4|r>>4;u=(r&15)<<2|i>>6;a=i&63;if(isNaN(r)){u=a=64}else if(isNaN(i)){a=64}t=t+this._keyStr.charAt(s)+this._keyStr.charAt(o)+this._keyStr.charAt(u)+this._keyStr.charAt(a)}return t},decode:function(e){var t="";var n,r,i;var s,o,u,a;var f=0;e=e.replace(/[^A-Za-z0-9\+\/\=]/g,"");while(f<e.length){s=this._keyStr.indexOf(e.charAt(f++));o=this._keyStr.indexOf(e.charAt(f++));u=this._keyStr.indexOf(e.charAt(f++));a=this._keyStr.indexOf(e.charAt(f++));n=s<<2|o>>4;r=(o&15)<<4|u>>2;i=(u&3)<<6|a;t=t+String.fromCharCode(n);if(u!=64){t=t+String.fromCharCode(r)}if(a!=64){t=t+String.fromCharCode(i)}}t=Base64._utf8_decode(t);return t},_utf8_encode:function(e){e=e.replace(/\r\n/g,"\n");var t="";for(var n=0;n<e.length;n++){var r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r)}else if(r>127&&r<2048){t+=String.fromCharCode(r>>6|192);t+=String.fromCharCode(r&63|128)}else{t+=String.fromCharCode(r>>12|224);t+=String.fromCharCode(r>>6&63|128);t+=String.fromCharCode(r&63|128)}}return t},_utf8_decode:function(e){var t="";var n=0;var r=c1=c2=0;while(n<e.length){r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r);n++}else if(r>191&&r<224){c2=e.charCodeAt(n+1);t+=String.fromCharCode((r&31)<<6|c2&63);n+=2}else{c2=e.charCodeAt(n+1);c3=e.charCodeAt(n+2);t+=String.fromCharCode((r&15)<<12|(c2&63)<<6|c3&63);n+=3}}return t}}
+var propertyGroupName = "CommvaultDataProtection";
+
+//Icon vars
+var iconBase64 = "iVBORw0KGgoAAAANSUhEUgAAACQAAAAhCAIAAAA+r558AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAP6SURBVEhLvVZpTxNBGN5fZIzRD2o0Rv3kjUeixngfHAoqHokCUkWFCGrBExAqBLRF8eIStSgGilqwKq0cBbG29NrdHlvkq2/7ToZtpycan7xtdt7r2dlndmY58T+C8yQB08hYdlHFmvSzHd19xDUrJCCz2R3FlY3zN2fOWX8QbX9eqcE0TMIpIiaZIIoNzzqX7cxFjrkbDi3alkOu09ILK1Q/rTaSmjSik73tG9iUXYitwfaeuaL/arJO2i/daZi3MQOdi7fnVGtaeF4gNUmA84bj++g4yENpVh0609rVS2IhDA6bMxXXacLajDwQksQSYYZs0uEsqXpA5Vm4Nbvy4Qs3z0PI6XJfq206UXJncMiMydpe/YasAkp5IL8MhMRQHATJRI+n8fmrGXnS0vOVNRO/rBCCuWvatMt3n8AQPMOiW/XwPINVolj3pGPpjuO0SnHjvsU2GewaA9z7T4YIeQYGhzDWo/+y9XgRDVFbsuOYqrldEETIgeXKConlLLis80rMQ3l8IZgnLLnFt9Efy+Axvu7RY75xZIz2AUMnC0K28UghLwjoKq9rXrAli1bGt4zC6z8sViwsq1GjE4csCNmu0yXE4fN16frTDp/DsviGi4jeZZWmBf04ZBFGZhweK1DW4tta//QlFZ81XESQiV0QKZD5/f7+b9/hGu63St0CO4jd6bp8t5GKT23f2dLPxmHIj0B1UysmkDGDKGRosF7a3urAaRodxxy5MypmT4ZGJwEbWP2zTphuqCo6/pYMDOQpKK+12Z1YEAcpkEmSBK8zZrOmbtNCgtfrg/9YoGRkzCAFMofLDZq1v+vDShb/kgwWJ16DkAbTCNbLkZjs8IVyCANZIBCAtYDZrOHM6BCEPFehstodUEVx71EbRsmYQRjZT6t95Z5TWBBhEWRo8EZWa1o9Xi/2SpZsU7YCa3hBVNY9ZvfGqGRgmQqlxWbHXtdUTejEIQtCBobio3fcYoWjEv1oLBns+lrdAOYPjU3QPmDoZMHpPg9uzlHQPBD/65B5KoQPBuO23Ivo17R3Od08XsN5Bi+43y9BjosXiisfyM+z2sftWM6Cg58UCKhbtfKTGsS3OZwQgttp7uxeseckkkFT2C3hIlglSQ3PX8lP6gu36u0ud7BrDATJEG5BvHJPLf8GAfG9Ph+EBNFjsTmgu3niFyZ3fzTIj6GDBVeNo+MYioMZMsToD8vRSzdpl9XBr+APJBZChDzwdfW6V09iicD9joae/m9yIffnlYGQMPWSqodyeVTNHZIUIDVJIDoZIDA1FSZk+BcxyONw8yQ1acQkQ8BsSms08m99lIeEU0QCMgSsCxByXWb+G10/cc0K3PR/w/T0H9jAGmi0QM2oAAAAAElFTkSuQmCC";
+var iconType = "";
+var iconContent = "";
+var cvImageName = "CV1.png";
+
+//Get customResourceMapping to map VC:VCAC VM
+var resourceType = "";
+var rTypes = vCACCAFEEntitiesFinder.getResourceMappings(host);
+if(rTypes.length == 0){
+	throw("No Resource Mappings were found for the selected VRA host");
+}
+for each(rtype in rTypes)
+{
+	//System.log("Name: "+rtype.name);
+	if(rtype.name == "IaaS VC VirtualMachine")
+	{
+		System.log("Found resourceMapping : "+rtype.name);
+		resourceType = rtype;
+	}
+}
+
+//Add RestHost
+var hostname = "";
+var restHostN = RESTHostName.split("//");
+
+hostname = restHostN[1].split(":")[0];
+hostsubString = RESTHostName.search("CVWebService.svc");
+
+if((hostname == "") || (hostsubString == -1)){
+
+	throw("Error:Check the format of the webservice URL, e.g, format, http://servername.companyname.com:81/SearchSvc/CVWebService.svc/");
+}
+
+
+
+var foundHost = false;
+var hosts = RESTHostManager.getHosts();
+var restHost = "";
+if (hosts.length > 0)
+{
+	for(var i =0;  i < hosts.length; i++ )
+	{
+		restHost = (RESTHostManager.getHost(hosts[i]));
+		if ((restHost.name == hostname) && (((restHost.url).search("CVWebService.svc")) != -1) )
+		{	
+			System.log("REST host is already present, skipping to add it again");
+			foundHost = true;
+			break;
+		}
+		else if((restHost.name != hostname) && (((restHost.url).search("CVWebService.svc")) != -1) ){
+			System.log("Found another CV Webservice host than the one provided, removing the host name " + restHost);
+			var removedRestHost = RESTHostManager.removeHost(restHost.id);
+		}
+		
+		
+	}
+	if(foundHost == false){
+		addCSHost(RESTHostName,cvUser,cvPwd);
+	}
+}
+else
+{
+	System.log ("Could not find any REST hosts, adding the host with provided details");
+	addCSHost(RESTHostName,cvUser,cvPwd);
+	var hostAdded = RESTHostManager.getHosts();
+	for(var i =0;  i < hostAdded.length; i++ )
+	{	
+		restHost = (RESTHostManager.getHost(hostAdded[i]));
+		if ((restHost.name == hostname) && (((restHost.url).search("CVWebService.svc")) != -1) )
+		{	
+			System.log("REST host is already present, skipping to add it again " +  restHost.name);
+			foundHost = true;
+			break;
+		}
+		else if((restHost.name != hostname) && (((restHost.url).search("CVWebService.svc")) != -1) ){
+			System.log("Found another CV Webservice host than the one provided, removing the host name " + restHost);
+			var removedRestHost = RESTHostManager.removeHost(restHost.id);
+		}
+		
+		
+	}
+}
+
+if(foundHost == true && restHost.id != null){
+	
+	System.log("REST host before getting token " +  restHost);
+	//Prepare cvLogin
+	var token = System.getModule("com.commvault.utils").getToken(restHost);
+	if(token == -1)
+	{	
+		System.log("Could not login to commvault web service with provided credentials. Removing the host added above.");
+		var removedRestHost = RESTHostManager.removeHost(restHost.id);
+	
+		System.log("REST host removed: " + removedRestHost);
+	    throw("Error: Failed to generate token for REST APIs. Please validate the Commvault Web Service credentials and try again.");
+	}
+	else{
+		System.log("Successful login to REST Host");
+	}
+}
+
+var installedActions = System.getModule("com.vmware.library.action").getAllActions();
+System.log("installed actions ");
+
+System.log(installedActions);
+
+for(var x=0; x<installedActions.length; x++){
+
+	System.log(installedActions[x].name);
+}
+
+//Install install backup workflow
+
+install(bckupwfName,backupString, backupDescription,parameterName);
+install(restorewfName,restoreString, restoreDescription,parameterName);
+install(filelevelrestorewfName,filelevelrestoreString, filelevelrestoreDescription, parameterName);
+install(onDemandBackupwfName, onDemandBackupString, onDemandBackupDescription, parameterName);
+
+//install send logs action
+install(sendLogswfName, sendLogsString, sendLogsDescription, parameterName);
+
+// Add Entitlement
+addEntitlement(backupString, restoreString)
+//Create Property definittions
+//createPropdefs(host,propertyGroupName)
+
+/*
+
+Creating property definitions and property group for blueprint
+
+*/
+
+//create property group
+var group = System.getModule("com.vmware.library.vcaccafe.propertygroup").createPropertyGroup(host,"Commvault DataProtection Policy","CommvaultDataProtectionPolicy","Commvault DataProtection Policy Property Group",false);
+
+
+//external action object for the action to be used for property definition exeternal value
+var externalActionStoragePlan = "";
+var externalActionTenant = "";
+var externalActionVMGroup = "";
+var actions = System.getModule("com.vmware.library.action").getAllActions();
+for(var i=0; i<actions.length; i++){
+	if(actions[i].name == "getStoragePlansList"){
+		externalActionStoragePlan = actions[i];	
+	}
+	if(actions[i].name == "getTenant"){
+		externalActionTenant = actions[i];
+	
+	}
+	if(actions[i].name == "getSubclientsForRegisteredVCenterPlugin"){
+		externalActionVMGroup = actions[i];
+	
+	}
+}
+
+//create property definitions
+var createStoragePlanPropDef = System.getModule("com.vmware.library.vcaccafe.propertydefinition").createPropertyDefinition(host,true,"CV Plan","Storage plan to be used for VM backup","Plan","string",1,"dropdown",false,true,false,false,null,false,externalActionStoragePlan,null)
+var createTenantPropDef = System.getModule("com.vmware.library.vcaccafe.propertydefinition").createPropertyDefinition(host,true,"Tenant Name","Tenant Name to be used for Backup policy","Tenant","string",2,"dropdown",false,true,false,false,null,false,externalActionTenant,null)
+var createSubclientPropDef = System.getModule("com.vmware.library.vcaccafe.propertydefinition").createPropertyDefinition(host,true,"CV VM Group Name","Subclient Name\VM Group to be used for backup","VM Group","string",3,"dropdown",false,true,false,false,null,true,externalActionVMGroup,null)
+
+//adding property definitions to the property group
+var addStoragePlan = System.getModule("com.vmware.library.vcaccafe.propertygroup").createOrUpdatePropertyInGroup(group,"",false,true,true,"CV Plan");
+var addTenant = System.getModule("com.vmware.library.vcaccafe.propertygroup").createOrUpdatePropertyInGroup(group,"",false,true,true,"Tenant Name");
+var addSubclientName = System.getModule("com.vmware.library.vcaccafe.propertygroup").createOrUpdatePropertyInGroup(group,"",false,true,true,"CV VM Group Name");
+
+
+/************************************************************************************/
+
+/*
+Creating and publishing workflow event broker subscription
+
+*/
+
+var criteriaJSON = JSON.stringify({
+"type" : "and",
+"subClauses" : [ {
+    "type" : "expression",
+    "operator" : {
+      "type" : "equals"
+    },
+    "leftOperand" : {
+      "type" : "path",
+      "path" : "data~machine~type"
+    },
+    "rightOperand" : {
+      "type" : "constant",
+      "value" : {
+        "type" : "integer",
+        "value" : ""
+      }
+    }
+  }, {
+    "type" : "expression",
+    "operator" : {
+      "type" : "equals"
+    },
+    "leftOperand" : {
+      "type" : "path",
+      "path" : "data~lifecycleState~state"
+    },
+    "rightOperand" : {
+      "type" : "constant",
+      "value" : {
+        "type" : "string",
+        "value" : "VMPSMasterWorkflow32.MachineProvisioned"
+      }
+    }
+  }, {
+    "type" : "expression",
+    "operator" : {
+      "type" : "equals"
+    },
+    "leftOperand" : {
+      "type" : "path",
+      "path" : "data~lifecycleState~phase"
+    },
+    "rightOperand" : {
+      "type" : "constant",
+      "value" : {
+        "type" : "string",
+        "value" : "POST"
+      }
+    }
+  } ]
+});
+
+
+var workflowId = "";
+var wfName = "AddToSubclientViaBlueprint";
+var workflows = Server.findAllForType("Workflow", "c.name='"+wfName+"'");
+var wfByName = null;
+System.log("workflows = "+ workflows);
+if (workflows != null){
+	if (workflows.length == 1){
+		System.log("Match found for workflow named: "+wfName);
+		wfByName = workflows[0];
+		workflowId = wfByName.id; 
+	}
+}
+
+
+var getTopics = System.getModule("com.vmware.library.vcaccafe.workflow.subscription").getEventTopics(host);
+
+var eventObject = "";
+
+for(var i=0;i<getTopics.length; i++){
+	var vcacEventEntity = getTopics[i];
+	var vcacEventEntityId = vcacEventEntity.getId();
+	if(vcacEventEntityId == "com.vmware.csp.iaas.blueprint.service.machine.lifecycle.provision"){
+		System.log("found the event topic"   + getTopics[i].getId());
+		eventObject = vcacEventEntity;
+		break;
+	}
+}
+
+var createEventSubscription = System.getModule("com.vmware.library.vcaccafe.workflow.subscription").createWorkflowSubscription("CommvaultDataProtectionEventSubscription","Adds the VM to selected subclient and attaches the storageplan.","com.vmware.csp.iaas.blueprint.service.machine.lifecycle.provision",workflowId,"PUBLISHED",true,true,10,5,criteriaJSON,"0.0.0");
+var service = host.createEventClient().getEventTenantWorkflowSubscriptionService();
+var createdSubscription = service.registerTenantSubscription(host.tenant, createEventSubscription);
+System.log("Workflow subscription " + createEventSubscription.getName() + " created.");
+
+var publishWorkflowSubscription = System.getModule("com.vmware.library.vcaccafe.workflow.subscription").publishWorkflowSubscription(createdSubscription);
+System.log("Workflow subscription published");
+/*******************************************************************************************/
+
+function install(wfName,name, description,parameterName)
+{
+	///Find workflow ID
+	var workflowId = "";
+	var workflows = Server.findAllForType("Workflow", "c.name='"+wfName+"'");
+	var wfByName = null;
+	System.log("workflows = "+ workflows);
+	System.log("length for " + wfName + " is "  + workflows.length);
+	if (workflows != null){
+	 if (workflows.length == 1){
+	    System.log("Match found for workflow named: "+wfName);
+	   	wfByName = workflows[0];
+		workflowId = wfByName.id; 
+		System.log("workflow id while generating resource action : "  + workflowId);
+	 }else{
+	   System.log("More than one workflow found with the name! "+wfName);
+	   for each (wfl in workflows){
+	    System.log("WORKFLOW ID:   " + wfl.id);
+	 	workflowId = wfl.id; 
+	   }
+	 }
+	}
+	
+	var resourceActions =	vCACCAFEEntitiesFinder.getResourceActions(host);
+	var bFound = false;
+	for each(rAction in resourceActions)
+	{
+		//System.log("Name: " + rAction.name);
+		if(rAction.name == name)
+		{
+			System.log("Found resourceAction : " + rAction.name +" so skipping Add operation");
+			bFound = true;
+		}
+	}
+	//Add resource action only if not exists already
+	if(bFound == false)
+	{
+		actionResult = System.getModule("com.vmware.library.vcaccafe.asd.resourceaction").createResourceActionFromWorkflow(host,name,description,workflowId,resourceType,parameterName);
+		System.log("Action result while creating resource action" + actionResult);
+		//Publish Resource Action
+		System.getModule("com.vmware.library.vcaccafe.asd.resourceaction").publishResourceAction(actionResult) ;
+	}
+			
+}
+
+function addEntitlement(backupString, restoreString)
+{
+	//Add entitlement
+	var arr = new Array();
+	var action = vCACCAFEEntitiesFinder.getAdminCatalogResourceActions(host);
+	var resourceAction;
+	for(var i=0; i < action.length; i++)
+	{	
+		if (action[i].name == backupString)
+		{
+			System.log("Found ResourceAction "+ action[i].name);
+			resourceAction = action[i];
+			arr = arr.concat(resourceAction);
+			//Assign Icon to the resource action
+			RESTUpdateIcon(resourceAction);
+		}
+		if (action[i].name == restoreString)
+		{
+			System.log("Found ResourceAction "+ action[i].name);
+			resourceAction = action[i];
+			arr = arr.concat(resourceAction);
+			//Assign Icon to the resource action
+			RESTUpdateIcon(resourceAction);
+		}
+		if (action[i].name == filelevelrestoreString)
+		{
+			System.log("Found ResourceAction "+ action[i].name);
+			resourceAction = action[i];
+			arr = arr.concat(resourceAction);
+			//Assign Icon to the resource action
+			RESTUpdateIcon(resourceAction);
+		}
+		if (action[i].name == onDemandBackupString)
+		{
+			System.log("Found ResourceAction "+ action[i].name);
+			resourceAction = action[i];
+			arr = arr.concat(resourceAction);
+			//Assign Icon to the resource action
+			RESTUpdateIcon(resourceAction);
+		}
+		if (action[i].name == sendLogsString)
+		{
+			System.log("Found ResourceAction "+ action[i].name);
+			resourceAction = action[i];
+			arr = arr.concat(resourceAction);
+			//Assign Icon to the resource action
+			RESTUpdateIcon(resourceAction);
+		}
+		
+	}
+	//Add all entitlements to the Action
+	for(var i = 0; i < Array_of_Entitlements.length; i++)
+	{
+		System.log("Adding entitlement "  + Array_of_Entitlements[i].name+ " to the action " );
+		//ResourceAction
+		System.getModule("com.vmware.library.vcaccafe.catalog.entitlement").assignResourceActionsToEntitlement(Array_of_Entitlements[i],arr,null) ;
+	}
+}
+
+function addCSHost(RESTHostName,cvUser,cvPwd)
+{
+	var csPwd = Base64.encode(cvPwd);
+	var temp = RESTHostName.split("//");
+	var hostName =  temp[1].split(":")[0];
+	System.log("CommServ Name:  "+ hostName);
+	
+	var bFound = false;
+	var hosts = RESTHostManager.getHosts();
+	for(var i =0;  i < hosts.length; i++ )
+	{
+		var host = (RESTHostManager.getHost(hosts[i]));
+		if (((host.url).search("CVWebService.svc")) != -1)
+		{
+			//System.log(host.name);
+			bFound = true;
+			break;
+		}
+	}
+	
+	if(bFound == false)
+	{
+		var arrAuthenticationParams;
+		    arrAuthenticationParams = ["Shared Session", cvUser, cvPwd];
+		 
+		var objRESTAuthentication;
+		    objRESTAuthentication = RESTAuthenticationManager.createAuthentication("Basic", arrAuthenticationParams);
+
+		//http://prodtest1:81/SearchSvc/CVWebService.svc
+		var objRESTHost = new RESTHost(hostName);
+		objRESTHost.url = RESTHostName; 
+		objRESTHost.connectionTimeout = 30.0;
+		objRESTHost.operationTimeout = 60.0;
+		objRESTHost.authentication = objRESTAuthentication;
+		objRESTHost = RESTHostManager.addHost(objRESTHost);
+	}
+	else
+	{
+		System.log("CommServ RESThost has been already added, so skipping");
+	}
+}
+
+
+function createPropdefs(vraCatalogHost,propertyGroupName)
+{
+	var tenant = vraCatalogHost.tenant;
+	var propertyGroupId = propertyGroupName.split(" ").join("");
+	var propertyGroup = new Properties
+	(
+		{
+			"id" : propertyGroupId,
+			"tenantId" : tenant,
+			"label" : propertyGroupName,
+			"description" : "Commvault DataProtection Solution",
+			"displayAdvice":"DROPDOWN",
+			"dataTypeTypeId":"STRING",
+			"dataType": {
+	            "type": "primitive",
+	            "typeId": "STRING"
+	         },
+			
+			"isMultiValued": "false",
+			"orderIndex":1,
+			"permissibleValues": {
+	            "type": "static",
+	            "customAllowed": "false",
+	            "values": [
+	               {
+	                  "underlyingValue": {
+	                     "type": "string",
+	                     "value": "Gold"
+	                  },
+	                  "label": "GoldProtectionPolicy"
+	               },
+	               {
+	                  "underlyingValue": {
+	                     "type": "string",
+	                     "value": "Silver"
+	                  },
+	                  "label": "SilverProtectionPolicy"
+	               }
+	            ]
+	         },
+	         "facets": {
+	            "mandatory": {
+	               "type": "constant",
+	               "value": {
+	                  "type": "boolean",
+	                  "value": "false"
+	               			}
+	            		},
+	            "encrypted": {
+	               "type": "constant",
+	               "value": {
+	                  "type": "boolean",
+	                  "value": "false"
+	               			}
+	            		}
+	         		}
+				}
+		);
+	var propertyClient = vraCatalogHost.createRestClient("com.vmware.csp.core.properties.service.api");
+	propertyClient.post("propertydefinitions/", propertyGroup);
+}
+
+//Method to assign icon for PerformBackup and Restore resource actions
+function RESTUpdateIcon(rAction)
+{
+	var rElementCategories = Server.getAllResourceElementCategories();
+	for each( rElementCategory  in rElementCategories)
+	{
+		var rElements = rElementCategory.allResourceElements;
+		for each(rElement in rElements){
+			if(rElement.name == cvImageName)
+			{
+				System.log("Found matching ResourceElement:  "+rElement.mimeType);	
+				iconType = rElement.mimeType;
+				iconContent = rElement.getContentAsMimeAttachment();
+			}
+		}
+	}
+	// Create a client connection to the icon service
+	var client = host.createCatalogClient().getCatalogIconService();
+	// Create organization object
+	var org = new vCACCAFECatalogOrganizationReference();
+	org.setTenantRef(host.tenant);
+	// Construct a new vCACCAFEIcon object
+	var iconObj = new vCACCAFEIcon();
+	iconObj.setId("commvaultResourceActionIcon");
+	iconObj.setContentType(iconType);
+	iconObj.setFileName("CV1.png");
+	iconObj.setImage(iconBase64);
+	iconObj.setOrganization(org);
+	var id = iconObj.getId();
+	//Update the icon
+	var result = client.createOrUpdateIcon(iconObj);
+	//update via REST API	 
+	//create catalog client  
+	var catalogClient = host.createCatalogClient();  
+	//build put call json   
+	var postData = {"iconId":id, "publishStatus":"PUBLISHED"};  
+	//make put call to resource url   
+	var response = catalogClient.put("/resourceOperations/"+rAction.id,postData);  
+
+	if (response.getStatus() != 200)  
+	    throw "Failed updating resource operation: "+response.getBodyAsString();  
+	System.log("Resource operation updated successfully" + response);
+	
+}
+]]></script>
+    <in-binding>
+      <bind name="host" type="vCACCAFE:VCACHost" export-name="host"/>
+      <bind name="RESTHostName" type="string" export-name="CVRESTHostUrl"/>
+      <bind name="cvUser" type="string" export-name="cvUser"/>
+      <bind name="cvPwd" type="SecureString" export-name="cvPwd"/>
+      <bind name="Array_of_Entitlements" type="Array/vCACCAFE:Entitlement" export-name="Array_of_Entitlements"/>
+    </in-binding>
+    <out-binding/>
+    <position y="55.90909090909091" x="205.0"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="host">
+      <desc><![CDATA[vRA CAFE host]]></desc>
+      <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+    </p-param>
+    <p-param name="Array_of_Entitlements">
+      <desc><![CDATA[Entitlement]]></desc>
+      <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+    </p-param>
+    <p-param name="CVRESTHostUrl">
+      <desc><![CDATA[CV Webservice URL]]></desc>
+      <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+      <p-qual kind="static" name="defaultValue" type="string"><![CDATA[http://server1.company.com:81/SearchSvc/CVWebService.svc/]]></p-qual>
+    </p-param>
+    <p-param name="cvUser">
+      <desc><![CDATA[CV username]]></desc>
+      <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+    </p-param>
+    <p-param name="cvPwd">
+      <desc><![CDATA[CV password]]></desc>
+      <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+    </p-param>
+  </presentation>
+</workflow>

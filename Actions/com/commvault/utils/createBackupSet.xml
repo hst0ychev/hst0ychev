@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="createBackupSet" result-type="void" api-version="6.0.0" id="071839b8-8ec4-4c0a-87ee-1d272d39b20c" version="0.0.0" allowed-operations="evf" category-name="com.commvault.utils">
+  <description><![CDATA[Action to create backupset under the given client]]></description>
+  <param n="token" t="string"><![CDATA[CV token for REST API]]></param>
+  <param n="clientName" t="string"><![CDATA[virtualization client name]]></param>
+  <param n="backupSetName" t="string"><![CDATA[backupset name]]></param>
+  <script encoded="false"><![CDATA[/*
+	Inputs-
+	token - CV token for REST API
+	clientName - name of client to be used for creating backupset
+	backupSetName - backupset name to be created
+
+
+	API used-
+	Backupset
+	
+	Output
+	Creates a backupset under the given client name and returns the status.
+	if unsuccessful then returns -1
+*/
+
+
+System.log("Executing createBackupset module");
+var createBackupSetUrl = "Backupset";
+var createbsXML = new XML('<App_CreateBackupSetRequest><association /></App_CreateBackupSetRequest>');
+var entity = new XML('<entity/>');
+var requestType = "POST";
+createbsXML.association.appendChild(entity);
+createbsXML.association.entity.appName = "Virtual Server";
+createbsXML.association.entity.backupsetName = backupSetName;
+createbsXML.association.entity.clientName = clientName;
+
+var response = System.getModule("com.commvault.utils").processRESTRequest(createBackupSetUrl,requestType, createbsXML, token,null,null);
+if(response.statusCode != 200)
+{
+	throw("Error: Failed to create backupSet");
+}
+status = System.getModule("com.commvault.utils").processResponse(response.contentAsString);
+if (status != 0)
+{
+	throw("Error: BackupSet creation failed "+ response.contentAsString);
+	return -1;
+}
+else
+{
+	return status;
+}
+]]></script>
+</dunes-script-module>

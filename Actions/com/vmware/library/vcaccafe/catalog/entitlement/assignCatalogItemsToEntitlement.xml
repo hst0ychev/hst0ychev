@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="assignCatalogItemsToEntitlement" result-type="void" api-version="6.0.0" id="3121a2ae-9c3d-4519-b801-fdc797abf4ae" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.catalog.entitlement">
+  <param n="entitlement" t="vCACCAFE:Entitlement"><![CDATA[Entitlement to assign catalog items to]]></param>
+  <param n="catalogItems" t="Array/vCACCAFE:AdminCatalogItem"><![CDATA[Catalog items to assign to the entitlement]]></param>
+  <param n="approvalPolicy" t="vCACCAFE:ApprovalPolicy"><![CDATA[Approval policy to apply to the catalog items]]></param>
+  <script encoded="false"><![CDATA[if(approvalPolicy != null) {
+	System.getModule("com.vmware.library.vcaccafe.util").checkHosts(entitlement, approvalPolicy, "entitlement", "approval policy");
+}
+var host = vCACCAFEEntitiesFinder.getHostForEntity(entitlement);
+var client = host.createCatalogClient().getCatalogEntitlementService();
+
+var entitledCatalogItems = entitlement.getEntitledCatalogItems();
+
+var entitledCatalogItem;
+for(var i = 0 ; i < catalogItems.length ; i++ ) {
+	System.getModule("com.vmware.library.vcaccafe.util").checkHosts(entitlement, catalogItems[i], "entitlement", "catalog item");
+	//Check if the catalog item already exists in the entitlement
+	var alreadyExists = false;
+	for(var j = 0 ; j < entitledCatalogItems.length ; j++ ) {
+		if(entitledCatalogItems[j].getCatalogItemRef().getId() == catalogItems[i].getId()) {
+			System.warn("Catalog item: " + catalogItems[i].getName() + " is already entitled. The item will be skipped.");
+			alreadyExists = true;
+		}
+	}
+	if(!alreadyExists) {
+		entitledCatalogItem = new vCACCAFEEntitledCatalogItem() ;
+		var reference = new vCACCAFELabelledReference();
+		reference.setId(catalogItems[i].getId());
+		reference.setLabel(catalogItems[i].getName());
+		entitledCatalogItem.setCatalogItemRef(reference);
+		if(approvalPolicy != null) {
+			entitledCatalogItem.setApprovalPolicyId(approvalPolicy.getId());
+		}
+		System.getModule("com.vmware.library.vcaccafe.util").addElementToList(entitlement, "getEntitledCatalogItems", entitledCatalogItem);
+	}
+}
+
+System.log("Assigning catalog items to entitlement " + entitlement.getName() + "...");
+client.update(entitlement);
+System.log("Catalog items assigned to entitlement " + entitlement.getName());]]></script>
+</dunes-script-module>

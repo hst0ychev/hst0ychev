@@ -1,0 +1,72 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="BasicClone" result-type="Any" api-version="6.0.0" id="9b757924-d7d5-33e3-9117-68c34e9c4fa5" version="1.0.0" allowed-operations="evf" category-name="com.vmware.indcoe.library.vrautil">
+  <script encoded="false"><![CDATA[var Clone={
+    cloneVM : function(virtualMachineName,powerOn,thinProvisioned,template){
+        //Prepare default naming convention for template
+        var cloneName = "autoScaleClone_"+virtualMachineName
+        var cloneFlag = false
+        //Check whether Template exist already in the vCenter
+        var sdkConnections = VcPlugin.allSdkConnections
+        var vcVirtualMachine;
+        var vmFolder;
+        var datastore; 
+        var vcVirtualMachine;
+        var pool;
+        for (var obj in sdkConnections){
+            var vms = sdkConnections[obj].allVirtualMachines
+            for (var vm in vms){
+                if(vms[vm].name == cloneName && vms[vm].isTemplate == true){
+                    cloneFlag = true                       
+                }                
+            }
+        }
+        if(cloneFlag){
+			System.debug("Template already exists "+cloneName)
+            return cloneName
+		}
+        else{
+            //Getting VC VM 
+            var sdkConnections = VcPlugin.allSdkConnections;                
+            for(var j in sdkConnections){
+                var vms = sdkConnections[j].allVirtualMachines
+                for(var k in vms){
+                    if(vms[k].name == virtualMachineName){
+                        vcVirtualMachine = vms[k]
+                    }
+                
+                }
+            }
+            //Getting respective VM Folder
+            var vmFolderName = vcVirtualMachine.parent.name;
+            System.log("VM Folder Name :"+vmFolderName);
+            var folders = VcPlugin.getAllVmFolders(null, "xpath:name='"+vmFolderName+"'");  
+             
+            if (folders != null){  
+                if (folders.length == 1){  
+                    System.log("Match found for vm named: "+vmFolderName);  
+                    vmFolder = folders[0];  
+                }else{  
+                    System.log("More than one vmFolder found with that name! "+vmFolderName);  
+                    for(l in folders){  
+                        System.log("Folder ID: "+folders[l].id);  
+                    }  
+                }  
+            } 
+            //Provide Name to the cloning VM            
+            System.log("Total Storage of VM "+vcVirtualMachine.committedStorage);
+            var dataStores = vcVirtualMachine.datastore
+            for(var m in dataStores){
+                System.log("Datastore capacity :"+dataStores[m].capacity);
+                datastore = dataStores[m]
+                break;
+            }
+            pool = vcVirtualMachine.resourcePool
+            System.log("Resource pool :"+pool.name);
+            System.getModule("com.vmware.library.vc.basic").cloneVM(vcVirtualMachine,vmFolder,cloneName,powerOn,template,datastore,null,pool,thinProvisioned);
+        }
+	return cloneName;
+    }
+}
+return Clone
+]]></script>
+</dunes-script-module>

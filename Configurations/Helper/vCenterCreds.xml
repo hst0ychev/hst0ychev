@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="c46ad3bb-5561-47bf-834f-8c0f7d3358b6" version="0.0.1">
+  <display-name><![CDATA[vCenterCreds]]></display-name>
+  <atts>
+    <att name="pcpctchvcen01cloudcrisin" type="CompositeType(username:string,password:SecureString):cred" read-only="false">
+      <value encoded="n"><![CDATA[{8:21:password=SecureString#__NULL__
+8:34:username=string#administrator@vsphere.local
+}]]></value>
+    </att>
+    <att name="psHost" type="PowerShell:PowerShellHost" read-only="false">
+      <value encoded="n"><![CDATA[dunes://service.dunes.ch/CustomSDKObject?id='64372951-8bfb-457b-9e47-0733bdb340fc'&dunesName='PowerShell:PowerShellHost']]></value>
+    </att>
+  </atts>
+</config-element>

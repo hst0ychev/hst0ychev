@@ -1,0 +1,66 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item1" object-name="workflow:name=generic" id="10472863-a6da-4c28-b45c-9e4a0697b1d3" version="0.0.0" api-version="6.0.0" allowed-operations="vfe" editor-version="1.6" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[test using configuration]]></display-name>
+  <position y="50.0" x="100.0"/>
+  <attrib name="Commvault_Username" type="string" read-only="false" conf-id="9fdf2485-a262-4984-b303-5eab606feebd" conf-key="username">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <attrib name="Commvault_Paasword" type="SecureString" read-only="false" conf-id="9fdf2485-a262-4984-b303-5eab606feebd" conf-key="password"/>
+  <workflow-item name="item0" type="end" end-mode="0">
+    <position y="45.40909090909091" x="384.5"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item0" type="task">
+    <display-name><![CDATA[Scriptable task]]></display-name>
+    <script encoded="false"><![CDATA[//System.log("TYOE of password : " + typeof());
+
+var restHost;
+var Username;
+var password;
+
+		var category = Server.getConfigurationElementCategoryWithPath("CRIS")
+		//die in a fire if non-existent
+		if (category == null) {
+		    throw "Configuration element category '" + categoryPath + "' not found or empty!";
+		}
+		//get _all_ the elements
+		var elements = category.configurationElements;
+        System.log("elements " + elements);
+
+		//var elementName1 = "Commvault_Baas";
+		//var attributeName1 = "Commvault_Baas";
+        //var attributeName2 = "username";
+        //var attributeName3 = "password";
+        System.log("elements " + elements.length);
+        
+		//retrieve names
+		for (i = 0; i < elements.length; i++) {
+            
+
+		     if (elements[i].name == "Commvault_Baas") {
+                 System.log("elements " + elements[i].name);
+		         //found required element
+                    System.log("elements " +elements[i].getAttributeWithKey("Commvault_Baas").value );
+                    System.log("elements " +elements[i].getAttributeWithKey("username").value );
+                    System.log("elements " +elements[i].getAttributeWithKey("password").value );
+		        // restHost = elements[i].getAttributeWithKey(attributeName1).value;
+                // Username = elements[i].getAttributeWithKey(attributeName2).value;
+                 //System.log("Username : " +Username );
+                 //password = Commvault_Paasword;
+                 //System.log("Password : " +password );
+		         //if (restHost != null) {
+		           //  System.debug("Found attribute '" + attributeName1 + "' in '" + elementName1 + "' with value '" +restHost + "'");
+		      //   }
+		     }
+        }
+        //System.log("USername : " + Commvault_Username);
+//System.log("Password : " + Commvault_Paasword);
+]]></script>
+    <in-binding>
+      <bind name="Commvault_Username" type="string" export-name="Commvault_Username"/>
+      <bind name="Commvault_Paasword" type="SecureString" export-name="Commvault_Paasword"/>
+    </in-binding>
+    <out-binding/>
+    <position y="57.5" x="192.0"/>
+  </workflow-item>
+  <presentation/>
+</workflow>

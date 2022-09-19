@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getConnectionBySubscriptionId" result-type="Azure:Connection" api-version="6.0.0" id="aa1db122-d810-4a03-af01-5955f33bd8a1" version="7.6.0" allowed-operations="vf" category-name="com.vmware.vra.endpoint.azure">
+  <param n="subscriptionId" t="string"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var azureConnections = Server.findAllForType("Azure:Connection");
+
+for each (var azureConnection in azureConnections) {
+	if (azureConnection.subscriptionId == subscriptionId) {
+		return azureConnection;
+	}
+}
+
+return null;]]></script>
+</dunes-script-module>

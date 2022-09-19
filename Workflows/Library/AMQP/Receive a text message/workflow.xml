@@ -1,0 +1,76 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="Workflow:name=generic" id="9281808080808080808080808080808080808080012995053491651398b094fa1" version="1.0.0" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Receive a text message]]></display-name>
+  <description><![CDATA[Receives a text message from specified queue in a specified broker.]]></description>
+  <ref-types><![CDATA[(AMQP:Broker)]]></ref-types>
+  <position y="20.0" x="160.0"/>
+  <input>
+    <param name="broker" type="AMQP:Broker">
+      <description><![CDATA[Broker to receive a message from.]]></description>
+    </param>
+    <param name="queue" type="string">
+      <description><![CDATA[The queue in the broker to read a message from]]></description>
+    </param>
+  </input>
+  <output>
+    <param name="body" type="string">
+      <description><![CDATA[Message body]]></description>
+    </param>
+    <param name="headers" type="Properties">
+      <description><![CDATA[Message headers]]></description>
+    </param>
+    <param name="properties" type="Properties">
+      <description><![CDATA[Message properties]]></description>
+    </param>
+  </output>
+  <attrib name="errorCode" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+  </attrib>
+  <workflow-item name="item0" out-name="item1" catch-name="item2" throw-bind-name="errorCode" type="task">
+    <display-name><![CDATA[Receive a message]]></display-name>
+    <script encoded="false"><![CDATA[var msg = broker.receive(queue);
+
+if (msg != null) {
+  body = msg.bodyAsText;
+  headers = msg.headers;
+  properties = msg.properties;
+}]]></script>
+    <in-binding>
+      <bind name="broker" type="AMQP:Broker" export-name="broker"/>
+      <bind name="queue" type="string" export-name="queue"/>
+    </in-binding>
+    <out-binding>
+      <bind name="body" type="string" export-name="body"/>
+      <bind name="headers" type="Properties" export-name="headers"/>
+      <bind name="properties" type="Properties" export-name="properties"/>
+    </out-binding>
+    <position y="100.0" x="120.0"/>
+  </workflow-item>
+  <workflow-item name="item1" type="end" end-mode="0">
+    <position y="150.0" x="160.0"/>
+  </workflow-item>
+  <workflow-item name="item2" throw-bind-name="errorCode" type="end" end-mode="1">
+    <position y="90.0" x="280.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Receive a text message]]></title>
+      <p-group>
+        <title><![CDATA[AMQP Broker]]></title>
+        <desc><![CDATA[Select a broker to receive a message from.]]></desc>
+        <p-param name="broker">
+          <desc><![CDATA[Broker]]></desc>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+          <p-qual name="contextualParameter" type="void"><![CDATA[]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Queue]]></title>
+        <desc><![CDATA[Specify the message source queue.]]></desc>
+        <p-param name="queue">
+          <desc><![CDATA[Queue]]></desc>
+        </p-param>
+      </p-group>
+    </p-step>
+  </presentation>
+</workflow>

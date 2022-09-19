@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="UpdateExistingIPRangeNw" result-type="void" api-version="6.0.0" id="2b44c2fb-318b-3497-933a-be82d42f80b4" version="1.0.0" allowed-operations="evf" category-name="com.vmware.indcoe.library.vrautil">
+  <param n="ipAddress" t="string"><![CDATA[]]></param>
+  <param n="vcacHost" t="vCAC:VCACHost"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var model = "ManagementModelEntities.svc";
+var entitySetName = "StaticIPv4Addresses";
+var prefixProperty = new Properties();
+prefixProperty.put("IPv4Address",ipAddress);
+var entities = vCACEntityManager.readModelEntitiesByCustomFilter(vcacHost.id, model, entitySetName, prefixProperty, null);
+var updateLinks = new Properties();
+var props = new Properties()
+	props.put("StaticIPv4AddressState", 0);	 
+	props.put("LastModifiedDate", new Date());
+for(e in entities){
+		updateLinks.put('VirtualMachine', null);
+		System.log("updating status for " + ipAddress + " to unallocated")
+		//vCACEntityManager.updateModelEntityBySerializedKey(vcacHost.id , model , entitySetName , e.keyString , updateProperties , updateLinks , null);
+		vCACEntityManager.updateModelEntity(vcacHost.id, entities[e].modelName, entities[e].entitySetName, entities[e].entityKey, props, null, null);
+	}
+]]></script>
+</dunes-script-module>

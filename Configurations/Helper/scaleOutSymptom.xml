@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="16a9181f-6271-4671-982c-97f65b4ffd84" version="0.0.1">
+  <display-name><![CDATA[scaleOutSymptom]]></display-name>
+  <atts>
+    <att name="cpuName" type="string" read-only="false">
+      <value encoded="n"><![CDATA[_HorizontalOut_CPUSymptom]]></value>
+    </att>
+    <att name="memoryName" type="string" read-only="false">
+      <value encoded="n"><![CDATA[_HorizontalOut_MemSymptom]]></value>
+    </att>
+    <att name="waitCycle" type="number" read-only="false">
+      <value encoded="n"><![CDATA[1.0]]></value>
+    </att>
+    <att name="cancelCycle" type="number" read-only="false">
+      <value encoded="n"><![CDATA[1.0]]></value>
+    </att>
+  </atts>
+</config-element>

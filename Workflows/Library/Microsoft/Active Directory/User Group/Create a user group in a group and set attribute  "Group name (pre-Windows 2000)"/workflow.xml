@@ -1,0 +1,96 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item0" object-name="workflow:name=generic" id="81dcc1d8-190f-4669-957d-649d27a21881" version="1.1.1" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Create a user group in a group and set attribute  "Group name (pre-Windows 2000)"]]></display-name>
+  <description><![CDATA[Creates a new user group in an existing container (group).]]></description>
+  <ref-types><![CDATA[(AD:Group)]]></ref-types>
+  <position y="9.545454545454543" x="185.0"/>
+  <input>
+    <param name="group" type="AD:Group">
+      <description><![CDATA[Parent group for the new user group]]></description>
+    </param>
+    <param name="name" type="string">
+      <description><![CDATA[Name for the new user group]]></description>
+    </param>
+    <param name="groupNamePreWindows2000" type="string">
+      <description><![CDATA[Group name (pre-Windows 2000)]]></description>
+    </param>
+  </input>
+  <output>
+    <param name="newUsergroup" type="AD:UserGroup"/>
+  </output>
+  <attrib name="newGroup" type="AD:UserGroup" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+  </attrib>
+  <workflow-item name="item2" type="end" end-mode="0">
+    <position y="263.59090909090907" x="185.0"/>
+  </workflow-item>
+  <workflow-item name="item0" out-name="item1" type="task" script-module="com.vmware.library.microsoft.activeDirectory/createUserGroup">
+    <display-name><![CDATA[createUserGroup]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+System.getModule("com.vmware.library.microsoft.activeDirectory").createUserGroup(groupName,container) ;]]></script>
+    <in-binding>
+      <bind name="groupName" type="string" export-name="name">
+        <description><![CDATA[The name for the user group]]></description>
+      </bind>
+      <bind name="container" type="Any" export-name="group">
+        <description><![CDATA[Container for the new user group (either an organizational unit or a group)]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Create a new user group in the given container (organizational unit or group)]]></description>
+    <position y="74.09090909090908" x="145.0"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item3" type="task" script-module="com.vmware.library.microsoft.activeDirectory/getUsergroupFromContainer">
+    <display-name><![CDATA[getUsergroupFromContainer]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.microsoft.activeDirectory").getUsergroupFromContainer(container,usergroupName) ;]]></script>
+    <in-binding>
+      <bind name="container" type="Any" export-name="group">
+        <description><![CDATA[Organizationl unit or group]]></description>
+      </bind>
+      <bind name="usergroupName" type="string" export-name="name">
+        <description><![CDATA[Name of the user group]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="actionResult" type="AD:UserGroup" export-name="newGroup"/>
+    </out-binding>
+    <description><![CDATA[Gets a user group by its name in the given organizational unit or group (container).]]></description>
+    <position y="119.04545454545453" x="145.0"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item2" type="task">
+    <display-name><![CDATA[Change "Group name (pre-Windows 2000)" attribute]]></display-name>
+    <script encoded="false"><![CDATA[newGroup.setAttribute("sAMAccountName", groupNamePreWindows2000);
+newUsergroup = newGroup;]]></script>
+    <in-binding>
+      <bind name="groupNamePreWindows2000" type="string" export-name="groupNamePreWindows2000"/>
+      <bind name="newGroup" type="AD:UserGroup" export-name="newGroup"/>
+    </in-binding>
+    <out-binding>
+      <bind name="newUsergroup" type="AD:UserGroup" export-name="newUsergroup"/>
+    </out-binding>
+    <position y="200.86363636363635" x="145.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Create a user group in a group]]></title>
+      <p-group>
+        <title><![CDATA[Details]]></title>
+        <p-param name="group">
+          <desc><![CDATA[Parent group for the new user group]]></desc>
+          <p-qual kind="static" name="show-select-as" type="string"><![CDATA[drop-down]]></p-qual>
+          <p-qual name="contextualParameter"><![CDATA[]]></p-qual>
+          <p-qual name="mandatory"><![CDATA[true]]></p-qual>
+        </p-param>
+        <p-param name="name">
+          <desc><![CDATA[Name for the new user group]]></desc>
+          <p-qual name="mandatory"><![CDATA[true]]></p-qual>
+        </p-param>
+        <p-param name="groupNamePreWindows2000">
+          <desc><![CDATA[Group name (pre-Windows 2000)]]></desc>
+          <p-qual kind="ognl" name="dataBinding" type="string"><![CDATA[#name]]></p-qual>
+        </p-param>
+      </p-group>
+    </p-step>
+  </presentation>
+</workflow>

@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="createTenant" result-type="vCACCAFE:Tenant" api-version="6.0.0" id="c175d8b1-249c-42d0-b761-94f8d8f94ba3" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.tenant">
+  <param n="host" t="vCACCAFE:VCACHost"><![CDATA[vRA host]]></param>
+  <param n="name" t="string"><![CDATA[Name]]></param>
+  <param n="description" t="string"><![CDATA[Description]]></param>
+  <param n="urlName" t="string"><![CDATA[URL name]]></param>
+  <param n="contactEmail" t="string"><![CDATA[Contact email]]></param>
+  <script encoded="false"><![CDATA[var tenant = new vCACCAFETenant();
+tenant.setName(name);
+tenant.setUrlName(urlName);
+tenant.setDescription(description);
+tenant.setContactEmail(contactEmail);
+
+System.log("Creating tenant '" + name + "'...");
+var service = host.createAuthenticationClient().getAuthenticationTenantService();
+service.updateOrCreateTenant(tenant);
+System.log("Tenant '" + name + "' created!");
+
+return vCACCAFEEntitiesFinder.getTenant(host, urlName);]]></script>
+</dunes-script-module>

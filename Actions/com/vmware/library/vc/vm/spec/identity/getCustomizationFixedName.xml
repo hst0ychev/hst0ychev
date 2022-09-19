@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getCustomizationFixedName" result-type="Any" api-version="6.0.0" id="64151fc0-3550-47d4-9d61-fdf660642064" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vc.vm.spec.identity">
+  <param n="name" t="string"><![CDATA[The virtual machine name specified by the client.]]></param>
+  <script encoded="false"><![CDATA[if (name == null) {
+	throw "Unable to create VcCustomizationFixedName. Reason: name cannot be null";
+}
+var fixedName = new VcCustomizationFixedName();
+fixedName.name = name;
+return fixedName;]]></script>
+</dunes-script-module>

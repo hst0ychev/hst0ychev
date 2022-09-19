@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="deleteTenant" result-type="void" api-version="6.0.0" id="46618946-2a5f-440b-96ca-b8226941ebc1" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.library.vcaccafe.tenant">
+  <param n="tenant" t="vCACCAFE:Tenant"><![CDATA[Tenant]]></param>
+  <script encoded="false"><![CDATA[System.getModule("com.vmware.library.vcaccafe.util").validateObject(tenant, "Tenant");
+System.log("Deleting tenant '" + tenant.getName() + "'...");
+var host = vCACCAFEEntitiesFinder.getHostForEntity(tenant);
+var service = host.createAuthenticationClient().getAuthenticationTenantService();
+service.deleteTenant(tenant.getId());
+System.log("Tenant '" + tenant.getName() + "' deleted.");]]></script>
+</dunes-script-module>

@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="getPbmUrl" result-type="string" api-version="6.0.0" id="f30cd7ca-2e83-4cef-bdd1-10d6a53b5f81" version="0.0.0" allowed-operations="vf" category-name="com.vmware.library.vc.configuration">
+  <param n="host" t="string"><![CDATA[]]></param>
+  <param n="port" t="number"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var hostStr = undefined;
+var portStr = undefined;
+
+if (host && host.trim().length >0 ) {
+   hostStr  = host.trim();
+}
+
+if (port && port > 0 ) {
+   portStr  = port;
+}
+
+if (hostStr && portStr) {
+  return  "https://" + hostStr +":"+ portStr + "/pbm";
+}
+return null;]]></script>
+</dunes-script-module>

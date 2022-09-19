@@ -1,0 +1,4 @@
+#[#scriptContent#=#string##!/bin/bash
+sudo subscription-manager unregister
+sudo subscription-manager remove --all
+sudo subscription-manager clean#+#scriptTimeOut#=#number#120.0#+#scriptWorkingDirectory#=#string##+#scriptRefreshTime#=#Any#Any#__NULL__#+#deleteResourceAfterRun#=#boolean#true#+#scriptType#=#string#bash#+#resourceSearchReplace#=#boolean#false#+#scriptInteractiveSession#=#boolean#false#+#resourceToCopy#=#Any#Any#__NULL__#+#copyResource#=#boolean#false#]#

@@ -1,0 +1,520 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item14" object-name="Workflow:name=generic" id="4C808080808080808080808080808080ED828080012233687034703cc9494706e" version="1.1.3" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Remove old snapshots]]></display-name>
+  <description><![CDATA[Gets all snapshots that are older than a given number of days and prompts the user to select which ones to delete.]]></description>
+  <position y="20.0" x="180.0"/>
+  <input>
+    <param name="numberOfDay" type="number">
+      <description><![CDATA[Age in days of the snapshots to consider for deletion]]></description>
+    </param>
+    <param name="removeChildren" type="boolean">
+      <description><![CDATA[Remove child snapshots?]]></description>
+    </param>
+    <param name="sendEmail" type="boolean">
+      <description><![CDATA[Send notification email on completion?]]></description>
+    </param>
+    <param name="smtpHost" type="string">
+      <description><![CDATA[STMP Host]]></description>
+    </param>
+    <param name="username" type="string">
+      <description><![CDATA[Username]]></description>
+    </param>
+    <param name="smtpPort1" type="number">
+      <description><![CDATA[SMTP Port]]></description>
+    </param>
+    <param name="password" type="SecureString">
+      <description><![CDATA[Password]]></description>
+    </param>
+    <param name="fromName" type="string">
+      <description><![CDATA[Email sender name]]></description>
+    </param>
+    <param name="fromAddress" type="string">
+      <description><![CDATA[Email sender address]]></description>
+    </param>
+    <param name="toAddress" type="string">
+      <description><![CDATA[Email recipient address]]></description>
+    </param>
+  </input>
+  <attrib name="snapshots" type="Array/VC:VirtualMachineSnapshot" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Array of snapshots]]></description>
+  </attrib>
+  <attrib name="snapshotProperties" type="Properties" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Snapshot properties]]></description>
+  </attrib>
+  <attrib name="snapshotCount" type="number" read-only="false">
+    <value encoded="n"><![CDATA[0]]></value>
+    <description><![CDATA[Number of snapshots]]></description>
+  </attrib>
+  <attrib name="currentSnapshot" type="number" read-only="false">
+    <value encoded="n"><![CDATA[0]]></value>
+    <description><![CDATA[Index of the current snapshot in the array of snapshots]]></description>
+  </attrib>
+  <attrib name="activeSnapshot" type="VC:VirtualMachineSnapshot" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Snapshot that is currently being processed]]></description>
+  </attrib>
+  <attrib name="text" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Error text if a snapshot cannot be removed]]></description>
+  </attrib>
+  <attrib name="subject" type="string" read-only="false">
+    <value encoded="n"><![CDATA[Result of the workflow 'Remove old snapshot']]></value>
+    <description><![CDATA[Email subject]]></description>
+  </attrib>
+  <attrib name="content" type="string" read-only="false">
+    <value encoded="n"><![CDATA[Result =>]]></value>
+    <description><![CDATA[Email content in text or HTML]]></description>
+  </attrib>
+  <attrib name="bigDifference" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+    <description><![CDATA[True if there are more than 2 hours of time difference between the vCenter Server and ESX hosts]]></description>
+  </attrib>
+  <attrib name="wantToContinue" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+    <description><![CDATA[Delete snapshot?]]></description>
+  </attrib>
+  <attrib name="useStartTls" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+  </attrib>
+  <attrib name="useSsl" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+  </attrib>
+  <attrib name="wantToContinue1" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[true]]></value>
+  </attrib>
+  <workflow-item name="item0" out-name="item2" type="task">
+    <display-name><![CDATA[Get snapshots]]></display-name>
+    <script encoded="false"><![CDATA[snapshots = new Array();
+
+var searchResults = System.getModule("com.vmware.library.vc.vm.snapshot").getAllSnapshotResultInDatastoreBrowser(false,false,false,true) ;
+
+var instance = new VcManagedObjectReference();
+instance.type = "ServiceInstance";
+instance.value = "ServiceInstance";
+var instanceObject = null;
+var dateNow;
+var timeForDateNow;
+var timeForDateModif;
+var diff;
+var days;
+
+var ss;
+var folderPath;
+for (var i in searchResults) {
+	var files = searchResults[i].file;
+	for (var j in files) {
+        folderPath = searchResults[i].folderPath;
+        folderPath = folderPath.charAt(folderPath.length - 1) === '/' ? folderPath : folderPath + '/';
+		ss = snapshotProperties.get(folderPath + files[j].path);
+		if(ss){
+			if(instanceObject==null){
+				instanceObject = VcPlugin.convertToVimManagedObject(ss , instance);
+			}
+			dateNow = instanceObject.currentTime();
+			timeForDateNow = dateNow.getTime();
+			timeForDateModif = files[j].modification.getTime();
+			diff = timeForDateNow-timeForDateModif;
+			days = diff/86400000;
+
+			if(days>numbrOfDay){
+				snapshots.push(ss);
+				System.log("The snapshot "+searchResults[i].folderPath +files[j].path+" of the VM "+ss.config.name+" had "+Math.floor(days)+" days");
+				snapshotProperties.remove(folderPath + files[j].path);
+			}		
+		}			
+	}
+}
+	
+
+
+]]></script>
+    <in-binding>
+      <bind name="numbrOfDay" type="number" export-name="numberOfDay"/>
+      <bind name="removeChildren" type="boolean" export-name="removeChildren"/>
+      <bind name="snapshots" type="Array/VC:VirtualMachineSnapshot" export-name="snapshots"/>
+      <bind name="snapshotProperties" type="Properties" export-name="snapshotProperties"/>
+    </in-binding>
+    <out-binding>
+      <bind name="snapshots" type="Array/VC:VirtualMachineSnapshot" export-name="snapshots"/>
+    </out-binding>
+    <position y="260.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item3" type="custom-condition" alt-out-name="item1">
+    <display-name><![CDATA[Have any snapshots?]]></display-name>
+    <script encoded="false"><![CDATA[return snapshots.length>0;]]></script>
+    <in-binding>
+      <bind name="snapshots" type="Array/VC:VirtualMachineSnapshot" export-name="snapshots"/>
+    </in-binding>
+    <position y="310.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item25" type="input">
+    <display-name><![CDATA[Want to remove snapshots?]]></display-name>
+    <in-binding>
+      <bind name="security.group" type="LdapGroup" explicitly-not-bound="true" export-name="NULL">
+        <description><![CDATA[Any user member of this security group will be authorized to answer this 'Input']]></description>
+      </bind>
+      <bind name="timeout.date" type="Date" explicitly-not-bound="true" export-name="NULL">
+        <description><![CDATA[If not null, this input item will wait until date and will continue workflow execution.]]></description>
+      </bind>
+    </in-binding>
+    <out-binding>
+      <bind name="snapshots" type="Array/VC:VirtualMachineSnapshot" export-name="snapshots"/>
+      <bind name="wantToContinue1" type="boolean" export-name="wantToContinue1"/>
+    </out-binding>
+    <presentation>
+      <p-param name="snapshots">
+        <desc><![CDATA[Choose the snapshots do you want to remove]]></desc>
+      </p-param>
+      <p-param name="wantToContinue1">
+        <desc><![CDATA[Are you sure that you want to continue?]]></desc>
+      </p-param>
+    </presentation>
+    <position y="320.0" x="280.0"/>
+  </workflow-item>
+  <workflow-item name="item6" out-name="item0" type="task" script-module="com.vmware.library.vc.vm.snapshot/getPropertiesForAllSnapshotTask">
+    <display-name><![CDATA[getPropertiesForAllSnapshotTask]]></display-name>
+    <script encoded="false"><![CDATA[//Auto generated script, cannot be modified !
+actionResult = System.getModule("com.vmware.library.vc.vm.snapshot").getPropertiesForAllSnapshotTask() ;]]></script>
+    <in-binding/>
+    <out-binding>
+      <bind name="actionResult" type="Properties" export-name="snapshotProperties"/>
+    </out-binding>
+    <description><![CDATA[Return properties with the name of snapshot as key and vc object VirtualMachineSnapshot as value. It is used to get the snapshot VC Object when searching information on the snapshot from the datastorebrowser which return the name of the snapshot but not the object.]]></description>
+    <position y="200.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item7" out-name="item8" type="task">
+    <display-name><![CDATA[Initialize]]></display-name>
+    <script encoded="false"><![CDATA[snapshotCount = snapshots.length;
+currentSnapshot = 0;]]></script>
+    <in-binding>
+      <bind name="snapshots" type="Array/VC:VirtualMachineSnapshot" export-name="snapshots"/>
+    </in-binding>
+    <out-binding>
+      <bind name="snapshotCount" type="number" export-name="snapshotCount"/>
+      <bind name="currentSnapshot" type="number" export-name="currentSnapshot"/>
+      <bind name="snapshots" type="Array/VC:VirtualMachineSnapshot" export-name="snapshots"/>
+    </out-binding>
+    <position y="260.0" x="420.0"/>
+  </workflow-item>
+  <workflow-item name="item8" out-name="item9" type="custom-condition" alt-out-name="item15">
+    <display-name><![CDATA[Snapshots to Process?]]></display-name>
+    <script encoded="false"><![CDATA[if(snapshots.length>0){
+	return true;
+}else{
+	return false;
+}]]></script>
+    <in-binding>
+      <bind name="snapshots" type="Array/VC:VirtualMachineSnapshot" export-name="snapshots"/>
+    </in-binding>
+    <position y="310.0" x="420.0"/>
+  </workflow-item>
+  <workflow-item name="item9" out-name="item10" type="custom-condition" alt-out-name="item5">
+    <display-name><![CDATA[Snapshots remaining?]]></display-name>
+    <script encoded="false"><![CDATA[if (currentSnapshot < snapshotCount){
+	return true;
+}else{
+	return false;
+}]]></script>
+    <in-binding>
+      <bind name="snapshotCount" type="number" export-name="snapshotCount"/>
+      <bind name="currentSnapshot" type="number" export-name="currentSnapshot"/>
+    </in-binding>
+    <position y="310.0" x="580.0"/>
+  </workflow-item>
+  <workflow-item name="item10" out-name="item11" type="task">
+    <display-name><![CDATA[Set Snapshot]]></display-name>
+    <script encoded="false"><![CDATA[// Set our activeVM object:
+var activeSnapshot = snapshots[currentSnapshot];
+]]></script>
+    <in-binding>
+      <bind name="currentSnapshot" type="number" export-name="currentSnapshot"/>
+      <bind name="snapshots" type="Array/VC:VirtualMachineSnapshot" export-name="snapshots"/>
+    </in-binding>
+    <out-binding>
+      <bind name="activeSnapshot" type="VC:VirtualMachineSnapshot" export-name="activeSnapshot"/>
+    </out-binding>
+    <position y="320.0" x="740.0"/>
+  </workflow-item>
+  <workflow-item name="item11" out-name="item12" catch-name="item13" throw-bind-name="text" type="task">
+    <display-name><![CDATA[Remove snapshot]]></display-name>
+    <script encoded="false"><![CDATA[var logtext;
+if(activeSnapshot.config){
+	var vmName = activeSnapshot.config.name;
+	var snapshotID = activeSnapshot.id;
+
+	var task = activeSnapshot.removeSnapshot_Task(removeChildren);
+	var actionResult = System.getModule("com.vmware.library.vc.basic").vim3WaitTaskEnd(task) ;
+
+	logtext = "The snapshot with the id " + snapshotID + " from the Virtual machine '"+vmName+"'has been removed.";
+}else{
+	logtext = "The snapshot with the id " + activeSnapshot.id + " has already been removed.";
+}
+
+content = content + "<br>" + logtext;
+System.log(logtext);
+
+
+
+
+]]></script>
+    <in-binding>
+      <bind name="activeSnapshot" type="VC:VirtualMachineSnapshot" export-name="activeSnapshot"/>
+      <bind name="removeChildren" type="boolean" export-name="removeChildren"/>
+      <bind name="content" type="string" export-name="content"/>
+    </in-binding>
+    <out-binding>
+      <bind name="content" type="string" export-name="content"/>
+    </out-binding>
+    <position y="260.0" x="740.0"/>
+  </workflow-item>
+  <workflow-item name="item12" out-name="item9" type="task">
+    <display-name><![CDATA[Increment Counter]]></display-name>
+    <script encoded="false"><![CDATA[currentSnapshot++;
+activeSnapshot = snapshots[currentSnapshot];
+]]></script>
+    <in-binding>
+      <bind name="snapshots" type="Array/VC:VirtualMachineSnapshot" export-name="snapshots"/>
+      <bind name="currentSnapshot" type="number" export-name="currentSnapshot"/>
+    </in-binding>
+    <out-binding>
+      <bind name="activeSnapshot" type="VC:VirtualMachineSnapshot" export-name="activeSnapshot"/>
+      <bind name="currentSnapshot" type="number" export-name="currentSnapshot"/>
+    </out-binding>
+    <position y="260.0" x="580.0"/>
+  </workflow-item>
+  <workflow-item name="item13" out-name="item12" content-mode="y" type="task" interaction="l">
+    <display-name><![CDATA[System+Server error]]></display-name>
+    <script encoded="false"><![CDATA[//Auto-generated script
+System.error(text);
+Server.error(text);
+]]></script>
+    <in-binding>
+      <bind name="text" type="string" export-name="text">
+        <description><![CDATA[The text to log]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Log the input text to the console and the server log with level 'error']]></description>
+    <position y="200.0" x="740.0"/>
+  </workflow-item>
+  <workflow-item name="item15" out-name="item16" type="task">
+    <display-name><![CDATA[Don't erase the snapshots]]></display-name>
+    <script encoded="false"><![CDATA[System.log("No snapshot will be removed.");]]></script>
+    <in-binding/>
+    <out-binding/>
+    <position y="380.0" x="420.0"/>
+  </workflow-item>
+  <workflow-item name="item16" type="end" end-mode="0">
+    <position y="430.0" x="460.0"/>
+  </workflow-item>
+  <workflow-item name="item1" out-name="item4" type="task">
+    <display-name><![CDATA[No snapshot]]></display-name>
+    <script encoded="false"><![CDATA[System.log("There is no snapshot older than " + numberOfDay + " day(s)");]]></script>
+    <in-binding>
+      <bind name="numberOfDay" type="number" export-name="numberOfDay"/>
+    </in-binding>
+    <out-binding/>
+    <position y="380.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item4" type="end" end-mode="0">
+    <position y="430.0" x="180.0"/>
+  </workflow-item>
+  <workflow-item name="item5" out-name="item17" type="custom-condition" alt-out-name="item19">
+    <display-name><![CDATA[Send an email?]]></display-name>
+    <script encoded="false"><![CDATA[return sendEmail;]]></script>
+    <in-binding>
+      <bind name="sendEmail" type="boolean" export-name="sendEmail"/>
+    </in-binding>
+    <position y="370.0" x="580.0"/>
+  </workflow-item>
+  <workflow-item name="item17" out-name="item18" type="link" linked-workflow-id="8D80808080808080808080808080808089808080012318760241416446ce5b52f">
+    <display-name><![CDATA[Email Send (Notification)]]></display-name>
+    <in-binding>
+      <bind name="smtpHost" type="string" export-name="smtpHost">
+        <description><![CDATA[STMP Host]]></description>
+      </bind>
+      <bind name="smtpPort" type="number" export-name="smtpPort1">
+        <description><![CDATA[SMTP Port]]></description>
+      </bind>
+      <bind name="username" type="string" export-name="username">
+        <description><![CDATA[Username for authentication]]></description>
+      </bind>
+      <bind name="password" type="SecureString" export-name="password">
+        <description><![CDATA[Password for authentication]]></description>
+      </bind>
+      <bind name="fromName" type="string" export-name="fromName">
+        <description><![CDATA[from name]]></description>
+      </bind>
+      <bind name="fromAddress" type="string" export-name="fromAddress">
+        <description><![CDATA[from address]]></description>
+      </bind>
+      <bind name="toAddress" type="string" export-name="toAddress">
+        <description><![CDATA[destination address]]></description>
+      </bind>
+      <bind name="subject" type="string" export-name="subject">
+        <description><![CDATA[email title]]></description>
+      </bind>
+      <bind name="content" type="string" export-name="content">
+        <description><![CDATA[content (text or html text)]]></description>
+      </bind>
+      <bind name="useStartTls" type="boolean" export-name="useStartTls"/>
+      <bind name="useSsl" type="boolean" export-name="useSsl"/>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Send an email with a text content to given email address.
+
+Use default settings (from Configuration), for these optional input parameters:
+STMP host, SMTP port, username, password, from Address and from Name.
+
+You can override these values by providing input parameters.]]></description>
+    <position y="440.0" x="580.0"/>
+  </workflow-item>
+  <workflow-item name="item18" type="end" end-mode="0">
+    <position y="490.0" x="620.0"/>
+  </workflow-item>
+  <workflow-item name="item19" type="end" end-mode="0">
+    <position y="370.0" x="760.0"/>
+  </workflow-item>
+  <workflow-item name="item14" out-name="item20" type="task">
+    <display-name><![CDATA[Check host and VC time]]></display-name>
+    <script encoded="false"><![CDATA[var hosts = VcPlugin.getAllHostSystems();
+
+var instance = new VcManagedObjectReference();
+instance.type = "ServiceInstance";
+instance.value = "ServiceInstance";
+
+var instanceObject;
+var timeVC;
+var myHostDateTimeSystem;
+var timeHost;
+var differenceInMinute;
+
+for each (host in hosts){
+	try {
+	  instanceObject = VcPlugin.convertToVimManagedObject(host , instance);
+	  timeVC = instanceObject.currentTime().getTime();
+	  myHostDateTimeSystem = VcPlugin.convertToVimManagedObject(host , host.configManager.dateTimeSystem);
+	  timeHost = myHostDateTimeSystem.queryDateTime().getTime();
+	} catch (e) {
+	  Server.error(e);
+	  continue;
+	}
+	differenceInMinute = (timeHost-timeVC)/60000;
+	if(differenceInMinute<0)differenceInMinute = -differenceInMinute;
+	if(differenceInMinute>2){
+		bigDifference=true;
+		break;
+	}
+}
+]]></script>
+    <in-binding>
+      <bind name="bigDifference" type="boolean" export-name="bigDifference"/>
+    </in-binding>
+    <out-binding>
+      <bind name="bigDifference" type="boolean" export-name="bigDifference"/>
+    </out-binding>
+    <position y="80.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item20" out-name="item6" type="custom-condition" alt-out-name="item21">
+    <display-name><![CDATA[Host time same as VC time?]]></display-name>
+    <script encoded="false"><![CDATA[return !bigDifference;]]></script>
+    <in-binding>
+      <bind name="bigDifference" type="boolean" export-name="bigDifference"/>
+    </in-binding>
+    <position y="130.0" x="140.0"/>
+  </workflow-item>
+  <workflow-item name="item21" out-name="item22" type="input">
+    <display-name><![CDATA[Want to continue]]></display-name>
+    <in-binding/>
+    <out-binding>
+      <bind name="wantToContinue" type="boolean" export-name="wantToContinue"/>
+    </out-binding>
+    <presentation>
+      <desc><![CDATA[Your host(s) have not the same time as your VC; it can cause some problem when calculating the age of your snapshots]]></desc>
+      <p-param name="wantToContinue">
+        <desc><![CDATA[Are you sure that you want to continue?]]></desc>
+      </p-param>
+    </presentation>
+    <position y="140.0" x="280.0"/>
+  </workflow-item>
+  <workflow-item name="item22" out-name="item6" type="custom-condition" alt-out-name="item23">
+    <display-name><![CDATA[Continue?]]></display-name>
+    <script encoded="false"><![CDATA[return wantToContinue;]]></script>
+    <in-binding>
+      <bind name="wantToContinue" type="boolean" export-name="wantToContinue"/>
+    </in-binding>
+    <position y="190.0" x="280.0"/>
+  </workflow-item>
+  <workflow-item name="item23" out-name="item24" type="task">
+    <display-name><![CDATA[Stop ]]></display-name>
+    <script encoded="false"><![CDATA[System.log("You decide to stop the workflow.");]]></script>
+    <in-binding/>
+    <out-binding/>
+    <position y="200.0" x="420.0"/>
+  </workflow-item>
+  <workflow-item name="item24" type="end" end-mode="0">
+    <position y="190.0" x="580.0"/>
+  </workflow-item>
+  <workflow-item name="item25" out-name="item7" type="custom-condition" alt-out-name="item4">
+    <display-name><![CDATA[Continue?]]></display-name>
+    <script encoded="false"><![CDATA[return wantToContinue1;]]></script>
+    <in-binding>
+      <bind name="wantToContinue1" type="boolean" export-name="wantToContinue1"/>
+    </in-binding>
+    <position y="372.68181818181813" x="285.0"/>
+  </workflow-item>
+  <presentation>
+    <p-step>
+      <title><![CDATA[Snapshot informations]]></title>
+      <p-param name="numberOfDay">
+        <desc><![CDATA[Age in days of the snapshots to consider for deletion]]></desc>
+        <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        <p-qual kind="static" name="numberFormat" type="String"><![CDATA[##]]></p-qual>
+      </p-param>
+      <p-param name="removeChildren">
+        <desc><![CDATA[Remove child snapshots?]]></desc>
+        <p-qual kind="static" name="defaultValue" type="boolean"><![CDATA[__NULL__]]></p-qual>
+      </p-param>
+    </p-step>
+    <p-step>
+      <title><![CDATA[Email informations]]></title>
+      <p-group>
+        <title><![CDATA[Send Email]]></title>
+        <desc><![CDATA[Optionally this workflow can email the results to the specified recipient.]]></desc>
+        <p-param name="sendEmail">
+          <desc><![CDATA[Send notification email on completion?]]></desc>
+        </p-param>
+        <p-param name="toAddress">
+          <desc><![CDATA[Destination address]]></desc>
+          <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#sendEmail]]></p-qual>
+          <p-qual kind="static" name="mandatory" type="boolean"><![CDATA[true]]></p-qual>
+        </p-param>
+      </p-group>
+      <p-group>
+        <title><![CDATA[Mail Configuration]]></title>
+        <desc><![CDATA[Mail configuration defaults can be defined using the vCO Configuration application.  The mail configuration can also be set using the input fields in this section.]]></desc>
+        <p-qual kind="ognl" name="visible" type="boolean"><![CDATA[#sendEmail]]></p-qual>
+        <p-param name="smtpPort1">
+          <desc><![CDATA[SMTP Port]]></desc>
+        </p-param>
+        <p-param name="smtpHost">
+          <desc><![CDATA[STMP Host]]></desc>
+        </p-param>
+        <p-param name="fromAddress">
+          <desc><![CDATA[Email sender address]]></desc>
+        </p-param>
+        <p-param name="fromName">
+          <desc><![CDATA[Email sender name]]></desc>
+        </p-param>
+        <p-param name="username">
+          <desc><![CDATA[Username]]></desc>
+        </p-param>
+        <p-param name="password">
+          <desc><![CDATA[Password]]></desc>
+        </p-param>
+      </p-group>
+    </p-step>
+  </presentation>
+</workflow>

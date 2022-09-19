@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="base64encode" result-type="string" api-version="6.0.0" id="aa873ef3-57a9-3b60-b1a0-f481d4ce5d7c" version="1.0.2" allowed-operations="evf" category-name="com.vmware.indcoe.util">
+  <description><![CDATA[Returns base64 encoded form of input plain text.
+@author Kevin S <kevins@vmware.com>]]></description>
+  <param n="plainText" t="string"><![CDATA[The text to encode]]></param>
+  <script encoded="false"><![CDATA[// Taken from: https://github.com/MaxArt2501/base64-js/blob/master/base64.js
+var b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+enteredText = String(plainText);
+        var bitmap, a, b, c,
+            result = "", i = 0,
+            rest = enteredText.length % 3; // To determine the final padding
+
+        for (; i < enteredText.length;) {
+            if ((a = enteredText.charCodeAt(i++)) > 255 || (b = enteredText.charCodeAt(i++)) > 255 || (c = enteredText.charCodeAt(i++)) > 255)
+            {
+                return 'null';
+            }
+
+            bitmap = (a << 16) | (b << 8) | c;
+            result += b64.charAt(bitmap >> 18 & 63) + b64.charAt(bitmap >> 12 & 63)
+                    + b64.charAt(bitmap >> 6 & 63) + b64.charAt(bitmap & 63);
+        }
+
+        // If there's need of padding, replace the last 'A's with equal signs
+        return rest ? result.slice(0, rest - 3) + "===".substring(rest) : result;
+]]></script>
+</dunes-script-module>

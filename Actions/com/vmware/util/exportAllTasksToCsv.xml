@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="exportAllTasksToCsv" result-type="void" api-version="6.0.0" id="8B808080808080808080808080808080C680808001297259131125b940b51f82d" version="1.0.0" allowed-operations="vfe" category-name="com.vmware.util">
+  <param n="csvPathAndName" t="Path"><![CDATA[]]></param>
+  <script encoded="false"><![CDATA[var csvFile = new FileWriter(csvPathAndName) ;
+csvFile.open();
+csvFile.clean();
+
+csvFile.write(
+	"Task Name" 
+	+ "," + "Execution Date"
+	+ "," + "State"
+	+ "," + "Workflow"
+	+ "\n");	
+
+var tasks = Server.findAllForType('Task');
+
+for (var i=0;i<tasks.length;i++){
+	
+	csvFile.write(
+	"\"" + tasks[i].name  + "\""
+	+ "," + "\"" + tasks[i].executionDate + "\""
+	+ "," + "\"" + tasks[i].state + "\""
+	+ "," + "\"" + tasks[i].workflow.name + "\""
+	+ "\n");	
+}
+
+csvFile.close();]]></script>
+</dunes-script-module>

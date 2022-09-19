@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<config-element id="d284d99b-6808-452d-9752-acfe51c13d18" version="1.0.0">
+  <display-name><![CDATA[RestoreBackupDestination]]></display-name>
+  <atts>
+    <att name="Snapshot" type="string" read-only="false">
+      <value encoded="n"><![CDATA[Snapshot]]></value>
+    </att>
+    <att name="AnotherVolume" type="string" read-only="false">
+      <value encoded="n"><![CDATA[AnotherVolume]]></value>
+    </att>
+    <att name="ParentVolume" type="string" read-only="false">
+      <value encoded="n"><![CDATA[ParentVolume]]></value>
+    </att>
+  </atts>
+</config-element>

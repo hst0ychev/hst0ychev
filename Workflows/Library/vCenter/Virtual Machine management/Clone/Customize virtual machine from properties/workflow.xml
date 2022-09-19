@@ -1,0 +1,480 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<workflow xmlns="http://vmware.com/vco/workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://vmware.com/vco/workflow http://vmware.com/vco/workflow/Workflow-v4.xsd" root-name="item20" object-name="Workflow:name=generic" id="BD80808080808080808080808080808073E180800122528313869552e41805bb1" version="1.1.1" api-version="6.0.0" allowed-operations="vfe" restartMode="1" resumeFromFailedMode="0">
+  <display-name><![CDATA[Customize virtual machine from properties]]></display-name>
+  <description><![CDATA[Customizes a virtual machine by using properties as input parameters. Properties of different types have the following prefixes:
+- VMware properties start with vm
+- Windows properties start with win
+- Linux properties with lin
+- Networks properties start with nic1, nic2, nic3 or nic4
+- Other properties are ignored
+
+See the workflow attributes for the key name and object types.]]></description>
+  <position y="30.0" x="40.0"/>
+  <input>
+    <param name="props" type="Properties">
+      <description><![CDATA[All input properties for the customization operation]]></description>
+    </param>
+  </input>
+  <attrib name="vmSource" type="VC:VirtualMachine" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Virtual machine to customize]]></description>
+  </attrib>
+  <attrib name="winDoSysprep" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+    <description><![CDATA[Run the Sysprep operations, start and wait for the task to complete. Not used if template=true]]></description>
+  </attrib>
+  <attrib name="winClientName" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Name or prefix name of the client, namely, the guest name of the Windows virtual machine]]></description>
+  </attrib>
+  <attrib name="winProductId" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Sysprep requires you to include a valid serial number in the answer file when the mini-setup runs. Workflow ignores this serial number if you installed the original guest OS using a volume-licensed CD]]></description>
+  </attrib>
+  <attrib name="winJoinDomain" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Optional) Domain that the virtual machine joins. If this value is set, you must set domainAdmin and domainAdminPassword, and you must leave the workgroup name empty]]></description>
+  </attrib>
+  <attrib name="winJoinWorkgroup" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[(Optional) Workgroup that the virtual machine joins. If this value is set, you must leave the domain name and authentication fields empty]]></description>
+  </attrib>
+  <attrib name="winDomainAdmin" type="Credential" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[(Optional) Domain user account to use for authentication if the virtual machine is to join a domain. Does not need to be a domain administrator account, but the account must have the necessary privileges to add machines to the domain]]></description>
+  </attrib>
+  <attrib name="winDomainAdminUsername" type="string" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[(Optional) Username of the domain user account to use for authentication if the virtual machine is to join a domain. Does not need to be a domain administrator account, but the account must have the necessary privileges to add machines to the domain]]></description>
+  </attrib>
+  <attrib name="winDomainAdminPassword" type="SecureString" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Optional) Password for the domain user account to use for authentication if the virtual machine is to join a domain. Does not need to be a domain administrator account, but the account must have the necessary privileges to add machines to the domain]]></description>
+  </attrib>
+  <attrib name="winLicenseMode" type="VC:CustomizationLicenseDataMode" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Server licensing mode ]]></description>
+  </attrib>
+  <attrib name="winLicenseUsers" type="number" read-only="false">
+    <value encoded="n"><![CDATA[5.0]]></value>
+    <description><![CDATA[This key is valid only if AutoMode = PerServer]]></description>
+  </attrib>
+  <attrib name="winNewAdminPassword" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[New administrator password. Set the associated plainText flag to false to activate encryption]]></description>
+  </attrib>
+  <attrib name="winTimezone" type="Enums:MSTimeZone" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Time zone for the new virtual machine]]></description>
+  </attrib>
+  <attrib name="winFullName" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[User's full name]]></description>
+  </attrib>
+  <attrib name="winOrgName" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[User's organization]]></description>
+  </attrib>
+  <attrib name="errorCodeNotSupportOS" type="string" read-only="false">
+    <value encoded="n"><![CDATA[NotSupportedOsError: This workflow only support Windows and Linux OS]]></value>
+    <description><![CDATA[Error for an unsupported guest OS]]></description>
+  </attrib>
+  <attrib name="errorCodeNumberOfNic" type="string" read-only="false">
+    <value encoded="n"><![CDATA[NotImplementedError: Number of Network Interface Card (NIC) not supported]]></value>
+    <description><![CDATA[Error for incorrect number of NICs]]></description>
+  </attrib>
+  <attrib name="nic1Network" type="VC:Network" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[Network on which to connect the virtual network inferface]]></description>
+  </attrib>
+  <attrib name="nic1DnsServerList" type="Array/string" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[(Optional) List of DNS servers, for a virtual network adapter with a static IP address]]></description>
+  </attrib>
+  <attrib name="nic1DnsDomain" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[(Optional) DNS domain suffix, for example, vmware.com]]></description>
+  </attrib>
+  <attrib name="nic1Dhcp" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+    <description><![CDATA[Use a DHCP server to configure the virtual network adapter]]></description>
+  </attrib>
+  <attrib name="nic1Gateway" type="Array/string" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[(Optional) List of gateways, in order of preference]]></description>
+  </attrib>
+  <attrib name="nic1IpAddress" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Fixed, valid IP address]]></description>
+  </attrib>
+  <attrib name="nic1MacAddress" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[(Optional) MAC address of a network adapter to customize. By default, the customization process maps the settings from the virtual machine's network adapters, in PCI slot order]]></description>
+  </attrib>
+  <attrib name="nic1NetBIOS" type="VC:CustomizationNetBIOSMode" read-only="false">
+    <value encoded="n"><![CDATA[__NULL__]]></value>
+    <description><![CDATA[(Optional) NetBIOS setting for Windows]]></description>
+  </attrib>
+  <attrib name="nic1PrimaryWINS" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[(Optional) IP address of the primary WINS server. Linux guest operating systems ignore this property]]></description>
+  </attrib>
+  <attrib name="nic1SecondaryWINS" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[(Optional) IP address of the secondary WINS server. Linux guest operating systems ignore this property ]]></description>
+  </attrib>
+  <attrib name="nic1SubnetMask" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[(Optional) Subnet mask for this virtual network adapter]]></description>
+  </attrib>
+  <attrib name="linClientName" type="string" read-only="false">
+    <value encoded="n"><![CDATA[]]></value>
+    <description><![CDATA[Name or prefix name of the client, namely, name of the Linux guest OS]]></description>
+  </attrib>
+  <attrib name="linDoSysprep" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+    <description><![CDATA[Run the Sysprep operations, start and wait for the task to complete. Not used if template=true]]></description>
+  </attrib>
+  <attrib name="isWindows" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[false]]></value>
+    <description><![CDATA[Internal: define this as a Windows clone]]></description>
+  </attrib>
+  <attrib name="logProps" type="boolean" read-only="false">
+    <value encoded="n"><![CDATA[true]]></value>
+    <description><![CDATA[Log properties]]></description>
+  </attrib>
+  <attrib name="logFile" type="Path" read-only="false">
+    <value encoded="n"><![CDATA[sysprep.log]]></value>
+    <description><![CDATA[Writes log file to a temporary folder]]></description>
+  </attrib>
+  <workflow-item name="item1" out-name="item2" type="task">
+    <display-name><![CDATA[Get VMware values]]></display-name>
+    <script encoded="false"><![CDATA[vmSource = props.get("vmSource");]]></script>
+    <in-binding>
+      <bind name="props" type="Properties" export-name="props"/>
+    </in-binding>
+    <out-binding>
+      <bind name="vmSource" type="VC:VirtualMachine" export-name="vmSource"/>
+    </out-binding>
+    <position y="80.0" x="120.0"/>
+  </workflow-item>
+  <workflow-item name="item2" out-name="item4" type="custom-condition" alt-out-name="item3">
+    <display-name><![CDATA[Has Windows props?]]></display-name>
+    <script encoded="false"><![CDATA[for (var i in props.keys) {
+	if (props.keys[i].substring(0,3) == "win")
+		return true;
+}
+return false;]]></script>
+    <in-binding>
+      <bind name="props" type="Properties" export-name="props"/>
+    </in-binding>
+    <position y="130.0" x="120.0"/>
+  </workflow-item>
+  <workflow-item name="item3" out-name="item17" type="custom-condition" alt-out-name="item5">
+    <display-name><![CDATA[Has Linux props?]]></display-name>
+    <script encoded="false"><![CDATA[for (var i in props.keys) {
+	if (props.keys[i].substring(0,3) == "lin")
+		return true;
+}
+return false;]]></script>
+    <in-binding>
+      <bind name="props" type="Properties" export-name="props"/>
+    </in-binding>
+    <position y="230.0" x="120.0"/>
+  </workflow-item>
+  <workflow-item name="item4" out-name="item7" type="task">
+    <display-name><![CDATA[Get Windows Values]]></display-name>
+    <script encoded="false"><![CDATA[if (props.get("winDoSysprep") == null)
+	winDoSysprep = true;
+else 
+	winDoSysprep = props.get("winDoSysprep");
+System.debug("Doing Sysprep: " + winDoSysprep);
+	
+winClientName = props.get("winClientName");
+winProductId = props.get("winProductId");
+winJoinDomain = props.get("winJoinDomain");
+winJoinWorkgroup = props.get("winJoinWorkgroup");
+winDomainAdmin = props.get("winDomainAdmin");
+winDomainAdminUsername = props.get("winDomainAdminUsername");
+winDomainAdminPassword = props.get("winDomainAdminPassword");
+winLicenseMode = props.get("winLicenseMode");
+winLicenseUsers = props.get("winLicenseUsers");
+winNewAdminPassword = props.get("winNewAdminPassword");
+winTimezone = props.get("winTimezone");
+winFullName = props.get("winFullName");
+winOrgName = props.get("winOrgName");
+
+
+isWindows = true;]]></script>
+    <in-binding>
+      <bind name="props" type="Properties" export-name="props"/>
+    </in-binding>
+    <out-binding>
+      <bind name="winDoSysprep" type="boolean" export-name="winDoSysprep"/>
+      <bind name="winClientName" type="string" export-name="winClientName"/>
+      <bind name="winProductId" type="string" export-name="winProductId"/>
+      <bind name="winJoinDomain" type="string" export-name="winJoinDomain"/>
+      <bind name="winJoinWorkgroup" type="string" export-name="winJoinWorkgroup"/>
+      <bind name="winDomainAdmin" type="Credential" export-name="winDomainAdmin"/>
+      <bind name="winDomainAdminUsername" type="string" export-name="winDomainAdminUsername"/>
+      <bind name="winDomainAdminPassword" type="SecureString" export-name="winDomainAdminPassword"/>
+      <bind name="winLicenseMode" type="VC:CustomizationLicenseDataMode" export-name="winLicenseMode"/>
+      <bind name="winLicenseUsers" type="number" export-name="winLicenseUsers"/>
+      <bind name="winNewAdminPassword" type="string" export-name="winNewAdminPassword"/>
+      <bind name="winTimezone" type="Enums:MSTimeZone" export-name="winTimezone"/>
+      <bind name="winFullName" type="string" export-name="winFullName"/>
+      <bind name="winOrgName" type="string" export-name="winOrgName"/>
+      <bind name="isWindows" type="boolean" export-name="isWindows"/>
+    </out-binding>
+    <position y="140.0" x="360.0"/>
+  </workflow-item>
+  <workflow-item name="item5" throw-bind-name="errorCodeNotSupportOS" type="end" end-mode="1">
+    <position y="310.0" x="160.0"/>
+  </workflow-item>
+  <workflow-item name="item7" out-name="item15" type="custom-condition" alt-out-name="item11">
+    <display-name><![CDATA[1 NIC?]]></display-name>
+    <script encoded="false"><![CDATA[for (var i in props.keys) {
+	if (props.keys[i].substring(0,4) == "nic1")
+		return true;
+}
+return false;]]></script>
+    <in-binding>
+      <bind name="props" type="Properties" export-name="props"/>
+    </in-binding>
+    <position y="130.0" x="560.0"/>
+  </workflow-item>
+  <workflow-item name="item8" out-name="item9" type="custom-condition" alt-out-name="item18">
+    <display-name><![CDATA[2 NIC?]]></display-name>
+    <script encoded="false"><![CDATA[for (var i in props.keys) {
+	if (props.keys[i].substring(0,4) == "nic2")
+		return true;
+}
+return false;]]></script>
+    <in-binding>
+      <bind name="props" type="Properties" export-name="props"/>
+    </in-binding>
+    <position y="230.0" x="560.0"/>
+  </workflow-item>
+  <workflow-item name="item9" out-name="item10" type="custom-condition" alt-out-name="item12">
+    <display-name><![CDATA[3 NIC?]]></display-name>
+    <script encoded="false"><![CDATA[for (var i in props.keys) {
+	if (props.keys[i].substring(0,4) == "nic3")
+		return true;
+}
+return false;]]></script>
+    <in-binding>
+      <bind name="props" type="Properties" export-name="props"/>
+    </in-binding>
+    <position y="330.0" x="560.0"/>
+  </workflow-item>
+  <workflow-item name="item10" out-name="item13" type="custom-condition" alt-out-name="item14">
+    <display-name><![CDATA[4 NIC?]]></display-name>
+    <script encoded="false"><![CDATA[for (var i in props.keys) {
+	if (props.keys[i].substring(0,4) == "nic4")
+		return true;
+}
+return false;]]></script>
+    <in-binding>
+      <bind name="props" type="Properties" export-name="props"/>
+    </in-binding>
+    <position y="410.0" x="560.0"/>
+  </workflow-item>
+  <workflow-item name="item11" throw-bind-name="errorCodeNumberOfNic" type="end" end-mode="1">
+    <position y="130.0" x="800.0"/>
+  </workflow-item>
+  <workflow-item name="item12" throw-bind-name="errorCodeNumberOfNic" type="end" end-mode="1">
+    <position y="330.0" x="800.0"/>
+  </workflow-item>
+  <workflow-item name="item13" throw-bind-name="errorCodeNumberOfNic" type="end" end-mode="1">
+    <position y="470.0" x="600.0"/>
+  </workflow-item>
+  <workflow-item name="item14" throw-bind-name="errorCodeNumberOfNic" type="end" end-mode="1">
+    <position y="410.0" x="800.0"/>
+  </workflow-item>
+  <workflow-item name="item15" out-name="item8" type="task">
+    <display-name><![CDATA[Get Nic1 Values]]></display-name>
+    <script encoded="false"><![CDATA[nic1Network = props.get("nic1Network");
+nic1DnsServerList = props.get("nic1DnsServerList");
+nic1DnsDomain = props.get("nic1DnsDomain");
+nic1Dhcp = props.get("nic1Dhcp");
+nic1Gateway = props.get("nic1Gateways");
+nic1IpAddress = props.get("nic1IpAddress");
+nic1MacAddress = props.get("nic1MacAddress");
+nic1NetBIOS = props.get("nic1NetBIOS");
+nic1PrimaryWINS = props.get("nic1PrimaryWINS");
+nic1SecondaryWINS = props.get("nic1SecondaryWINS");
+nic1SubnetMask = props.get("nic1SubnetMask");]]></script>
+    <in-binding>
+      <bind name="props" type="Properties" export-name="props"/>
+    </in-binding>
+    <out-binding>
+      <bind name="nic1Network" type="VC:Network" export-name="nic1Network"/>
+      <bind name="nic1DnsServerList" type="Array/string" export-name="nic1DnsServerList"/>
+      <bind name="nic1DnsDomain" type="string" export-name="nic1DnsDomain"/>
+      <bind name="nic1Dhcp" type="boolean" export-name="nic1Dhcp"/>
+      <bind name="nic1Gateway" type="Array/string" export-name="nic1Gateway"/>
+      <bind name="nic1IpAddress" type="string" export-name="nic1IpAddress"/>
+      <bind name="nic1MacAddress" type="string" export-name="nic1MacAddress"/>
+      <bind name="nic1NetBIOS" type="VC:CustomizationNetBIOSMode" export-name="nic1NetBIOS"/>
+      <bind name="nic1PrimaryWINS" type="string" export-name="nic1PrimaryWINS"/>
+      <bind name="nic1SecondaryWINS" type="string" export-name="nic1SecondaryWINS"/>
+      <bind name="nic1SubnetMask" type="string" export-name="nic1SubnetMask"/>
+    </out-binding>
+    <position y="180.0" x="560.0"/>
+  </workflow-item>
+  <workflow-item name="item16" type="end" end-mode="0">
+    <position y="190.0" x="1100.0"/>
+  </workflow-item>
+  <workflow-item name="item17" out-name="item7" type="task">
+    <display-name><![CDATA[Get Linux Values]]></display-name>
+    <script encoded="false"><![CDATA[if (props.get("linDoSysprep") == null)
+	linDoSysprep = true;
+else 
+	linDoSysprep = props.get("linDoSysprep");
+System.debug("Doing Sysprep: " + linDoSysprep);
+	
+linClientName = props.get("linClientName");]]></script>
+    <in-binding>
+      <bind name="props" type="Properties" export-name="props"/>
+    </in-binding>
+    <out-binding>
+      <bind name="linClientName" type="string" export-name="linClientName"/>
+      <bind name="linDoSysprep" type="boolean" export-name="linDoSysprep"/>
+    </out-binding>
+    <position y="240.0" x="360.0"/>
+  </workflow-item>
+  <workflow-item name="item18" out-name="item21" type="condition" alt-out-name="item0" comparator="0">
+    <display-name><![CDATA[Windows?]]></display-name>
+    <script encoded="false"><![CDATA[//Generated by the system, cannot be edited
+return (isWindows == true) ;]]></script>
+    <in-binding>
+      <bind name="isWindows" type="boolean" export-name="isWindows"/>
+    </in-binding>
+    <condition name="isWindows" type="boolean" comparator="0" label="null">false</condition>
+    <position y="230.0" x="780.0"/>
+  </workflow-item>
+  <workflow-item name="item20" out-name="item1" type="task">
+    <display-name><![CDATA[Log properties]]></display-name>
+    <script encoded="false"><![CDATA[if (logProps) {
+	var myFileWriter = new FileWriter(System.getTempDirectory()+logFile);
+
+	try {
+		myFileWriter.open();
+		//myFileWriter.clean();
+		for each (var key in props.keys) {
+			myFileWriter.writeLine(key + " : '" + props.get(key) + "'");
+		}		
+		myFileWriter.writeLine("===========================================================================");
+	}
+	catch (ex) {
+		Server.warn ("Error logging" + ex);
+	}
+	finally {
+		try {
+			myFileWriter.close();
+		}
+		catch (ex) {
+			Server.warn ("Error closing file" + ex);
+		}
+		
+	}
+}]]></script>
+    <in-binding>
+      <bind name="props" type="Properties" export-name="props"/>
+      <bind name="logProps" type="boolean" export-name="logProps"/>
+      <bind name="logFile" type="Path" export-name="logFile"/>
+    </in-binding>
+    <out-binding/>
+    <position y="40.0" x="120.0"/>
+  </workflow-item>
+  <workflow-item name="item21" out-name="item16" type="link" linked-workflow-id="BD808080808080808080808080808080F6C280800122528313869552e41805bb1">
+    <display-name><![CDATA[Customize VM (Windows customization, 1 Nic, Credential)]]></display-name>
+    <in-binding>
+      <bind name="vm" type="VC:VirtualMachine" export-name="vmSource">
+        <description><![CDATA[VM to clone]]></description>
+      </bind>
+      <bind name="clientName" type="string" export-name="winClientName">
+        <description><![CDATA[Name or Prefix name of the Client (Guest Name of the Windows)]]></description>
+      </bind>
+      <bind name="productId" type="string" export-name="winProductId">
+        <description><![CDATA[Microsoft Sysprep requires that a valid serial number be included in the answer file when mini-setup runs. This serial number is ignored if the original guest operating system was installed using a volume-licensed CD. ]]></description>
+      </bind>
+      <bind name="joinDomain" type="string" export-name="winJoinDomain">
+        <description><![CDATA[[Optional] The domain that the virtual machine should join. If this value is supplied, then domainAdmin and domainAdminPassword must also be supplied, and the workgroup name must be empty. ]]></description>
+      </bind>
+      <bind name="joinWorkgroup" type="string" export-name="winJoinWorkgroup">
+        <description><![CDATA[[Optional] The workgroup that the virtual machine should join. If this value is supplied, then the domain name and authentication fields must be empty. ]]></description>
+      </bind>
+      <bind name="domainAdmin" type="Credential" export-name="winDomainAdmin">
+        <description><![CDATA[[Optional] This is the domain user account used for authentication if the virtual machine is joining a domain. The user does not need to be a domain administrator, but the account must have the privileges required to add computers to the domain. ]]></description>
+      </bind>
+      <bind name="domainAdminUsername" type="string" export-name="winDomainAdminUsername">
+        <description><![CDATA[[Optional] This is the username of the domain user account used for authentication if the virtual machine is joining a domain. The user does not need to be a domain administrator, but the account must have the privileges required to add computers to the domain. ]]></description>
+      </bind>
+      <bind name="domainAdminPassword" type="SecureString" export-name="winDomainAdminPassword">
+        <description><![CDATA[[Optional] This is the password of the domain user account used for authentication if the virtual machine is joining a domain. The user does not need to be a domain administrator, but the account must have the privileges required to add computers to the domain. ]]></description>
+      </bind>
+      <bind name="licenseMode" type="VC:CustomizationLicenseDataMode" export-name="winLicenseMode">
+        <description><![CDATA[Server licensing mode ]]></description>
+      </bind>
+      <bind name="licenseUsers" type="number" export-name="winLicenseUsers">
+        <description><![CDATA[This key is valid only if AutoMode = PerServer. ]]></description>
+      </bind>
+      <bind name="newAdminPassword" type="string" export-name="winNewAdminPassword">
+        <description><![CDATA[The password string. It is encrypted if the associated plainText flag is false. ]]></description>
+      </bind>
+      <bind name="inTimezone" type="Enums:MSTimeZone" export-name="winTimezone">
+        <description><![CDATA[Timezone for the newly created VM]]></description>
+      </bind>
+      <bind name="dnsServerList" type="Array/string" export-name="nic1DnsServerList">
+        <description><![CDATA[[Optional] List of DNS servers, for a virtual network adapter with a static IP address]]></description>
+      </bind>
+      <bind name="dnsDomain" type="string" export-name="nic1DnsDomain">
+        <description><![CDATA[[Optional] A DNS domain suffix such as dunes.ch. ]]></description>
+      </bind>
+      <bind name="dhcp" type="boolean" export-name="nic1Dhcp">
+        <description><![CDATA[Use a DHCP server to configure the virtual network adapter. ]]></description>
+      </bind>
+      <bind name="gateway" type="Array/string" export-name="nic1Gateway">
+        <description><![CDATA[[Optional] List of gateways, in order of preference. ]]></description>
+      </bind>
+      <bind name="ipAddress" type="string" export-name="nic1IpAddress">
+        <description><![CDATA[A Fixed valid IP Address]]></description>
+      </bind>
+      <bind name="macAddress" type="string" export-name="nic1MacAddress">
+        <description><![CDATA[[Optional] The MAC address of a network adapter being customized. If it is not included, the customization process maps the settings from the virtual machine's network adapters, in PCI slot order.]]></description>
+      </bind>
+      <bind name="netBIOS" type="VC:CustomizationNetBIOSMode" export-name="nic1NetBIOS">
+        <description><![CDATA[[Optional] NetBIOS setting for Windows. ]]></description>
+      </bind>
+      <bind name="primaryWINS" type="string" export-name="nic1PrimaryWINS">
+        <description><![CDATA[[Optional] The IP address of the primary WINS server. This property is ignored for Linux guest operating systems. ]]></description>
+      </bind>
+      <bind name="secondaryWINS" type="string" export-name="nic1SecondaryWINS">
+        <description><![CDATA[[Optional] The IP address of the secondary WINS server. This property is ignored for Linux guest operating systems. ]]></description>
+      </bind>
+      <bind name="subnetMask" type="string" export-name="nic1SubnetMask">
+        <description><![CDATA[[Optional] Subnet mask for this virtual network adapter. ]]></description>
+      </bind>
+      <bind name="fullName" type="string" export-name="winFullName">
+        <description><![CDATA[User's full name. ]]></description>
+      </bind>
+      <bind name="orgName" type="string" export-name="winOrgName">
+        <description><![CDATA[User's organization. ]]></description>
+      </bind>
+    </in-binding>
+    <out-binding/>
+    <description><![CDATA[Clones a windows VM, doing customization of the guest (Sysprep) and configures one network card.
+
+Sysprep tools must be available on the Virtual Center.]]></description>
+    <position y="200.0" x="920.0"/>
+  </workflow-item>
+  <workflow-item name="item0" throw-bind-name="errorCodeNotSupportOS" type="end" end-mode="1">
+    <position y="270.0" x="960.0"/>
+  </workflow-item>
+  <presentation>
+    <p-param name="props">
+      <desc><![CDATA[All input properties for the customization operation]]></desc>
+    </p-param>
+  </presentation>
+</workflow>

@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dunes-script-module name="publishWorkflowSubscription" result-type="vCACCAFE:WorkflowSubscription" api-version="6.0.0" id="c933beda-d2c1-4ec6-a66f-95215b9eb709" version="1.0.0" allowed-operations="vf" category-name="com.vmware.library.vcaccafe.workflow.subscription">
+  <description><![CDATA[Activates a system workflow subscription.]]></description>
+  <param n="workflowSubscription" t="vCACCAFE:WorkflowSubscription"><![CDATA[Workflow subscription to publish]]></param>
+  <script encoded="false"><![CDATA[System.getModule("com.vmware.library.vcaccafe.util").validateObject(workflowSubscription, "System workflow subscription");
+var publishedWfSubscription;
+var service;
+var host = vCACCAFEEntitiesFinder.getHostForEntity(workflowSubscription);
+System.log("Publishing workflow subscription...");
+if(workflowSubscription.getTenantId()) {
+	service = host.createEventClient().getEventTenantWorkflowSubscriptionService();
+	service.updateTenantSubscriptionStatus(host.tenant, workflowSubscription.getId(), vCACCAFEDesignerPublishStatus.PUBLISHED);
+	publishedWfSubscription = vCACCAFEEntitiesFinder.getTenantWorkflowSubscription(host, workflowSubscription.getId());
+} else {
+	service = host.createEventClient().getEventSystemWorkflowSubscriptionService();
+	workflowSubscription.setStatus(vCACCAFEDesignerPublishStatus.PUBLISHED);
+	service.updateSystemSubscription(workflowSubscription);
+	publishedWfSubscription = vCACCAFEEntitiesFinder.getSystemWorkflowSubscription(host, workflowSubscription.getId());
+}
+System.log("Workflow subscription " + workflowSubscription.getName() + " published.");
+return publishedWfSubscription;]]></script>
+</dunes-script-module>
