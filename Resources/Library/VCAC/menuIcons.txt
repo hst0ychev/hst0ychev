@@ -108,3 +108,4 @@ icon_vms_add.gif
 icon_warning.png
 icon_workflow.png
 icon_youarehere.gif
+TEST.gif
